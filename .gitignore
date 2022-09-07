@@ -50,3 +50,6 @@ app.*.map.json
 lib/app/app.locator.dart
 lib/app/app.router.dart
 *.g.dart
+
+# Dictionary source files
+assets/dictionary_source/*

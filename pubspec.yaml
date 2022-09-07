@@ -17,13 +17,31 @@ dependencies:
   stacked: ^2.3.15
   stacked_services: ^0.9.4
 
+  # Other
+  isar: ^3.0.0-dev.13
+  isar_flutter_libs: any
+  xml: ^6.1.0
+  path_provider: ^2.0.11
+  kana_kit: # TODO change to main one after merge
+    git:
+      url: https://github.com/Moseco/kana_kit
+  async: ^2.8.2
+  archive: ^3.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-  build_runner:
+  build_runner: any
   stacked_generator: ^0.7.15
+  isar_generator: any
+  path: ^1.8.1
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/dictionary_source/JMdict_e_examp # Should be removed for release builds
+    - assets/dictionary_source/db_export.zip
+    
