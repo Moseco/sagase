@@ -20,8 +20,11 @@ class DevViewModel extends BaseViewModel {
     _loading = true;
     notifyListeners();
     await compute(
-      DictionaryUtils.createVocabDictionaryIsolate,
-      await rootBundle.loadString('assets/dictionary_source/JMdict_e_examp'),
+      DictionaryUtils.createDictionaryIsolate,
+      DictionarySource(
+        await rootBundle.loadString('assets/dictionary_source/JMdict_e_examp'),
+        await rootBundle.loadString('assets/dictionary_source/kanjidic2.xml'),
+      ),
     );
     _loading = false;
     notifyListeners();

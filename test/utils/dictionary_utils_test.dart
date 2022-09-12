@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
+import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:path/path.dart' as path;
 import 'package:sagase/utils/dictionary_utils.dart';
@@ -48,7 +49,7 @@ void main() {
 
       // Open Isar instance with random name
       isar = await Isar.open(
-        [DictionaryInfoSchema, VocabSchema],
+        [DictionaryInfoSchema, VocabSchema, KanjiSchema],
         directory: testTempPath,
         name: Random().nextInt(pow(2, 32) as int).toString(),
         inspector: false,
@@ -57,9 +58,8 @@ void main() {
 
     tearDown(() => isar.close(deleteFromDisk: true));
 
-    test('Vocab creation with short source dictionary', () async {
-      await DictionaryUtils.createVocabDictionaryIsolate(shortJMdict,
-          testingIsar: isar);
+    test('Vocab database creation with short source dictionary', () async {
+      await DictionaryUtils.createVocabDictionaryIsolate(shortJMdict, isar);
 
       final vocab0 = await isar.vocabs.get(1000220);
       expect(vocab0!.commonWord, true);
@@ -357,6 +357,92 @@ void main() {
           'I\'m sorry to have kept you waiting');
       expect(vocab5.definitions[0].pos!.length, 1);
       expect(vocab5.definitions[0].pos![0], PartOfSpeech.expressions);
+    });
+
+    test('Kanji database creation with short source dictionary', () async {
+      await DictionaryUtils.createKanjiDictionaryIsolate(shortKanjidic2, isar);
+
+      final kanji1 = await isar.kanjis.get(20811601);
+      expect(kanji1!.kanji, '亜');
+      expect(kanji1.radical, 7);
+      expect(kanji1.grade, 255);
+      expect(kanji1.strokeCount, 7);
+      expect(kanji1.variants.length, 1);
+      await kanji1.variants.load();
+      expect(kanji1.variants.elementAt(0).kanji, '亞');
+      expect(kanji1.frequency, 1509);
+      expect(kanji1.jlpt, 1);
+      expect(kanji1.meanings, 'Asia, rank next, come after, -ous');
+      expect(kanji1.onReadings!.length, 1);
+      expect(kanji1.onReadings![0], 'ア');
+      expect(kanji1.kunReadings!.length, 1);
+      expect(kanji1.kunReadings![0], 'つ.ぐ');
+      expect(kanji1.nanori!.length, 3);
+      expect(kanji1.nanori![0], 'や');
+      expect(kanji1.nanori![1], 'つぎ');
+      expect(kanji1.nanori![2], 'つぐ');
+
+      final kanji2 = await isar.kanjis.get(20811613);
+      expect(kanji2!.kanji, '悪');
+      expect(kanji2.radical, 61);
+      expect(kanji2.grade, 3);
+      expect(kanji2.strokeCount, 11);
+      // Variants for this kanji is empty because its variants not included in test
+      expect(kanji2.variants.length, 0);
+      expect(kanji2.frequency, 530);
+      expect(kanji2.jlpt, 3);
+      expect(kanji2.meanings, 'bad, vice, rascal, false, evil, wrong');
+      expect(kanji2.onReadings!.length, 2);
+      expect(kanji2.onReadings![0], 'アク');
+      expect(kanji2.onReadings![1], 'オ');
+      expect(kanji2.kunReadings!.length, 9);
+      expect(kanji2.kunReadings![0], 'わる.い');
+      expect(kanji2.kunReadings![1], 'わる-');
+      expect(kanji2.kunReadings![2], 'あ.し');
+      expect(kanji2.kunReadings![3], 'にく.い');
+      expect(kanji2.kunReadings![4], '-にく.い');
+      expect(kanji2.kunReadings![5], 'ああ');
+      expect(kanji2.kunReadings![6], 'いずくに');
+      expect(kanji2.kunReadings![7], 'いずくんぞ');
+      expect(kanji2.kunReadings![8], 'にく.む');
+      expect(kanji2.nanori, null);
+
+      final kanji3 = await isar.kanjis.get(20814819);
+      expect(kanji3!.kanji, '亞');
+      expect(kanji3.radical, 7);
+      expect(kanji3.grade, 255);
+      expect(kanji3.strokeCount, 8);
+      expect(kanji3.variants.length, 1);
+      await kanji3.variants.load();
+      expect(kanji3.variants.elementAt(0).kanji, '亜');
+      expect(kanji3.frequency, null);
+      expect(kanji3.jlpt, 255);
+      expect(kanji3.meanings, 'rank, follow');
+      expect(kanji3.onReadings!.length, 1);
+      expect(kanji3.onReadings![0], 'ア');
+      expect(kanji3.kunReadings!.length, 1);
+      expect(kanji3.kunReadings![0], 'つ.ぐ');
+      expect(kanji3.nanori, null);
+
+      final kanji4 = await isar.kanjis.get(20811602);
+      expect(kanji4!.kanji, '唖');
+      expect(kanji4.variants.length, 2);
+      await kanji4.variants.load();
+      expect(kanji4.variants.elementAt(0).kanji, '啞');
+      expect(kanji4.variants.elementAt(1).kanji, '瘂');
+    });
+
+    test('Vocab-kanji links', () async {
+      await DictionaryUtils.createDictionaryIsolate(
+        const DictionarySource(compundTestJMdict, compundTestKanjidic2),
+        testingIsar: isar,
+      );
+
+      final kanji = await isar.kanjis.get(20813521);
+      expect(kanji!.compounds.length, 2);
+      await kanji.compounds.load();
+      expect(kanji.compounds.elementAt(0).id, 1227150);
+      expect(kanji.compounds.elementAt(1).id, 1593670);
     });
   });
 }

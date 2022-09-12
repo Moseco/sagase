@@ -1,11 +1,12 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/datamodels/dictionary_item.dart';
 
 part 'vocab.g.dart';
 
 // Run the following to generate files
 //    flutter pub run build_runner build --delete-conflicting-outputs
 @Collection()
-class Vocab {
+class Vocab extends DictionaryItem {
   late Id id;
 
   List<KanjiReadingPair> kanjiReadingPairs = [];

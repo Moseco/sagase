@@ -6,6 +6,8 @@ import 'package:kana_kit/kana_kit.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/dictionary_info.dart';
+import 'package:sagase/datamodels/dictionary_item.dart';
+import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:stacked/stacked_annotations.dart';
 
@@ -16,10 +18,32 @@ class IsarService {
 
   final kanaKit = const KanaKit();
 
+  final kanjiRegexp = RegExp(r'(\p{Script=Han})', unicode: true);
+
   static Future<IsarService> initialize() async {
-    final isar = await Isar.open([DictionaryInfoSchema, VocabSchema]);
+    final isar = await Isar.open(
+      [DictionaryInfoSchema, VocabSchema, KanjiSchema],
+    );
 
     return IsarService(isar);
+  }
+
+  Future<List<DictionaryItem>> searchDictionary(String value) async {
+    // First check if searching single kanji
+    Kanji? kanji;
+    if (value.length == 1 && value.contains(kanjiRegexp)) {
+      kanji = await _isar.kanjis.getByKanji(value);
+    }
+
+    // Search vocab
+    final vocabList = await searchVocab(value);
+
+    // Add kanji to the start of results if found
+    if (kanji != null) {
+      return <DictionaryItem>[kanji] + vocabList;
+    } else {
+      return vocabList;
+    }
   }
 
   Future<List<Vocab>> searchVocab(String value) async {

@@ -18,7 +18,7 @@ dependencies:
   stacked_services: ^0.9.4
 
   # Other
-  isar: ^3.0.0-dev.13
+  isar: ^3.0.0-dev.14
   isar_flutter_libs: any
   xml: ^6.1.0
   path_provider: ^2.0.11
@@ -43,5 +43,6 @@ flutter:
 
   assets:
     - assets/dictionary_source/JMdict_e_examp # Should be removed for release builds
+    - assets/dictionary_source/kanjidic2.xml # Should be removed for release builds
     - assets/dictionary_source/db_export.zip
     

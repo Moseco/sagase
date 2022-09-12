@@ -12,7 +12,9 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 Download the following files and place them in `assets/dictionary_source/`
 
-- [Vocab file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is the `JMdict_e_examp` (English only, with examples).
+- [Vocab dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is the `JMdict_e_examp` (English only, with examples).
+
+- [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is the `kanjidic2` (contains all 13,108 kanji).
 
 ## Feature list
 
@@ -32,7 +34,19 @@ Download the following files and place them in `assets/dictionary_source/`
         - [x] Hiragana/katakana reading
         - [x] Romaji reading
         - [x] Simplified romaji reading (e.g. remove small tsu before conversion)
-- [ ] Create kanji dictionary
+- [x] Create kanji dictionary
+    - [x] Kanji character
+    - [x] Radical
+    - [x] Grade
+    - [x] Stroke count
+    - [x] Variants
+    - [x] Frequency
+    - [x] JLPT level
+    - [x] Meanings
+    - [x] On readings
+    - [x] Kun readings
+    - [x] Nanori
+    - [x] Compounds
 - [x] Export/import database
 - [ ] Search
     - [ ] Search vocab

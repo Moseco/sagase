@@ -1,6 +1,8 @@
 import 'package:async/async.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/datamodels/dictionary_item.dart';
+import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
@@ -11,10 +13,10 @@ class HomeViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
 
   String _searchString = '';
-  List<Vocab> _searchResult = [];
-  List<Vocab> get searchResult => _searchResult;
+  List<DictionaryItem> _searchResult = [];
+  List<DictionaryItem> get searchResult => _searchResult;
 
-  CancelableOperation<List<Vocab>>? _searchOperation;
+  CancelableOperation<List<DictionaryItem>>? _searchOperation;
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -24,6 +26,13 @@ class HomeViewModel extends BaseViewModel {
     _navigationService.navigateTo(
       Routes.vocabView,
       arguments: VocabViewArguments(vocab: vocab),
+    );
+  }
+
+  void navigateToKanji(Kanji kanji) {
+    _navigationService.navigateTo(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(kanji: kanji),
     );
   }
 
@@ -39,7 +48,7 @@ class HomeViewModel extends BaseViewModel {
       }
 
       _searchOperation = CancelableOperation.fromFuture(
-        _isarService.searchVocab(_searchString),
+        _isarService.searchDictionary(_searchString),
       );
 
       _searchOperation!.value.then((value) {
