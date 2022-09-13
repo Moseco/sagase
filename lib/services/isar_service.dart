@@ -9,7 +9,7 @@ import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
-import 'package:stacked/stacked_annotations.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 
 class IsarService {
   final Isar _isar;
@@ -26,6 +26,26 @@ class IsarService {
     );
 
     return IsarService(isar);
+  }
+
+  Future<void> close() async {
+    await _isar.close();
+  }
+
+  Future<DictionaryStatus> validateDictionary() async {
+    // Check if dictionary count matches expectation
+    if ((await _isar.kanjis.count()) != 13108 ||
+        (await _isar.vocabs.count()) != 196581) {
+      return DictionaryStatus.invalid;
+    }
+
+    // Check version matches current
+    if ((await _isar.dictionaryInfos.get(0))?.version !=
+        constants.dictionaryVersion) {
+      return DictionaryStatus.outOfDate;
+    }
+
+    return DictionaryStatus.valid;
   }
 
   Future<List<DictionaryItem>> searchDictionary(String value) async {
@@ -97,10 +117,7 @@ class IsarService {
     }
   }
 
-  Future<void> importDatabase() async {
-    // Close the current instance
-    _isar.close();
-
+  static Future<void> importDatabase() async {
     // Copy db_export.zip asset to temporary directory file
     final ByteData byteData =
         await rootBundle.load('assets/dictionary_source/db_export.zip');
@@ -123,9 +140,11 @@ class IsarService {
     await File('${appSupportDir.path}/db_export.isar')
         .rename('${appSupportDir.path}/default.isar');
     await newDbZipFile.delete();
-
-    // Register new instance with locator
-    StackedLocator.instance.unregister<IsarService>();
-    StackedLocator.instance.registerSingleton(await IsarService.initialize());
   }
+}
+
+enum DictionaryStatus {
+  valid,
+  invalid,
+  outOfDate,
 }

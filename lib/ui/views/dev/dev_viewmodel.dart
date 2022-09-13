@@ -53,7 +53,8 @@ class DevViewModel extends BaseViewModel {
   Future<void> importDatabase() async {
     _loading = true;
     notifyListeners();
-    await _isarService.importDatabase();
+    await _isarService.close();
+    await IsarService.importDatabase();
     _loading = false;
     notifyListeners();
   }

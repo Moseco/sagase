@@ -6,6 +6,7 @@ import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:xml/xml.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 
 // This class contains functions only to be used during development
 class DictionaryUtils {
@@ -20,7 +21,9 @@ class DictionaryUtils {
 
     await isar.writeTxn(() async {
       await isar.clear();
-      return isar.dictionaryInfos.put(DictionaryInfo());
+      return isar.dictionaryInfos.put(
+        DictionaryInfo()..version = constants.dictionaryVersion,
+      );
     });
 
     await createVocabDictionaryIsolate(source.vocabDict, isar);
@@ -47,7 +50,7 @@ class DictionaryUtils {
     for (int i = 0; i < rawVocabList.length; i++) {
       // Write to database every 10,000 iterations
       if (i % 10000 == 0) {
-        print("Writing at $i");
+        print("At vocab $i");
         await isar.writeTxn(() async {
           for (var vocab in vocabList) {
             await isar.vocabs.put(vocab);
@@ -606,7 +609,7 @@ class DictionaryUtils {
     // Top level of kanji items (skip first element which is header)
     for (int i = 1; i < rawKanjiList.length; i++) {
       // // Write to database every 10,000 iterations
-      if (i % 1000 == 0) print("Parsed at $i");
+      if (i % 1000 == 0) print("At kanji $i");
 
       final kanji = Kanji();
 
