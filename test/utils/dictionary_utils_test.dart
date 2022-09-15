@@ -68,14 +68,20 @@ void main() {
       // Pair 1
       expect(vocab0.kanjiReadingPairs[0].kanjiWritings!.length, 1);
       expect(vocab0.kanjiReadingPairs[0].kanjiWritings![0].kanji, '明白');
+      expect(vocab0.kanjiReadingPairs[0].kanjiWritings![0].info, null);
       expect(vocab0.kanjiReadingPairs[0].readings.length, 1);
       expect(vocab0.kanjiReadingPairs[0].readings[0].reading, 'めいはく');
+      expect(vocab0.kanjiReadingPairs[0].readings[0].info, null);
       // Definition
       expect(vocab0.definitions.length, 1);
       expect(vocab0.definitions[0].definition,
           'obvious, clear, plain, evident, apparent, explicit, overt');
+      expect(vocab0.definitions[0].additionalInfo, null);
       expect(vocab0.definitions[0].pos!.length, 1);
       expect(vocab0.definitions[0].pos![0], PartOfSpeech.adjective);
+      expect(vocab0.definitions[0].appliesTo, null);
+      expect(vocab0.definitions[0].miscInfo, null);
+      expect(vocab0.definitions[0].dialects, null);
       // Example
       expect(vocab0.examples!.length, 1);
       expect(vocab0.examples![0].index, 0);
@@ -159,20 +165,41 @@ void main() {
           'surely, undoubtedly, almost certainly, most likely (e.g. 90 percent)');
       expect(vocab2.definitions[0].pos!.length, 1);
       expect(vocab2.definitions[0].pos![0], PartOfSpeech.adverb);
+      expect(vocab2.definitions[0].miscInfo!.length, 2);
+      expect(vocab2.definitions[0].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+      expect(vocab2.definitions[0].miscInfo![1],
+          MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 2
       expect(vocab2.definitions[1].definition, 'sternly, severely');
       expect(vocab2.definitions[1].additionalInfo, 'esp. キッと');
       expect(vocab2.definitions[1].pos!.length, 1);
       expect(vocab2.definitions[1].pos![0], PartOfSpeech.adverb);
+      expect(vocab2.definitions[1].miscInfo!.length, 2);
+      expect(vocab2.definitions[1].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+      expect(vocab2.definitions[1].miscInfo![1],
+          MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 3
       expect(vocab2.definitions[2].definition,
           'having no slack, rigid, stiff, tight');
       expect(vocab2.definitions[2].pos!.length, 1);
       expect(vocab2.definitions[2].pos![0], PartOfSpeech.adverb);
+      expect(vocab2.definitions[2].miscInfo!.length, 2);
+      expect(vocab2.definitions[2].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+      expect(vocab2.definitions[2].miscInfo![1],
+          MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 4
       expect(vocab2.definitions[3].definition, 'suddenly, abruptly, instantly');
       expect(vocab2.definitions[3].pos!.length, 1);
       expect(vocab2.definitions[3].pos![0], PartOfSpeech.adverb);
+      expect(vocab2.definitions[3].miscInfo!.length, 3);
+      expect(vocab2.definitions[3].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+      expect(vocab2.definitions[3].miscInfo![1],
+          MiscellaneousInfo.onomatopoeicOrMimeticWord);
+      expect(vocab2.definitions[3].miscInfo![2], MiscellaneousInfo.archaism);
       // Example
       expect(vocab2.examples!.length, 1);
       expect(vocab2.examples![0].index, 0);
@@ -225,6 +252,8 @@ void main() {
       expect(vocab3.definitions[4].pos!.length, 2);
       expect(vocab3.definitions[4].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[4].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[4].appliesTo!.length, 1);
+      expect(vocab3.definitions[4].appliesTo![0], '逝く');
       // Definition 6
       expect(vocab3.definitions[5].definition, 'to do (in a specific way)');
       expect(vocab3.definitions[5].pos!.length, 2);
@@ -242,18 +271,28 @@ void main() {
       expect(vocab3.definitions[7].pos!.length, 2);
       expect(vocab3.definitions[7].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[7].pos![1], PartOfSpeech.auxiliary);
+      expect(vocab3.definitions[7].miscInfo!.length, 1);
+      expect(vocab3.definitions[7].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
       // Definition 9
       expect(vocab3.definitions[8].definition,
           'to have an orgasm, to come, to cum');
       expect(vocab3.definitions[8].pos!.length, 2);
       expect(vocab3.definitions[8].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[8].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[8].miscInfo!.length, 1);
+      expect(vocab3.definitions[8].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
       // Definition 10
       expect(vocab3.definitions[9].definition,
           'to trip, to get high, to have a drug-induced hallucination');
       expect(vocab3.definitions[9].pos!.length, 2);
       expect(vocab3.definitions[9].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[9].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[9].miscInfo!.length, 2);
+      expect(vocab3.definitions[9].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+      expect(vocab3.definitions[9].miscInfo![1], MiscellaneousInfo.slang);
       // Examples
       expect(vocab3.examples!.length, 3);
       // Example 1
@@ -291,6 +330,8 @@ void main() {
       expect(vocab4.definitions[1].definition, 'nuh-uh, no');
       expect(vocab4.definitions[1].pos!.length, 1);
       expect(vocab4.definitions[1].pos![0], PartOfSpeech.interjection);
+      expect(vocab4.definitions[1].appliesTo!.length, 1);
+      expect(vocab4.definitions[1].appliesTo![0], 'ううん');
       // Definition 3
       expect(vocab4.definitions[2].definition, 'oof');
       expect(vocab4.definitions[2].pos!.length, 1);
@@ -357,6 +398,53 @@ void main() {
           'I\'m sorry to have kept you waiting');
       expect(vocab5.definitions[0].pos!.length, 1);
       expect(vocab5.definitions[0].pos![0], PartOfSpeech.expressions);
+
+      final vocab6 = await isar.vocabs.get(1001390);
+      expect(vocab6!.commonWord, true);
+      // Kanji-reading pairs
+      expect(vocab6.kanjiReadingPairs.length, 1);
+      // Pair 1
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings!.length, 2);
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![0].kanji, '御田');
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![0].info!.length, 1);
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![0].info![0],
+          KanjiInfo.rareKanjiForm);
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![1].kanji, 'お田');
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![1].info!.length, 1);
+      expect(vocab6.kanjiReadingPairs[0].kanjiWritings![1].info![0],
+          KanjiInfo.rareKanjiForm);
+      expect(vocab6.kanjiReadingPairs[0].readings.length, 1);
+      expect(vocab6.kanjiReadingPairs[0].readings[0].reading, 'おでん');
+      // Definition
+      expect(vocab6.definitions.length, 1);
+      expect(vocab6.definitions[0].definition,
+          'oden, dish of various ingredients, e.g. egg, daikon, potato, chikuwa, konnyaku stewed in soy-flavored dashi');
+      expect(vocab6.definitions[0].pos!.length, 1);
+      expect(vocab6.definitions[0].pos![0], PartOfSpeech.noun);
+      expect(vocab6.definitions[0].fields!.length, 1);
+      expect(vocab6.definitions[0].fields![0], Field.foodCooking);
+      expect(vocab6.definitions[0].miscInfo!.length, 1);
+      expect(vocab6.definitions[0].miscInfo![0],
+          MiscellaneousInfo.usuallyKanaAlone);
+
+      final vocab7 = await isar.vocabs.get(2067590);
+      expect(vocab7!.commonWord, false);
+      // Kanji-reading pairs
+      expect(vocab7.kanjiReadingPairs.length, 1);
+      // Pair 1
+      expect(vocab7.kanjiReadingPairs[0].readings.length, 3);
+      expect(vocab7.kanjiReadingPairs[0].readings[0].reading, 'めんこい');
+      expect(vocab7.kanjiReadingPairs[0].readings[1].reading, 'めごい');
+      expect(vocab7.kanjiReadingPairs[0].readings[2].reading, 'めんごい');
+      // Definition
+      expect(vocab7.definitions.length, 1);
+      expect(vocab7.definitions[0].definition,
+          'dear, darling, adorable, precious, cute, lovely, sweet, beloved, charming');
+      expect(vocab7.definitions[0].pos!.length, 1);
+      expect(vocab7.definitions[0].pos![0], PartOfSpeech.adjective);
+      expect(vocab7.definitions[0].dialects!.length, 2);
+      expect(vocab7.definitions[0].dialects![0], Dialect.touhokuBen);
+      expect(vocab7.definitions[0].dialects![1], Dialect.hokkaidoBen);
     });
 
     test('Kanji database creation with short source dictionary', () async {

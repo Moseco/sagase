@@ -29,6 +29,11 @@ Download the following files and place them in `assets/dictionary_source/`
     - [x] Mark common words
     - [x] Extra information
     - [ ] Cross-referenced vocab
+    - [ ] Antonyms
+    - [x] Definition only associated with a certain kanji/reading
+    - [x] Field of application
+    - [x] Miscellaneous information
+    - [x] Dialect
     - [x] Index
         - [x] Kanji writing
         - [x] Hiragana/katakana reading

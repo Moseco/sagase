@@ -141,7 +141,7 @@ class DictionaryUtils {
               .add(kanaKit.toRomaji(reading.reading).toLowerCase());
           // Simplified romaji text (remove based on if verb or not)
           String? simplifiedReading;
-          for (var pos in vocab.definitions.first.pos!) {
+          for (var pos in vocab.definitions.first.pos ?? []) {
             // Range of verbs
             if (pos.index >= PartOfSpeech.verb.index &&
                 pos.index <= PartOfSpeech.verbIchidanZuru.index) {
@@ -314,16 +314,25 @@ class DictionaryUtils {
 
   static void _handleSenseElement(XmlElement xmlElement, Vocab vocab) {
     List<String> definitions = [];
-    List<PartOfSpeech> partsOfSpeech = [];
+    List<PartOfSpeech>? partsOfSpeech;
     String? additionalInfo;
+    List<String>? appliesTo;
+    List<Field>? fields;
+    List<MiscellaneousInfo>? miscInfo;
+    List<Dialect>? dialects;
 
     for (var senseElement in xmlElement.childElements) {
       switch (senseElement.name.local) {
         case 'stagk':
+          appliesTo ??= [];
+          appliesTo.add(senseElement.text);
           break;
         case 'stagr':
+          appliesTo ??= [];
+          appliesTo.add(senseElement.text);
           break;
         case 'pos':
+          partsOfSpeech ??= [];
           partsOfSpeech.add(_handlePartOfSpeechElement(senseElement.text));
           break;
         case 'xref':
@@ -333,8 +342,14 @@ class DictionaryUtils {
           // Reference to another entry that is an antonym of the current entry
           break;
         case 'field':
+          final field = _handleFieldElement(senseElement.text);
+          fields ??= [];
+          fields.add(field!);
           break;
         case 'misc':
+          final misc = _handleMiscElement(senseElement.text);
+          miscInfo ??= [];
+          miscInfo.add(misc!);
           break;
         case 's_inf':
           additionalInfo = senseElement.text;
@@ -343,7 +358,9 @@ class DictionaryUtils {
           // Indicates the source language of a loan-word/gairaigo
           break;
         case 'dial':
-          // For words associated with a specific regional dialect
+          final dialect = _handleDialectElement(senseElement.text);
+          dialects ??= [];
+          dialects.add(dialect!);
           break;
         case 'gloss':
           definitions.add(senseElement.text);
@@ -369,7 +386,11 @@ class DictionaryUtils {
       VocabDefinition()
         ..definition = definitionBuffer.toString()
         ..additionalInfo = additionalInfo
-        ..pos = partsOfSpeech,
+        ..pos = partsOfSpeech
+        ..appliesTo = appliesTo
+        ..fields = fields
+        ..miscInfo = miscInfo
+        ..dialects = dialects,
     );
   }
 
@@ -590,6 +611,303 @@ class DictionaryUtils {
       default:
         print('Unknown part-of-speech');
         return PartOfSpeech.unknown;
+    }
+  }
+
+  static Field? _handleFieldElement(String field) {
+    switch (field) {
+      case '&agric;':
+        return Field.agriculture;
+      case '&anat;':
+        return Field.anatomy;
+      case '&archeol;':
+        return Field.archeology;
+      case '&archit;':
+        return Field.architecture;
+      case '&art;':
+        return Field.artAesthetics;
+      case '&astron;':
+        return Field.astronomy;
+      case '&audvid;':
+        return Field.audiovisual;
+      case '&aviat;':
+        return Field.aviation;
+      case '&baseb;':
+        return Field.baseball;
+      case '&biochem;':
+        return Field.biochemistry;
+      case '&biol;':
+        return Field.biology;
+      case '&bot;':
+        return Field.botany;
+      case '&Buddh;':
+        return Field.buddhism;
+      case '&bus;':
+        return Field.business;
+      case '&chem;':
+        return Field.chemistry;
+      case '&Christn;':
+        return Field.christianity;
+      case '&cloth;':
+        return Field.clothing;
+      case '&comp;':
+        return Field.computing;
+      case '&cryst;':
+        return Field.crystallography;
+      case '&ecol;':
+        return Field.ecology;
+      case '&econ;':
+        return Field.economics;
+      case '&elec;':
+        return Field.electricityElecEng;
+      case '&electr;':
+        return Field.electronics;
+      case '&embryo;':
+        return Field.embryology;
+      case '&engr;':
+        return Field.engineering;
+      case '&ent;':
+        return Field.entomology;
+      case '&finc;':
+        return Field.finance;
+      case '&fish;':
+        return Field.fishing;
+      case '&food;':
+        return Field.foodCooking;
+      case '&gardn;':
+        return Field.gardening;
+      case '&genet;':
+        return Field.genetics;
+      case '&geogr;':
+        return Field.geography;
+      case '&geol;':
+        return Field.geology;
+      case '&geom;':
+        return Field.geometry;
+      case '&go;':
+        return Field.go;
+      case '&golf;':
+        return Field.golf;
+      case '&gramm;':
+        return Field.grammar;
+      case '&grmyth;':
+        return Field.greekMythology;
+      case '&hanaf;':
+        return Field.hanafuda;
+      case '&horse;':
+        return Field.horseRacing;
+      case '&law;':
+        return Field.law;
+      case '&ling;':
+        return Field.linguistics;
+      case '&logic;':
+        return Field.logic;
+      case '&MA;':
+        return Field.martialArts;
+      case '&mahj;':
+        return Field.mahjong;
+      case '&math;':
+        return Field.mathematics;
+      case '&mech;':
+        return Field.mechanicalEngineering;
+      case '&med;':
+        return Field.medicine;
+      case '&met;':
+        return Field.meteorology;
+      case '&mil;':
+        return Field.military;
+      case '&music;':
+        return Field.music;
+      case '&ornith;':
+        return Field.ornithology;
+      case '&paleo;':
+        return Field.paleontology;
+      case '&pathol;':
+        return Field.pathology;
+      case '&pharm;':
+        return Field.pharmacy;
+      case '&phil;':
+        return Field.philosophy;
+      case '&photo;':
+        return Field.photography;
+      case '&physics;':
+        return Field.physics;
+      case '&physiol;':
+        return Field.physiology;
+      case '&print;':
+        return Field.printing;
+      case '&psy;':
+        return Field.psychiatry;
+      case '&psych;':
+        return Field.psychology;
+      case '&rail;':
+        return Field.railway;
+      case '&Shinto;':
+        return Field.shinto;
+      case '&shogi;':
+        return Field.shogi;
+      case '&sports;':
+        return Field.sports;
+      case '&stat;':
+        return Field.statistics;
+      case '&sumo;':
+        return Field.sumo;
+      case '&telec;':
+        return Field.telecommunications;
+      case '&tradem;':
+        return Field.trademark;
+      case '&vidg;':
+        return Field.videoGames;
+      case '&zool;':
+        return Field.zoology;
+      default:
+        return null;
+    }
+  }
+
+  static MiscellaneousInfo? _handleMiscElement(String miscellaneousInfo) {
+    switch (miscellaneousInfo) {
+      case '&abbr;':
+        return MiscellaneousInfo.abbreviation;
+      case '&arch;':
+        return MiscellaneousInfo.archaism;
+      case '&char;':
+        return MiscellaneousInfo.character;
+      case '&chn;':
+        return MiscellaneousInfo.childrensLanguage;
+      case '&col;':
+        return MiscellaneousInfo.colloquialism;
+      case '&company;':
+        return MiscellaneousInfo.companyName;
+      case '&creat;':
+        return MiscellaneousInfo.creature;
+      case '&dated;':
+        return MiscellaneousInfo.datedTerm;
+      case '&dei;':
+        return MiscellaneousInfo.deity;
+      case '&derog;':
+        return MiscellaneousInfo.derogatory;
+      case '&doc;':
+        return MiscellaneousInfo.document;
+      case '&ev;':
+        return MiscellaneousInfo.event;
+      case '&fam;':
+        return MiscellaneousInfo.familiarLanguage;
+      case '&fem;':
+        return MiscellaneousInfo.femaleLanguage;
+      case '&fict;':
+        return MiscellaneousInfo.fiction;
+      case '&form;':
+        return MiscellaneousInfo.formalOrLiteraryTerm;
+      case '&given;':
+        return MiscellaneousInfo.givenName;
+      case '&group;':
+        return MiscellaneousInfo.group;
+      case '&hist;':
+        return MiscellaneousInfo.historicalTerm;
+      case '&hon;':
+        return MiscellaneousInfo.honorificOrRespectful;
+      case '&hum;':
+        return MiscellaneousInfo.humbleLanguage;
+      case '&id;':
+        return MiscellaneousInfo.idiomaticExpression;
+      case '&joc;':
+        return MiscellaneousInfo.humorousTerm;
+      case '&leg;':
+        return MiscellaneousInfo.legend;
+      case '&m-sl;':
+        return MiscellaneousInfo.mangaSlang;
+      case '&male;':
+        return MiscellaneousInfo.maleLanguage;
+      case '&myth;':
+        return MiscellaneousInfo.mythology;
+      case '&net-sl;':
+        return MiscellaneousInfo.internetSlang;
+      case '&obj;':
+        return MiscellaneousInfo.object;
+      case '&obs;':
+        return MiscellaneousInfo.obsoleteTerm;
+      case '&obsc;':
+        return MiscellaneousInfo.obscureTerm;
+      case '&on-mim;':
+        return MiscellaneousInfo.onomatopoeicOrMimeticWord;
+      case '&organization;':
+        return MiscellaneousInfo.organizationName;
+      case '&oth;':
+        return MiscellaneousInfo.other;
+      case '&person;':
+        return MiscellaneousInfo.particularPerson;
+      case '&place;':
+        return MiscellaneousInfo.placeName;
+      case '&poet;':
+        return MiscellaneousInfo.poeticalTerm;
+      case '&pol;':
+        return MiscellaneousInfo.politeLanguage;
+      case '&product;':
+        return MiscellaneousInfo.productName;
+      case '&proverb;':
+        return MiscellaneousInfo.proverb;
+      case '&quote;':
+        return MiscellaneousInfo.quotation;
+      case '&rare;':
+        return MiscellaneousInfo.rare;
+      case '&relig;':
+        return MiscellaneousInfo.religion;
+      case '&sens;':
+        return MiscellaneousInfo.sensitive;
+      case '&serv;':
+        return MiscellaneousInfo.service;
+      case '&sl;':
+        return MiscellaneousInfo.slang;
+      case '&station;':
+        return MiscellaneousInfo.railwayStation;
+      case '&surname;':
+        return MiscellaneousInfo.surname;
+      case '&uk;':
+        return MiscellaneousInfo.usuallyKanaAlone;
+      case '&unclass;':
+        return MiscellaneousInfo.unclassifiedName;
+      case '&vulg;':
+        return MiscellaneousInfo.vulgar;
+      case '&work;':
+        return MiscellaneousInfo.workOfArt;
+      case '&X;':
+        return MiscellaneousInfo.rudeOrXRatedTerm;
+      case '&yoji;':
+        return MiscellaneousInfo.yojijukugo;
+      default:
+        return null;
+    }
+  }
+
+  static Dialect? _handleDialectElement(String dialect) {
+    switch (dialect) {
+      case '&bra;':
+        return Dialect.brazilian;
+      case '&hob;':
+        return Dialect.hokkaidoBen;
+      case '&ksb;':
+        return Dialect.kansaiBen;
+      case '&ktb;':
+        return Dialect.kantouBen;
+      case '&kyb;':
+        return Dialect.kyotoBen;
+      case '&kyu;':
+        return Dialect.kyuushuuBen;
+      case '&nab;':
+        return Dialect.naganoBen;
+      case '&osb;':
+        return Dialect.osakaBen;
+      case '&rkb;':
+        return Dialect.ryuukyuuBen;
+      case '&thb;':
+        return Dialect.touhokuBen;
+      case '&tsb;':
+        return Dialect.tosaBen;
+      case '&tsug;':
+        return Dialect.tsugaruBen;
+      default:
+        return null;
     }
   }
 
