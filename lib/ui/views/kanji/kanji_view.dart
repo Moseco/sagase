@@ -16,7 +16,7 @@ class KanjiView extends StatelessWidget {
       fireOnModelReadyOnce: true,
       onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(title: const Text('Kanji Item')),
+        appBar: AppBar(title: Text(kanji.kanji)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8),
           child: Column(

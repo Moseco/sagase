@@ -18,8 +18,6 @@ class IsarService {
 
   final kanaKit = const KanaKit();
 
-  final kanjiRegexp = RegExp(r'(\p{Script=Han})', unicode: true);
-
   static Future<IsarService> initialize() async {
     final isar = await Isar.open(
       [DictionaryInfoSchema, VocabSchema, KanjiSchema],
@@ -51,7 +49,7 @@ class IsarService {
   Future<List<DictionaryItem>> searchDictionary(String value) async {
     // First check if searching single kanji
     Kanji? kanji;
-    if (value.length == 1 && value.contains(kanjiRegexp)) {
+    if (value.length == 1 && value.contains(constants.kanjiRegExp)) {
       kanji = await _isar.kanjis.getByKanji(value);
     }
 
@@ -115,6 +113,10 @@ class IsarService {
           .limit(100)
           .findAll();
     }
+  }
+
+  Future<Kanji?> getKanji(String kanji) async {
+    return _isar.kanjis.getByKanji(kanji);
   }
 
   static Future<void> importDatabase() async {

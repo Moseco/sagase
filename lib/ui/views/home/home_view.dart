@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 
 import 'home_viewmodel.dart';
 
@@ -15,7 +17,7 @@ class HomeView extends StatelessWidget {
       viewModelBuilder: () => HomeViewModel(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
-          title: const Text('Home'),
+          title: const Text('Sagase'),
           actions: kDebugMode
               ? [
                   IconButton(
@@ -28,16 +30,7 @@ class HomeView extends StatelessWidget {
         body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search',
-                    border: OutlineInputBorder(borderSide: BorderSide()),
-                  ),
-                  onChanged: viewModel.searchOnChange,
-                ),
-              ),
+              const _SearchTextField(),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8),
@@ -60,6 +53,37 @@ class HomeView extends StatelessWidget {
   }
 }
 
+class _SearchTextField extends HookViewModelWidget<HomeViewModel> {
+  const _SearchTextField({Key? key}) : super(key: key);
+  @override
+  Widget buildViewModelWidget(BuildContext context, HomeViewModel viewModel) {
+    var searchController = useTextEditingController();
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: TextField(
+        autocorrect: false,
+        enableSuggestions: false,
+        enableIMEPersonalizedLearning: false,
+        maxLines: 1,
+        textInputAction: TextInputAction.done,
+        decoration: InputDecoration(
+          hintText: 'Search',
+          border: const OutlineInputBorder(borderSide: BorderSide()),
+          suffixIcon: IconButton(
+            onPressed: () {
+              viewModel.searchOnChange('');
+              searchController.clear();
+            },
+            icon: const Icon(Icons.clear),
+          ),
+        ),
+        controller: searchController,
+        onChanged: viewModel.searchOnChange,
+      ),
+    );
+  }
+}
+
 class _VocabSearchItem extends ViewModelWidget<HomeViewModel> {
   final Vocab vocab;
 
@@ -69,8 +93,9 @@ class _VocabSearchItem extends ViewModelWidget<HomeViewModel> {
   Widget build(BuildContext context, HomeViewModel viewModel) {
     return ListTile(
       title: Text(
-        vocab.kanjiReadingPairs.first.kanjiWritings?.first.kanji ??
-            vocab.kanjiReadingPairs.first.readings.first.reading,
+        vocab.kanjiReadingPairs[0].kanjiWritings != null
+            ? '${vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji}【${vocab.kanjiReadingPairs[0].readings[0].reading}】'
+            : vocab.kanjiReadingPairs[0].readings[0].reading,
         maxLines: 1,
       ),
       subtitle: Text(

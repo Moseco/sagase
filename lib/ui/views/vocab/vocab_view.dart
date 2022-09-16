@@ -7,27 +7,36 @@ import 'vocab_viewmodel.dart';
 class VocabView extends StatelessWidget {
   final Vocab vocab;
 
-  const VocabView({required this.vocab, Key? key}) : super(key: key);
+  const VocabView(this.vocab, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<VocabViewModel>.reactive(
       viewModelBuilder: () => VocabViewModel(vocab),
+      fireOnModelReadyOnce: true,
+      onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(title: const Text('Vocab Item')),
+        appBar: AppBar(
+          title: Text(
+            vocab.kanjiReadingPairs[0].kanjiWritings?[0].kanji ??
+                vocab.kanjiReadingPairs[0].readings[0].reading,
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (vocab.commonWord) const Text('Is common'),
+              _PrimaryKanjiReadingPair(vocab.kanjiReadingPairs[0]),
+              if (vocab.commonWord) const Text('Common word'),
               const Text(
-                'Kanji and reading',
+                'All kanji and reading',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               ListView.builder(
                 shrinkWrap: true,
                 primary: false,
+                padding: EdgeInsets.zero,
                 itemCount: vocab.kanjiReadingPairs.length,
                 itemBuilder: (context, index) {
                   return Column(
@@ -58,6 +67,7 @@ class VocabView extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 primary: false,
+                padding: EdgeInsets.zero,
                 itemCount: vocab.definitions.length,
                 itemBuilder: (context, index) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,6 +88,7 @@ class VocabView extends StatelessWidget {
                   ],
                 ),
               ),
+              if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               const Text(
                 'Examples',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -86,11 +97,17 @@ class VocabView extends StatelessWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   primary: false,
+                  padding: EdgeInsets.zero,
                   itemCount: vocab.examples!.length,
                   itemBuilder: (context, index) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Example for definition ${index + 1}'),
+                      Text(
+                        'Example for definition ${vocab.examples![index].index + 1}',
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                       Text(vocab.examples![index].japanese),
                       Text(vocab.examples![index].english),
                     ],
@@ -100,6 +117,64 @@ class VocabView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PrimaryKanjiReadingPair extends StatelessWidget {
+  final KanjiReadingPair pair;
+
+  const _PrimaryKanjiReadingPair(this.pair, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (pair.kanjiWritings != null) {
+      return Text(
+        '${pair.kanjiWritings![0].kanji}【${pair.readings[0].reading}】',
+        style: const TextStyle(fontSize: 32),
+      );
+    } else {
+      return Text(
+        pair.readings[0].reading,
+        style: const TextStyle(fontSize: 32),
+      );
+    }
+  }
+}
+
+class _KanjiList extends ViewModelWidget<VocabViewModel> {
+  const _KanjiList({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, VocabViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Kanji in vocab',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          padding: EdgeInsets.zero,
+          itemCount: viewModel.kanjiList.length,
+          itemBuilder: (context, index) {
+            final current = viewModel.kanjiList[index];
+            if (viewModel.kanjiLoaded) {
+              return ListTile(
+                title: Text(current.kanji),
+                subtitle: Text(
+                  current.meanings ?? 'NO MEANING',
+                  maxLines: 1,
+                ),
+                onTap: () => viewModel.navigateToKanji(current),
+              );
+            } else {
+              return ListTile(title: Text(current.kanji));
+            }
+          },
+        ),
+      ],
     );
   }
 }
