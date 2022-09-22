@@ -19,6 +19,10 @@ dependencies:
   stacked_hooks: ^0.2.2
   flutter_hooks: ^0.18.5+1
 
+  # UI
+  google_nav_bar: ^5.0.6
+  settings_ui: ^2.0.2
+
   # Other
   isar: ^3.0.0-dev.14
   isar_flutter_libs: any

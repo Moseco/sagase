@@ -1,6 +1,13 @@
 import 'package:sagase/ui/views/dev/dev_view.dart';
+import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_view.dart';
+import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
+import 'package:sagase/ui/views/learning/learning_view.dart';
+import 'package:sagase/ui/views/learning/learning_viewmodel.dart';
+import 'package:sagase/ui/views/search/search_view.dart';
+import 'package:sagase/ui/views/search/search_viewmodel.dart';
+import 'package:sagase/ui/views/settings/settings_view.dart';
 import 'package:sagase/ui/views/splash_screen/splash_screen_view.dart';
 import 'package:sagase/ui/views/vocab/vocab_view.dart';
 import 'package:stacked/stacked.dart';
@@ -15,6 +22,12 @@ import 'package:stacked_services/stacked_services.dart';
     CustomRoute(
       page: HomeView,
       transitionsBuilder: TransitionsBuilders.fadeIn,
+      children: [
+        CustomRoute(page: SearchView),
+        CustomRoute(page: DictionaryListsView),
+        CustomRoute(page: LearningView),
+        CustomRoute(page: SettingsView),
+      ],
     ),
     MaterialRoute(page: VocabView),
     MaterialRoute(page: KanjiView),
@@ -23,6 +36,9 @@ import 'package:stacked_services/stacked_services.dart';
   dependencies: [
     LazySingleton(classType: NavigationService),
     // IsarService is registered in SplashScreen to catch errors
+    LazySingleton(classType: SearchViewModel),
+    LazySingleton(classType: DictionaryListsViewModel),
+    LazySingleton(classType: LearningViewModel),
   ],
 )
 class AppSetup {
