@@ -3,6 +3,7 @@ import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_view.dart';
 import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
+import 'package:sagase/ui/views/kanji_compounds/kanji_compounds_view.dart';
 import 'package:sagase/ui/views/learning/learning_view.dart';
 import 'package:sagase/ui/views/learning/learning_viewmodel.dart';
 import 'package:sagase/ui/views/search/search_view.dart';
@@ -31,6 +32,7 @@ import 'package:stacked_services/stacked_services.dart';
     ),
     MaterialRoute(page: VocabView),
     MaterialRoute(page: KanjiView),
+    MaterialRoute(page: KanjiCompoundsView),
     MaterialRoute(page: DevView),
   ],
   dependencies: [

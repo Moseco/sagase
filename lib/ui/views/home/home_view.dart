@@ -20,37 +20,39 @@ class HomeView extends StatelessWidget {
           initialRoute: HomeViewRoutes.searchView,
           router: HomeViewRouter(),
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8),
-          child: GNav(
-            haptic: false,
-            gap: 8,
-            activeColor: Colors.deepPurple,
-            iconSize: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            tabBorderRadius: 15,
-            tabBackgroundColor: Colors.deepPurple.withOpacity(0.2),
-            color: Colors.grey[600],
-            selectedIndex: viewModel.currentIndex,
-            onTabChange: viewModel.handleNavigation,
-            tabs: const [
-              GButton(
-                icon: Icons.search,
-                text: 'Search',
-              ),
-              GButton(
-                icon: Icons.format_list_bulleted,
-                text: 'Lists',
-              ),
-              GButton(
-                icon: Icons.school,
-                text: 'Learning',
-              ),
-              GButton(
-                icon: Icons.settings,
-                text: 'Settings',
-              ),
-            ],
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: GNav(
+              haptic: false,
+              gap: 8,
+              activeColor: Colors.deepPurple,
+              iconSize: 24,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              tabBorderRadius: 15,
+              tabBackgroundColor: Colors.deepPurple.withOpacity(0.2),
+              color: Colors.grey[600],
+              selectedIndex: viewModel.currentIndex,
+              onTabChange: viewModel.handleNavigation,
+              tabs: const [
+                GButton(
+                  icon: Icons.search,
+                  text: 'Search',
+                ),
+                GButton(
+                  icon: Icons.format_list_bulleted,
+                  text: 'Lists',
+                ),
+                GButton(
+                  icon: Icons.school,
+                  text: 'Learning',
+                ),
+                GButton(
+                  icon: Icons.settings,
+                  text: 'Settings',
+                ),
+              ],
+            ),
           ),
         ),
       ),

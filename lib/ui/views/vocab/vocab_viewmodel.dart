@@ -39,6 +39,9 @@ class VocabViewModel extends BaseViewModel {
       final kanji = await _isarService.getKanji(kanjiList[i].kanji);
       if (kanji != null) {
         kanjiList[i] = kanji;
+      } else {
+        kanjiList.removeAt(i);
+        i--;
       }
     }
 

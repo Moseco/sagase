@@ -57,8 +57,6 @@ Download the following files and place them in `assets/dictionary_source/`
     - [ ] Search vocab
     - [ ] Search kanji
     - [ ] Hand writing character recognition
-- [ ] Vocab entry view
-- [ ] Kanji entry view
 - [ ] Standard kanji and vocab lists
 - [ ] Bookmarks
 - [ ] Flashcards
