@@ -27,6 +27,7 @@ class HomeHeader extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
+                child,
                 Align(
                   alignment: Alignment.topRight,
                   child: ClipPath(
@@ -38,7 +39,6 @@ class HomeHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-                child,
               ],
             ),
           ),
