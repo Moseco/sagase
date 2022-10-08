@@ -1,0 +1,2 @@
+# Dictionary source files
+assets/dictionary_source/* filter=lfs diff=lfs merge=lfs -text

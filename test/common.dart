@@ -43,37 +43,22 @@ const shortJMdict = '''
 <keb>あっと言う間に</keb>
 </k_ele>
 <k_ele>
-<keb>あっとゆう間に</keb>
-</k_ele>
-<k_ele>
 <keb>アッという間に</keb>
 </k_ele>
 <k_ele>
 <keb>アッと言う間に</keb>
 </k_ele>
 <k_ele>
+<keb>あっとゆう間に</keb>
+<ke_inf>&sK;</ke_inf>
+</k_ele>
+<k_ele>
 <keb>アッとゆう間に</keb>
+<ke_inf>&sK;</ke_inf>
 </k_ele>
 <r_ele>
 <reb>あっというまに</reb>
-<re_restr>あっという間に</re_restr>
-<re_restr>あっと言う間に</re_restr>
 <re_pri>spec1</re_pri>
-</r_ele>
-<r_ele>
-<reb>あっとゆうまに</reb>
-<re_restr>あっと言う間に</re_restr>
-<re_restr>あっとゆう間に</re_restr>
-</r_ele>
-<r_ele>
-<reb>アッというまに</reb>
-<re_restr>アッという間に</re_restr>
-<re_restr>アッと言う間に</re_restr>
-</r_ele>
-<r_ele>
-<reb>アッとゆうまに</reb>
-<re_restr>アッと言う間に</re_restr>
-<re_restr>アッとゆう間に</re_restr>
 </r_ele>
 <sense>
 <pos>&exp;</pos>
@@ -421,8 +406,8 @@ const shortKanjidic2 = '''
 	and KANJD212 files plus the kanji from JIS X 0213.
 -->
 <file_version>4</file_version>
-<database_version>2022-164</database_version>
-<date_of_creation>2022-06-13</date_of_creation>
+<database_version>2022-273</database_version>
+<date_of_creation>2022-09-30</date_of_creation>
 </header>
 <!-- Entry for Kanji: 亜 -->
 <character>
@@ -642,130 +627,312 @@ const shortKanjidic2 = '''
 </rmgroup>
 </reading_meaning>
 </character>
-<!-- Entry for Kanji: 唖 -->
+<!-- Entry for Kanji: 一 -->
 <character>
-<literal>唖</literal>
+<literal>一</literal>
 <codepoint>
-<cp_value cp_type="ucs">5516</cp_value>
-<cp_value cp_type="jis208">1-16-02</cp_value>
+<cp_value cp_type="ucs">4e00</cp_value>
+<cp_value cp_type="jis208">1-16-76</cp_value>
+</codepoint>
+<radical>
+<rad_value rad_type="classical">1</rad_value>
+</radical>
+<misc>
+<grade>1</grade>
+<stroke_count>1</stroke_count>
+<variant var_type="jis208">1-48-01</variant>
+<freq>2</freq>
+<jlpt>4</jlpt>
+</misc>
+<dic_number>
+<dic_ref dr_type="nelson_c">1</dic_ref>
+<dic_ref dr_type="nelson_n">1</dic_ref>
+<dic_ref dr_type="halpern_njecd">3341</dic_ref>
+<dic_ref dr_type="halpern_kkd">4148</dic_ref>
+<dic_ref dr_type="halpern_kkld">2105</dic_ref>
+<dic_ref dr_type="halpern_kkld_2ed">2850</dic_ref>
+<dic_ref dr_type="heisig">1</dic_ref>
+<dic_ref dr_type="heisig6">1</dic_ref>
+<dic_ref dr_type="gakken">4</dic_ref>
+<dic_ref dr_type="oneill_names">3</dic_ref>
+<dic_ref dr_type="oneill_kk">1</dic_ref>
+<dic_ref dr_type="moro" m_vol="1" m_page="0001">1</dic_ref>
+<dic_ref dr_type="henshall">1</dic_ref>
+<dic_ref dr_type="sh_kk">2</dic_ref>
+<dic_ref dr_type="sh_kk2">2</dic_ref>
+<dic_ref dr_type="sakade">1</dic_ref>
+<dic_ref dr_type="jf_cards">1</dic_ref>
+<dic_ref dr_type="henshall3">1</dic_ref>
+<dic_ref dr_type="tutt_cards">1</dic_ref>
+<dic_ref dr_type="crowley">1</dic_ref>
+<dic_ref dr_type="kanji_in_context">1</dic_ref>
+<dic_ref dr_type="busy_people">1.A</dic_ref>
+<dic_ref dr_type="kodansha_compact">1</dic_ref>
+<dic_ref dr_type="maniette">1</dic_ref>
+</dic_number>
+<query_code>
+<q_code qc_type="skip">4-1-4</q_code>
+<q_code qc_type="sh_desc">0a1.1</q_code>
+<q_code qc_type="four_corner">1000.0</q_code>
+<q_code qc_type="deroo">3072</q_code>
+</query_code>
+<reading_meaning>
+<rmgroup>
+<reading r_type="pinyin">yi1</reading>
+<reading r_type="korean_r">il</reading>
+<reading r_type="korean_h">일</reading>
+<reading r_type="vietnam">Nhất</reading>
+<reading r_type="ja_on">イチ</reading>
+<reading r_type="ja_on">イツ</reading>
+<reading r_type="ja_kun">ひと-</reading>
+<reading r_type="ja_kun">ひと.つ</reading>
+<meaning>one</meaning>
+<meaning>one radical (no.1)</meaning>
+<meaning m_lang="fr">un</meaning>
+<meaning m_lang="fr">radical un (no. 1)</meaning>
+<meaning m_lang="es">uno</meaning>
+<meaning m_lang="es">1</meaning>
+<meaning m_lang="pt">um</meaning>
+</rmgroup>
+<nanori>かず</nanori>
+<nanori>い</nanori>
+<nanori>いっ</nanori>
+<nanori>いる</nanori>
+<nanori>かつ</nanori>
+<nanori>かづ</nanori>
+<nanori>てん</nanori>
+<nanori>はじめ</nanori>
+<nanori>ひ</nanori>
+<nanori>ひとつ</nanori>
+<nanori>まこと</nanori>
+</reading_meaning>
+</character>
+<!-- Entry for Kanji: 口 -->
+<character>
+<literal>口</literal>
+<codepoint>
+<cp_value cp_type="ucs">53e3</cp_value>
+<cp_value cp_type="jis208">1-24-93</cp_value>
 </codepoint>
 <radical>
 <rad_value rad_type="classical">30</rad_value>
 </radical>
 <misc>
-<stroke_count>10</stroke_count>
-<variant var_type="jis212">1-21-64</variant>
-<variant var_type="jis212">1-45-68</variant>
+<grade>1</grade>
+<stroke_count>3</stroke_count>
+<freq>284</freq>
+<jlpt>4</jlpt>
 </misc>
 <dic_number>
-<dic_ref dr_type="nelson_c">939</dic_ref>
-<dic_ref dr_type="nelson_n">795</dic_ref>
-<dic_ref dr_type="heisig">2958</dic_ref>
-<dic_ref dr_type="heisig6">2964</dic_ref>
-<dic_ref dr_type="moro" m_vol="2" m_page="1066">3743</dic_ref>
+<dic_ref dr_type="nelson_c">868</dic_ref>
+<dic_ref dr_type="nelson_n">685</dic_ref>
+<dic_ref dr_type="halpern_njecd">3382</dic_ref>
+<dic_ref dr_type="halpern_kkd">4189</dic_ref>
+<dic_ref dr_type="halpern_kkld">2119</dic_ref>
+<dic_ref dr_type="halpern_kkld_2ed">2865</dic_ref>
+<dic_ref dr_type="heisig">11</dic_ref>
+<dic_ref dr_type="heisig6">11</dic_ref>
+<dic_ref dr_type="gakken">213</dic_ref>
+<dic_ref dr_type="oneill_names">29</dic_ref>
+<dic_ref dr_type="oneill_kk">38</dic_ref>
+<dic_ref dr_type="moro" m_vol="2" m_page="0717">3227</dic_ref>
+<dic_ref dr_type="henshall">20</dic_ref>
+<dic_ref dr_type="sh_kk">54</dic_ref>
+<dic_ref dr_type="sh_kk2">54</dic_ref>
+<dic_ref dr_type="sakade">27</dic_ref>
+<dic_ref dr_type="jf_cards">31</dic_ref>
+<dic_ref dr_type="henshall3">34</dic_ref>
+<dic_ref dr_type="tutt_cards">16</dic_ref>
+<dic_ref dr_type="crowley">200</dic_ref>
+<dic_ref dr_type="kanji_in_context">167</dic_ref>
+<dic_ref dr_type="busy_people">2.16</dic_ref>
+<dic_ref dr_type="kodansha_compact">276</dic_ref>
+<dic_ref dr_type="maniette">11</dic_ref>
 </dic_number>
 <query_code>
-<q_code qc_type="skip">1-3-7</q_code>
-<q_code qc_type="sh_desc">3d8.3</q_code>
-<q_code qc_type="four_corner">6101.7</q_code>
+<q_code qc_type="skip">4-3-1</q_code>
+<q_code qc_type="sh_desc">3d0.1</q_code>
+<q_code qc_type="four_corner">6000.0</q_code>
+<q_code qc_type="deroo">3777</q_code>
+<q_code qc_type="skip" skip_misclass="posn">3-3-0</q_code>
 </query_code>
 <reading_meaning>
 <rmgroup>
-<reading r_type="pinyin">ya1</reading>
-<reading r_type="korean_r">a</reading>
-<reading r_type="korean_h">아</reading>
-<reading r_type="vietnam">Á</reading>
-<reading r_type="vietnam">Ớ</reading>
-<reading r_type="vietnam">Ứ</reading>
-<reading r_type="ja_on">ア</reading>
-<reading r_type="ja_on">アク</reading>
-<reading r_type="ja_kun">おし</reading>
-<meaning>mute</meaning>
-<meaning>dumb</meaning>
+<reading r_type="pinyin">kou3</reading>
+<reading r_type="korean_r">gu</reading>
+<reading r_type="korean_h">구</reading>
+<reading r_type="vietnam">Khẩu</reading>
+<reading r_type="ja_on">コウ</reading>
+<reading r_type="ja_on">ク</reading>
+<reading r_type="ja_kun">くち</reading>
+<meaning>mouth</meaning>
+<meaning m_lang="fr">bouche</meaning>
+<meaning m_lang="es">boca</meaning>
+<meaning m_lang="es">orificio</meaning>
+<meaning m_lang="es">apertura</meaning>
+<meaning m_lang="pt">boca</meaning>
 </rmgroup>
 </reading_meaning>
 </character>
-<!-- Entry for Kanji: 啞 -->
+<!-- Entry for Kanji: 心 -->
 <character>
-<literal>啞</literal>
+<literal>心</literal>
 <codepoint>
-<cp_value cp_type="ucs">555e</cp_value>
-<cp_value cp_type="jis212">1-21-64</cp_value>
-<cp_value cp_type="jis213">1-15-08</cp_value>
+<cp_value cp_type="ucs">5fc3</cp_value>
+<cp_value cp_type="jis208">1-31-20</cp_value>
 </codepoint>
 <radical>
-<rad_value rad_type="classical">30</rad_value>
+<rad_value rad_type="classical">61</rad_value>
 </radical>
 <misc>
-<stroke_count>11</stroke_count>
-<variant var_type="jis208">1-16-02</variant>
-<variant var_type="jis212">1-45-68</variant>
+<grade>2</grade>
+<stroke_count>4</stroke_count>
+<variant var_type="jis212">1-29-24</variant>
+<freq>157</freq>
+<rad_name>りっしんべん</rad_name>
+<jlpt>3</jlpt>
 </misc>
 <dic_number>
-<dic_ref dr_type="nelson_n">827</dic_ref>
-<dic_ref dr_type="moro">3835</dic_ref>
+<dic_ref dr_type="nelson_c">1645</dic_ref>
+<dic_ref dr_type="nelson_n">1780</dic_ref>
+<dic_ref dr_type="halpern_njecd">11</dic_ref>
+<dic_ref dr_type="halpern_kkd">11</dic_ref>
+<dic_ref dr_type="halpern_kkld">4</dic_ref>
+<dic_ref dr_type="halpern_kkld_2ed">4</dic_ref>
+<dic_ref dr_type="heisig">595</dic_ref>
+<dic_ref dr_type="heisig6">639</dic_ref>
+<dic_ref dr_type="gakken">139</dic_ref>
+<dic_ref dr_type="oneill_names">49</dic_ref>
+<dic_ref dr_type="oneill_kk">80</dic_ref>
+<dic_ref dr_type="moro" m_vol="4" m_page="0937">10295</dic_ref>
+<dic_ref dr_type="henshall">147</dic_ref>
+<dic_ref dr_type="sh_kk">97</dic_ref>
+<dic_ref dr_type="sh_kk2">97</dic_ref>
+<dic_ref dr_type="sakade">95</dic_ref>
+<dic_ref dr_type="jf_cards">172</dic_ref>
+<dic_ref dr_type="henshall3">164</dic_ref>
+<dic_ref dr_type="tutt_cards">96</dic_ref>
+<dic_ref dr_type="crowley">64</dic_ref>
+<dic_ref dr_type="kanji_in_context">172</dic_ref>
+<dic_ref dr_type="busy_people">2.14</dic_ref>
+<dic_ref dr_type="kodansha_compact">766</dic_ref>
+<dic_ref dr_type="maniette">602</dic_ref>
 </dic_number>
 <query_code>
-<q_code qc_type="skip">1-3-8</q_code>
+<q_code qc_type="skip">1-1-3</q_code>
+<q_code qc_type="sh_desc">4k0.1</q_code>
+<q_code qc_type="four_corner">3300.0</q_code>
+<q_code qc_type="deroo">358</q_code>
+<q_code qc_type="skip" skip_misclass="posn">4-4-4</q_code>
 </query_code>
 <reading_meaning>
 <rmgroup>
-<reading r_type="pinyin">ya3</reading>
-<reading r_type="pinyin">ya1</reading>
-<reading r_type="korean_r">a</reading>
-<reading r_type="vietnam">A</reading>
-<reading r_type="vietnam">Á</reading>
-<reading r_type="vietnam">Ách</reading>
-<reading r_type="vietnam">Nha</reading>
-<reading r_type="vietnam">Nhạ</reading>
-<reading r_type="vietnam">Ố</reading>
-<reading r_type="vietnam">Ạ</reading>
-<reading r_type="vietnam">Ớ</reading>
-<reading r_type="ja_on">ア</reading>
-<reading r_type="ja_kun">おし</reading>
-<meaning>dumb</meaning>
-<meaning>mute</meaning>
-<meaning>become hoarse</meaning>
+<reading r_type="pinyin">xin1</reading>
+<reading r_type="korean_r">sim</reading>
+<reading r_type="korean_h">심</reading>
+<reading r_type="vietnam">Tâm</reading>
+<reading r_type="ja_on">シン</reading>
+<reading r_type="ja_kun">こころ</reading>
+<reading r_type="ja_kun">-ごころ</reading>
+<meaning>heart</meaning>
+<meaning>mind</meaning>
+<meaning>spirit</meaning>
+<meaning>heart radical (no. 61)</meaning>
+<meaning m_lang="fr">coeur</meaning>
+<meaning m_lang="fr">esprit</meaning>
+<meaning m_lang="fr">radical coeur (no. 61)</meaning>
+<meaning m_lang="es">corazón</meaning>
+<meaning m_lang="es">centro</meaning>
+<meaning m_lang="pt">coração</meaning>
+<meaning m_lang="pt">mente</meaning>
+<meaning m_lang="pt">espírito</meaning>
 </rmgroup>
 </reading_meaning>
 </character>
-<!-- Entry for Kanji: 瘂 -->
+<!-- Entry for Kanji: 二 -->
 <character>
-<literal>瘂</literal>
+<literal>二</literal>
 <codepoint>
-<cp_value cp_type="ucs">7602</cp_value>
-<cp_value cp_type="jis212">1-45-68</cp_value>
-<cp_value cp_type="jis213">1-88-49</cp_value>
+<cp_value cp_type="ucs">4e8c</cp_value>
+<cp_value cp_type="jis208">1-38-83</cp_value>
 </codepoint>
 <radical>
-<rad_value rad_type="classical">104</rad_value>
+<rad_value rad_type="classical">7</rad_value>
 </radical>
 <misc>
-<stroke_count>13</stroke_count>
-<variant var_type="jis208">1-16-02</variant>
-<variant var_type="jis212">1-21-64</variant>
+<grade>1</grade>
+<stroke_count>2</stroke_count>
+<variant var_type="jis208">1-48-17</variant>
+<freq>9</freq>
+<jlpt>4</jlpt>
 </misc>
 <dic_number>
-<dic_ref dr_type="moro">22297</dic_ref>
+<dic_ref dr_type="nelson_c">273</dic_ref>
+<dic_ref dr_type="nelson_n">72</dic_ref>
+<dic_ref dr_type="halpern_njecd">1922</dic_ref>
+<dic_ref dr_type="halpern_kkd">2421</dic_ref>
+<dic_ref dr_type="halpern_kkld">1224</dic_ref>
+<dic_ref dr_type="halpern_kkld_2ed">1688</dic_ref>
+<dic_ref dr_type="heisig">2</dic_ref>
+<dic_ref dr_type="heisig6">2</dic_ref>
+<dic_ref dr_type="gakken">6</dic_ref>
+<dic_ref dr_type="oneill_names">4</dic_ref>
+<dic_ref dr_type="oneill_kk">2</dic_ref>
+<dic_ref dr_type="moro" m_vol="1" m_page="0416">247</dic_ref>
+<dic_ref dr_type="henshall">61</dic_ref>
+<dic_ref dr_type="sh_kk">3</dic_ref>
+<dic_ref dr_type="sh_kk2">3</dic_ref>
+<dic_ref dr_type="sakade">2</dic_ref>
+<dic_ref dr_type="jf_cards">9</dic_ref>
+<dic_ref dr_type="henshall3">2</dic_ref>
+<dic_ref dr_type="tutt_cards">2</dic_ref>
+<dic_ref dr_type="crowley">11</dic_ref>
+<dic_ref dr_type="kanji_in_context">2</dic_ref>
+<dic_ref dr_type="busy_people">1.A</dic_ref>
+<dic_ref dr_type="kodansha_compact">31</dic_ref>
+<dic_ref dr_type="maniette">2</dic_ref>
 </dic_number>
 <query_code>
-<q_code qc_type="skip">3-5-8</q_code>
+<q_code qc_type="skip">2-1-1</q_code>
+<q_code qc_type="sh_desc">0a2.1</q_code>
+<q_code qc_type="four_corner">1010.0</q_code>
+<q_code qc_type="deroo">3072</q_code>
 </query_code>
 <reading_meaning>
 <rmgroup>
-<reading r_type="pinyin">ya3</reading>
-<reading r_type="vietnam">Á</reading>
-<reading r_type="ja_on">ア</reading>
-<reading r_type="ja_kun">おし</reading>
-<meaning>dumb</meaning>
+<reading r_type="pinyin">er4</reading>
+<reading r_type="korean_r">i</reading>
+<reading r_type="korean_h">이</reading>
+<reading r_type="vietnam">Nhị</reading>
+<reading r_type="ja_on">ニ</reading>
+<reading r_type="ja_on">ジ</reading>
+<reading r_type="ja_kun">ふた</reading>
+<reading r_type="ja_kun">ふた.つ</reading>
+<reading r_type="ja_kun">ふたたび</reading>
+<meaning>two</meaning>
+<meaning>two radical (no. 7)</meaning>
+<meaning m_lang="fr">deux</meaning>
+<meaning m_lang="fr">radical deux (no. 2)</meaning>
+<meaning m_lang="es">dos</meaning>
+<meaning m_lang="es">2</meaning>
+<meaning m_lang="pt">dois</meaning>
 </rmgroup>
+<nanori>おと</nanori>
+<nanori>つぐ</nanori>
+<nanori>つぎ</nanori>
+<nanori>にい</nanori>
+<nanori>は</nanori>
+<nanori>ふ</nanori>
+<nanori>ふたつ</nanori>
+<nanori>ふだ</nanori>
+<nanori>わ</nanori>
 </reading_meaning>
 </character>
 </kanjidic2>
 ''';
 
 // Excerpts from the EDRDG dictionary file. See README for details.
-const compundTestJMdict = '''
+const compoundTestJMdict = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <JMdict>
 <entry>
@@ -879,7 +1046,7 @@ const compundTestJMdict = '''
 ''';
 
 // Excerpts from the EDRDG dictionary file. See README for details.
-const compundTestKanjidic2 = '''
+const compoundTestKanjidic2 = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <kanjidic2>
 <header>
@@ -887,8 +1054,8 @@ const compundTestKanjidic2 = '''
 	and KANJD212 files plus the kanji from JIS X 0213.
 -->
 <file_version>4</file_version>
-<database_version>2022-164</database_version>
-<date_of_creation>2022-06-13</date_of_creation>
+<database_version>2022-273</database_version>
+<date_of_creation>2022-09-30</date_of_creation>
 </header>
 <!-- Entry for Kanji: 探 -->
 <character>
@@ -963,4 +1130,12 @@ const compundTestKanjidic2 = '''
 </reading_meaning>
 </character>
 </kanjidic2>
+''';
+
+const shortKanjiComponents = '''
+# Starting comment
+亜 : ｜ 一 口
+悪 : ｜ 一 口 心
+亞 : 一 二
+
 ''';

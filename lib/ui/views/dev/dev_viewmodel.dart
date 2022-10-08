@@ -24,6 +24,7 @@ class DevViewModel extends BaseViewModel {
       DictionarySource(
         await rootBundle.loadString('assets/dictionary_source/JMdict_e_examp'),
         await rootBundle.loadString('assets/dictionary_source/kanjidic2.xml'),
+        await rootBundle.loadString('assets/dictionary_source/kradfilex_utf-8'),
       ),
     );
     _loading = false;

@@ -50,5 +50,6 @@ flutter:
   assets:
     - assets/dictionary_source/JMdict_e_examp # Should be removed for release builds
     - assets/dictionary_source/kanjidic2.xml # Should be removed for release builds
+    - assets/dictionary_source/kradfilex_utf-8 # Should be removed for release builds
     - assets/dictionary_source/db_export.zip
     

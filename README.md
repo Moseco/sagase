@@ -8,14 +8,6 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 ```flutter pub run build_runner build --delete-conflicting-outputs```
 
-### Download required files
-
-Download the following files and place them in `assets/dictionary_source/`
-
-- [Vocab dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is the `JMdict_e_examp` (English only, with examples).
-
-- [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is the `kanjidic2` (contains all 13,108 kanji).
-
 ## Feature list
 
 - [ ] Create vocab dictionary
@@ -42,9 +34,9 @@ Download the following files and place them in `assets/dictionary_source/`
 - [x] Create kanji dictionary
     - [x] Kanji character
     - [x] Radical
+    - [x] Components
     - [x] Grade
     - [x] Stroke count
-    - [x] Variants
     - [x] Frequency
     - [x] JLPT level
     - [x] Meanings
@@ -52,15 +44,29 @@ Download the following files and place them in `assets/dictionary_source/`
     - [x] Kun readings
     - [x] Nanori
     - [x] Compounds
+- [ ] Kanji radicals
+    - [x] 214 classic kanji radicals
+    - [x] Meaning
+    - [x] Variants
+    - [ ] Kanji using the radical
 - [x] Export/import database
 - [ ] Search
-    - [ ] Search vocab
-    - [ ] Search kanji
+    - [x] Vocab
+    - [x] Kanji
     - [ ] Hand writing character recognition
+    - [ ] Sort by closest match
 - [ ] Standard kanji and vocab lists
 - [ ] Bookmarks
 - [ ] Flashcards
 
 ## Special thanks
 
-Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the dictionary file.
+Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the source dictionary file.
+
+### Files used
+
+- [Vocab dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is `JMdict_e_examp` (English only, with examples).
+
+- [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is `kanjidic2` (contains all 13,108 kanji).
+
+- [Kanji component file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/krad/kradinf.html) Version used for this project is `kradfile` and `kradfile2` merged together and converted to utf-8 encoding (renamed to `kradfilex_utf-8`).
