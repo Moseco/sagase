@@ -84,8 +84,13 @@ class KanjiView extends StatelessWidget {
                     children: [
                       _TitleInfoText(
                         title: 'Radical',
-                        content: radicals[kanji.radical],
+                        content: radicals[kanji.radical].radical,
                       ),
+                      if (kanji.components != null)
+                        _TitleInfoText(
+                          title: 'Components',
+                          content: kanji.components!.join(', '),
+                        ),
                       _TitleInfoText(
                         title: 'Stroke count',
                         content: kanji.strokeCount.toString(),
@@ -105,61 +110,48 @@ class KanjiView extends StatelessWidget {
                           title: 'JLPT',
                           content: kanji.jlpt.toString(),
                         ),
-                      if (kanji.variants.isNotEmpty)
-                        _TitleInfoText(
-                          title: 'Variants',
-                          content: _getVariantsString(),
-                        ),
                     ],
                   ),
                 ),
               ),
-              DictionaryEntrySection(
-                title: 'Compounds',
-                child: Column(
-                  children: [
-                    ListView.separated(
-                      separatorBuilder: (_, __) => const Divider(
-                        height: 1,
-                        color: Colors.grey,
-                        indent: 8,
-                        endIndent: 8,
+              if (kanji.compounds.isNotEmpty)
+                DictionaryEntrySection(
+                  title: 'Compounds',
+                  child: Column(
+                    children: [
+                      ListView.separated(
+                        separatorBuilder: (_, __) => const Divider(
+                          height: 1,
+                          color: Colors.grey,
+                          indent: 8,
+                          endIndent: 8,
+                        ),
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: kanji.compounds.length < 10
+                            ? kanji.compounds.length
+                            : 10,
+                        itemBuilder: (context, index) => VocabListItem(
+                          vocab: kanji.compounds.elementAt(index),
+                          onPressed: () => viewModel.navigateToVocab(
+                              kanji.compounds.elementAt(index)),
+                        ),
                       ),
-                      shrinkWrap: true,
-                      primary: false,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: kanji.compounds.length < 10
-                          ? kanji.compounds.length
-                          : 10,
-                      itemBuilder: (context, index) => VocabListItem(
-                        vocab: kanji.compounds.elementAt(index),
-                        onPressed: () => viewModel
-                            .navigateToVocab(kanji.compounds.elementAt(index)),
-                      ),
-                    ),
-                    if (kanji.compounds.length > 10)
-                      TextButton(
-                        onPressed: viewModel.showAllCompounds,
-                        child: const Text('Show all compounds'),
-                      ),
-                  ],
+                      if (kanji.compounds.length > 10)
+                        TextButton(
+                          onPressed: viewModel.showAllCompounds,
+                          child: const Text('Show all compounds'),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
               SizedBox(height: MediaQuery.of(context).padding.bottom),
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _getVariantsString() {
-    final buffer = StringBuffer(kanji.variants.elementAt(0).kanji);
-    for (int i = 1; i < kanji.variants.length; i++) {
-      buffer.write(', ');
-      buffer.write(kanji.variants.elementAt(i).kanji);
-    }
-    return buffer.toString();
   }
 }
 

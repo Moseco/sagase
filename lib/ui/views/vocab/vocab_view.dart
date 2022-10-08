@@ -349,6 +349,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'Buddhism';
       case Field.business:
         return 'business';
+      case Field.cardGames:
+        return 'card games';
       case Field.chemistry:
         return 'chemistry';
       case Field.christianity:
@@ -359,6 +361,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'computing';
       case Field.crystallography:
         return 'crystallography';
+      case Field.dentistry:
+        return 'dentistry';
       case Field.ecology:
         return 'ecology';
       case Field.economics:
@@ -373,6 +377,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'engineering';
       case Field.entomology:
         return 'entomology';
+      case Field.film:
+        return 'film';
       case Field.finance:
         return 'finance';
       case Field.fishing:
@@ -401,6 +407,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'hanafuda';
       case Field.horseRacing:
         return 'horse racing';
+      case Field.kabuki:
+        return 'kabuki';
       case Field.law:
         return 'law';
       case Field.linguistics:
@@ -411,6 +419,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'martial arts';
       case Field.mahjong:
         return 'mahjong';
+      case Field.manga:
+        return 'manga';
       case Field.mathematics:
         return 'mathematics';
       case Field.mechanicalEngineering:
@@ -421,16 +431,20 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'meteorology';
       case Field.military:
         return 'military';
+      case Field.mining:
+        return 'mining';
       case Field.music:
         return 'music';
+      case Field.noh:
+        return 'noh';
       case Field.ornithology:
         return 'ornithology';
       case Field.paleontology:
         return 'paleontology';
       case Field.pathology:
         return 'pathology';
-      case Field.pharmacy:
-        return 'pharmacy';
+      case Field.pharmacology:
+        return 'pharmacology';
       case Field.philosophy:
         return 'philosophy';
       case Field.photography:
@@ -439,28 +453,40 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'physics';
       case Field.physiology:
         return 'physiology';
+      case Field.politics:
+        return 'politics';
       case Field.printing:
         return 'printing';
       case Field.psychiatry:
         return 'psychiatry';
+      case Field.psychoanalysis:
+        return 'psychoanalysis';
       case Field.psychology:
         return 'psychology';
       case Field.railway:
         return 'railway';
+      case Field.romanMythology:
+        return 'Roman mythology';
       case Field.shinto:
         return 'Shinto';
       case Field.shogi:
         return 'shogi';
+      case Field.skiing:
+        return 'skiing';
       case Field.sports:
         return 'sports';
       case Field.statistics:
         return 'statistics';
+      case Field.stockMarket:
+        return 'stock market';
       case Field.sumo:
         return 'sumo';
       case Field.telecommunications:
         return 'telecommunications';
       case Field.trademark:
         return 'trademark';
+      case Field.television:
+        return 'television';
       case Field.videoGames:
         return 'video games';
       case Field.zoology:
@@ -492,6 +518,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'derogatory';
       case MiscellaneousInfo.document:
         return 'document';
+      case MiscellaneousInfo.euphemistic:
+        return 'euphemistic';
       case MiscellaneousInfo.event:
         return 'event';
       case MiscellaneousInfo.familiarLanguage:
@@ -530,8 +558,6 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'object';
       case MiscellaneousInfo.obsoleteTerm:
         return 'obsolete term';
-      case MiscellaneousInfo.obscureTerm:
-        return 'obscure term';
       case MiscellaneousInfo.onomatopoeicOrMimeticWord:
         return 'onomatopoeic or mimetic word';
       case MiscellaneousInfo.organizationName:
@@ -560,6 +586,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'sensitive';
       case MiscellaneousInfo.service:
         return 'service';
+      case MiscellaneousInfo.shipName:
+        return 'ship name';
       case MiscellaneousInfo.slang:
         return 'slang';
       case MiscellaneousInfo.railwayStation:

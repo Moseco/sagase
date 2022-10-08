@@ -27,7 +27,11 @@ class DictionaryUtils {
     });
 
     await createVocabDictionaryIsolate(source.vocabDict, isar);
-    await createKanjiDictionaryIsolate(source.kanjiDict, isar);
+    await createKanjiDictionaryIsolate(
+      source.kanjiDict,
+      source.kanjiComponents,
+      isar,
+    );
 
     // If did not receive the isar instance, close it
     if (testingIsar == null) {
@@ -200,10 +204,8 @@ class DictionaryUtils {
           break;
         case 'ke_inf':
           final kanjiInfo = _handleKanjiInfo(kanjiElement.text);
-          if (kanjiInfo != null) {
-            kanjiWriting.info ??= [];
-            kanjiWriting.info!.add(kanjiInfo);
-          }
+          kanjiWriting.info ??= [];
+          kanjiWriting.info!.add(kanjiInfo!);
           break;
         case 'ke_pri':
           _handleVocabPriorityInfo(kanjiElement.text, vocab);
@@ -228,6 +230,8 @@ class DictionaryUtils {
         return KanjiInfo.outdatedKanji;
       case '&rK;':
         return KanjiInfo.rareKanjiForm;
+      case '&sK;':
+        return KanjiInfo.searchOnlyForm;
       default:
         return null;
     }
@@ -266,10 +270,8 @@ class DictionaryUtils {
           break;
         case 're_inf':
           final readingInfo = _handleReadingInfo(readingElement.text);
-          if (readingInfo != null) {
-            reading.info ??= [];
-            reading.info!.add(readingInfo);
-          }
+          reading.info ??= [];
+          reading.info!.add(readingInfo!);
           break;
         case 're_pri':
           _handleVocabPriorityInfo(readingElement.text, vocab);
@@ -305,8 +307,8 @@ class DictionaryUtils {
         return ReadingInfo.irregularKana;
       case '&ok;':
         return ReadingInfo.outdatedKana;
-      case '&uK;':
-        return ReadingInfo.onlyKanji;
+      case '&sk;':
+        return ReadingInfo.searchOnlyForm;
       default:
         return null;
     }
@@ -644,6 +646,8 @@ class DictionaryUtils {
         return Field.buddhism;
       case '&bus;':
         return Field.business;
+      case '&cards;':
+        return Field.cardGames;
       case '&chem;':
         return Field.chemistry;
       case '&Christn;':
@@ -654,6 +658,8 @@ class DictionaryUtils {
         return Field.computing;
       case '&cryst;':
         return Field.crystallography;
+      case '&dent;':
+        return Field.dentistry;
       case '&ecol;':
         return Field.ecology;
       case '&econ;':
@@ -668,6 +674,8 @@ class DictionaryUtils {
         return Field.engineering;
       case '&ent;':
         return Field.entomology;
+      case '&film;':
+        return Field.film;
       case '&finc;':
         return Field.finance;
       case '&fish;':
@@ -696,6 +704,8 @@ class DictionaryUtils {
         return Field.hanafuda;
       case '&horse;':
         return Field.horseRacing;
+      case '&kabuki;':
+        return Field.kabuki;
       case '&law;':
         return Field.law;
       case '&ling;':
@@ -706,6 +716,8 @@ class DictionaryUtils {
         return Field.martialArts;
       case '&mahj;':
         return Field.mahjong;
+      case '&manga;':
+        return Field.manga;
       case '&math;':
         return Field.mathematics;
       case '&mech;':
@@ -716,8 +728,12 @@ class DictionaryUtils {
         return Field.meteorology;
       case '&mil;':
         return Field.military;
+      case '&mining;':
+        return Field.mining;
       case '&music;':
         return Field.music;
+      case '&noh;':
+        return Field.noh;
       case '&ornith;':
         return Field.ornithology;
       case '&paleo;':
@@ -725,7 +741,7 @@ class DictionaryUtils {
       case '&pathol;':
         return Field.pathology;
       case '&pharm;':
-        return Field.pharmacy;
+        return Field.pharmacology;
       case '&phil;':
         return Field.philosophy;
       case '&photo;':
@@ -734,28 +750,40 @@ class DictionaryUtils {
         return Field.physics;
       case '&physiol;':
         return Field.physiology;
+      case '&politics;':
+        return Field.politics;
       case '&print;':
         return Field.printing;
       case '&psy;':
         return Field.psychiatry;
+      case '&psyanal;':
+        return Field.psychoanalysis;
       case '&psych;':
         return Field.psychology;
       case '&rail;':
         return Field.railway;
+      case '&rommyth;':
+        return Field.romanMythology;
       case '&Shinto;':
         return Field.shinto;
       case '&shogi;':
         return Field.shogi;
+      case '&ski;':
+        return Field.skiing;
       case '&sports;':
         return Field.sports;
       case '&stat;':
         return Field.statistics;
+      case '&stockm;':
+        return Field.stockMarket;
       case '&sumo;':
         return Field.sumo;
       case '&telec;':
         return Field.telecommunications;
       case '&tradem;':
         return Field.trademark;
+      case '&tv;':
+        return Field.television;
       case '&vidg;':
         return Field.videoGames;
       case '&zool;':
@@ -789,6 +817,8 @@ class DictionaryUtils {
         return MiscellaneousInfo.derogatory;
       case '&doc;':
         return MiscellaneousInfo.document;
+      case '&euph;':
+        return MiscellaneousInfo.euphemistic;
       case '&ev;':
         return MiscellaneousInfo.event;
       case '&fam;':
@@ -827,8 +857,6 @@ class DictionaryUtils {
         return MiscellaneousInfo.object;
       case '&obs;':
         return MiscellaneousInfo.obsoleteTerm;
-      case '&obsc;':
-        return MiscellaneousInfo.obscureTerm;
       case '&on-mim;':
         return MiscellaneousInfo.onomatopoeicOrMimeticWord;
       case '&organization;':
@@ -857,6 +885,8 @@ class DictionaryUtils {
         return MiscellaneousInfo.sensitive;
       case '&serv;':
         return MiscellaneousInfo.service;
+      case '&ship;':
+        return MiscellaneousInfo.shipName;
       case '&sl;':
         return MiscellaneousInfo.slang;
       case '&station;':
@@ -915,10 +945,10 @@ class DictionaryUtils {
   @visibleForTesting
   static Future<void> createKanjiDictionaryIsolate(
     String kanjidic2String,
+    String kanjiComponentsString,
     Isar isar,
   ) async {
     final List<Kanji> kanjiList = [];
-    Map<int, List<int>> variantsMap = {};
 
     final kanjidic2Doc = XmlDocument.parse(kanjidic2String);
 
@@ -945,11 +975,7 @@ class DictionaryUtils {
             _handleKanjiRadicalElements(kanjiElement.childElements, kanji);
             break;
           case 'misc':
-            _handleKanjiMiscElements(
-              kanjiElement.childElements,
-              kanji,
-              variantsMap,
-            );
+            _handleKanjiMiscElements(kanjiElement.childElements, kanji);
             break;
           case 'dic_number':
             // Index numbers referencing published dictionaries
@@ -984,19 +1010,27 @@ class DictionaryUtils {
       }
     });
 
-    // Create IsarLinks to variants
+    // Add components to kanji
     await isar.writeTxn(() async {
-      for (var entry in variantsMap.entries) {
-        // Get kanji to assign variants to
-        final kanji = await isar.kanjis.get(entry.key);
-        if (kanji == null) continue;
-        // Get and assign variants
-        for (var id in entry.value) {
-          final variant = await isar.kanjis.get(id);
-          if (variant != null) kanji.variants.add(variant);
+      final lines = kanjiComponentsString.split('\n');
+      for (var line in lines) {
+        if (line.isNotEmpty && !line.startsWith('#')) {
+          final splits = line.split(':');
+          final kanji = await isar.kanjis.getByKanji(splits[0].trim());
+          if (kanji != null) {
+            final componentStrings = splits[1].split(' ');
+            for (var component in componentStrings) {
+              // If component is the same as the radical, don't add it
+              if (component.isEmpty ||
+                  component == constants.radicals[kanji.radical].radical) {
+                continue;
+              }
+              kanji.components ??= [];
+              kanji.components!.add(component);
+            }
+            await isar.kanjis.put(kanji);
+          }
         }
-        // Update kanji
-        await kanji.variants.save();
       }
     });
   }
@@ -1031,7 +1065,6 @@ class DictionaryUtils {
   static void _handleKanjiMiscElements(
     Iterable<XmlElement> elements,
     Kanji kanji,
-    Map<int, List<int>> variantsMap,
   ) {
     int? strokeCount;
 
@@ -1045,16 +1078,7 @@ class DictionaryUtils {
           strokeCount ??= int.parse(element.text);
           break;
         case 'variant':
-          if (!element.getAttribute('var_type')!.startsWith('j')) break;
-          final variantId = _getIdFromCodepoint(
-            element.getAttribute('var_type')!,
-            element.text,
-          );
-          if (variantsMap.containsKey(kanji.id)) {
-            variantsMap[kanji.id]!.add(variantId);
-          } else {
-            variantsMap[kanji.id] = [variantId];
-          }
+          // Variant of the current kanji
           break;
         case 'freq':
           kanji.frequency = int.parse(element.text);
@@ -1146,6 +1170,7 @@ class DictionaryUtils {
 class DictionarySource {
   final String vocabDict;
   final String kanjiDict;
+  final String kanjiComponents;
 
-  const DictionarySource(this.vocabDict, this.kanjiDict);
+  const DictionarySource(this.vocabDict, this.kanjiDict, this.kanjiComponents);
 }

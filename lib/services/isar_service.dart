@@ -33,7 +33,7 @@ class IsarService {
   Future<DictionaryStatus> validateDictionary() async {
     // Check if dictionary count matches expectation
     if ((await _isar.kanjis.count()) != 13108 ||
-        (await _isar.vocabs.count()) != 196581) {
+        (await _isar.vocabs.count()) != 198094) {
       return DictionaryStatus.invalid;
     }
 

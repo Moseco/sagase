@@ -91,39 +91,17 @@ void main() {
       final vocab1 = await isar.vocabs.get(1000390);
       expect(vocab1!.commonWord, true);
       // Kanji-reading pairs
-      expect(vocab1.kanjiReadingPairs.length, 6);
+      expect(vocab1.kanjiReadingPairs.length, 1);
       // Pair 1
-      expect(vocab1.kanjiReadingPairs[0].kanjiWritings!.length, 1);
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings!.length, 6);
       expect(vocab1.kanjiReadingPairs[0].kanjiWritings![0].kanji, 'あっという間に');
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings![1].kanji, 'あっと言う間に');
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings![2].kanji, 'アッという間に');
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings![3].kanji, 'アッと言う間に');
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings![4].kanji, 'あっとゆう間に');
+      expect(vocab1.kanjiReadingPairs[0].kanjiWritings![5].kanji, 'アッとゆう間に');
       expect(vocab1.kanjiReadingPairs[0].readings.length, 1);
       expect(vocab1.kanjiReadingPairs[0].readings[0].reading, 'あっというまに');
-      // Pair 2
-      expect(vocab1.kanjiReadingPairs[1].kanjiWritings!.length, 1);
-      expect(vocab1.kanjiReadingPairs[1].kanjiWritings![0].kanji, 'あっと言う間に');
-      expect(vocab1.kanjiReadingPairs[1].readings.length, 2);
-      expect(vocab1.kanjiReadingPairs[1].readings[0].reading, 'あっというまに');
-      expect(vocab1.kanjiReadingPairs[1].readings[1].reading, 'あっとゆうまに');
-      // Pair 3
-      expect(vocab1.kanjiReadingPairs[2].kanjiWritings!.length, 1);
-      expect(vocab1.kanjiReadingPairs[2].kanjiWritings![0].kanji, 'あっとゆう間に');
-      expect(vocab1.kanjiReadingPairs[2].readings.length, 1);
-      expect(vocab1.kanjiReadingPairs[2].readings[0].reading, 'あっとゆうまに');
-      // Pair 4
-      expect(vocab1.kanjiReadingPairs[3].kanjiWritings!.length, 1);
-      expect(vocab1.kanjiReadingPairs[3].kanjiWritings![0].kanji, 'アッという間に');
-      expect(vocab1.kanjiReadingPairs[3].readings.length, 1);
-      expect(vocab1.kanjiReadingPairs[3].readings[0].reading, 'アッというまに');
-      // Pair 5
-      expect(vocab1.kanjiReadingPairs[4].kanjiWritings!.length, 1);
-      expect(vocab1.kanjiReadingPairs[4].kanjiWritings![0].kanji, 'アッと言う間に');
-      expect(vocab1.kanjiReadingPairs[4].readings.length, 2);
-      expect(vocab1.kanjiReadingPairs[4].readings[0].reading, 'アッというまに');
-      expect(vocab1.kanjiReadingPairs[4].readings[1].reading, 'アッとゆうまに');
-      // Pair 6
-      expect(vocab1.kanjiReadingPairs[5].kanjiWritings!.length, 1);
-      expect(vocab1.kanjiReadingPairs[5].kanjiWritings![0].kanji, 'アッとゆう間に');
-      expect(vocab1.kanjiReadingPairs[5].readings.length, 1);
-      expect(vocab1.kanjiReadingPairs[5].readings[0].reading, 'アッとゆうまに');
       // Definition
       expect(vocab1.definitions.length, 1);
       expect(vocab1.definitions[0].definition,
@@ -211,6 +189,7 @@ void main() {
       expect(vocab3!.commonWord, true);
       // Kanji-reading pairs
       expect(vocab3.kanjiReadingPairs.length, 1);
+      // Pair 1
       expect(vocab3.kanjiReadingPairs[0].kanjiWritings!.length, 3);
       expect(vocab3.kanjiReadingPairs[0].kanjiWritings![0].kanji, '行く');
       expect(vocab3.kanjiReadingPairs[0].kanjiWritings![1].kanji, '逝く');
@@ -315,6 +294,7 @@ void main() {
       expect(vocab4!.commonWord, true);
       // Kanji-reading pairs
       expect(vocab4.kanjiReadingPairs.length, 1);
+      // Pair 1
       expect(vocab4.kanjiReadingPairs[0].kanjiWritings, null);
       expect(vocab4.kanjiReadingPairs[0].readings.length, 3);
       expect(vocab4.kanjiReadingPairs[0].readings[0].reading, 'ううん');
@@ -448,16 +428,21 @@ void main() {
     });
 
     test('Kanji database creation with short source dictionary', () async {
-      await DictionaryUtils.createKanjiDictionaryIsolate(shortKanjidic2, isar);
+      await DictionaryUtils.createKanjiDictionaryIsolate(
+        shortKanjidic2,
+        shortKanjiComponents,
+        isar,
+      );
 
       final kanji1 = await isar.kanjis.get(20811601);
       expect(kanji1!.kanji, '亜');
       expect(kanji1.radical, 7);
+      expect(kanji1.components!.length, 3);
+      expect(kanji1.components![0], '｜');
+      expect(kanji1.components![1], '一');
+      expect(kanji1.components![2], '口');
       expect(kanji1.grade, 255);
       expect(kanji1.strokeCount, 7);
-      expect(kanji1.variants.length, 1);
-      await kanji1.variants.load();
-      expect(kanji1.variants.elementAt(0).kanji, '亞');
       expect(kanji1.frequency, 1509);
       expect(kanji1.jlpt, 1);
       expect(kanji1.meanings, 'Asia, rank next, come after, -ous');
@@ -473,10 +458,12 @@ void main() {
       final kanji2 = await isar.kanjis.get(20811613);
       expect(kanji2!.kanji, '悪');
       expect(kanji2.radical, 61);
+      expect(kanji2.components!.length, 3);
+      expect(kanji2.components![0], '｜');
+      expect(kanji2.components![1], '一');
+      expect(kanji2.components![2], '口');
       expect(kanji2.grade, 3);
       expect(kanji2.strokeCount, 11);
-      // Variants for this kanji is empty because its variants not included in test
-      expect(kanji2.variants.length, 0);
       expect(kanji2.frequency, 530);
       expect(kanji2.jlpt, 3);
       expect(kanji2.meanings, 'bad, vice, rascal, false, evil, wrong');
@@ -498,11 +485,10 @@ void main() {
       final kanji3 = await isar.kanjis.get(20814819);
       expect(kanji3!.kanji, '亞');
       expect(kanji3.radical, 7);
+      expect(kanji3.components!.length, 1);
+      expect(kanji3.components![0], '一');
       expect(kanji3.grade, 255);
       expect(kanji3.strokeCount, 8);
-      expect(kanji3.variants.length, 1);
-      await kanji3.variants.load();
-      expect(kanji3.variants.elementAt(0).kanji, '亜');
       expect(kanji3.frequency, null);
       expect(kanji3.jlpt, 255);
       expect(kanji3.meanings, 'rank, follow');
@@ -511,18 +497,15 @@ void main() {
       expect(kanji3.kunReadings!.length, 1);
       expect(kanji3.kunReadings![0], 'つ.ぐ');
       expect(kanji3.nanori, null);
-
-      final kanji4 = await isar.kanjis.get(20811602);
-      expect(kanji4!.kanji, '唖');
-      expect(kanji4.variants.length, 2);
-      await kanji4.variants.load();
-      expect(kanji4.variants.elementAt(0).kanji, '啞');
-      expect(kanji4.variants.elementAt(1).kanji, '瘂');
     });
 
     test('Vocab-kanji links', () async {
       await DictionaryUtils.createDictionaryIsolate(
-        const DictionarySource(compundTestJMdict, compundTestKanjidic2),
+        const DictionarySource(
+          compoundTestJMdict,
+          compoundTestKanjidic2,
+          '# Nothing',
+        ),
         testingIsar: isar,
       );
 
