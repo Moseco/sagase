@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
+import 'package:sagase/datamodels/dictionary_list.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
@@ -20,7 +21,7 @@ class IsarService {
 
   static Future<IsarService> initialize() async {
     final isar = await Isar.open(
-      [DictionaryInfoSchema, VocabSchema, KanjiSchema],
+      [DictionaryInfoSchema, VocabSchema, KanjiSchema, DictionaryListSchema],
     );
 
     return IsarService(isar);
@@ -117,6 +118,10 @@ class IsarService {
 
   Future<Kanji?> getKanji(String kanji) async {
     return _isar.kanjis.getByKanji(kanji);
+  }
+
+  Future<DictionaryList?> getDictionaryList(int id) async {
+    return _isar.dictionaryLists.get(id);
   }
 
   static Future<void> importDatabase() async {

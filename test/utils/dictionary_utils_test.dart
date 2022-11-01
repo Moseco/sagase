@@ -505,6 +505,8 @@ void main() {
           compoundTestJMdict,
           compoundTestKanjidic2,
           '# Nothing',
+          '',
+          '',
         ),
         testingIsar: isar,
       );
