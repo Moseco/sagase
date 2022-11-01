@@ -3,6 +3,13 @@ import 'package:sagase/datamodels/kanji_radical.dart';
 const int dictionaryVersion = 1;
 const int nestedNavigationKey = 1;
 
+const int dictionaryListIdJouyou = 0;
+const int dictionaryListIdJlptN1 = 1;
+const int dictionaryListIdJlptN2 = 2;
+const int dictionaryListIdJlptN3 = 3;
+const int dictionaryListIdJlptN4 = 4;
+const int dictionaryListIdJlptN5 = 5;
+
 final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
 
 const radicals = [

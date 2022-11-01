@@ -36,7 +36,13 @@ class KanjiListItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
-                  KanjiKunReadings(kanji.kunReadings!),
+                  kanji.kunReadings != null
+                      ? KanjiKunReadings(kanji.kunReadings!)
+                      : Text(
+                          kanji.onReadings!.join(', '),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
                 ],
               ),
             ),

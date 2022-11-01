@@ -24,7 +24,7 @@ dependencies:
   settings_ui: ^2.0.2
 
   # Other
-  isar: ^3.0.0
+  isar: ^3.0.2
   isar_flutter_libs: any
   xml: ^6.1.0
   path_provider: ^2.0.11
@@ -48,8 +48,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/dictionary_source/JMdict_e_examp # Should be removed for release builds
-    - assets/dictionary_source/kanjidic2.xml # Should be removed for release builds
-    - assets/dictionary_source/kradfilex_utf-8 # Should be removed for release builds
+    - assets/dictionary_source/ # Should be removed for release builds
     - assets/dictionary_source/db_export.zip
     

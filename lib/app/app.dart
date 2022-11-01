@@ -1,4 +1,5 @@
 import 'package:sagase/ui/views/dev/dev_view.dart';
+import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_view.dart';
 import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
@@ -35,6 +36,7 @@ import 'package:stacked_services/stacked_services.dart';
     MaterialRoute(page: VocabView),
     MaterialRoute(page: KanjiView),
     MaterialRoute(page: KanjiCompoundsView),
+    MaterialRoute(page: DictionaryListView),
     MaterialRoute(page: KanjiRadicalsView),
     MaterialRoute(page: KanaView),
     MaterialRoute(page: DevView),
