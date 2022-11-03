@@ -18,7 +18,10 @@ class KanaView extends StatelessWidget {
               onPressed: viewModel.toggleKana,
               child: Text(
                 viewModel.showHiragana ? 'ア' : 'あ',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -83,9 +86,9 @@ class KanaView extends StatelessWidget {
                   _GridItem('ろ', 'ro'),
                   // w
                   _GridItem('わ', 'wa'),
-                  _GridItem('ゐ', 'wi', dim: true),
+                  _GridItem('ゐ', 'wi', obsolete: true),
                   _GridItem('', ''),
-                  _GridItem('ゑ', 'we', dim: true),
+                  _GridItem('ゑ', 'we', obsolete: true),
                   _GridItem('を', 'o'),
                   // n
                   _GridItem('ん', 'n'),
@@ -107,8 +110,8 @@ class KanaView extends StatelessWidget {
                   _GridItem('ぞ', 'zo'),
                   // d
                   _GridItem('だ', 'da'),
-                  _GridItem('ぢ', 'ji', dim: true),
-                  _GridItem('づ', 'zu', dim: true),
+                  _GridItem('ぢ', 'ji'),
+                  _GridItem('づ', 'zu'),
                   _GridItem('で', 'de'),
                   _GridItem('ど', 'do'),
                   // b
@@ -181,9 +184,9 @@ class KanaView extends StatelessWidget {
                   _GridItem('ロ', 'ro'),
                   // w
                   _GridItem('ワ', 'wa'),
-                  _GridItem('ヰ', 'wi', dim: true),
+                  _GridItem('ヰ', 'wi', obsolete: true),
                   _GridItem('', ''),
-                  _GridItem('ヱ', 'we', dim: true),
+                  _GridItem('ヱ', 'we', obsolete: true),
                   _GridItem('ヲ', 'o'),
                   // n
                   _GridItem('ン', 'n'),
@@ -205,8 +208,8 @@ class KanaView extends StatelessWidget {
                   _GridItem('ゾ', 'zo'),
                   // d
                   _GridItem('ダ', 'da'),
-                  _GridItem('ヂ', 'ji', dim: true),
-                  _GridItem('ヅ', 'zu', dim: true),
+                  _GridItem('ヂ', 'ji'),
+                  _GridItem('ヅ', 'zu'),
                   _GridItem('デ', 'de'),
                   _GridItem('ド', 'do'),
                   // b
@@ -231,12 +234,12 @@ class KanaView extends StatelessWidget {
 class _GridItem extends StatelessWidget {
   final String kana;
   final String romaji;
-  final bool dim;
+  final bool obsolete;
 
   const _GridItem(
     this.kana,
     this.romaji, {
-    this.dim = false,
+    this.obsolete = false,
     Key? key,
   }) : super(key: key);
 
@@ -249,12 +252,12 @@ class _GridItem extends StatelessWidget {
           kana,
           style: TextStyle(
             fontSize: 32,
-            color: dim ? Colors.black26 : null,
+            color: obsolete ? Colors.black26 : null,
           ),
         ),
         Text(
           romaji,
-          style: TextStyle(color: dim ? Colors.black26 : null),
+          style: TextStyle(color: obsolete ? Colors.black26 : null),
         ),
       ],
     );
