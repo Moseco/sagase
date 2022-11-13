@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 
 part 'vocab.g.dart';
@@ -25,6 +26,9 @@ class Vocab extends DictionaryItem {
   bool commonWord = false;
 
   List<VocabExample>? examples;
+
+  @Backlink(to: 'vocabLinks')
+  final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
 }
 
 @embedded

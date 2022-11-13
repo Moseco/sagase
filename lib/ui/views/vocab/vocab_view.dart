@@ -14,7 +14,7 @@ class VocabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<VocabViewModel>.nonReactive(
+    return ViewModelBuilder<VocabViewModel>.reactive(
       viewModelBuilder: () => VocabViewModel(vocab),
       fireOnModelReadyOnce: true,
       onModelReady: (viewModel) => viewModel.initialize(),
@@ -24,6 +24,16 @@ class VocabView extends StatelessWidget {
             vocab.kanjiReadingPairs[0].kanjiWritings?[0].kanji ??
                 vocab.kanjiReadingPairs[0].readings[0].reading,
           ),
+          actions: [
+            IconButton(
+              onPressed: viewModel.openMyDictionaryListsSheet,
+              icon: Icon(
+                vocab.myDictionaryListLinks.isEmpty
+                    ? Icons.star_border
+                    : Icons.star,
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8),

@@ -4,9 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart' show visibleForTesting;
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
+import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
-import 'package:sagase/datamodels/dictionary_list.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:xml/xml.dart';
 import 'package:sagase/utils/constants.dart' as constants;
@@ -24,7 +25,8 @@ class DictionaryUtils {
           DictionaryInfoSchema,
           VocabSchema,
           KanjiSchema,
-          DictionaryListSchema
+          PredefinedDictionaryListSchema,
+          MyDictionaryListSchema,
         ]);
 
     await isar.writeTxn(() async {
@@ -1182,102 +1184,90 @@ class DictionaryUtils {
     final vocabMap = jsonDecode(vocabLists);
 
     // JLPT N5
-    final jlptN5List = DictionaryList()
+    final jlptN5List = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJlptN5
-      ..name = 'N5'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'N5';
     final jlptN5ListRaw = vocabMap['jlpt_n5'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jlptN5ListRaw.length; i++) {
         final vocab = await isar.vocabs.get(jlptN5ListRaw[i]);
-        jlptN5List.vocab.add(vocab!);
+        jlptN5List.vocabLinks.add(vocab!);
       }
-      await isar.dictionaryLists.put(jlptN5List);
-      await jlptN5List.vocab.save();
+      await isar.predefinedDictionaryLists.put(jlptN5List);
+      await jlptN5List.vocabLinks.save();
     });
 
     // JLPT N4
-    final jlptN4List = DictionaryList()
+    final jlptN4List = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJlptN4
-      ..name = 'N4'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'N4';
     final jlptN4ListRaw = vocabMap['jlpt_n4'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jlptN4ListRaw.length; i++) {
         final vocab = await isar.vocabs.get(jlptN4ListRaw[i]);
-        jlptN4List.vocab.add(vocab!);
+        jlptN4List.vocabLinks.add(vocab!);
       }
-      await isar.dictionaryLists.put(jlptN4List);
-      await jlptN4List.vocab.save();
+      await isar.predefinedDictionaryLists.put(jlptN4List);
+      await jlptN4List.vocabLinks.save();
     });
 
     // JLPT N3
-    final jlptN3List = DictionaryList()
+    final jlptN3List = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJlptN3
-      ..name = 'N3'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'N3';
     final jlptN3ListRaw = vocabMap['jlpt_n3'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jlptN3ListRaw.length; i++) {
         final vocab = await isar.vocabs.get(jlptN3ListRaw[i]);
-        jlptN3List.vocab.add(vocab!);
+        jlptN3List.vocabLinks.add(vocab!);
       }
-      await isar.dictionaryLists.put(jlptN3List);
-      await jlptN3List.vocab.save();
+      await isar.predefinedDictionaryLists.put(jlptN3List);
+      await jlptN3List.vocabLinks.save();
     });
 
     // JLPT N2
-    final jlptN2List = DictionaryList()
+    final jlptN2List = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJlptN2
-      ..name = 'N2'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'N2';
     final jlptN2ListRaw = vocabMap['jlpt_n2'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jlptN2ListRaw.length; i++) {
         final vocab = await isar.vocabs.get(jlptN2ListRaw[i]);
-        jlptN2List.vocab.add(vocab!);
+        jlptN2List.vocabLinks.add(vocab!);
       }
-      await isar.dictionaryLists.put(jlptN2List);
-      await jlptN2List.vocab.save();
+      await isar.predefinedDictionaryLists.put(jlptN2List);
+      await jlptN2List.vocabLinks.save();
     });
 
     // JLPT N1
-    final jlptN1List = DictionaryList()
+    final jlptN1List = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJlptN1
-      ..name = 'N1'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'N1';
     final jlptN1ListRaw = vocabMap['jlpt_n1'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jlptN1ListRaw.length; i++) {
         final vocab = await isar.vocabs.get(jlptN1ListRaw[i]);
-        jlptN1List.vocab.add(vocab!);
+        jlptN1List.vocabLinks.add(vocab!);
       }
-      await isar.dictionaryLists.put(jlptN1List);
-      await jlptN1List.vocab.save();
+      await isar.predefinedDictionaryLists.put(jlptN1List);
+      await jlptN1List.vocabLinks.save();
     });
 
     // Parse kanji lists
     final kanjiListsMap = jsonDecode(kanjiLists);
 
     // Jouyou
-    final jouyouList = DictionaryList()
+    final jouyouList = PredefinedDictionaryList()
       ..id = constants.dictionaryListIdJouyou
-      ..name = 'Jouyou'
-      ..timestamp = DateTime.now()
-      ..editable = false;
+      ..name = 'Jouyou';
     final jouyouListRaw = kanjiListsMap['jouyou'];
     await isar.writeTxn(() async {
       for (int i = 0; i < jouyouListRaw.length; i++) {
         final kanji = await isar.kanjis.getByKanji(jouyouListRaw[i]);
-        jouyouList.kanji.add(kanji!);
+        jouyouList.kanjiLinks.add(kanji!);
       }
-      await isar.dictionaryLists.put(jouyouList);
-      await jouyouList.kanji.save();
+      await isar.predefinedDictionaryLists.put(jouyouList);
+      await jouyouList.kanjiLinks.save();
     });
   }
 
@@ -1287,7 +1277,8 @@ class DictionaryUtils {
       DictionaryInfoSchema,
       VocabSchema,
       KanjiSchema,
-      DictionaryListSchema,
+      PredefinedDictionaryListSchema,
+      MyDictionaryListSchema,
     ]);
 
     await isar.copyToFile('$path/db_export.isar');
