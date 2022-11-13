@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 
@@ -26,4 +27,7 @@ class Kanji extends DictionaryItem {
   List<String>? nanori;
 
   final compounds = IsarLinks<Vocab>();
+
+  @Backlink(to: 'kanjiLinks')
+  final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
 }

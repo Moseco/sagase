@@ -10,7 +10,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 ## Feature list
 
-- [ ] Create vocab dictionary
+- [ ] Vocab dictionary
     - [x] Kanji writing
     - [x] Hiragana/katakana reading
     - [x] Definition
@@ -31,7 +31,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
         - [x] Hiragana/katakana reading
         - [x] Romaji reading
         - [x] Simplified romaji reading (e.g. remove small tsu before conversion)
-- [x] Create kanji dictionary
+- [x] Kanji dictionary
     - [x] Kanji character
     - [x] Radical
     - [x] Components
@@ -44,19 +44,20 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Kun readings
     - [x] Nanori
     - [x] Compounds
-- [ ] Kanji radicals
-    - [x] 214 classic kanji radicals
-    - [x] Meaning
-    - [x] Variants
-    - [ ] Kanji using the radical
-- [x] Export/import database
 - [ ] Search
     - [x] Vocab
     - [x] Kanji
     - [ ] Hand writing character recognition
     - [ ] Sort by closest match
-- [ ] Standard kanji and vocab lists
-- [ ] Bookmarks
+- [ ] Kanji radicals
+    - [x] 214 classic kanji radicals
+    - [x] Meaning
+    - [x] Variants
+    - [ ] Kanji using the radical
+- [x] Hiragana and katakana table
+- [x] Export/import database
+- [x] Predefined vocab and kanji lists
+- [x] User defined lists
 - [ ] Flashcards
 
 ## Special thanks

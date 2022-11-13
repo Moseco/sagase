@@ -4,17 +4,17 @@ import 'package:sagase/ui/widgets/home_header.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 
-import 'dictionary_lists_viewmodel.dart';
+import 'lists_viewmodel.dart';
 
-class DictionaryListsView extends StatelessWidget {
-  const DictionaryListsView({super.key});
+class ListsView extends StatelessWidget {
+  const ListsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<DictionaryListsViewModel>.reactive(
+    return ViewModelBuilder<ListsViewModel>.reactive(
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
-      viewModelBuilder: () => locator<DictionaryListsViewModel>(),
+      viewModelBuilder: () => locator<ListsViewModel>(),
       builder: (context, viewModel, child) => Scaffold(
         body: HomeHeader(
           title: Row(
@@ -24,8 +24,8 @@ class DictionaryListsView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: IconButton(
-                  onPressed: () => viewModel.setCurrentList(null),
-                  color: viewModel.currentList == null
+                  onPressed: () => viewModel.setListSelection(null),
+                  color: viewModel.listSelection == null
                       ? Colors.transparent
                       : Colors.white,
                   icon: const Icon(Icons.arrow_back),
@@ -33,7 +33,7 @@ class DictionaryListsView extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  _getTitle(viewModel.currentList),
+                  _getTitle(viewModel.listSelection),
                   maxLines: 1,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -45,8 +45,8 @@ class DictionaryListsView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: IconButton(
-                  onPressed: () {},
-                  color: viewModel.currentList == MainListSelection.myLists
+                  onPressed: viewModel.createMyDictionaryList,
+                  color: viewModel.listSelection == ListSelection.myLists
                       ? Colors.white
                       : Colors.transparent,
                   icon: const Icon(Icons.add),
@@ -54,19 +54,28 @@ class DictionaryListsView extends StatelessWidget {
               ),
             ],
           ),
-          child: _Body(),
+          child: WillPopScope(
+            onWillPop: () async {
+              if (viewModel.listSelection != null) {
+                viewModel.setListSelection(null);
+                return false;
+              }
+              return true;
+            },
+            child: _Body(),
+          ),
         ),
       ),
     );
   }
 
-  String _getTitle(MainListSelection? selection) {
+  String _getTitle(ListSelection? selection) {
     switch (selection) {
-      case MainListSelection.vocab:
+      case ListSelection.vocab:
         return 'Vocab Lists';
-      case MainListSelection.kanji:
+      case ListSelection.kanji:
         return 'Kanji Lists';
-      case MainListSelection.myLists:
+      case ListSelection.myLists:
         return 'My Lists';
       default:
         return 'Lists';
@@ -74,42 +83,42 @@ class DictionaryListsView extends StatelessWidget {
   }
 }
 
-class _Body extends ViewModelWidget<DictionaryListsViewModel> {
+class _Body extends ViewModelWidget<ListsViewModel> {
   @override
-  Widget build(BuildContext context, DictionaryListsViewModel viewModel) {
-    switch (viewModel.currentList) {
-      case MainListSelection.vocab:
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    switch (viewModel.listSelection) {
+      case ListSelection.vocab:
         return _VocabList();
-      case MainListSelection.kanji:
+      case ListSelection.kanji:
         return _KanjiList();
-      case MainListSelection.myLists:
-        return _MyListsList();
+      case ListSelection.myLists:
+        return _MyLists();
       default:
         return _MainList();
     }
   }
 }
 
-class _MainList extends ViewModelWidget<DictionaryListsViewModel> {
+class _MainList extends ViewModelWidget<ListsViewModel> {
   @override
-  Widget build(BuildContext context, DictionaryListsViewModel viewModel) {
+  Widget build(BuildContext context, ListsViewModel viewModel) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _MainListItem(
           leadingText: '語',
           titleText: 'Vocabulary',
-          onTap: () => viewModel.setCurrentList(MainListSelection.vocab),
+          onTap: () => viewModel.setListSelection(ListSelection.vocab),
         ),
         _MainListItem(
           leadingText: '字',
           titleText: 'Kanji',
-          onTap: () => viewModel.setCurrentList(MainListSelection.kanji),
+          onTap: () => viewModel.setListSelection(ListSelection.kanji),
         ),
         _MainListItem(
           leadingIcon: Icons.star,
           titleText: 'My lists',
-          onTap: () => viewModel.setCurrentList(MainListSelection.myLists),
+          onTap: () => viewModel.setListSelection(ListSelection.myLists),
         ),
         _MainListItem(
           leadingText: 'あ',
@@ -126,36 +135,36 @@ class _MainList extends ViewModelWidget<DictionaryListsViewModel> {
   }
 }
 
-class _VocabList extends ViewModelWidget<DictionaryListsViewModel> {
+class _VocabList extends ViewModelWidget<ListsViewModel> {
   @override
-  Widget build(BuildContext context, DictionaryListsViewModel viewModel) {
+  Widget build(BuildContext context, ListsViewModel viewModel) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _DictionaryListItem(
           text: 'JLPT N5',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJlptN5),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptN5),
         ),
         _DictionaryListItem(
           text: 'JLPT N4',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJlptN4),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptN4),
         ),
         _DictionaryListItem(
           text: 'JLPT N3',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJlptN3),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptN3),
         ),
         _DictionaryListItem(
           text: 'JLPT N2',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJlptN2),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptN2),
         ),
         _DictionaryListItem(
           text: 'JLPT N1',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJlptN1),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptN1),
         ),
         const Text(
           'These are not official lists. They are a best guess of the required vocabulary.',
@@ -165,31 +174,40 @@ class _VocabList extends ViewModelWidget<DictionaryListsViewModel> {
   }
 }
 
-class _KanjiList extends ViewModelWidget<DictionaryListsViewModel> {
+class _KanjiList extends ViewModelWidget<ListsViewModel> {
   @override
-  Widget build(BuildContext context, DictionaryListsViewModel viewModel) {
+  Widget build(BuildContext context, ListsViewModel viewModel) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _DictionaryListItem(
           text: 'Jouyou',
-          onTap: () =>
-              viewModel.navigateToList(constants.dictionaryListIdJouyou),
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJouyou),
         ),
       ],
     );
   }
 }
 
-class _MyListsList extends ViewModelWidget<DictionaryListsViewModel> {
+class _MyLists extends ViewModelWidget<ListsViewModel> {
   @override
-  Widget build(BuildContext context, DictionaryListsViewModel viewModel) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: const [
-        Text('TODO My lists'),
-      ],
-    );
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    if (viewModel.myDictionaryLists == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: viewModel.myDictionaryLists!.length,
+        itemBuilder: (context, index) {
+          final current = viewModel.myDictionaryLists![index];
+          return _DictionaryListItem(
+            text: current.name,
+            onTap: () => viewModel.navigateToMyDictionaryList(current),
+          );
+        },
+      );
+    }
   }
 }
 

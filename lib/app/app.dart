@@ -1,7 +1,7 @@
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
-import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_view.dart';
-import 'package:sagase/ui/views/dictionary_lists/dictionary_lists_viewmodel.dart';
+import 'package:sagase/ui/views/lists/lists_view.dart';
+import 'package:sagase/ui/views/lists/lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kana/kana_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
@@ -28,7 +28,7 @@ import 'package:stacked_services/stacked_services.dart';
       transitionsBuilder: TransitionsBuilders.fadeIn,
       children: [
         CustomRoute(page: SearchView),
-        CustomRoute(page: DictionaryListsView),
+        CustomRoute(page: ListsView),
         CustomRoute(page: LearningView),
         CustomRoute(page: SettingsView),
       ],
@@ -43,9 +43,11 @@ import 'package:stacked_services/stacked_services.dart';
   ],
   dependencies: [
     LazySingleton(classType: NavigationService),
+    LazySingleton(classType: DialogService),
+    LazySingleton(classType: BottomSheetService),
     // IsarService is registered in SplashScreen to catch errors
     LazySingleton(classType: SearchViewModel),
-    LazySingleton(classType: DictionaryListsViewModel),
+    LazySingleton(classType: ListsViewModel),
     LazySingleton(classType: LearningViewModel),
   ],
 )

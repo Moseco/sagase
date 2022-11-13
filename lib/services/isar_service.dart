@@ -5,23 +5,36 @@ import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
+import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/dictionary_list.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 
 class IsarService {
   final Isar _isar;
 
-  IsarService(this._isar);
+  final _kanaKit = const KanaKit();
 
-  final kanaKit = const KanaKit();
+  bool _myDictionaryListsChanged = false;
+  bool get myDictionaryListsChanged => _myDictionaryListsChanged;
+  List<MyDictionaryList>? _myDictionaryLists;
+  List<MyDictionaryList>? get myDictionaryLists => _myDictionaryLists;
+
+  IsarService(this._isar);
 
   static Future<IsarService> initialize() async {
     final isar = await Isar.open(
-      [DictionaryInfoSchema, VocabSchema, KanjiSchema, DictionaryListSchema],
+      [
+        DictionaryInfoSchema,
+        VocabSchema,
+        KanjiSchema,
+        PredefinedDictionaryListSchema,
+        MyDictionaryListSchema,
+      ],
     );
 
     return IsarService(isar);
@@ -67,7 +80,7 @@ class IsarService {
 
   Future<List<Vocab>> searchVocab(String value) async {
     // Check if searching Japanese or romaji text
-    if (kanaKit.isRomaji(value)) {
+    if (_kanaKit.isRomaji(value)) {
       List<String> split = Isar.splitWords(value);
 
       if (split.length == 1) {
@@ -116,12 +129,98 @@ class IsarService {
     }
   }
 
+  Future<Vocab?> getVocab(int id) async {
+    return _isar.vocabs.get(id);
+  }
+
   Future<Kanji?> getKanji(String kanji) async {
     return _isar.kanjis.getByKanji(kanji);
   }
 
-  Future<DictionaryList?> getDictionaryList(int id) async {
-    return _isar.dictionaryLists.get(id);
+  Future<DictionaryList?> getPredefinedDictionaryList(int id) async {
+    return _isar.predefinedDictionaryLists.get(id);
+  }
+
+  Future<void> createMyDictionaryList(String name) async {
+    final list = MyDictionaryList()
+      ..name = name
+      ..timestamp = DateTime.now();
+
+    await _isar.writeTxn(() async {
+      await _isar.myDictionaryLists.put(list);
+    });
+    // If my lists are loaded, insert the new list, otherwise load my lists
+    if (_myDictionaryLists == null) {
+      await getMyDictionaryLists();
+    } else {
+      _myDictionaryLists!.insert(0, list);
+    }
+  }
+
+  Future<void> updateMyDictionaryList(MyDictionaryList list) async {
+    // Move list to start
+    _myDictionaryLists!.remove(list);
+    _myDictionaryLists!.insert(0, list);
+    // Update
+    list.timestamp = DateTime.now();
+    return _isar.writeTxn(() async {
+      await _isar.myDictionaryLists.put(list);
+      await list.vocabLinks.save();
+      await list.kanjiLinks.save();
+    });
+  }
+
+  Future<void> getMyDictionaryLists() async {
+    _myDictionaryLists =
+        await _isar.myDictionaryLists.where().sortByTimestampDesc().findAll();
+  }
+
+  Future<void> deleteMyDictionaryList(MyDictionaryList list) async {
+    _myDictionaryListsChanged = true;
+    // Remove from in memory list
+    _myDictionaryLists!.remove(list);
+    // Remove from database
+    await _isar.writeTxn(() async {
+      await _isar.myDictionaryLists.delete(list.id!);
+    });
+  }
+
+  Future<void> addVocabToMyDictionaryList(
+    MyDictionaryList list,
+    Vocab vocab,
+  ) async {
+    _myDictionaryListsChanged = true;
+    list.vocabLinks.add(vocab);
+    await updateMyDictionaryList(list);
+  }
+
+  Future<void> removeVocabFromMyDictionaryList(
+    MyDictionaryList list,
+    Vocab vocab,
+  ) async {
+    _myDictionaryListsChanged = true;
+    if (!list.vocabLinks.isLoaded) await list.vocabLinks.load();
+    list.vocabLinks.removeWhere((element) => element.id == vocab.id);
+    await updateMyDictionaryList(list);
+  }
+
+  Future<void> addKanjiToMyDictionaryList(
+    MyDictionaryList list,
+    Kanji kanji,
+  ) async {
+    _myDictionaryListsChanged = true;
+    list.kanjiLinks.add(kanji);
+    await updateMyDictionaryList(list);
+  }
+
+  Future<void> removeKanjiFromMyDictionaryList(
+    MyDictionaryList list,
+    Kanji kanji,
+  ) async {
+    _myDictionaryListsChanged = true;
+    if (!list.kanjiLinks.isLoaded) await list.kanjiLinks.load();
+    list.kanjiLinks.removeWhere((element) => element.id == kanji.id);
+    await updateMyDictionaryList(list);
   }
 
   static Future<void> importDatabase() async {

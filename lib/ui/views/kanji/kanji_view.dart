@@ -15,10 +15,24 @@ class KanjiView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<KanjiViewModel>.nonReactive(
+    return ViewModelBuilder<KanjiViewModel>.reactive(
       viewModelBuilder: () => KanjiViewModel(kanji),
+      fireOnModelReadyOnce: true,
+      onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(title: Text(kanji.kanji)),
+        appBar: AppBar(
+          title: Text(kanji.kanji),
+          actions: [
+            IconButton(
+              onPressed: viewModel.openMyDictionaryListsSheet,
+              icon: Icon(
+                kanji.myDictionaryListLinks.isEmpty
+                    ? Icons.star_border
+                    : Icons.star,
+              ),
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8),
           child: Column(
