@@ -45,10 +45,7 @@ class KanjiView extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8),
                     child: Text(
                       kanji.kanji,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 40),
                     ),
                   ),
                   Expanded(child: Text(kanji.meanings ?? 'NO MEANING')),
