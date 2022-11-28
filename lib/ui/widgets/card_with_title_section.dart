@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class DictionaryEntrySection extends StatelessWidget {
+class CardWithTitleSection extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const DictionaryEntrySection({
+  const CardWithTitleSection({
     required this.title,
     required this.child,
     super.key,

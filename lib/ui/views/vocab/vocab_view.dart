@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
-import 'package:sagase/ui/widgets/dictionary_entry_section.dart';
+import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:stacked/stacked.dart';
 
@@ -215,7 +215,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
       otherInfo.add(otherInfoBuffer.toString());
     }
 
-    return DictionaryEntrySection(
+    return CardWithTitleSection(
       title: 'Definition',
       child: ListView.builder(
         shrinkWrap: true,
@@ -653,7 +653,7 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
   const _KanjiList({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    return DictionaryEntrySection(
+    return CardWithTitleSection(
       title: 'Kanji',
       child: ListView.builder(
         shrinkWrap: true,
@@ -689,7 +689,7 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
       examples.last.list.add(example);
     }
 
-    return DictionaryEntrySection(
+    return CardWithTitleSection(
       title: 'Examples',
       child: ListView.builder(
         shrinkWrap: true,

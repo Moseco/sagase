@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
+import 'package:sagase/datamodels/spaced_repetition_data.dart';
 
 part 'vocab.g.dart';
 
@@ -8,8 +9,6 @@ part 'vocab.g.dart';
 //    flutter pub run build_runner build --delete-conflicting-outputs
 @Collection()
 class Vocab extends DictionaryItem {
-  late Id id;
-
   List<KanjiReadingPair> kanjiReadingPairs = [];
 
   List<VocabDefinition> definitions = [];
@@ -29,6 +28,13 @@ class Vocab extends DictionaryItem {
 
   @Backlink(to: 'vocabLinks')
   final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
+
+  bool isUsuallyKanaAlone() {
+    if (definitions[0].miscInfo == null) return false;
+    return definitions[0]
+        .miscInfo!
+        .contains(MiscellaneousInfo.usuallyKanaAlone);
+  }
 }
 
 @embedded

@@ -5,6 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
+import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
@@ -26,7 +27,10 @@ class IsarService {
 
   IsarService(this._isar);
 
-  static Future<IsarService> initialize() async {
+  // Optional argument for testing
+  static Future<IsarService> initialize({Isar? testingIsar}) async {
+    if (testingIsar != null) return IsarService(testingIsar);
+
     final isar = await Isar.open(
       [
         DictionaryInfoSchema,
@@ -34,6 +38,7 @@ class IsarService {
         KanjiSchema,
         PredefinedDictionaryListSchema,
         MyDictionaryListSchema,
+        FlashcardSetSchema,
       ],
     );
 
@@ -221,6 +226,93 @@ class IsarService {
     if (!list.kanjiLinks.isLoaded) await list.kanjiLinks.load();
     list.kanjiLinks.removeWhere((element) => element.id == kanji.id);
     await updateMyDictionaryList(list);
+  }
+
+  Future<FlashcardSet> createFlashcardSet(String name) async {
+    final flashcardSet = FlashcardSet()
+      ..name = name
+      ..timestamp = DateTime.now();
+
+    await _isar.writeTxn(() async {
+      await _isar.flashcardSets.put(flashcardSet);
+    });
+    return flashcardSet;
+  }
+
+  Future<void> updateFlashcardSet(FlashcardSet flashcardSet) async {
+    flashcardSet.timestamp = DateTime.now();
+    return _isar.writeTxn(() async {
+      await _isar.flashcardSets.put(flashcardSet);
+      await flashcardSet.predefinedDictionaryListLinks.save();
+      await flashcardSet.myDictionaryListLinks.save();
+    });
+  }
+
+  Future<List<FlashcardSet>> getFlashcardSets() async {
+    return _isar.flashcardSets.where().sortByTimestampDesc().findAll();
+  }
+
+  Future<void> deleteFlashcardSet(FlashcardSet flashcardSet) async {
+    await _isar.writeTxn(() async {
+      await _isar.flashcardSets.delete(flashcardSet.id);
+    });
+  }
+
+  Future<void> addDictionaryListsToFlashcardSet(
+    FlashcardSet flashcardSet, {
+    List<int> predefinedDictionaryListIds = const [],
+    List<MyDictionaryList> myDictionaryLists = const [],
+  }) async {
+    // Add predefined dictionary lists
+    for (int i = 0; i < predefinedDictionaryListIds.length; i++) {
+      final predefinedDictionaryList = await _isar.predefinedDictionaryLists
+          .get(predefinedDictionaryListIds[i]);
+      if (predefinedDictionaryList != null) {
+        flashcardSet.predefinedDictionaryListLinks
+            .add(predefinedDictionaryList);
+      }
+    }
+    // Add my dictionary lists
+    for (int i = 0; i < myDictionaryLists.length; i++) {
+      flashcardSet.myDictionaryListLinks.add(myDictionaryLists[i]);
+    }
+    // Update in database if something was changed
+    if (predefinedDictionaryListIds.isNotEmpty ||
+        myDictionaryLists.isNotEmpty) {
+      return updateFlashcardSet(flashcardSet);
+    }
+  }
+
+  Future<void> removeDictionaryListsToFlashcardSet(
+    FlashcardSet flashcardSet, {
+    List<int> predefinedDictionaryListIds = const [],
+    List<MyDictionaryList> myDictionaryLists = const [],
+  }) async {
+    // Remove predefined dictionary lists
+    for (int i = 0; i < predefinedDictionaryListIds.length; i++) {
+      flashcardSet.predefinedDictionaryListLinks.removeWhere(
+          (element) => element.id == predefinedDictionaryListIds[i]);
+    }
+    // Remove my dictionary lists
+    for (int i = 0; i < myDictionaryLists.length; i++) {
+      flashcardSet.myDictionaryListLinks
+          .removeWhere((element) => element.id == myDictionaryLists[i].id);
+    }
+    // Update in database if something was changed
+    if (predefinedDictionaryListIds.isNotEmpty ||
+        myDictionaryLists.isNotEmpty) {
+      return updateFlashcardSet(flashcardSet);
+    }
+  }
+
+  Future<void> updateSpacedRepetitionData(DictionaryItem item) async {
+    return _isar.writeTxn(() async {
+      if (item is Vocab) {
+        await _isar.vocabs.put(item);
+      } else {
+        await _isar.kanjis.put(item as Kanji);
+      }
+    });
   }
 
   static Future<void> importDatabase() async {
