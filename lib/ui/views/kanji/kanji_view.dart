@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/ui/widgets/dictionary_entry_section.dart';
+import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
@@ -51,7 +51,7 @@ class KanjiView extends StatelessWidget {
                   Expanded(child: Text(kanji.meanings ?? 'NO MEANING')),
                 ],
               ),
-              DictionaryEntrySection(
+              CardWithTitleSection(
                 title: 'Reading',
                 child: Container(
                   width: double.infinity,
@@ -85,7 +85,7 @@ class KanjiView extends StatelessWidget {
                   ),
                 ),
               ),
-              DictionaryEntrySection(
+              CardWithTitleSection(
                 title: 'Info',
                 child: Container(
                   width: double.infinity,
@@ -126,7 +126,7 @@ class KanjiView extends StatelessWidget {
                 ),
               ),
               if (kanji.compounds.isNotEmpty)
-                DictionaryEntrySection(
+                CardWithTitleSection(
                   title: 'Compounds',
                   child: Column(
                     children: [

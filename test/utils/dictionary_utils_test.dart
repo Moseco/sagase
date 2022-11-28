@@ -1,59 +1,18 @@
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
-import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
-import 'package:path/path.dart' as path;
 import 'package:sagase/utils/dictionary_utils.dart';
 
 import '../common.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('DictionaryUtilsTest', () {
     late Isar isar;
 
     setUp(() async {
-      // Create directory .dart_tool/isar_test/tmp/
-      final dartToolDir = path.join(Directory.current.path, '.dart_tool');
-      String testTempPath = path.join(dartToolDir, 'isar_test', 'tmp');
-      String downloadPath = path.join(dartToolDir, 'isar_test');
-      await Directory(testTempPath).create(recursive: true);
-
-      // Get name of isar binary based on platform
-      late String binaryName;
-      switch (Abi.current()) {
-        case Abi.macosX64:
-          binaryName = 'libisar.dylib';
-          break;
-        case Abi.linuxX64:
-          binaryName = 'libisar.so';
-          break;
-        case Abi.windowsX64:
-          binaryName = 'isar.dll';
-          break;
-        default:
-          throw Exception('Unsupported platform for testing');
-      }
-
-      // Downloads Isar binary file
-      await Isar.initializeIsarCore(
-        libraries: {
-          Abi.current(): '$downloadPath${Platform.pathSeparator}$binaryName'
-        },
-        download: true,
-      );
-
-      // Open Isar instance with random name
-      isar = await Isar.open(
-        [DictionaryInfoSchema, VocabSchema, KanjiSchema],
-        directory: testTempPath,
-        name: Random().nextInt(pow(2, 32) as int).toString(),
-        inspector: false,
-      );
+      isar = await setUpIsar();
     });
 
     tearDown(() => isar.close(deleteFromDisk: true));

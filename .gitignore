@@ -49,4 +49,5 @@ app.*.map.json
 # Generated dart files
 lib/app/app.locator.dart
 lib/app/app.router.dart
+test/helpers/test_helpers.mocks.dart
 *.g.dart

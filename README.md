@@ -59,6 +59,12 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 - [x] Predefined vocab and kanji lists
 - [x] User defined lists
 - [ ] Flashcards
+    - [x] Spaced repetition
+    - [x] Random order
+    - [x] Japanese front
+    - [ ] English front 
+    - [x] Customize front appearance
+    - [ ] View spaced repetition performance 
 
 ## Special thanks
 

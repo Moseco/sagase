@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase/datamodels/spaced_repetition_data.dart';
 
 part 'kanji.g.dart';
 
@@ -9,8 +10,6 @@ part 'kanji.g.dart';
 //    flutter pub run build_runner build --delete-conflicting-outputs
 @Collection()
 class Kanji extends DictionaryItem {
-  late Id id;
-
   @Index(unique: true)
   late String kanji;
 
