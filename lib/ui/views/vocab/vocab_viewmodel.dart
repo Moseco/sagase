@@ -1,9 +1,10 @@
+import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
-import 'package:sagase/ui/setup_bottom_sheet_ui.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -72,10 +73,10 @@ class VocabViewModel extends BaseViewModel {
       await _isarService.getMyDictionaryLists();
     }
     // Create list for bottom sheet
-    List<MyDictionaryListsSheetItem> list = [];
+    List<MyListsBottomSheetItem> list = [];
     for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      list.add(MyDictionaryListsSheetItem(
-          _isarService.myDictionaryLists![i], false));
+      list.add(
+          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
     }
     // Mark lists that the vocab is in and move them to the top
     for (int i = 0; i < vocab.myDictionaryListLinks.length; i++) {
@@ -90,7 +91,7 @@ class VocabViewModel extends BaseViewModel {
     }
 
     final response = await _bottomSheetService.showCustomSheet(
-      variant: BottomSheetType.myDictionaryLists,
+      variant: BottomsheetType.assignMyListsBottomSheet,
       data: list,
       barrierDismissible: false,
     );

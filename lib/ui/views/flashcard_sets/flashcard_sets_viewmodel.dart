@@ -1,8 +1,8 @@
+import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/services/isar_service.dart';
-import 'package:sagase/ui/setup_dialog_ui.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -25,7 +25,7 @@ class FlashcardSetsViewModel extends BaseViewModel {
 
   Future<void> createFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.form,
+      variant: DialogType.textFieldDialog,
       title: 'Create flashcards',
       description: 'Name',
       mainButtonTitle: 'Create',

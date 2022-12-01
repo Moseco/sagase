@@ -1,3 +1,4 @@
+import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/dictionary_list.dart';
@@ -5,7 +6,6 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
-import 'package:sagase/ui/setup_dialog_ui.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -52,7 +52,7 @@ class DictionaryListViewModel extends BaseViewModel {
 
   Future<void> renameMyList() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.form,
+      variant: DialogType.textFieldDialog,
       title: 'Rename list',
       description: 'Name',
       mainButtonTitle: 'Update',
@@ -61,7 +61,7 @@ class DictionaryListViewModel extends BaseViewModel {
     );
 
     String? name = response?.data?.trim();
-    if (name == null || name.isEmpty) return;
+    if (name == null || name.isEmpty || dictionaryList.name == name) return;
 
     dictionaryList.name = name;
     _isarService.updateMyDictionaryList(dictionaryList as MyDictionaryList);

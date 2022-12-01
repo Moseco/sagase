@@ -1,9 +1,11 @@
+import 'package:sagase/app/app.bottomsheets.dart';
+import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
+import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/isar_service.dart';
-import 'package:sagase/ui/setup_bottom_sheet_ui.dart';
-import 'package:sagase/ui/setup_dialog_ui.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -27,7 +29,7 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
 
   Future<void> renameFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.form,
+      variant: DialogType.textFieldDialog,
       title: 'Rename flashcards',
       description: 'Name',
       mainButtonTitle: 'Update',
@@ -71,10 +73,10 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
           flashcardSet.predefinedDictionaryListLinks.elementAt(i).id!] = true;
     }
     // Create list for my lists
-    List<MyDictionaryListsSheetItem> myDictionaryLists = [];
+    List<MyListsBottomSheetItem> myDictionaryLists = [];
     for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      myDictionaryLists.add(MyDictionaryListsSheetItem(
-          _isarService.myDictionaryLists![i], false));
+      myDictionaryLists.add(
+          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
     }
     // Mark lists that the flashcard set uses and move them to the top
     for (int i = 0; i < flashcardSet.myDictionaryListLinks.length; i++) {
@@ -90,8 +92,8 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     }
 
     final response = await _bottomSheetService.showCustomSheet(
-      variant: BottomSheetType.flashcardSet,
-      data: FlashcardSetSheetArgument(predefinedLists, myDictionaryLists),
+      variant: BottomsheetType.assignListsBottomSheet,
+      data: ListsBottomSheetArgument(predefinedLists, myDictionaryLists),
       barrierDismissible: false,
     );
 

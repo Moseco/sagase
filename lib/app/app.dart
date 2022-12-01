@@ -1,3 +1,6 @@
+import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
+import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
+import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
@@ -55,6 +58,13 @@ import 'package:stacked_services/stacked_services.dart';
     LazySingleton(classType: SearchViewModel),
     LazySingleton(classType: ListsViewModel),
     LazySingleton(classType: LearningViewModel),
+  ],
+  bottomsheets: [
+    StackedBottomsheet(classType: AssignMyListsBottomSheet),
+    StackedBottomsheet(classType: AssignListsBottomSheet),
+  ],
+  dialogs: [
+    StackedDialog(classType: TextFieldDialog),
   ],
 )
 class AppSetup {
