@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/app/app.locator.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-void setupDialogUi() {
-  final dialogService = locator<DialogService>();
-
-  final builders = {
-    DialogType.form: (context, sheetRequest, completer) =>
-        _FormDialog(sheetRequest, completer),
-  };
-
-  dialogService.registerCustomDialogBuilders(builders);
-}
-
-// ignore: must_be_immutable
-class _FormDialog extends StatelessWidget {
+class TextFieldDialog extends HookWidget {
   final DialogRequest request;
   final Function(DialogResponse) completer;
 
-  String textInput = '';
-
-  _FormDialog(
-    this.request,
-    this.completer, {
+  const TextFieldDialog({
+    required this.request,
+    required this.completer,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final controller = useTextEditingController(text: request.data);
     return Dialog(
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -52,14 +39,13 @@ class _FormDialog extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: TextFormField(
-                initialValue: request.data,
+                controller: controller,
                 autofocus: true,
-                onChanged: (value) => textInput = value,
                 decoration: InputDecoration(hintText: request.description!),
               ),
             ),
             GestureDetector(
-              onTap: () => completer(DialogResponse(data: textInput)),
+              onTap: () => completer(DialogResponse(data: controller.text)),
               child: Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -79,8 +65,4 @@ class _FormDialog extends StatelessWidget {
       ),
     );
   }
-}
-
-enum DialogType {
-  form,
 }
