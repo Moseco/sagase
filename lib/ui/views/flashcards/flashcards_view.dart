@@ -41,50 +41,54 @@ class FlashcardsView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Center(
-                        child: FlipCard(
-                          controller: flipCardController,
-                          fill: Fill.fillBack,
-                          direction: FlipDirection.HORIZONTAL,
-                          front: SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.85,
-                            width: MediaQuery.of(context).size.width * 0.85,
-                            child: Card(
-                              elevation: 8,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        child: GestureDetector(
+                          onLongPress: viewModel.openFlashcardItem,
+                          child: FlipCard(
+                            controller: flipCardController,
+                            fill: Fill.fillBack,
+                            direction: FlipDirection.HORIZONTAL,
+                            speed: 300,
+                            front: SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.85,
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              child: Card(
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: viewModel.activeFlashcards[0] is Vocab
+                                    ? _VocabFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[0]
+                                            as Vocab,
+                                      )
+                                    : _KanjiFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[0]
+                                            as Kanji,
+                                      ),
                               ),
-                              child: viewModel.activeFlashcards[0] is Vocab
-                                  ? _VocabFlashcardFront(
-                                      flashcardSet: flashcardSet,
-                                      vocab: viewModel.activeFlashcards[0]
-                                          as Vocab,
-                                    )
-                                  : _KanjiFlashcardFront(
-                                      flashcardSet: flashcardSet,
-                                      kanji: viewModel.activeFlashcards[0]
-                                          as Kanji,
-                                    ),
                             ),
-                          ),
-                          back: SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.85,
-                            width: MediaQuery.of(context).size.width * 0.85,
-                            child: Card(
-                              elevation: 8,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                            back: SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.85,
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              child: Card(
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: viewModel.activeFlashcards[0] is Vocab
+                                    ? _VocabFlashcardBack(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[0]
+                                            as Vocab,
+                                      )
+                                    : _KanjiFlashcardBack(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[0]
+                                            as Kanji,
+                                      ),
                               ),
-                              child: viewModel.activeFlashcards[0] is Vocab
-                                  ? _VocabFlashcardBack(
-                                      flashcardSet: flashcardSet,
-                                      vocab: viewModel.activeFlashcards[0]
-                                          as Vocab,
-                                    )
-                                  : _KanjiFlashcardBack(
-                                      flashcardSet: flashcardSet,
-                                      kanji: viewModel.activeFlashcards[0]
-                                          as Kanji,
-                                    ),
                             ),
                           ),
                         ),
@@ -228,7 +232,7 @@ class _VocabFlashcardFront extends StatelessWidget {
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, color: Colors.black45),
+            style: const TextStyle(fontSize: 24, color: Colors.grey),
           ),
           const Divider(
             color: Colors.black,
@@ -378,35 +382,37 @@ class _VocabFlashcardBack extends StatelessWidget {
 
     // Add kanji writing and reading
     if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
-      children.addAll([
-        Text(
-          vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24),
-        ),
-        Text(
-          vocab.kanjiReadingPairs[0].readings[0].reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16),
-        ),
-      ]);
-    } else {
-      children.add(
-        Text(
-          vocab.kanjiReadingPairs[0].readings[0].reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24),
-        ),
-      );
+      if (vocab.isUsuallyKanaAlone()) {
+        children.add(
+          Text(
+            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20, color: Colors.grey),
+          ),
+        );
+      } else {
+        children.add(
+          Text(
+            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20),
+          ),
+        );
+      }
     }
 
-    children.add(
+    children.addAll([
+      Text(
+        vocab.kanjiReadingPairs[0].readings[0].reading,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 20),
+      ),
       const Divider(
         color: Colors.black,
         indent: 8,
         endIndent: 8,
       ),
-    );
+    ]);
 
     // Add definitions
     for (int i = 0; i < vocab.definitions.length; i++) {
