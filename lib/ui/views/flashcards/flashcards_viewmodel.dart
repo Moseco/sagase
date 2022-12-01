@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
@@ -15,6 +18,8 @@ class FlashcardsViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
 
   final FlashcardSet flashcardSet;
+
+  late final Random _random;
 
   List<DictionaryItem>? allFlashcards;
   final List<DictionaryItem> _activeFlashcards = [];
@@ -35,7 +40,8 @@ class FlashcardsViewModel extends BaseViewModel {
   int _nonFreshFlashcardCount = 0;
   int get nonFreshFlashcardCount => _nonFreshFlashcardCount;
 
-  FlashcardsViewModel(this.flashcardSet);
+  FlashcardsViewModel(this.flashcardSet, {int? randomSeed})
+      : _random = Random(randomSeed);
 
   Future<void> initialize() async {
     _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
@@ -117,7 +123,6 @@ class FlashcardsViewModel extends BaseViewModel {
         title: 'No flashcards',
         description: 'Add lists to the flashcard set to practice.',
         buttonTitle: 'Exit',
-        cancelTitle: '',
         barrierDismissible: true,
       );
 
@@ -180,13 +185,15 @@ class FlashcardsViewModel extends BaseViewModel {
     if (_usingSpacedRepetition) {
       // Check if need to add cards to active list
       while (_activeFlashcards.length < 10 && dueFlashcards.isNotEmpty) {
-        final flashcard = dueFlashcards.removeAt(0);
+        final flashcard =
+            dueFlashcards.removeAt(_random.nextInt(dueFlashcards.length));
         _activeFlashcards.insert(_activeFlashcards.length, flashcard);
       }
       // If active flashcards is still empty and try to add fresh flashcards
       if (_activeFlashcards.isEmpty) {
         while (_activeFlashcards.length < 10 && freshFlashcards.isNotEmpty) {
-          final flashcard = freshFlashcards.removeAt(0);
+          final flashcard =
+              freshFlashcards.removeAt(_random.nextInt(freshFlashcards.length));
           _activeFlashcards.insert(_activeFlashcards.length, flashcard);
         }
       }
@@ -214,6 +221,7 @@ class FlashcardsViewModel extends BaseViewModel {
       // If initial call, just add all flashcards to active list
       if (initial) {
         _activeFlashcards.addAll(allFlashcards!);
+        _activeFlashcards.shuffle(_random);
       }
 
       // If active flashcards is empty, ask user if they want to restart
@@ -255,7 +263,7 @@ class FlashcardsViewModel extends BaseViewModel {
           interval = 2;
           break;
         default:
-          interval = (currentData.interval * currentData.easeFactor).round();
+          interval = (currentData.interval * currentData.easeFactor).floor();
       }
 
       repetitions = currentData.repetitions + 1;
@@ -277,6 +285,20 @@ class FlashcardsViewModel extends BaseViewModel {
       ..repetitions = repetitions
       ..easeFactor = easeFactor
       ..dueDate = DateTime.now().add(Duration(days: interval)).toInt();
+  }
+
+  void openFlashcardItem() async {
+    if (_activeFlashcards[0] is Vocab) {
+      _navigationService.navigateTo(
+        Routes.vocabView,
+        arguments: VocabViewArguments(vocab: _activeFlashcards[0] as Vocab),
+      );
+    } else {
+      _navigationService.navigateTo(
+        Routes.kanjiView,
+        arguments: KanjiViewArguments(kanji: _activeFlashcards[0] as Kanji),
+      );
+    }
   }
 }
 

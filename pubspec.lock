@@ -209,7 +209,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "061de671927f33f41c09c9240389d0f71b3c7bca"
+      resolved-ref: "54552dea4d8d6c8134e7217ccd58a4298c9506fa"
       url: "https://github.com/Moseco/flip_card"
     source: git
     version: "0.6.0"

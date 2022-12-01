@@ -102,7 +102,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet);
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -152,7 +152,7 @@ void main() {
           DateTime.now().add(const Duration(days: 1)).toInt());
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
-      viewModel = FlashcardsViewModel(flashcardSet);
+      viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -175,7 +175,7 @@ void main() {
       }
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
-      viewModel = FlashcardsViewModel(flashcardSet);
+      viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -195,7 +195,7 @@ void main() {
       expect(viewModel.activeFlashcards.length, 1);
       expect(tempFlashcard.spacedRepetitionData!.interval, 2);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 2);
-      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.5);
+      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.6);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 2)).toInt());
 
@@ -206,7 +206,7 @@ void main() {
       expect(tempFlashcard.spacedRepetitionData!.interval, 0);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 0);
       expect(
-          tempFlashcard.spacedRepetitionData!.easeFactor, 2.2800000000000002);
+          tempFlashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
       expect(
           tempFlashcard.spacedRepetitionData!.dueDate, DateTime.now().toInt());
 
@@ -216,8 +216,7 @@ void main() {
       expect(viewModel.activeFlashcards.length, 4);
       expect(tempFlashcard.spacedRepetitionData!.interval, 1);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 1);
-      expect(
-          tempFlashcard.spacedRepetitionData!.easeFactor, 2.3800000000000003);
+      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.28);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 1)).toInt());
 
@@ -231,7 +230,7 @@ void main() {
       verify(navigationService.back());
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
-      viewModel = FlashcardsViewModel(flashcardSet);
+      viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Flashcard contents
@@ -287,7 +286,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet);
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -357,7 +356,7 @@ void main() {
           getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet);
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -418,7 +417,7 @@ void main() {
           getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet);
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
