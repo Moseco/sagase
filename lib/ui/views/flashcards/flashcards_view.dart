@@ -32,150 +32,138 @@ class FlashcardsView extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: SafeArea(
-          child: viewModel.activeFlashcards.isEmpty
-              ? viewModel.initialLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : Container()
-              : Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: GestureDetector(
-                          onLongPress: viewModel.openFlashcardItem,
-                          child: FlipCard(
-                            controller: flipCardController,
-                            fill: Fill.fillBack,
-                            direction: FlipDirection.HORIZONTAL,
-                            speed: 300,
-                            front: SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.85,
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: viewModel.activeFlashcards[0] is Vocab
-                                    ? _VocabFlashcardFront(
-                                        flashcardSet: flashcardSet,
-                                        vocab: viewModel.activeFlashcards[0]
-                                            as Vocab,
-                                      )
-                                    : _KanjiFlashcardFront(
-                                        flashcardSet: flashcardSet,
-                                        kanji: viewModel.activeFlashcards[0]
-                                            as Kanji,
-                                      ),
-                              ),
-                            ),
-                            back: SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.85,
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: viewModel.activeFlashcards[0] is Vocab
-                                    ? _VocabFlashcardBack(
-                                        flashcardSet: flashcardSet,
-                                        vocab: viewModel.activeFlashcards[0]
-                                            as Vocab,
-                                      )
-                                    : _KanjiFlashcardBack(
-                                        flashcardSet: flashcardSet,
-                                        kanji: viewModel.activeFlashcards[0]
-                                            as Kanji,
-                                      ),
-                              ),
-                            ),
-                          ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: GestureDetector(
+                  onLongPress: viewModel.openFlashcardItem,
+                  child: FlipCard(
+                    flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
+                    controller: flipCardController,
+                    fill: Fill.fillBack,
+                    direction: FlipDirection.HORIZONTAL,
+                    speed: 300,
+                    front: SizedBox(
+                      height: MediaQuery.of(context).size.width * 0.85,
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      child: Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                        child: viewModel.activeFlashcards.isEmpty
+                            ? null
+                            : viewModel.activeFlashcards[0] is Vocab
+                                ? _VocabFlashcardFront(
+                                    flashcardSet: flashcardSet,
+                                    vocab:
+                                        viewModel.activeFlashcards[0] as Vocab,
+                                  )
+                                : _KanjiFlashcardFront(
+                                    flashcardSet: flashcardSet,
+                                    kanji:
+                                        viewModel.activeFlashcards[0] as Kanji,
+                                  ),
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: viewModel.usingSpacedRepetition
-                          ? [
-                              _FlashcardAnswerButton(
-                                icon: Icons.close,
-                                color: Colors.red,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel
-                                      .answerFlashcard(FlashcardAnswer.wrong);
-                                },
-                              ),
-                              _FlashcardAnswerButton(
-                                icon: Icons.refresh,
-                                color: Colors.yellow,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel
-                                      .answerFlashcard(FlashcardAnswer.wrong);
-                                },
-                              ),
-                              _FlashcardAnswerButton(
-                                icon: Icons.check,
-                                color: Colors.green,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel
-                                      .answerFlashcard(FlashcardAnswer.correct);
-                                },
-                              ),
-                              _FlashcardAnswerButton(
-                                icon: Icons.done_all,
-                                color: Colors.blue,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel.answerFlashcard(
-                                      FlashcardAnswer.veryCorrect);
-                                },
-                              ),
-                            ]
-                          : [
-                              _FlashcardAnswerButton(
-                                icon: Icons.close,
-                                color: Colors.red,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel
-                                      .answerFlashcard(FlashcardAnswer.wrong);
-                                },
-                              ),
-                              _FlashcardAnswerButton(
-                                icon: Icons.check,
-                                color: Colors.green,
-                                onTap: () {
-                                  if (!flipCardController.state!.isFront) {
-                                    flipCardController
-                                        .toggleCardWithoutAnimation();
-                                  }
-                                  viewModel
-                                      .answerFlashcard(FlashcardAnswer.correct);
-                                },
-                              ),
-                            ],
+                    back: SizedBox(
+                      height: MediaQuery.of(context).size.width * 0.85,
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      child: Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: viewModel.activeFlashcards.isEmpty
+                            ? null
+                            : viewModel.activeFlashcards[0] is Vocab
+                                ? _VocabFlashcardBack(
+                                    flashcardSet: flashcardSet,
+                                    vocab:
+                                        viewModel.activeFlashcards[0] as Vocab,
+                                  )
+                                : _KanjiFlashcardBack(
+                                    flashcardSet: flashcardSet,
+                                    kanji:
+                                        viewModel.activeFlashcards[0] as Kanji,
+                                  ),
+                      ),
                     ),
-                  ],
+                  ),
                 ),
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: viewModel.usingSpacedRepetition
+                  ? [
+                      _FlashcardAnswerButton(
+                        icon: Icons.close,
+                        color: Colors.red,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                        },
+                      ),
+                      _FlashcardAnswerButton(
+                        icon: Icons.refresh,
+                        color: Colors.yellow,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                        },
+                      ),
+                      _FlashcardAnswerButton(
+                        icon: Icons.check,
+                        color: Colors.green,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel.answerFlashcard(FlashcardAnswer.correct);
+                        },
+                      ),
+                      _FlashcardAnswerButton(
+                        icon: Icons.done_all,
+                        color: Colors.blue,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel
+                              .answerFlashcard(FlashcardAnswer.veryCorrect);
+                        },
+                      ),
+                    ]
+                  : [
+                      _FlashcardAnswerButton(
+                        icon: Icons.close,
+                        color: Colors.red,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                        },
+                      ),
+                      _FlashcardAnswerButton(
+                        icon: Icons.check,
+                        color: Colors.green,
+                        onTap: () {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                          viewModel.answerFlashcard(FlashcardAnswer.correct);
+                        },
+                      ),
+                    ],
+            ),
+          ],
         ),
       ),
     );
@@ -200,8 +188,7 @@ class _FlashcardAnswerButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 40,
-          // margin: const EdgeInsets.all(2),
+          height: 40 + MediaQuery.of(context).padding.bottom,
           decoration: BoxDecoration(color: color),
           child: Icon(icon),
         ),

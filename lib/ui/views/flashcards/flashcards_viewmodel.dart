@@ -31,7 +31,7 @@ class FlashcardsViewModel extends BaseViewModel {
 
   // Use this bool instead of flashcardSet variable because a spaced
   // repetition set can switch to random when out of due words
-  late bool _usingSpacedRepetition;
+  bool _usingSpacedRepetition = true;
   bool get usingSpacedRepetition => _usingSpacedRepetition;
 
   // Used to keep track of spaced repetition flashcards that are in
@@ -133,6 +133,7 @@ class FlashcardsViewModel extends BaseViewModel {
   }
 
   Future<void> answerFlashcard(FlashcardAnswer answer) async {
+    if (activeFlashcards.isEmpty) return;
     // Remove current flashcard from active list
     final currentFlashcard = _activeFlashcards.removeAt(0);
 
