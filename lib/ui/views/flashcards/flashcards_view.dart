@@ -1,6 +1,7 @@
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
@@ -17,23 +18,24 @@ class FlashcardsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final flipCardController = FlipCardController();
+    final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
       viewModelBuilder: () => FlashcardsViewModel(flashcardSet),
       fireOnModelReadyOnce: true,
       onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
-          title: Text(
-            viewModel.initialLoading
-                ? 'Flashcards'
-                : viewModel.usingSpacedRepetition
-                    ? '(${viewModel.activeFlashcards.length}) ${viewModel.nonFreshFlashcardCount}/${viewModel.allFlashcards!.length}'
-                    : '${viewModel.allFlashcards!.length - viewModel.activeFlashcards.length}/${viewModel.allFlashcards!.length}',
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
           ),
-          centerTitle: true,
+          iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: Column(
           children: [
+            const _ProgressIndicator(),
             Expanded(
               child: Center(
                 child: GestureDetector(
@@ -44,124 +46,151 @@ class FlashcardsView extends StatelessWidget {
                     fill: Fill.fillBack,
                     direction: FlipDirection.HORIZONTAL,
                     speed: 300,
-                    front: SizedBox(
-                      height: MediaQuery.of(context).size.width * 0.85,
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      child: Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    front: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: screenWidth * 0.85 * 1.5,
+                        maxWidth: screenWidth * 0.85,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: viewModel.activeFlashcards.isEmpty
+                              ? Container()
+                              : viewModel.activeFlashcards[0] is Vocab
+                                  ? _VocabFlashcardFront(
+                                      flashcardSet: flashcardSet,
+                                      vocab: viewModel.activeFlashcards[0]
+                                          as Vocab,
+                                    )
+                                  : _KanjiFlashcardFront(
+                                      flashcardSet: flashcardSet,
+                                      kanji: viewModel.activeFlashcards[0]
+                                          as Kanji,
+                                    ),
                         ),
-                        child: viewModel.activeFlashcards.isEmpty
-                            ? null
-                            : viewModel.activeFlashcards[0] is Vocab
-                                ? _VocabFlashcardFront(
-                                    flashcardSet: flashcardSet,
-                                    vocab:
-                                        viewModel.activeFlashcards[0] as Vocab,
-                                  )
-                                : _KanjiFlashcardFront(
-                                    flashcardSet: flashcardSet,
-                                    kanji:
-                                        viewModel.activeFlashcards[0] as Kanji,
-                                  ),
                       ),
                     ),
-                    back: SizedBox(
-                      height: MediaQuery.of(context).size.width * 0.85,
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      child: Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    back: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: screenWidth * 0.85 * 1.5,
+                        maxWidth: screenWidth * 0.85,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: viewModel.activeFlashcards.isEmpty
+                              ? Container()
+                              : viewModel.activeFlashcards[0] is Vocab
+                                  ? _VocabFlashcardBack(
+                                      flashcardSet: flashcardSet,
+                                      vocab: viewModel.activeFlashcards[0]
+                                          as Vocab,
+                                    )
+                                  : _KanjiFlashcardBack(
+                                      flashcardSet: flashcardSet,
+                                      kanji: viewModel.activeFlashcards[0]
+                                          as Kanji,
+                                    ),
                         ),
-                        child: viewModel.activeFlashcards.isEmpty
-                            ? null
-                            : viewModel.activeFlashcards[0] is Vocab
-                                ? _VocabFlashcardBack(
-                                    flashcardSet: flashcardSet,
-                                    vocab:
-                                        viewModel.activeFlashcards[0] as Vocab,
-                                  )
-                                : _KanjiFlashcardBack(
-                                    flashcardSet: flashcardSet,
-                                    kanji:
-                                        viewModel.activeFlashcards[0] as Kanji,
-                                  ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: viewModel.usingSpacedRepetition
-                  ? [
-                      _FlashcardAnswerButton(
-                        icon: Icons.close,
-                        color: Colors.red,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                        },
-                      ),
-                      _FlashcardAnswerButton(
-                        icon: Icons.refresh,
-                        color: Colors.yellow,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                        },
-                      ),
-                      _FlashcardAnswerButton(
-                        icon: Icons.check,
-                        color: Colors.green,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel.answerFlashcard(FlashcardAnswer.correct);
-                        },
-                      ),
-                      _FlashcardAnswerButton(
-                        icon: Icons.done_all,
-                        color: Colors.blue,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel
-                              .answerFlashcard(FlashcardAnswer.veryCorrect);
-                        },
-                      ),
-                    ]
-                  : [
-                      _FlashcardAnswerButton(
-                        icon: Icons.close,
-                        color: Colors.red,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                        },
-                      ),
-                      _FlashcardAnswerButton(
-                        icon: Icons.check,
-                        color: Colors.green,
-                        onTap: () {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
-                          viewModel.answerFlashcard(FlashcardAnswer.correct);
-                        },
-                      ),
-                    ],
+            Card(
+              elevation: 8,
+              margin: EdgeInsets.only(
+                left: 8,
+                right: 8,
+                bottom: 8 + MediaQuery.of(context).padding.bottom * 1.2,
+              ),
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: viewModel.usingSpacedRepetition
+                      ? [
+                          _FlashcardAnswerButton(
+                            icon: Icons.close,
+                            color: Colors.red,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                            },
+                          ),
+                          _FlashcardAnswerButton(
+                            icon: Icons.refresh,
+                            color: Colors.yellow,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                            },
+                          ),
+                          _FlashcardAnswerButton(
+                            icon: Icons.check,
+                            color: Colors.green,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel
+                                  .answerFlashcard(FlashcardAnswer.correct);
+                            },
+                          ),
+                          _FlashcardAnswerButton(
+                            icon: Icons.done_all,
+                            color: Colors.blue,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel
+                                  .answerFlashcard(FlashcardAnswer.veryCorrect);
+                            },
+                          ),
+                        ]
+                      : [
+                          _FlashcardAnswerButton(
+                            icon: Icons.close,
+                            color: Colors.red,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                            },
+                          ),
+                          _FlashcardAnswerButton(
+                            icon: Icons.check,
+                            color: Colors.green,
+                            onTap: () {
+                              if (!flipCardController.state!.isFront) {
+                                flipCardController.toggleCardWithoutAnimation();
+                              }
+                              viewModel
+                                  .answerFlashcard(FlashcardAnswer.correct);
+                            },
+                          ),
+                        ],
+                ),
+              ),
             ),
           ],
         ),
@@ -188,8 +217,12 @@ class _FlashcardAnswerButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 40 + MediaQuery.of(context).padding.bottom,
-          decoration: BoxDecoration(color: color),
+          height: 40,
+          margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+          ),
           child: Icon(icon),
         ),
       ),
@@ -219,17 +252,12 @@ class _VocabFlashcardFront extends StatelessWidget {
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, color: Colors.grey),
-          ),
-          const Divider(
-            color: Colors.black,
-            indent: 8,
-            endIndent: 8,
+            style: const TextStyle(fontSize: 40, color: Colors.grey),
           ),
           Text(
             vocab.kanjiReadingPairs[0].readings[0].reading,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 32),
+            style: const TextStyle(fontSize: 54),
           ),
         ]);
       } else {
@@ -238,7 +266,7 @@ class _VocabFlashcardFront extends StatelessWidget {
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 32),
+            style: const TextStyle(fontSize: 54),
           ),
         );
 
@@ -253,7 +281,7 @@ class _VocabFlashcardFront extends StatelessWidget {
             Text(
               vocab.kanjiReadingPairs[0].readings[0].reading,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 40),
             ),
           ]);
         }
@@ -264,7 +292,7 @@ class _VocabFlashcardFront extends StatelessWidget {
         Text(
           vocab.kanjiReadingPairs[0].readings[0].reading,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 32),
+          style: const TextStyle(fontSize: 54),
         ),
       );
     }
@@ -296,7 +324,7 @@ class _KanjiFlashcardFront extends StatelessWidget {
     List<Widget> children = [
       Text(
         kanji.kanji,
-        style: const TextStyle(fontSize: 32),
+        style: const TextStyle(fontSize: 54),
       ),
     ];
 
@@ -374,7 +402,7 @@ class _VocabFlashcardBack extends StatelessWidget {
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 20, color: Colors.grey),
+            style: const TextStyle(fontSize: 32, color: Colors.grey),
           ),
         );
       } else {
@@ -382,24 +410,31 @@ class _VocabFlashcardBack extends StatelessWidget {
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 20),
+            style: const TextStyle(fontSize: 32),
           ),
         );
       }
     }
 
-    children.addAll([
-      Text(
-        vocab.kanjiReadingPairs[0].readings[0].reading,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 20),
-      ),
-      const Divider(
-        color: Colors.black,
-        indent: 8,
-        endIndent: 8,
-      ),
-    ]);
+    if (children.isEmpty) {
+      children.addAll([
+        Text(
+          vocab.kanjiReadingPairs[0].readings[0].reading,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 32),
+        ),
+        const SizedBox(height: 16),
+      ]);
+    } else {
+      children.addAll([
+        Text(
+          vocab.kanjiReadingPairs[0].readings[0].reading,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 24),
+        ),
+        const SizedBox(height: 16),
+      ]);
+    }
 
     // Add definitions
     for (int i = 0; i < vocab.definitions.length; i++) {
@@ -443,22 +478,14 @@ class _KanjiFlashcardBack extends StatelessWidget {
           children: [
             Text(
               kanji.kanji,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 40),
             ),
-            const Divider(
-              color: Colors.black,
-              indent: 8,
-              endIndent: 8,
-            ),
+            const SizedBox(height: 16),
             Text(
               kanji.meanings ?? 'NO MEANING',
               textAlign: TextAlign.center,
             ),
-            const Divider(
-              color: Colors.black,
-              indent: 8,
-              endIndent: 8,
-            ),
+            const SizedBox(height: 16),
             if (kanji.onReadings != null)
               _KanjiReadingText(
                 title: 'On readings',
@@ -475,6 +502,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
                   ),
                 ),
                 maxLines: 99,
+                alignCenter: true,
               ),
             if (kanji.nanori != null)
               _KanjiReadingText(
@@ -501,6 +529,7 @@ class _KanjiReadingText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RichText(
+      textAlign: TextAlign.center,
       text: TextSpan(
         children: [
           TextSpan(
@@ -520,6 +549,100 @@ class _KanjiReadingText extends StatelessWidget {
           TextSpan(
             text: content,
             style: const TextStyle(color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
+  const _ProgressIndicator({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, FlashcardsViewModel viewModel) {
+    // Set up widget elements
+    int completedBar = 0;
+    int emptyBar = 0;
+    String bottomLeftString = '';
+    String bottomRightString = '';
+
+    if (viewModel.allFlashcards == null) {
+      // Empty during loading
+    } else if (viewModel.usingSpacedRepetition) {
+      if (viewModel.dueFlashcardCount > 0) {
+        // Answering due flashcards
+        completedBar =
+            viewModel.initialDueFlashcardCount - viewModel.dueFlashcardCount;
+        emptyBar = viewModel.dueFlashcardCount;
+        bottomLeftString = '${viewModel.dueFlashcardCount} cards remaining';
+        bottomRightString = '${viewModel.initialDueFlashcardCount} cards due';
+      } else {
+        // Answering fresh flashcards
+        completedBar = viewModel.nonFreshFlashcardCount;
+        emptyBar =
+            viewModel.allFlashcards!.length - viewModel.nonFreshFlashcardCount;
+        bottomLeftString = '${viewModel.nonFreshFlashcardCount} completed';
+        bottomRightString = '${viewModel.allFlashcards!.length} cards';
+      }
+    } else {
+      completedBar =
+          viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
+      emptyBar = viewModel.activeFlashcards.length;
+      bottomLeftString =
+          '${viewModel.allFlashcards!.length - viewModel.activeFlashcards.length} completed';
+      bottomRightString = '${viewModel.allFlashcards!.length} cards';
+    }
+
+    // If completedBar would be too small, set minimum size
+    if (completedBar != 0 && completedBar / emptyBar < 0.04) {
+      completedBar = 1;
+      emptyBar = 25;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Container(
+            height: 10,
+            decoration: const BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            child: viewModel.allFlashcards == null || completedBar == 0
+                ? null
+                : Row(
+                    children: [
+                      Flexible(
+                        flex: completedBar,
+                        child: Container(
+                          height: 10,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: emptyBar,
+                        child: Container(),
+                      ),
+                    ],
+                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(bottomLeftString, textAlign: TextAlign.start),
+                ),
+                Expanded(
+                  child: Text(bottomRightString, textAlign: TextAlign.end),
+                ),
+              ],
+            ),
           ),
         ],
       ),

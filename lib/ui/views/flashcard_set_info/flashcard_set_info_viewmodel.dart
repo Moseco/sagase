@@ -1,6 +1,7 @@
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
@@ -155,5 +156,12 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     flashcardSet.kanjiShowReading = value;
     notifyListeners();
     _isarService.updateFlashcardSet(flashcardSet);
+  }
+
+  void openFlashcardSet() {
+    _navigationService.navigateTo(
+      Routes.flashcardsView,
+      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
+    );
   }
 }

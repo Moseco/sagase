@@ -44,20 +44,31 @@ class FlashcardSetsViewModel extends BaseViewModel {
     editFlashcardSet(flashcardSet);
   }
 
-  Future<void> openFlashcardSet(FlashcardSet flashcardSet) async {
+  void openFlashcardSet(FlashcardSet flashcardSet) {
     _navigationService.navigateTo(
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
     );
+    // Move flashcard set to top of the list
+    _flashcardSets!.remove(flashcardSet);
+    _flashcardSets!.insert(0, flashcardSet);
+    notifyListeners();
   }
 
   Future<void> editFlashcardSet(FlashcardSet flashcardSet) async {
+    DateTime initialDateTime = flashcardSet.timestamp;
     final result = await _navigationService.navigateTo(
       Routes.flashcardSetInfoView,
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
     // If receive true as result, the flashcard set was deleted
-    if (result ?? false) _flashcardSets!.remove(flashcardSet);
+    if (result ?? false) {
+      _flashcardSets!.remove(flashcardSet);
+    } else if (initialDateTime != flashcardSet.timestamp) {
+      // If timestamp was changed, move flashcard set to top of the list
+      _flashcardSets!.remove(flashcardSet);
+      _flashcardSets!.insert(0, flashcardSet);
+    }
     notifyListeners();
   }
 }

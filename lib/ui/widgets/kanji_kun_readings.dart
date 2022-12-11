@@ -4,11 +4,13 @@ class KanjiKunReadings extends StatelessWidget {
   final List<String> kunReadings;
   final TextSpan? leading;
   final int maxLines;
+  final bool alignCenter;
 
   const KanjiKunReadings(
     this.kunReadings, {
     this.leading,
     this.maxLines = 1,
+    this.alignCenter = false,
     super.key,
   });
 
@@ -60,6 +62,7 @@ class KanjiKunReadings extends StatelessWidget {
       text: TextSpan(children: kunReadingTextSpans),
       overflow: TextOverflow.ellipsis,
       maxLines: maxLines,
+      textAlign: alignCenter ? TextAlign.center : TextAlign.start,
     );
   }
 }
