@@ -36,14 +36,20 @@ class FlashcardsViewModel extends BaseViewModel {
 
   // Used to keep track of spaced repetition flashcards that are in
   // the rotation (answered correctly at least once).
-  // Used in app bar title "(10) x/100"
   int _nonFreshFlashcardCount = 0;
   int get nonFreshFlashcardCount => _nonFreshFlashcardCount;
+  int _initialDueFlashcardCount = 0;
+  int get initialDueFlashcardCount => _initialDueFlashcardCount;
+  int _dueFlashcardCount = 0;
+  int get dueFlashcardCount => _dueFlashcardCount;
 
   FlashcardsViewModel(this.flashcardSet, {int? randomSeed})
       : _random = Random(randomSeed);
 
   Future<void> initialize() async {
+    // Update flashcard set to update timestamp
+    _isarService.updateFlashcardSet(flashcardSet);
+
     _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
     // Load all vocab and kanji and add to maps to avoid duplicates
     await flashcardSet.predefinedDictionaryListLinks.load();
@@ -115,6 +121,8 @@ class FlashcardsViewModel extends BaseViewModel {
         }
       }
       _nonFreshFlashcardCount = allFlashcards!.length - freshFlashcards.length;
+      _initialDueFlashcardCount = dueFlashcards.length;
+      _dueFlashcardCount = dueFlashcards.length;
     }
 
     // If have no flashcards tell user and exit
@@ -157,6 +165,7 @@ class FlashcardsViewModel extends BaseViewModel {
         }
       } else {
         // If current card has not been answered previously, increase completed counter
+        _dueFlashcardCount--;
         if (currentFlashcard.spacedRepetitionData == null) {
           _nonFreshFlashcardCount++;
         }
@@ -286,6 +295,10 @@ class FlashcardsViewModel extends BaseViewModel {
       ..repetitions = repetitions
       ..easeFactor = easeFactor
       ..dueDate = DateTime.now().add(Duration(days: interval)).toInt();
+  }
+
+  void back() {
+    _navigationService.back();
   }
 
   void openFlashcardItem() async {
