@@ -90,48 +90,193 @@ class IsarService {
 
       if (split.length == 1) {
         // Check both readings and definition
-        return _isar.vocabs
+        List<Vocab> unsortedRomajiList = await _isar.vocabs
             .where()
             .romajiTextIndexElementStartsWith(split.first)
-            .or()
-            .definitionIndexElementStartsWith(split.first)
-            .limit(100)
+            .limit(350)
             .findAll();
-      } else {
-        // Check definition only
-        // Must do a which check with index and follow up with filters
-        // Use -EqualTo for all but last element, and use -StartsWith for last element
-        late QueryBuilder<Vocab, Vocab, QAfterFilterCondition> query;
 
-        if (split.length == 2) {
-          // First filter is also final filter
-          query = _isar.vocabs
-              .where()
-              .definitionIndexElementEqualTo(split.first)
-              .filter()
-              .definitionIndexElementStartsWith(split[1]);
-        } else {
-          // Add all filters
-          query = _isar.vocabs
-              .where()
-              .definitionIndexElementEqualTo(split.first)
-              .filter()
-              .definitionIndexElementEqualTo(split[1]);
-          for (int i = 2; i < split.length - 1; i++) {
-            query = query.and().definitionIndexElementEqualTo(split[i]);
+        List<Vocab> unsortedDefinitionList = await _isar.vocabs
+            .where()
+            .definitionIndexElementStartsWith(split.first)
+            .limit(350)
+            .findAll();
+
+        // Sort romaji result
+        // Each nested list is for difference in length compared to search string
+        List<List<Vocab>> nestedRomajiSortingList = [[], [], [], [], []];
+
+        for (int i = 0; i < unsortedRomajiList.length; i++) {
+          int minDifference = 999;
+          for (var current in unsortedRomajiList[i].romajiTextIndex) {
+            if (current.length >= minDifference) continue;
+            if (current.startsWith(value)) {
+              minDifference = current.length - value.length;
+            }
           }
-          query = query.and().definitionIndexElementStartsWith(split.last);
+
+          if (minDifference > 4) {
+            nestedRomajiSortingList[4].add(unsortedRomajiList[i]);
+          } else {
+            nestedRomajiSortingList[minDifference].add(unsortedRomajiList[i]);
+          }
         }
 
-        return query.limit(100).findAll();
+        // Sort definition result
+        final nestedDefinitionSortingList =
+            _sortByDefinition(unsortedDefinitionList, value);
+
+        // Merge sorted romaji and definition lists
+        List<Vocab> sortedList = [];
+        Map<Vocab, bool> vocabRankMap = {};
+
+        for (int i = 0; i < nestedRomajiSortingList.length; i++) {
+          for (var vocab in nestedRomajiSortingList[i]) {
+            if (!vocabRankMap.containsKey(vocab)) {
+              sortedList.add(vocab);
+              vocabRankMap[vocab] = true;
+            }
+          }
+          for (var vocab in nestedDefinitionSortingList[i]) {
+            if (!vocabRankMap.containsKey(vocab)) {
+              sortedList.add(vocab);
+              vocabRankMap[vocab] = true;
+            }
+          }
+        }
+
+        for (var vocab in nestedDefinitionSortingList[5]) {
+          if (!vocabRankMap.containsKey(vocab)) {
+            sortedList.add(vocab);
+          }
+        }
+
+        return sortedList;
+      } else {
+        // Check definition only
+        late final List<Vocab> unsortedList;
+        // If start with 'to ' search as single string
+        if (value.startsWith('to ')) {
+          unsortedList = await _isar.vocabs
+              .where()
+              .definitionIndexElementStartsWith(value)
+              .limit(350)
+              .findAll();
+        } else {
+          // Must do a where check with index and follow up with filters
+          // Use -EqualTo for all but last element, and use -StartsWith for last element
+          late QueryBuilder<Vocab, Vocab, QAfterFilterCondition> query;
+
+          if (split.length == 2) {
+            // First filter is also final filter
+            query = _isar.vocabs
+                .where()
+                .definitionIndexElementEqualTo(split.first)
+                .filter()
+                .definitionIndexElementStartsWith(split[1]);
+          } else {
+            // Add all filters
+            query = _isar.vocabs
+                .where()
+                .definitionIndexElementEqualTo(split.first)
+                .filter()
+                .definitionIndexElementEqualTo(split[1]);
+            for (int i = 2; i < split.length - 1; i++) {
+              query = query.and().definitionIndexElementEqualTo(split[i]);
+            }
+            query = query.and().definitionIndexElementStartsWith(split.last);
+          }
+
+          unsortedList = await query.limit(350).findAll();
+        }
+
+        final sortedList = _sortByDefinition(unsortedList, value);
+        return sortedList[0] +
+            sortedList[1] +
+            sortedList[2] +
+            sortedList[3] +
+            sortedList[4] +
+            sortedList[5];
       }
     } else {
-      return _isar.vocabs
+      final unsortedList = await _isar.vocabs
           .where()
           .japaneseTextIndexElementStartsWith(value)
-          .limit(100)
+          .limit(350)
           .findAll();
+
+      // Each nested list is for difference in length compared to search string
+      List<List<Vocab>> nestedSortingList = [[], [], [], [], []];
+
+      for (int i = 0; i < unsortedList.length; i++) {
+        int minDifference = 999;
+        for (var current in unsortedList[i].japaneseTextIndex) {
+          if (current.length >= minDifference) continue;
+          if (current.startsWith(value)) {
+            minDifference = current.length - value.length;
+          }
+        }
+
+        if (minDifference > 4) {
+          nestedSortingList[4].add(unsortedList[i]);
+        } else {
+          nestedSortingList[minDifference].add(unsortedList[i]);
+        }
+      }
+
+      return nestedSortingList[0] +
+          nestedSortingList[1] +
+          nestedSortingList[2] +
+          nestedSortingList[3] +
+          nestedSortingList[4];
     }
+  }
+
+  List<List<Vocab>> _sortByDefinition(
+    List<Vocab> unsortedList,
+    String searchString,
+  ) {
+    // Each nested list is for quality of match
+    //    Nested list 0: definitions 1 starts with string (common vocab)
+    //    Nested list 1: exact match in definition 1 (common vocab)
+    //    Nested list 2: definitions 1 starts with string (not common vocab)
+    //    Nested list 3: exact match in definition 1 (not common vocab)
+    //    Nested list 4: exact match in other definition
+    //    Nested list 5: no exact match found
+    List<List<Vocab>> nestedSortingList = [[], [], [], [], [], []];
+
+    for (int i = 0; i < unsortedList.length; i++) {
+      bool noMatch = true;
+      for (int j = 0; j < unsortedList[i].definitions.length; j++) {
+        if (unsortedList[i].definitions[j].definition.contains(searchString)) {
+          noMatch = false;
+          if (j == 0) {
+            if (unsortedList[i]
+                .definitions[j]
+                .definition
+                .startsWith(searchString)) {
+              if (unsortedList[i].commonWord) {
+                nestedSortingList[0].add(unsortedList[i]);
+              } else {
+                nestedSortingList[2].add(unsortedList[i]);
+              }
+            } else {
+              if (unsortedList[i].commonWord) {
+                nestedSortingList[1].add(unsortedList[i]);
+              } else {
+                nestedSortingList[3].add(unsortedList[i]);
+              }
+            }
+          } else {
+            nestedSortingList[4].add(unsortedList[i]);
+          }
+          break;
+        }
+      }
+      if (noMatch) nestedSortingList[5].add(unsortedList[i]);
+    }
+
+    return nestedSortingList;
   }
 
   Future<Vocab?> getVocab(int id) async {

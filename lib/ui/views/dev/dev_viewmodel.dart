@@ -68,10 +68,19 @@ class DevViewModel extends BaseViewModel {
     _loading = true;
     notifyListeners();
 
+    String searchTerm = 'する';
+    int iterations = 20;
+
+    // Run once for index warmup
+    await _isarService.searchDictionary(searchTerm);
+
     final start = DateTime.now();
-    final list = await _isarService.searchVocab('ku');
+    for (int i = 0; i < iterations; i++) {
+      await _isarService.searchDictionary(searchTerm);
+    }
+
     final end = DateTime.now();
-    print('Time: ${end.difference(start).inMilliseconds}');
+    print('Time: ${end.difference(start).inMilliseconds / iterations}');
 
     _loading = false;
     notifyListeners();

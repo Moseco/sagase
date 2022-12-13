@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart' show visibleForTesting;
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
+import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
@@ -27,6 +28,7 @@ class DictionaryUtils {
           KanjiSchema,
           PredefinedDictionaryListSchema,
           MyDictionaryListSchema,
+          FlashcardSetSchema,
         ]);
 
     await isar.writeTxn(() async {
@@ -81,6 +83,7 @@ class DictionaryUtils {
       final vocab = Vocab();
       List<KanjiReadingPair> kanjiReadingPairs = [];
       vocab.kanjiReadingPairs = kanjiReadingPairs;
+      List<String> rawDefinitions = [];
 
       // Elements within vocab
       final rawVocabItem = rawVocabList.elementAt(i);
@@ -105,7 +108,7 @@ class DictionaryUtils {
             );
             break;
           case 'sense':
-            _handleSenseElement(vocabElement, vocab);
+            rawDefinitions.addAll(_handleSenseElement(vocabElement, vocab));
             break;
         }
       }
@@ -186,10 +189,14 @@ class DictionaryUtils {
         }
       }
 
-      for (var definition in vocab.definitions) {
+      for (var definition in rawDefinitions) {
+        // If definition starts with 'to ' (including space) index the whole string
+        // This improves searching for verbs
+        if (definition.startsWith('to ')) {
+          vocab.definitionIndex.add(definition);
+        }
         // Split words for improved searching
-        vocab.definitionIndex
-            .addAll(Isar.splitWords(definition.definition.toLowerCase()));
+        vocab.definitionIndex.addAll(Isar.splitWords(definition.toLowerCase()));
       }
 
       // Remove duplicates from indexes
@@ -329,7 +336,7 @@ class DictionaryUtils {
     }
   }
 
-  static void _handleSenseElement(XmlElement xmlElement, Vocab vocab) {
+  static List<String> _handleSenseElement(XmlElement xmlElement, Vocab vocab) {
     List<String> definitions = [];
     List<PartOfSpeech>? partsOfSpeech;
     String? additionalInfo;
@@ -395,7 +402,7 @@ class DictionaryUtils {
     // Construct definition
     final definitionBuffer = StringBuffer(definitions.first);
     for (int i = 1; i < definitions.length; i++) {
-      definitionBuffer.write(', ${definitions[i]}');
+      definitionBuffer.write('; ${definitions[i]}');
     }
 
     // Set definition
@@ -409,6 +416,8 @@ class DictionaryUtils {
         ..miscInfo = miscInfo
         ..dialects = dialects,
     );
+
+    return definitions;
   }
 
   static void _handleExampleElement(
@@ -1279,6 +1288,7 @@ class DictionaryUtils {
       KanjiSchema,
       PredefinedDictionaryListSchema,
       MyDictionaryListSchema,
+      FlashcardSetSchema,
     ]);
 
     await isar.copyToFile('$path/db_export.isar');
