@@ -48,7 +48,6 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Vocab
     - [x] Kanji
     - [ ] Hand writing character recognition
-    - [ ] Sort by closest match
 - [ ] Kanji radicals
     - [x] 214 classic kanji radicals
     - [x] Meaning
