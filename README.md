@@ -2,6 +2,13 @@
 
 A Japanese-English dictionary and learning tool built with [Flutter](https://docs.flutter.dev/).
 
+<p align="center">
+    <img width="400" alt="Search" src="https://user-images.githubusercontent.com/10720298/208696336-c4b5cab8-26d4-456a-bcbf-b2fe4e5ecc62.png"> 
+    <img width="400" alt="Vocab" src="https://user-images.githubusercontent.com/10720298/208696345-4c77d60a-9528-4191-99fd-1ee8c0db6ebc.png">
+    <img width="400" alt="Lists" src="https://user-images.githubusercontent.com/10720298/208696348-b727ab3d-1d5c-4445-b20e-436cf8fc801c.png">
+    <img width="400" alt="Flashcards" src="https://user-images.githubusercontent.com/10720298/208696328-d7a6c1c5-a7a9-487c-b078-32b82fa06aff.png">
+</p>
+
 ## Getting Started
 
 ### Generate files with the following command:
