@@ -265,6 +265,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  google_mlkit_commons:
+    dependency: transitive
+    description:
+      name: google_mlkit_commons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  google_mlkit_digital_ink_recognition:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_digital_ink_recognition
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.0"
   google_nav_bar:
     dependency: "direct main"
     description:
@@ -344,6 +358,13 @@ packages:
       url: "https://github.com/Moseco/kana_kit"
     source: git
     version: "2.0.0"
+  keyboard_actions:
+    dependency: "direct main"
+    description:
+      name: keyboard_actions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   lints:
     dependency: transitive
     description:
