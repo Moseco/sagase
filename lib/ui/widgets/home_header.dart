@@ -9,41 +9,38 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).viewPadding.top;
-    return SafeArea(
-      top: false,
-      child: Column(
-        children: [
-          Container(
-            height: 80 + statusBarHeight,
-            decoration: const BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-              ),
+    return Column(
+      children: [
+        Container(
+          height: 80 + statusBarHeight,
+          decoration: const BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(24),
             ),
-            padding: EdgeInsets.only(top: statusBarHeight),
-            child: Center(child: title),
           ),
-          Expanded(
-            child: Stack(
-              children: [
-                child,
-                Align(
-                  alignment: Alignment.topRight,
-                  child: ClipPath(
-                    clipper: const CustomCornerClipPath(),
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      color: Colors.deepPurple,
-                    ),
+          padding: EdgeInsets.only(top: statusBarHeight),
+          child: Center(child: title),
+        ),
+        Expanded(
+          child: Stack(
+            children: [
+              child,
+              Align(
+                alignment: Alignment.topRight,
+                child: ClipPath(
+                  clipper: const CustomCornerClipPath(),
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    color: Colors.deepPurple,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

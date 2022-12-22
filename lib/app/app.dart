@@ -1,3 +1,4 @@
+import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
@@ -6,6 +7,7 @@ import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
 import 'package:sagase/ui/views/flashcard_sets/flashcard_sets_view.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
+import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/ui/views/lists/lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
@@ -54,7 +56,13 @@ import 'package:stacked_services/stacked_services.dart';
     LazySingleton(classType: NavigationService),
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
+    LazySingleton(classType: SnackbarService),
+    Presolve(
+      classType: DigitalInkService,
+      presolveUsing: DigitalInkService.initialize,
+    ),
     // IsarService is registered in SplashScreen to catch errors
+    LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
     LazySingleton(classType: ListsViewModel),
     LazySingleton(classType: LearningViewModel),

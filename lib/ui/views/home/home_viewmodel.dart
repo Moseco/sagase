@@ -8,6 +8,9 @@ import 'package:sagase/utils/constants.dart' show nestedNavigationKey;
 class HomeViewModel extends IndexTrackingViewModel {
   final _navigationService = locator<NavigationService>();
 
+  bool _showNavigationBar = true;
+  bool get showNavigationBar => _showNavigationBar;
+
   void handleNavigation(int index) {
     // Prevent navigation to the same screen
     if (index == currentIndex) {
@@ -42,5 +45,10 @@ class HomeViewModel extends IndexTrackingViewModel {
         );
         break;
     }
+  }
+
+  void setShowNavigationBar(bool value) {
+    _showNavigationBar = value;
+    notifyListeners();
   }
 }

@@ -25,6 +25,7 @@ dependencies:
   flip_card: # TODO change to main one after merge
     git:
       url: https://github.com/Moseco/flip_card
+  keyboard_actions: ^4.1.0
 
   # Other
   isar: ^3.0.2
@@ -36,6 +37,7 @@ dependencies:
       url: https://github.com/Moseco/kana_kit
   async: ^2.8.2
   archive: ^3.3.1
+  google_mlkit_digital_ink_recognition: ^0.6.0
 
 dev_dependencies:
   flutter_test:
