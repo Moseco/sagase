@@ -34,7 +34,7 @@ void main() {
       // Definition
       expect(vocab0.definitions.length, 1);
       expect(vocab0.definitions[0].definition,
-          'obvious, clear, plain, evident, apparent, explicit, overt');
+          'obvious; clear; plain; evident; apparent; explicit; overt');
       expect(vocab0.definitions[0].additionalInfo, null);
       expect(vocab0.definitions[0].pos!.length, 1);
       expect(vocab0.definitions[0].pos![0], PartOfSpeech.adjective);
@@ -64,7 +64,7 @@ void main() {
       // Definition
       expect(vocab1.definitions.length, 1);
       expect(vocab1.definitions[0].definition,
-          'in an instant, in a flash, in the blink of an eye, in no time at all, just like that');
+          'in an instant; in a flash; in the blink of an eye; in no time at all; just like that');
       expect(vocab1.definitions[0].pos!.length, 2);
       expect(vocab1.definitions[0].pos![0], PartOfSpeech.expressions);
       expect(vocab1.definitions[0].pos![1], PartOfSpeech.adverb);
@@ -99,7 +99,7 @@ void main() {
       expect(vocab2.definitions.length, 4);
       // Definition 1
       expect(vocab2.definitions[0].definition,
-          'surely, undoubtedly, almost certainly, most likely (e.g. 90 percent)');
+          'surely; undoubtedly; almost certainly; most likely (e.g. 90 percent)');
       expect(vocab2.definitions[0].pos!.length, 1);
       expect(vocab2.definitions[0].pos![0], PartOfSpeech.adverb);
       expect(vocab2.definitions[0].miscInfo!.length, 2);
@@ -108,7 +108,7 @@ void main() {
       expect(vocab2.definitions[0].miscInfo![1],
           MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 2
-      expect(vocab2.definitions[1].definition, 'sternly, severely');
+      expect(vocab2.definitions[1].definition, 'sternly; severely');
       expect(vocab2.definitions[1].additionalInfo, 'esp. キッと');
       expect(vocab2.definitions[1].pos!.length, 1);
       expect(vocab2.definitions[1].pos![0], PartOfSpeech.adverb);
@@ -119,7 +119,7 @@ void main() {
           MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 3
       expect(vocab2.definitions[2].definition,
-          'having no slack, rigid, stiff, tight');
+          'having no slack; rigid; stiff; tight');
       expect(vocab2.definitions[2].pos!.length, 1);
       expect(vocab2.definitions[2].pos![0], PartOfSpeech.adverb);
       expect(vocab2.definitions[2].miscInfo!.length, 2);
@@ -128,7 +128,7 @@ void main() {
       expect(vocab2.definitions[2].miscInfo![1],
           MiscellaneousInfo.onomatopoeicOrMimeticWord);
       // Definition 4
-      expect(vocab2.definitions[3].definition, 'suddenly, abruptly, instantly');
+      expect(vocab2.definitions[3].definition, 'suddenly; abruptly; instantly');
       expect(vocab2.definitions[3].pos!.length, 1);
       expect(vocab2.definitions[3].pos![0], PartOfSpeech.adverb);
       expect(vocab2.definitions[3].miscInfo!.length, 3);
@@ -163,12 +163,12 @@ void main() {
       expect(vocab3.definitions.length, 10);
       // Definition 1
       expect(vocab3.definitions[0].definition,
-          'to go, to move (in a direction or towards a specific location), to head (towards), to be transported (towards), to reach');
+          'to go; to move (in a direction or towards a specific location); to head (towards); to be transported (towards); to reach');
       expect(vocab3.definitions[0].pos!.length, 2);
       expect(vocab3.definitions[0].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[0].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 2
-      expect(vocab3.definitions[1].definition, 'to proceed, to take place');
+      expect(vocab3.definitions[1].definition, 'to proceed; to take place');
       expect(vocab3.definitions[1].additionalInfo,
           'い sometimes omitted in auxiliary use');
       expect(vocab3.definitions[1].pos!.length, 2);
@@ -176,7 +176,7 @@ void main() {
       expect(vocab3.definitions[1].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 3
       expect(
-          vocab3.definitions[2].definition, 'to pass through, to come and go');
+          vocab3.definitions[2].definition, 'to pass through; to come and go');
       expect(vocab3.definitions[2].pos!.length, 2);
       expect(vocab3.definitions[2].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[2].pos![1], PartOfSpeech.verbIntransitive);
@@ -186,7 +186,7 @@ void main() {
       expect(vocab3.definitions[3].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[3].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 5
-      expect(vocab3.definitions[4].definition, 'to die, to pass away');
+      expect(vocab3.definitions[4].definition, 'to die; to pass away');
       expect(vocab3.definitions[4].pos!.length, 2);
       expect(vocab3.definitions[4].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[4].pos![1], PartOfSpeech.verbIntransitive);
@@ -198,7 +198,7 @@ void main() {
       expect(vocab3.definitions[5].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[5].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 7
-      expect(vocab3.definitions[6].definition, 'to stream, to flow');
+      expect(vocab3.definitions[6].definition, 'to stream; to flow');
       expect(vocab3.definitions[6].pos!.length, 2);
       expect(vocab3.definitions[6].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[6].pos![1], PartOfSpeech.verbIntransitive);
@@ -214,7 +214,7 @@ void main() {
           MiscellaneousInfo.usuallyKanaAlone);
       // Definition 9
       expect(vocab3.definitions[8].definition,
-          'to have an orgasm, to come, to cum');
+          'to have an orgasm; to come; to cum');
       expect(vocab3.definitions[8].pos!.length, 2);
       expect(vocab3.definitions[8].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[8].pos![1], PartOfSpeech.verbIntransitive);
@@ -223,7 +223,7 @@ void main() {
           MiscellaneousInfo.usuallyKanaAlone);
       // Definition 10
       expect(vocab3.definitions[9].definition,
-          'to trip, to get high, to have a drug-induced hallucination');
+          'to trip; to get high; to have a drug-induced hallucination');
       expect(vocab3.definitions[9].pos!.length, 2);
       expect(vocab3.definitions[9].pos![0], PartOfSpeech.verbGodan);
       expect(vocab3.definitions[9].pos![1], PartOfSpeech.verbIntransitive);
@@ -262,11 +262,11 @@ void main() {
       // Definitions
       expect(vocab4.definitions.length, 3);
       // Definition 1
-      expect(vocab4.definitions[0].definition, 'um, er, well');
+      expect(vocab4.definitions[0].definition, 'um; er; well');
       expect(vocab4.definitions[0].pos!.length, 1);
       expect(vocab4.definitions[0].pos![0], PartOfSpeech.interjection);
       // Definition 2
-      expect(vocab4.definitions[1].definition, 'nuh-uh, no');
+      expect(vocab4.definitions[1].definition, 'nuh-uh; no');
       expect(vocab4.definitions[1].pos!.length, 1);
       expect(vocab4.definitions[1].pos![0], PartOfSpeech.interjection);
       expect(vocab4.definitions[1].appliesTo!.length, 1);
@@ -357,7 +357,7 @@ void main() {
       // Definition
       expect(vocab6.definitions.length, 1);
       expect(vocab6.definitions[0].definition,
-          'oden, dish of various ingredients, e.g. egg, daikon, potato, chikuwa, konnyaku stewed in soy-flavored dashi');
+          'oden; dish of various ingredients, e.g. egg, daikon, potato, chikuwa, konnyaku stewed in soy-flavored dashi');
       expect(vocab6.definitions[0].pos!.length, 1);
       expect(vocab6.definitions[0].pos![0], PartOfSpeech.noun);
       expect(vocab6.definitions[0].fields!.length, 1);
@@ -378,7 +378,7 @@ void main() {
       // Definition
       expect(vocab7.definitions.length, 1);
       expect(vocab7.definitions[0].definition,
-          'dear, darling, adorable, precious, cute, lovely, sweet, beloved, charming');
+          'dear; darling; adorable; precious; cute; lovely; sweet; beloved; charming');
       expect(vocab7.definitions[0].pos!.length, 1);
       expect(vocab7.definitions[0].pos![0], PartOfSpeech.adjective);
       expect(vocab7.definitions[0].dialects!.length, 2);
