@@ -32,6 +32,19 @@ class FlashcardsView extends StatelessWidget {
             statusBarBrightness: Brightness.light,
           ),
           iconTheme: const IconThemeData(color: Colors.black),
+          actions: [
+            IconButton(
+              onPressed: viewModel.canUndo
+                  ? () {
+                      if (!flipCardController.state!.isFront) {
+                        flipCardController.toggleCardWithoutAnimation();
+                      }
+                      viewModel.undo();
+                    }
+                  : null,
+              icon: const Icon(Icons.undo),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -247,17 +260,17 @@ class _VocabFlashcardFront extends StatelessWidget {
     if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
       if (flashcardSet.vocabShowReadingIfRareKanji &&
           vocab.isUsuallyKanaAlone()) {
-        // Usually written with kana alone, add faded kanji writing, divider, and reading
+        // Usually written with kana alone, add faded kanji writing and reading
         children.addAll([
           Text(
             vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 40, color: Colors.grey),
+            style: const TextStyle(fontSize: 54, color: Colors.grey),
           ),
           Text(
             vocab.kanjiReadingPairs[0].readings[0].reading,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 54),
+            style: const TextStyle(fontSize: 40),
           ),
         ]);
       } else {
@@ -271,19 +284,14 @@ class _VocabFlashcardFront extends StatelessWidget {
         );
 
         if (flashcardSet.vocabShowReading) {
-          // Add divider and reading to be shown with kanji writing
-          children.addAll([
-            const Divider(
-              color: Colors.black,
-              indent: 8,
-              endIndent: 8,
-            ),
+          // Add reading to be shown with kanji writing
+          children.add(
             Text(
               vocab.kanjiReadingPairs[0].readings[0].reading,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 40),
             ),
-          ]);
+          );
         }
       }
     } else {
@@ -329,13 +337,6 @@ class _KanjiFlashcardFront extends StatelessWidget {
     ];
 
     if (flashcardSet.kanjiShowReading) {
-      children.add(
-        const Divider(
-          color: Colors.black,
-          indent: 8,
-          endIndent: 8,
-        ),
-      );
       if (kanji.onReadings != null) {
         children.add(
           _KanjiReadingText(
@@ -570,19 +571,19 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
     if (viewModel.allFlashcards == null) {
       // Empty during loading
     } else if (viewModel.usingSpacedRepetition) {
-      if (viewModel.dueFlashcardCount > 0) {
+      if (viewModel.answeringDueFlashcards) {
         // Answering due flashcards
-        completedBar =
-            viewModel.initialDueFlashcardCount - viewModel.dueFlashcardCount;
-        emptyBar = viewModel.dueFlashcardCount;
-        bottomLeftString = '${viewModel.dueFlashcardCount} cards remaining';
+        completedBar = viewModel.initialDueFlashcardCount -
+            viewModel.activeFlashcards.length;
+        emptyBar = viewModel.activeFlashcards.length;
+        bottomLeftString = '$completedBar completed';
         bottomRightString = '${viewModel.initialDueFlashcardCount} cards due';
       } else {
         // Answering fresh flashcards
-        completedBar = viewModel.nonFreshFlashcardCount;
-        emptyBar =
-            viewModel.allFlashcards!.length - viewModel.nonFreshFlashcardCount;
-        bottomLeftString = '${viewModel.nonFreshFlashcardCount} completed';
+        completedBar =
+            viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
+        emptyBar = viewModel.activeFlashcards.length;
+        bottomLeftString = '$completedBar completed';
         bottomRightString = '${viewModel.allFlashcards!.length} cards';
       }
     } else {
