@@ -195,7 +195,7 @@ void main() {
       expect(viewModel.activeFlashcards.length, 1);
       expect(tempFlashcard.spacedRepetitionData!.interval, 2);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 2);
-      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.6);
+      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.5);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 2)).toInt());
 
@@ -206,7 +206,7 @@ void main() {
       expect(tempFlashcard.spacedRepetitionData!.interval, 0);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 0);
       expect(
-          tempFlashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
+          tempFlashcard.spacedRepetitionData!.easeFactor, 2.2800000000000002);
       expect(
           tempFlashcard.spacedRepetitionData!.dueDate, DateTime.now().toInt());
 
@@ -216,7 +216,8 @@ void main() {
       expect(viewModel.activeFlashcards.length, 4);
       expect(tempFlashcard.spacedRepetitionData!.interval, 1);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 1);
-      expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.28);
+      expect(
+          tempFlashcard.spacedRepetitionData!.easeFactor, 2.3800000000000003);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 1)).toInt());
 
@@ -335,7 +336,7 @@ void main() {
 
     test('Spaced repetition flashcard set and switch to random order',
         () async {
-      // Create vocab and kanji to use
+      // Create vocab to use
       final vocab1 = Vocab()..id = 1;
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -394,7 +395,7 @@ void main() {
     });
 
     test('Random-order flashcard set and go again', () async {
-      // Create vocab and kanji to use
+      // Create vocab to use
       final vocab1 = Vocab()..id = 1;
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -447,6 +448,110 @@ void main() {
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
       expect(viewModel.freshFlashcards.length, 0);
+    });
+
+    test('Undo', () async {
+      // Create 12 vocab to use
+      isar.writeTxn(() async {
+        for (int i = 1; i < 13; i++) {
+          await isar.vocabs.put(Vocab()..id = i);
+        }
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      for (int i = 1; i < 13; i++) {
+        await isarService.addVocabToMyDictionaryList(
+            isarService.myDictionaryLists![0], Vocab()..id = i);
+      }
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      final navigationService = getAndRegisterNavigationService();
+      final dialogService =
+          getAndRegisterDialogService(dialogResponseConfirmed: true);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Verify that back was not called
+      verifyNever(navigationService.back());
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 12);
+      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.dueFlashcards.length, 0);
+      expect(viewModel.freshFlashcards.length, 0);
+
+      // Answer flashcard and then undo
+      DictionaryItem firstFlashcard = viewModel.activeFlashcards[0];
+      DictionaryItem secondFlashcard = viewModel.activeFlashcards[1];
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(firstFlashcard.spacedRepetitionData != null, true);
+      expect(secondFlashcard.spacedRepetitionData != null, true);
+      viewModel.undo();
+      expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
+      viewModel.undo();
+      expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
+      expect(firstFlashcard.spacedRepetitionData == null, true);
+      expect(secondFlashcard.spacedRepetitionData == null, true);
+
+      // Answer 10 flashcards and undo to check undo length limit
+      expect(viewModel.activeFlashcards.length, 12);
+      for (int i = 0; i < 10; i++) {
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      }
+      expect(viewModel.activeFlashcards.length, 2);
+      for (int i = 0; i < 10; i++) {
+        viewModel.undo();
+        expect(viewModel.activeFlashcards.length, 3 + i);
+      }
+      expect(viewModel.activeFlashcards.length, 12);
+
+      // Answer 11 flashcards and undo to check undo length limit (will lose 1)
+      for (int i = 0; i < 11; i++) {
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      }
+      expect(viewModel.activeFlashcards.length, 1);
+      for (int i = 0; i < 10; i++) {
+        viewModel.undo();
+        expect(viewModel.activeFlashcards.length, 2 + i);
+      }
+
+      // This undo does nothing because limit has been reached
+      expect(viewModel.activeFlashcards.length, 11);
+      viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 11);
+      expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
+
+      // Answer all flashcards and check that undo does not work after starting random
+      for (int i = 0; i < 11; i++) {
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      }
+
+      expect(viewModel.activeFlashcards.length, 12);
+      viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 12);
+
+      // Make sure undo removes when undoing a wrong answer
+      firstFlashcard = viewModel.activeFlashcards[0];
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards[0] != firstFlashcard, true);
+      expect(viewModel.activeFlashcards[9] == firstFlashcard, true);
+      viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
     });
   });
 }

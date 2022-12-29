@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:sagase/app/app.locator.dart';
@@ -22,8 +23,7 @@ class FlashcardsViewModel extends BaseViewModel {
   late final Random _random;
 
   List<DictionaryItem>? allFlashcards;
-  final List<DictionaryItem> _activeFlashcards = [];
-  List<DictionaryItem> get activeFlashcards => _activeFlashcards;
+  final List<DictionaryItem> activeFlashcards = [];
   final List<DictionaryItem> dueFlashcards = [];
   final List<DictionaryItem> freshFlashcards = [];
 
@@ -34,14 +34,13 @@ class FlashcardsViewModel extends BaseViewModel {
   bool _usingSpacedRepetition = true;
   bool get usingSpacedRepetition => _usingSpacedRepetition;
 
-  // Used to keep track of spaced repetition flashcards that are in
-  // the rotation (answered correctly at least once).
-  int _nonFreshFlashcardCount = 0;
-  int get nonFreshFlashcardCount => _nonFreshFlashcardCount;
   int _initialDueFlashcardCount = 0;
   int get initialDueFlashcardCount => _initialDueFlashcardCount;
-  int _dueFlashcardCount = 0;
-  int get dueFlashcardCount => _dueFlashcardCount;
+  bool _answeringDueFlashcards = false;
+  bool get answeringDueFlashcards => _answeringDueFlashcards;
+
+  final ListQueue<_UndoItem> _undoList = ListQueue<_UndoItem>();
+  bool get canUndo => _undoList.isNotEmpty;
 
   FlashcardsViewModel(this.flashcardSet, {int? randomSeed})
       : _random = Random(randomSeed);
@@ -120,9 +119,8 @@ class FlashcardsViewModel extends BaseViewModel {
           }
         }
       }
-      _nonFreshFlashcardCount = allFlashcards!.length - freshFlashcards.length;
       _initialDueFlashcardCount = dueFlashcards.length;
-      _dueFlashcardCount = dueFlashcards.length;
+      _answeringDueFlashcards = true;
     }
 
     // If have no flashcards tell user and exit
@@ -143,16 +141,27 @@ class FlashcardsViewModel extends BaseViewModel {
   Future<void> answerFlashcard(FlashcardAnswer answer) async {
     if (activeFlashcards.isEmpty) return;
     // Remove current flashcard from active list
-    final currentFlashcard = _activeFlashcards.removeAt(0);
+    final currentFlashcard = activeFlashcards.removeAt(0);
+    // Add to the undo list
+    _undoList.add(_UndoItem(
+      currentFlashcard,
+      currentFlashcard.spacedRepetitionData,
+    ));
 
     if (usingSpacedRepetition) {
       if (answer == FlashcardAnswer.repeat) {
-        // Put current flashcard to the end of the active flashcard list
-        _activeFlashcards.insert(_activeFlashcards.length, currentFlashcard);
+        // Put current flashcard at 10th or end of the active flashcard list
+        activeFlashcards.insert(
+          min(9, activeFlashcards.length),
+          currentFlashcard,
+        );
         notifyListeners();
       } else if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard to the end of the active flashcard list
-        _activeFlashcards.insert(_activeFlashcards.length, currentFlashcard);
+        // Put current flashcard at 10th or end of the active flashcard list
+        activeFlashcards.insert(
+          min(9, activeFlashcards.length),
+          currentFlashcard,
+        );
         notifyListeners();
         // Only get new spaced repetition date if flashcard has previous data
         if (currentFlashcard.spacedRepetitionData != null) {
@@ -164,11 +173,6 @@ class FlashcardsViewModel extends BaseViewModel {
           await _isarService.updateSpacedRepetitionData(currentFlashcard);
         }
       } else {
-        // If current card has not been answered previously, increase completed counter
-        _dueFlashcardCount--;
-        if (currentFlashcard.spacedRepetitionData == null) {
-          _nonFreshFlashcardCount++;
-        }
         // Get new spaced repetition date and use enum index as argument
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
           answer.index,
@@ -182,34 +186,42 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     } else {
       if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard to the end of the active flashcard list
-        _activeFlashcards.insert(_activeFlashcards.length, currentFlashcard);
+        // Put current flashcard at 10th or end of the active flashcard list
+        activeFlashcards.insert(
+          min(9, activeFlashcards.length),
+          currentFlashcard,
+        );
       }
       notifyListeners();
     }
 
-    if (_activeFlashcards.isEmpty) await _prepareFlashcards();
+    // Limit undo list to 10
+    if (_undoList.length > 10) {
+      _undoList.removeFirst();
+    }
+
+    if (activeFlashcards.isEmpty) await _prepareFlashcards();
   }
 
   Future<void> _prepareFlashcards({bool initial = false}) async {
     if (_usingSpacedRepetition) {
-      // Check if need to add cards to active list
-      while (_activeFlashcards.length < 10 && dueFlashcards.isNotEmpty) {
-        final flashcard =
-            dueFlashcards.removeAt(_random.nextInt(dueFlashcards.length));
-        _activeFlashcards.insert(_activeFlashcards.length, flashcard);
+      // Add due cards
+      activeFlashcards.addAll(dueFlashcards);
+      dueFlashcards.clear();
+
+      // If active flashcards is still empty then try to add fresh flashcards
+      if (activeFlashcards.isEmpty) {
+        activeFlashcards.addAll(freshFlashcards);
+        freshFlashcards.clear();
+        _answeringDueFlashcards = false;
       }
-      // If active flashcards is still empty and try to add fresh flashcards
-      if (_activeFlashcards.isEmpty) {
-        while (_activeFlashcards.length < 10 && freshFlashcards.isNotEmpty) {
-          final flashcard =
-              freshFlashcards.removeAt(_random.nextInt(freshFlashcards.length));
-          _activeFlashcards.insert(_activeFlashcards.length, flashcard);
-        }
-      }
+
+      // Randomize active flashcards
+      activeFlashcards.shuffle(_random);
+
       // If active flashcards is still empty then the user is finished with today's spaced repetition
       // Ask if they want to continue using random order
-      if (_activeFlashcards.isEmpty) {
+      if (activeFlashcards.isEmpty) {
         final response = await _dialogService.showDialog(
           title: 'Finished!',
           description:
@@ -224,18 +236,19 @@ class FlashcardsViewModel extends BaseViewModel {
           _prepareFlashcards(initial: true);
         } else {
           _navigationService.back();
-          return;
         }
+        return;
       }
     } else {
-      // If initial call, just add all flashcards to active list
+      // If initial call, add all flashcards to active list and clear undo list
       if (initial) {
-        _activeFlashcards.addAll(allFlashcards!);
-        _activeFlashcards.shuffle(_random);
+        activeFlashcards.addAll(allFlashcards!);
+        activeFlashcards.shuffle(_random);
+        _undoList.clear();
       }
 
       // If active flashcards is empty, ask user if they want to restart
-      if (_activeFlashcards.isEmpty) {
+      if (activeFlashcards.isEmpty) {
         final response = await _dialogService.showDialog(
           title: 'Finished!',
           description:
@@ -249,12 +262,38 @@ class FlashcardsViewModel extends BaseViewModel {
           _prepareFlashcards(initial: true);
         } else {
           _navigationService.back();
-          return;
         }
+        return;
       }
     }
 
     notifyListeners();
+  }
+
+  void undo() {
+    if (_undoList.isEmpty) return;
+
+    // Current card to go back to
+    final current = _undoList.removeLast();
+
+    // Go through the first 10 elements in the active list and
+    // remove the same flashcard if present
+    int limit = min(10, activeFlashcards.length);
+    for (int i = 0; i < limit; i++) {
+      if (current.flashcard == activeFlashcards[i]) {
+        activeFlashcards.removeAt(i);
+        break;
+      }
+    }
+
+    // Put flashcard at the front of active list with the previous data
+    activeFlashcards.insert(0, current.flashcard);
+    current.flashcard.spacedRepetitionData = current.previousData;
+
+    notifyListeners();
+
+    // Update in database with old data
+    _isarService.updateSpacedRepetitionData(current.flashcard);
   }
 
   SpacedRepetitionData _calculateSpacedRepetition(
@@ -302,15 +341,15 @@ class FlashcardsViewModel extends BaseViewModel {
   }
 
   void openFlashcardItem() async {
-    if (_activeFlashcards[0] is Vocab) {
+    if (activeFlashcards[0] is Vocab) {
       _navigationService.navigateTo(
         Routes.vocabView,
-        arguments: VocabViewArguments(vocab: _activeFlashcards[0] as Vocab),
+        arguments: VocabViewArguments(vocab: activeFlashcards[0] as Vocab),
       );
     } else {
       _navigationService.navigateTo(
         Routes.kanjiView,
-        arguments: KanjiViewArguments(kanji: _activeFlashcards[0] as Kanji),
+        arguments: KanjiViewArguments(kanji: activeFlashcards[0] as Kanji),
       );
     }
   }
@@ -321,4 +360,14 @@ enum FlashcardAnswer {
   repeat,
   correct,
   veryCorrect,
+}
+
+class _UndoItem {
+  final DictionaryItem flashcard;
+  final SpacedRepetitionData? previousData;
+
+  const _UndoItem(
+    this.flashcard,
+    this.previousData,
+  );
 }
