@@ -17,9 +17,11 @@ class CardWithTitleSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          child: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          child: SelectionContainer.disabled(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
         Card(

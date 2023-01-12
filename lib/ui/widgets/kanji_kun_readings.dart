@@ -58,8 +58,8 @@ class KanjiKunReadings extends StatelessWidget {
       );
     }
 
-    return RichText(
-      text: TextSpan(children: kunReadingTextSpans),
+    return Text.rich(
+      TextSpan(children: kunReadingTextSpans),
       overflow: TextOverflow.ellipsis,
       maxLines: maxLines,
       textAlign: alignCenter ? TextAlign.center : TextAlign.start,

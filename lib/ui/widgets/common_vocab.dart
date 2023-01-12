@@ -13,9 +13,11 @@ class CommonVocab extends StatelessWidget {
         color: Color(0xFF3AB767),
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      child: Text(
-        'Common',
-        style: TextStyle(color: Colors.black, fontSize: fontSize),
+      child: SelectionContainer.disabled(
+        child: Text(
+          'Common',
+          style: TextStyle(color: Colors.black, fontSize: fontSize),
+        ),
       ),
     );
   }

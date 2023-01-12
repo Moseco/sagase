@@ -35,10 +35,12 @@ class VocabView extends StatelessWidget {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        // Can throw exception "'!_selectionStartsInScrollable': is not true."
+        // when long press then try to scroll on disabled areas.
+        // But seems to work okay in release builds.
+        body: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.all(8),
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +134,10 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
         textList.add(Text(buffer.toString()));
       }
 
-      return Column(children: textList);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: textList,
+      );
     }
   }
 }
@@ -224,13 +229,17 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         itemCount: viewModel.vocab.definitions.length,
         itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
-          child: RichText(
-            text: TextSpan(
+          child: Text.rich(
+            TextSpan(
               children: [
                 if (partsOfSpeechStrings[index].isNotEmpty)
-                  TextSpan(
-                    text: '${index + 1}: ',
-                    style: const TextStyle(color: Colors.transparent),
+                  WidgetSpan(
+                    child: SelectionContainer.disabled(
+                      child: Text(
+                        '${index + 1}: ',
+                        style: const TextStyle(color: Colors.transparent),
+                      ),
+                    ),
                   ),
                 TextSpan(
                   text: partsOfSpeechStrings[index],
@@ -653,24 +662,26 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
   const _KanjiList({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    return CardWithTitleSection(
-      title: 'Kanji',
-      child: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: viewModel.kanjiList.length,
-        itemBuilder: (context, index) {
-          final current = viewModel.kanjiList[index];
-          if (viewModel.kanjiLoaded) {
-            return KanjiListItemLarge(
-              kanji: current,
-              onPressed: () => viewModel.navigateToKanji(current),
-            );
-          } else {
-            return ListTile(title: Text(current.kanji));
-          }
-        },
+    return SelectionContainer.disabled(
+      child: CardWithTitleSection(
+        title: 'Kanji',
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemCount: viewModel.kanjiList.length,
+          itemBuilder: (context, index) {
+            final current = viewModel.kanjiList[index];
+            if (viewModel.kanjiLoaded) {
+              return KanjiListItemLarge(
+                kanji: current,
+                onPressed: () => viewModel.navigateToKanji(current),
+              );
+            } else {
+              return ListTile(title: Text(current.kanji));
+            }
+          },
+        ),
       ),
     );
   }
