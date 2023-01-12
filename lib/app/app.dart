@@ -5,6 +5,7 @@ import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
+import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_view.dart';
 import 'package:sagase/ui/views/flashcard_sets/flashcard_sets_view.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
@@ -48,6 +49,7 @@ import 'package:stacked_services/stacked_services.dart';
     MaterialRoute(page: KanjiRadicalsView),
     MaterialRoute(page: KanaView),
     MaterialRoute(page: FlashcardSetsView),
+    MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
     MaterialRoute(page: DevView),

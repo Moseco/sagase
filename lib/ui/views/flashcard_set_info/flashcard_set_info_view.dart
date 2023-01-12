@@ -1,4 +1,6 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:stacked/stacked.dart';
@@ -12,243 +14,216 @@ class FlashcardSetInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final dayFormatter = DateFormat.EEEE();
     return ViewModelBuilder<FlashcardSetInfoViewModel>.reactive(
       viewModelBuilder: () => FlashcardSetInfoViewModel(flashcardSet),
       builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          title: Text(flashcardSet.name),
-          actions: [
-            IconButton(
-              onPressed: viewModel.renameFlashcardSet,
-              icon: const Icon(Icons.edit),
-            ),
-            IconButton(
-              onPressed: viewModel.deleteFlashcardSet,
-              icon: const Icon(Icons.delete),
-            ),
-          ],
-        ),
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 8,
-                  right: 8,
-                  top: 8,
-                  bottom: 8 + MediaQuery.of(context).padding.bottom,
-                ),
-                child: Column(
-                  children: [
-                    CardWithTitleSection(
-                      title: 'Included Lists',
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Column(
+        appBar: AppBar(title: Text(flashcardSet.name)),
+        body: viewModel.loading
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: const EdgeInsets.all(8),
+                children: [
+                  CardWithTitleSection(
+                    title: 'Upcoming due flashcards',
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      child: IntrinsicHeight(
+                        child: Row(
                           children: [
-                            flashcardSet.myDictionaryListLinks.isLoaded
-                                ? GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: viewModel.editIncludedLists,
-                                    child: Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Wrap(
-                                        spacing: 4,
-                                        children: List.generate(
-                                          flashcardSet
-                                                  .predefinedDictionaryListLinks
-                                                  .length +
-                                              flashcardSet.myDictionaryListLinks
-                                                  .length +
-                                              1,
-                                          (index) {
-                                            if (index ==
-                                                flashcardSet
-                                                        .predefinedDictionaryListLinks
-                                                        .length +
-                                                    flashcardSet
-                                                        .myDictionaryListLinks
-                                                        .length) {
-                                              return const Chip(
-                                                label: Text('Add list'),
-                                                avatar: Icon(Icons.add),
-                                              );
-                                            } else if (index <
-                                                flashcardSet
-                                                    .predefinedDictionaryListLinks
-                                                    .length) {
-                                              return Chip(
-                                                label: Text(
-                                                  flashcardSet
-                                                      .predefinedDictionaryListLinks
-                                                      .elementAt(index)
-                                                      .name,
-                                                ),
-                                              );
-                                            } else {
-                                              return Chip(
-                                                label: Text(
-                                                  flashcardSet
-                                                      .myDictionaryListLinks
-                                                      .elementAt(index -
-                                                          flashcardSet
-                                                              .predefinedDictionaryListLinks
-                                                              .length)
-                                                      .name,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : const Center(
-                                    child: CircularProgressIndicator()),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Text('Today'),
+                                  const Text('Tomorrow'),
+                                  Text(dayFormatter.format(
+                                      now.add(const Duration(days: 2)))),
+                                  Text(dayFormatter.format(
+                                      now.add(const Duration(days: 3)))),
+                                  Text(dayFormatter.format(
+                                      now.add(const Duration(days: 4)))),
+                                  Text(dayFormatter.format(
+                                      now.add(const Duration(days: 5)))),
+                                  Text(dayFormatter.format(
+                                      now.add(const Duration(days: 6)))),
+                                  const Text('Afterwards')
+                                ],
+                              ),
+                            ),
+                            const VerticalDivider(color: Colors.black),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(viewModel.upcomingDueFlashcards[0]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[1]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[2]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[3]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[4]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[5]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[6]
+                                      .toString()),
+                                  Text(viewModel.upcomingDueFlashcards[7]
+                                      .toString()),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-                    const Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                        child: Text(
-                          'Order Type',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          _ToggleOption(
-                            text: 'Spaced repetition',
-                            enabled: flashcardSet.usingSpacedRepetition,
-                            onTap: () => viewModel.setOrderType(true),
-                          ),
-                          _ToggleOption(
-                            text: 'Random',
-                            enabled: !flashcardSet.usingSpacedRepetition,
-                            onTap: () => viewModel.setOrderType(false),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CardWithTitleSection(
-                      title: 'Appearance',
+                  ),
+                  CardWithTitleSection(
+                    title: 'Flashcard due date length',
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         children: [
-                          ListTile(
-                            title: const Text('Show reading'),
-                            subtitle: const Text('Vocab flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.vocabShowReading,
-                              onChanged: viewModel.setVocabShowReading,
+                          SizedBox(
+                            height: 200,
+                            child: PieChart(
+                              PieChartData(
+                                borderData: FlBorderData(show: false),
+                                sectionsSpace: 0,
+                                centerSpaceRadius: 40,
+                                sections: [
+                                  PieChartSectionData(
+                                    color: Colors.red,
+                                    value: viewModel.flashcardIntervalCounts[0],
+                                    title: viewModel.flashcardIntervalCounts[0]
+                                        .toStringAsFixed(0),
+                                    radius: 50,
+                                    titleStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffffffff),
+                                    ),
+                                  ),
+                                  PieChartSectionData(
+                                    color: Colors.orange,
+                                    value: viewModel.flashcardIntervalCounts[1],
+                                    title: viewModel.flashcardIntervalCounts[1]
+                                        .toStringAsFixed(0),
+                                    radius: 50,
+                                    titleStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffffffff),
+                                    ),
+                                  ),
+                                  PieChartSectionData(
+                                    color: Colors.green,
+                                    value: viewModel.flashcardIntervalCounts[2],
+                                    title: viewModel.flashcardIntervalCounts[2]
+                                        .toStringAsFixed(0),
+                                    radius: 50,
+                                    titleStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffffffff),
+                                    ),
+                                  ),
+                                  PieChartSectionData(
+                                    color: Colors.blue,
+                                    value: viewModel.flashcardIntervalCounts[3],
+                                    title: viewModel.flashcardIntervalCounts[3]
+                                        .toStringAsFixed(0),
+                                    radius: 50,
+                                    titleStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffffffff),
+                                    ),
+                                  ),
+                                  PieChartSectionData(
+                                    color: Colors.deepPurple,
+                                    value: viewModel.flashcardIntervalCounts[4],
+                                    title: viewModel.flashcardIntervalCounts[4]
+                                        .toStringAsFixed(0),
+                                    radius: 50,
+                                    titleStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffffffff),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          ListTile(
-                            title: const Text(
-                              'Show reading if kanji rarely used',
-                            ),
-                            subtitle: const Text('Vocab flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.vocabShowReadingIfRareKanji,
-                              onChanged:
-                                  viewModel.setVocabShowReadingIfRareKanji,
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text('Show reading'),
-                            subtitle: const Text('Kanji flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.kanjiShowReading,
-                              onChanged: viewModel.setKanjiShowReading,
-                            ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            alignment: WrapAlignment.center,
+                            children: const [
+                              _Indicator(
+                                color: Colors.red,
+                                text: 'Not started',
+                              ),
+                              _Indicator(
+                                color: Colors.orange,
+                                text: 'Less than 1 week',
+                              ),
+                              _Indicator(
+                                color: Colors.green,
+                                text: '2-4 weeks',
+                              ),
+                              _Indicator(
+                                color: Colors.blue,
+                                text: '1-2 months',
+                              ),
+                              _Indicator(
+                                color: Colors.deepPurple,
+                                text: '3+ months',
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    const Spacer(),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: Colors.deepPurple),
-                        ),
-                      ),
-                      onPressed: viewModel.openFlashcardSet,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: const Center(
-                          child: Text(
-                            'Open Flashcards',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
 
-class _ToggleOption extends StatelessWidget {
+class _Indicator extends StatelessWidget {
+  final Color color;
   final String text;
-  final bool enabled;
-  final void Function() onTap;
 
-  const _ToggleOption({
+  const _Indicator({
+    required this.color,
     required this.text,
-    required this.enabled,
-    required this.onTap,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          width: 14,
+          height: 14,
           decoration: BoxDecoration(
-            color: enabled ? Colors.deepPurple : null,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 18,
-                color: enabled ? Colors.white : Colors.black,
-              ),
-            ),
+            shape: BoxShape.circle,
+            color: color,
           ),
         ),
-      ),
+        const SizedBox(width: 4),
+        Text(text)
+      ],
     );
   }
 }

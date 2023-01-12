@@ -1,167 +1,124 @@
-import 'package:sagase/app/app.bottomsheets.dart';
-import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
-import 'package:sagase/app/app.router.dart';
+import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
-import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/vocab.dart';
 import 'package:stacked/stacked.dart';
+import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class FlashcardSetInfoViewModel extends BaseViewModel {
-  final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
-  final _bottomSheetService = locator<BottomSheetService>();
 
   final FlashcardSet flashcardSet;
+
+  bool get loading => upcomingDueFlashcards.isEmpty;
+
+  // Information about when flashcards are due
+  // index 0-6 is days of the week starting from today
+  // last index is words due afterwards
+  List<int> upcomingDueFlashcards = [];
+  // Information about the length of the due date for flashcards
+  // 0 : fresh flashcards
+  // 1 : flashcards due within 1 week
+  // 2 : flashcards due in 2-4 weeks
+  // 3 : flashcards due in 1-2 months
+  // 4 : flashcards due in 3+ months
+  List<double> flashcardIntervalCounts = [0, 0, 0, 0, 0];
 
   FlashcardSetInfoViewModel(this.flashcardSet) {
     _loadLists();
   }
 
   Future<void> _loadLists() async {
+    // Load all vocab and kanji and add to maps to avoid duplicates
     await flashcardSet.predefinedDictionaryListLinks.load();
     await flashcardSet.myDictionaryListLinks.load();
-    notifyListeners();
-  }
 
-  Future<void> renameFlashcardSet() async {
-    final response = await _dialogService.showCustomDialog(
-      variant: DialogType.textFieldDialog,
-      title: 'Rename flashcards',
-      description: 'Name',
-      mainButtonTitle: 'Update',
-      data: flashcardSet.name,
-      barrierDismissible: true,
-    );
+    Map<int, Vocab> vocabMap = {};
+    Map<String, Kanji> kanjiMap = {};
 
-    String? name = response?.data?.trim();
-    if (name == null || name.isEmpty) return;
-
-    flashcardSet.name = name;
-    _isarService.updateFlashcardSet(flashcardSet);
-    notifyListeners();
-  }
-
-  Future<void> deleteFlashcardSet() async {
-    final response = await _dialogService.showConfirmationDialog(
-      title: 'Delete flashcards?',
-      confirmationTitle: 'Delete',
-      cancelTitle: 'Cancel',
-      barrierDismissible: true,
-    );
-
-    if (response != null && response.confirmed) {
-      _isarService.deleteFlashcardSet(flashcardSet);
-      // Send true as result when deleting
-      _navigationService.back(result: true);
-    }
-  }
-
-  Future<void> editIncludedLists() async {
-    if (_isarService.myDictionaryLists == null) {
-      await _isarService.getMyDictionaryLists();
-    }
-    // Get included predefined lists
-    Map<int, bool> predefinedLists = {};
+    // Get predefined lists vocab and kanji
     for (int i = 0;
         i < flashcardSet.predefinedDictionaryListLinks.length;
         i++) {
-      predefinedLists[
-          flashcardSet.predefinedDictionaryListLinks.elementAt(i).id!] = true;
+      await flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .vocabLinks
+          .load();
+      await flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .kanjiLinks
+          .load();
+
+      for (var vocab in flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .vocabLinks) {
+        vocabMap[vocab.id] = vocab;
+      }
+      for (var kanji in flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .kanjiLinks) {
+        kanjiMap[kanji.kanji] = kanji;
+      }
     }
-    // Create list for my lists
-    List<MyListsBottomSheetItem> myDictionaryLists = [];
-    for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      myDictionaryLists.add(
-          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
-    }
-    // Mark lists that the flashcard set uses and move them to the top
+
+    // Get my lists vocab and kanji
     for (int i = 0; i < flashcardSet.myDictionaryListLinks.length; i++) {
-      for (int j = 0; j < myDictionaryLists.length; j++) {
-        if (flashcardSet.myDictionaryListLinks.elementAt(i).id ==
-            myDictionaryLists[j].list.id) {
-          myDictionaryLists[j].enabled = true;
-          final temp = myDictionaryLists.removeAt(j);
-          myDictionaryLists.insert(0, temp);
-          break;
-        }
+      await flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks.load();
+      await flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks.load();
+
+      for (var vocab
+          in flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks) {
+        vocabMap[vocab.id] = vocab;
+      }
+      for (var kanji
+          in flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks) {
+        kanjiMap[kanji.kanji] = kanji;
       }
     }
 
-    final response = await _bottomSheetService.showCustomSheet(
-      variant: BottomsheetType.assignListsBottomSheet,
-      data: ListsBottomSheetArgument(predefinedLists, myDictionaryLists),
-      barrierDismissible: false,
-    );
+    // Merge vocab and kanji lists
+    final flashcards = vocabMap.values.toList().cast<DictionaryItem>() +
+        kanjiMap.values.toList().cast<DictionaryItem>();
 
-    if (response?.data != null) {
-      // Get predefined dictionary lists to add or remove from flashcard set
-      List<int> predefinedListsToAdd = [];
-      List<int> predefinedListsToRemove = [];
-      for (var pairs in response!.data.predefinedLists.entries) {
-        if (pairs.value) {
-          predefinedListsToAdd.add(pairs.key);
-        } else {
-          predefinedListsToRemove.add(pairs.key);
-        }
-      }
-      // Get my dictionary lists to add or remove from flashcard set
-      List<MyDictionaryList> myListsToAdd = [];
-      List<MyDictionaryList> myListsToRemove = [];
-      for (int i = 0; i < response.data.myLists.length; i++) {
-        if (response.data.myLists[i].enabled) {
-          myListsToAdd.add(response.data.myLists[i].list);
-        } else {
-          myListsToRemove.add(response.data.myLists[i].list);
-        }
-      }
-      // Add and remove from database
-      await _isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        predefinedDictionaryListIds: predefinedListsToAdd,
-        myDictionaryLists: myListsToAdd,
+    // Exit if nothing available
+    if (flashcards.isEmpty) {
+      await _dialogService.showDialog(
+        title: 'No flashcards',
+        description: 'Add lists to the flashcard set to view performance.',
+        buttonTitle: 'Exit',
+        barrierDismissible: true,
       );
-      await _isarService.removeDictionaryListsToFlashcardSet(
-        flashcardSet,
-        predefinedDictionaryListIds: predefinedListsToRemove,
-        myDictionaryLists: myListsToRemove,
-      );
-      notifyListeners();
+
+      _navigationService.back();
+
+      return;
     }
-  }
 
-  void setOrderType(bool value) {
-    flashcardSet.usingSpacedRepetition = value;
+    // Go through and assemble data
+    final today = DateTime.now().toInt();
+    upcomingDueFlashcards = List<int>.filled(8, 0);
+    for (var flashcard in flashcards) {
+      if (flashcard.spacedRepetitionData != null) {
+        upcomingDueFlashcards[
+            (flashcard.spacedRepetitionData!.dueDate - today).clamp(0, 7)]++;
+
+        if (flashcard.spacedRepetitionData!.interval <= 7) {
+          flashcardIntervalCounts[1]++;
+        } else if (flashcard.spacedRepetitionData!.interval <= 28) {
+          flashcardIntervalCounts[2]++;
+        } else if (flashcard.spacedRepetitionData!.interval <= 56) {
+          flashcardIntervalCounts[3]++;
+        } else {
+          flashcardIntervalCounts[4]++;
+        }
+      } else {
+        flashcardIntervalCounts[0]++;
+      }
+    }
+
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
-  }
-
-  void setVocabShowReading(bool value) {
-    flashcardSet.vocabShowReading = value;
-    notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
-  }
-
-  void setVocabShowReadingIfRareKanji(bool value) {
-    flashcardSet.vocabShowReadingIfRareKanji = value;
-    notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
-  }
-
-  void setKanjiShowReading(bool value) {
-    flashcardSet.kanjiShowReading = value;
-    notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
-  }
-
-  void openFlashcardSet() {
-    _navigationService.navigateTo(
-      Routes.flashcardsView,
-      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
-    );
   }
 }

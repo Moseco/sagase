@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:stacked/stacked.dart';
 
 import 'flashcard_sets_viewmodel.dart';
@@ -25,55 +26,54 @@ class FlashcardSetsView extends StatelessWidget {
             : ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: viewModel.flashcardSets!.length,
-                itemBuilder: (context, index) {
-                  return _FlashcardSet(
-                    text: viewModel.flashcardSets![index].name,
-                    openFlashcardSet: () => viewModel
-                        .openFlashcardSet(viewModel.flashcardSets![index]),
-                    editFlashcardSet: () => viewModel
-                        .editFlashcardSet(viewModel.flashcardSets![index]),
-                  );
-                },
+                itemBuilder: (context, index) => _FlashcardSet(
+                  viewModel.flashcardSets![index],
+                ),
               ),
       ),
     );
   }
 }
 
-class _FlashcardSet extends StatelessWidget {
-  final String text;
-  final void Function() openFlashcardSet;
-  final void Function() editFlashcardSet;
+class _FlashcardSet extends ViewModelWidget<FlashcardSetsViewModel> {
+  final FlashcardSet flashcardSet;
 
-  const _FlashcardSet({
-    required this.text,
-    required this.openFlashcardSet,
-    required this.editFlashcardSet,
-    Key? key,
-  }) : super(key: key);
+  const _FlashcardSet(this.flashcardSet, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, FlashcardSetsViewModel viewModel) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: openFlashcardSet,
+        onTap: () => viewModel.openFlashcardSet(flashcardSet),
         child: Row(
           children: [
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12),
                 child: Text(
-                  text,
+                  flashcardSet.name,
                   style: const TextStyle(fontSize: 24),
                   maxLines: 1,
                 ),
               ),
             ),
+            if (flashcardSet.usingSpacedRepetition)
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => viewModel.openFlashcardSetInfo(flashcardSet),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: const Icon(
+                    Icons.info_outline,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: editFlashcardSet,
+              onTap: () => viewModel.editFlashcardSet(flashcardSet),
               child: Container(
                 padding: const EdgeInsets.all(12),
                 child: const Icon(

@@ -353,6 +353,13 @@ class FlashcardsViewModel extends BaseViewModel {
       );
     }
   }
+
+  void openFlashcardSetInfo(FlashcardSet flashcardSet) async {
+    _navigationService.navigateTo(
+      Routes.flashcardSetInfoView,
+      arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
+    );
+  }
 }
 
 enum FlashcardAnswer {

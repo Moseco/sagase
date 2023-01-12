@@ -601,51 +601,57 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
       emptyBar = 25;
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Container(
-            height: 10,
-            decoration: const BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-            ),
-            child: viewModel.allFlashcards == null || completedBar == 0
-                ? null
-                : Row(
-                    children: [
-                      Flexible(
-                        flex: completedBar,
-                        child: Container(
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => viewModel.openFlashcardSetInfo(viewModel.flashcardSet),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            Container(
+              height: 10,
+              decoration: const BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
+              child: viewModel.allFlashcards == null || completedBar == 0
+                  ? null
+                  : Row(
+                      children: [
+                        Flexible(
+                          flex: completedBar,
+                          child: Container(
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Flexible(
-                        flex: emptyBar,
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(bottomLeftString, textAlign: TextAlign.start),
-                ),
-                Expanded(
-                  child: Text(bottomRightString, textAlign: TextAlign.end),
-                ),
-              ],
+                        Flexible(
+                          flex: emptyBar,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(bottomLeftString, textAlign: TextAlign.start),
+                  ),
+                  Expanded(
+                    child: Text(bottomRightString, textAlign: TextAlign.end),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
