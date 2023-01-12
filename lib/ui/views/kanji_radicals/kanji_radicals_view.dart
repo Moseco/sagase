@@ -44,26 +44,33 @@ class KanjiRadicalsView extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(title: const Text('Radicals')),
-          body: ListView.builder(
-            itemCount: radicalGroups.length,
-            itemBuilder: (context, groupIndex) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    color: Colors.deepPurple,
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      radicalGroups[groupIndex].strokes == 1
-                          ? '${radicalGroups[groupIndex].strokes} stroke'
-                          : '${radicalGroups[groupIndex].strokes} strokes',
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+          body: SelectionArea(
+            child: ListView.builder(
+              itemCount: radicalGroups.length,
+              itemBuilder: (context, groupIndex) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: Colors.deepPurple,
+                      padding: const EdgeInsets.all(8),
+                      child: SelectionContainer.disabled(
+                        child: Text(
+                          radicalGroups[groupIndex].strokes == 1
+                              ? '${radicalGroups[groupIndex].strokes} stroke'
+                              : '${radicalGroups[groupIndex].strokes} strokes',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  Wrap(children: radicalGroups[groupIndex].radicals),
-                ],
+                    Wrap(children: radicalGroups[groupIndex].radicals),
+                  ],
+                ),
               ),
             ),
           ),

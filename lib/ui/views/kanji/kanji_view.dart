@@ -33,10 +33,12 @@ class KanjiView extends StatelessWidget {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        // Can throw exception "'!_selectionStartsInScrollable': is not true."
+        // when long press then try to scroll on disabled areas.
+        // But seems to work okay in release builds.
+        body: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.all(8),
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,38 +128,39 @@ class KanjiView extends StatelessWidget {
                 ),
               ),
               if (kanji.compounds.isNotEmpty)
-                CardWithTitleSection(
-                  title: 'Compounds',
-                  child: Column(
-                    children: [
-                      ListView.separated(
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          color: Colors.grey,
-                          indent: 8,
-                          endIndent: 8,
+                SelectionContainer.disabled(
+                  child: CardWithTitleSection(
+                    title: 'Compounds',
+                    child: Column(
+                      children: [
+                        ListView.separated(
+                          separatorBuilder: (_, __) => const Divider(
+                            height: 1,
+                            color: Colors.grey,
+                            indent: 8,
+                            endIndent: 8,
+                          ),
+                          shrinkWrap: true,
+                          primary: false,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: kanji.compounds.length < 10
+                              ? kanji.compounds.length
+                              : 10,
+                          itemBuilder: (context, index) => VocabListItem(
+                            vocab: kanji.compounds.elementAt(index),
+                            onPressed: () => viewModel.navigateToVocab(
+                                kanji.compounds.elementAt(index)),
+                          ),
                         ),
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: kanji.compounds.length < 10
-                            ? kanji.compounds.length
-                            : 10,
-                        itemBuilder: (context, index) => VocabListItem(
-                          vocab: kanji.compounds.elementAt(index),
-                          onPressed: () => viewModel.navigateToVocab(
-                              kanji.compounds.elementAt(index)),
-                        ),
-                      ),
-                      if (kanji.compounds.length > 10)
-                        TextButton(
-                          onPressed: viewModel.showAllCompounds,
-                          child: const Text('Show all compounds'),
-                        ),
-                    ],
+                        if (kanji.compounds.length > 10)
+                          TextButton(
+                            onPressed: viewModel.showAllCompounds,
+                            child: const Text('Show all compounds'),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
             ],
           ),
         ),
@@ -178,8 +181,8 @@ class _TitleInfoText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         children: [
           TextSpan(
             text: title,
