@@ -1,2 +1,4 @@
 # Dictionary source files
 assets/dictionary_source/* filter=lfs diff=lfs merge=lfs -text
+# Fonts
+assets/fonts/Noto_Sans_JP/* filter=lfs diff=lfs merge=lfs -text

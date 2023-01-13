@@ -53,6 +53,12 @@ dev_dependencies:
   mockito: ^5.3.2
 
 flutter:
+  fonts:   
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/Noto_Sans_JP/NotoSansJP-Regular.otf
+        - asset: assets/fonts/Noto_Sans_JP/NotoSansJP-Bold.otf
+
   uses-material-design: true
 
   assets:
