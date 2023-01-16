@@ -27,6 +27,7 @@ dependencies:
       url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.1.0
   fl_chart: ^0.55.2
+  flutter_svg: ^1.1.6
 
   # Other
   isar: ^3.0.2

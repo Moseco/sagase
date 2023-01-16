@@ -390,6 +390,7 @@ void main() {
       await DictionaryUtils.createKanjiDictionaryIsolate(
         shortKanjidic2,
         shortKanjiComponents,
+        shortKanjiStrokeData,
         isar,
       );
 
@@ -413,6 +414,7 @@ void main() {
       expect(kanji1.nanori![0], 'や');
       expect(kanji1.nanori![1], 'つぎ');
       expect(kanji1.nanori![2], 'つぐ');
+      expect(kanji1.strokes!.length, 7);
 
       final kanji2 = await isar.kanjis.get(20811613);
       expect(kanji2!.kanji, '悪');
@@ -466,6 +468,7 @@ void main() {
           '# Nothing',
           '',
           '',
+          '{}',
         ),
         testingIsar: isar,
       );

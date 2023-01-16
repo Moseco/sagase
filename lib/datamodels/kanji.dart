@@ -24,6 +24,7 @@ class Kanji extends DictionaryItem {
   List<String>? onReadings;
   List<String>? kunReadings;
   List<String>? nanori;
+  List<String>? strokes;
 
   final compounds = IsarLinks<Vocab>();
 

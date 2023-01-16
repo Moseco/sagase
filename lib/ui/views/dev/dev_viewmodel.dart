@@ -29,6 +29,8 @@ class DevViewModel extends BaseViewModel {
             .loadString('assets/dictionary_source/vocab_lists.json'),
         await rootBundle
             .loadString('assets/dictionary_source/kanji_lists.json'),
+        await rootBundle
+            .loadString('assets/dictionary_source/kanji_strokes.json'),
       ),
     );
     _loading = false;

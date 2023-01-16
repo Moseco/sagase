@@ -52,6 +52,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Kun readings
     - [x] Nanori
     - [x] Compounds
+    - [x] Stroke order
 - [x] Search
     - [x] Vocab
     - [x] Kanji
@@ -77,6 +78,8 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the source dictionary file.
 
+Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji stroke order data.
+
 ### Files used
 
 - [Vocab dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is `JMdict_e_examp` (English only, with examples).
@@ -84,3 +87,5 @@ Thanks to [Electronic Dictionary Research and Development Group](http://www.edrd
 - [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is `kanjidic2` (contains all 13,108 kanji).
 
 - [Kanji component file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/krad/kradinf.html) Version used for this project is `kradfile` and `kradfile2` merged together and converted to utf-8 encoding (renamed to `kradfilex_utf-8`).
+
+- Stroke order data for kanji were extracted from the svg files created by the [KanjiVG project](http://kanjivg.tagaini.net/). The output is stored in ```kanji_strokes.json```.

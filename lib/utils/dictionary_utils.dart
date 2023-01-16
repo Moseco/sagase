@@ -42,6 +42,7 @@ class DictionaryUtils {
     await createKanjiDictionaryIsolate(
       source.kanjiDict,
       source.kanjiComponents,
+      source.kanjiStrokeData,
       isar,
     );
     await _createDictionaryListsIsolate(
@@ -970,6 +971,7 @@ class DictionaryUtils {
   static Future<void> createKanjiDictionaryIsolate(
     String kanjidic2String,
     String kanjiComponentsString,
+    String kanjiStrokeDataString,
     Isar isar,
   ) async {
     final List<Kanji> kanjiList = [];
@@ -1054,6 +1056,19 @@ class DictionaryUtils {
             }
             await isar.kanjis.put(kanji);
           }
+        }
+      }
+    });
+
+    // Add stroke data
+    await isar.writeTxn(() async {
+      Map<String, dynamic> strokeMap = jsonDecode(kanjiStrokeDataString);
+
+      for (var entry in strokeMap.entries) {
+        final kanji = await isar.kanjis.getByKanji(entry.key);
+        if (kanji != null) {
+          kanji.strokes = entry.value.cast<String>();
+          await isar.kanjis.put(kanji);
         }
       }
     });
@@ -1303,6 +1318,7 @@ class DictionarySource {
   final String kanjiComponents;
   final String vocabLists;
   final String kanjiLists;
+  final String kanjiStrokeData;
 
   const DictionarySource(
     this.vocabDict,
@@ -1310,5 +1326,6 @@ class DictionarySource {
     this.kanjiComponents,
     this.vocabLists,
     this.kanjiLists,
+    this.kanjiStrokeData,
   );
 }
