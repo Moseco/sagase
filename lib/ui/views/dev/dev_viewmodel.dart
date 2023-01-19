@@ -61,7 +61,7 @@ class DevViewModel extends BaseViewModel {
     _loading = true;
     notifyListeners();
     await _isarService.close();
-    await IsarService.importDatabase();
+    await IsarService.importDatabase(DictionaryStatus.invalid);
     _loading = false;
     notifyListeners();
   }

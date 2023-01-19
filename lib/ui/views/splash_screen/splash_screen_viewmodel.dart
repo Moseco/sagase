@@ -37,7 +37,7 @@ class SplashScreenViewModel extends BaseViewModel {
         notifyListeners();
         await isarService?.close();
         try {
-          await IsarService.importDatabase();
+          await IsarService.importDatabase(status);
           isarService = await IsarService.initialize();
         } catch (_) {
           // Something went wrong importing database

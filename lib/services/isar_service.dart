@@ -14,6 +14,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:flutter/foundation.dart' show compute;
 
 class IsarService {
   final Isar _isar;
@@ -50,16 +51,21 @@ class IsarService {
   }
 
   Future<DictionaryStatus> validateDictionary() async {
-    // Check if dictionary count matches expectation
-    if ((await _isar.kanjis.count()) != 13108 ||
-        (await _isar.vocabs.count()) != 198094) {
+    // If dictionary info does not exist, this is a fresh install
+    final dictionaryInfo = await _isar.dictionaryInfos.get(0);
+    if (dictionaryInfo == null) {
       return DictionaryStatus.invalid;
     }
 
-    // Check version matches current
-    if ((await _isar.dictionaryInfos.get(0))?.version !=
-        constants.dictionaryVersion) {
+    // If database version does not match current, app update includes a new database
+    if (dictionaryInfo.version != constants.dictionaryVersion) {
       return DictionaryStatus.outOfDate;
+    }
+
+    // If dictionary count does not match expectation, database probably got corrupted
+    if ((await _isar.kanjis.count()) != 13108 ||
+        (await _isar.vocabs.count()) != 198094) {
+      return DictionaryStatus.invalid;
     }
 
     return DictionaryStatus.valid;
@@ -460,7 +466,7 @@ class IsarService {
     });
   }
 
-  static Future<void> importDatabase() async {
+  static Future<void> importDatabase(DictionaryStatus status) async {
     // Copy db_export.zip asset to temporary directory file
     final ByteData byteData =
         await rootBundle.load('assets/dictionary_source/db_export.zip');
@@ -474,6 +480,14 @@ class IsarService {
     final appSupportDir = await path_provider.getApplicationSupportDirectory();
     await archive.extractFileToDisk(newDbZipFile.path, appSupportDir.path);
 
+    // If upgrading from older database, transfer user data
+    if (status == DictionaryStatus.outOfDate) {
+      await compute(
+        IsarService.transferUserDataIsolate,
+        null,
+      );
+    }
+
     // Remove old database file, rename new one, delete temp file
     final File oldDbFile = File('${appSupportDir.path}/default.isar');
     if (await oldDbFile.exists()) {
@@ -483,6 +497,145 @@ class IsarService {
     await File('${appSupportDir.path}/db_export.isar')
         .rename('${appSupportDir.path}/default.isar');
     await newDbZipFile.delete();
+  }
+
+  // Optional arguments included for testing
+  static Future<void> transferUserDataIsolate(
+    _, {
+    Isar? testingOldIsar,
+    Isar? testingNewIsar,
+  }) async {
+    final oldIsar = testingOldIsar ??
+        await Isar.open(
+          [
+            DictionaryInfoSchema,
+            VocabSchema,
+            KanjiSchema,
+            PredefinedDictionaryListSchema,
+            MyDictionaryListSchema,
+            FlashcardSetSchema,
+          ],
+        );
+
+    final newIsar = testingNewIsar ??
+        await Isar.open(
+          [
+            DictionaryInfoSchema,
+            VocabSchema,
+            KanjiSchema,
+            PredefinedDictionaryListSchema,
+            MyDictionaryListSchema,
+            FlashcardSetSchema,
+          ],
+          name: 'db_export',
+        );
+
+    // Transfer my lists
+    final myListResult = await oldIsar.myDictionaryLists.where().findAll();
+    List<MyDictionaryList> newMyLists = [];
+    for (var oldDbMyList in myListResult) {
+      MyDictionaryList newDbMyList = MyDictionaryList()
+        ..id = oldDbMyList.id!
+        ..name = oldDbMyList.name
+        ..timestamp = oldDbMyList.timestamp;
+
+      newMyLists.add(newDbMyList);
+
+      await oldDbMyList.vocabLinks.load();
+      for (var oldDbVocab in oldDbMyList.vocabLinks) {
+        Vocab? newDbVocab = await newIsar.vocabs.get(oldDbVocab.id);
+        if (newDbVocab != null) newDbMyList.vocabLinks.add(newDbVocab);
+      }
+
+      await oldDbMyList.kanjiLinks.load();
+      for (var oldDbKanji in oldDbMyList.kanjiLinks) {
+        Kanji? newDbKanji = await newIsar.kanjis.getByKanji(oldDbKanji.kanji);
+        if (newDbKanji != null) newDbMyList.kanjiLinks.add(newDbKanji);
+      }
+    }
+
+    await newIsar.writeTxn(() async {
+      for (var myList in newMyLists) {
+        await newIsar.myDictionaryLists.put(myList);
+        await myList.vocabLinks.save();
+        await myList.kanjiLinks.save();
+      }
+    });
+
+    // Transfer flashcard sets
+    final flashcardSetResult = await oldIsar.flashcardSets.where().findAll();
+    List<FlashcardSet> newFlashcardSets = [];
+    for (var oldDbFlashcardSet in flashcardSetResult) {
+      FlashcardSet newDbFlashcardSet = FlashcardSet()
+        ..id = oldDbFlashcardSet.id
+        ..name = oldDbFlashcardSet.name
+        ..usingSpacedRepetition = oldDbFlashcardSet.usingSpacedRepetition
+        ..vocabShowReading = oldDbFlashcardSet.vocabShowReading
+        ..vocabShowReadingIfRareKanji =
+            oldDbFlashcardSet.vocabShowReadingIfRareKanji
+        ..kanjiShowReading = oldDbFlashcardSet.kanjiShowReading
+        ..timestamp = oldDbFlashcardSet.timestamp;
+
+      newFlashcardSets.add(newDbFlashcardSet);
+
+      await oldDbFlashcardSet.predefinedDictionaryListLinks.load();
+      for (var oldDbPredefinedList
+          in oldDbFlashcardSet.predefinedDictionaryListLinks) {
+        PredefinedDictionaryList? newDbPredefinedList = await newIsar
+            .predefinedDictionaryLists
+            .get(oldDbPredefinedList.id!);
+        if (newDbPredefinedList != null) {
+          newDbFlashcardSet.predefinedDictionaryListLinks
+              .add(newDbPredefinedList);
+        }
+      }
+
+      await oldDbFlashcardSet.myDictionaryListLinks.load();
+      for (var oldDbMyList in oldDbFlashcardSet.myDictionaryListLinks) {
+        MyDictionaryList? newDbMyList =
+            await newIsar.myDictionaryLists.get(oldDbMyList.id!);
+        if (newDbMyList != null) {
+          newDbFlashcardSet.myDictionaryListLinks.add(newDbMyList);
+        }
+      }
+    }
+
+    await newIsar.writeTxn(() async {
+      for (var flashcardSet in newFlashcardSets) {
+        await newIsar.flashcardSets.put(flashcardSet);
+        await flashcardSet.predefinedDictionaryListLinks.save();
+        await flashcardSet.myDictionaryListLinks.save();
+      }
+    });
+
+    // Transfer vocab spaced repetition data
+    final vocabResult =
+        await oldIsar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
+    await newIsar.writeTxn(() async {
+      for (var oldDbVocab in vocabResult) {
+        Vocab? newDbVocab = await newIsar.vocabs.get(oldDbVocab.id);
+        if (newDbVocab != null) {
+          newDbVocab.spacedRepetitionData = oldDbVocab.spacedRepetitionData;
+          await newIsar.vocabs.put(newDbVocab);
+        }
+      }
+    });
+
+    // Transfer kanji spaced repetition data
+    final kanjiResult =
+        await oldIsar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
+    await newIsar.writeTxn(() async {
+      for (var oldDbKanji in kanjiResult) {
+        Kanji? newDbKanji = await newIsar.kanjis.getByKanji(oldDbKanji.kanji);
+        if (newDbKanji != null) {
+          newDbKanji.spacedRepetitionData = oldDbKanji.spacedRepetitionData;
+          await newIsar.kanjis.put(newDbKanji);
+        }
+      }
+    });
+
+    if (testingOldIsar == null) await oldIsar.close();
+    if (testingNewIsar == null) await newIsar.close();
   }
 }
 
