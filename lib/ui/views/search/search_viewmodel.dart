@@ -45,7 +45,7 @@ class SearchViewModel extends BaseViewModel {
   }
 
   void searchOnChange(String value) {
-    String stringToSearch = value.toLowerCase().trim();
+    String stringToSearch = value.trim();
     // Prevent duplicate searches
     if (stringToSearch == _searchString) return;
     _searchString = stringToSearch;

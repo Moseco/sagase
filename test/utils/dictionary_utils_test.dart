@@ -46,6 +46,13 @@ void main() {
       expect(vocab0.examples![0].index, 0);
       expect(vocab0.examples![0].japanese, '何をしなければならないかは明白です。');
       expect(vocab0.examples![0].english, 'It is clear what must be done.');
+      // Japanese text index
+      expect(vocab0.japaneseTextIndex.length, 2);
+      expect(vocab0.japaneseTextIndex[0], 'めいはく');
+      expect(vocab0.japaneseTextIndex[1], '明白');
+      // Romaji text index
+      expect(vocab0.romajiTextIndex.length, 1);
+      expect(vocab0.romajiTextIndex[0], 'meihaku');
 
       final vocab1 = await isar.vocabs.get(1000390);
       expect(vocab1!.commonWord, true);
@@ -73,6 +80,16 @@ void main() {
       expect(vocab1.examples![0].index, 0);
       expect(vocab1.examples![0].japanese, '休暇はあっという間に終わった。');
       expect(vocab1.examples![0].english, 'The holiday ended all too soon.');
+      // Japanese text index
+      expect(vocab1.japaneseTextIndex.length, 4);
+      expect(vocab1.japaneseTextIndex[0], 'あっというまに');
+      expect(vocab1.japaneseTextIndex[1], 'あっという間に');
+      expect(vocab1.japaneseTextIndex[2], 'あっと言う間に');
+      expect(vocab1.japaneseTextIndex[3], 'あっとゆう間に');
+      // Romaji text index
+      expect(vocab1.romajiTextIndex.length, 2);
+      expect(vocab1.romajiTextIndex[0], 'attoiumani');
+      expect(vocab1.romajiTextIndex[1], 'atoimani');
 
       final vocab2 = await isar.vocabs.get(1003430);
       expect(vocab2!.commonWord, true);
@@ -143,6 +160,15 @@ void main() {
       expect(vocab2.examples![0].japanese, 'でもよー、オラのおとうさんは良い気しねーよ、きっと。');
       expect(vocab2.examples![0].english,
           'But I don\'t think Dad would like me to.');
+      // Japanese text index
+      expect(vocab2.japaneseTextIndex.length, 3);
+      expect(vocab2.japaneseTextIndex[0], 'きっと');
+      expect(vocab2.japaneseTextIndex[1], '屹度');
+      expect(vocab2.japaneseTextIndex[2], '急度');
+      // Romaji text index
+      expect(vocab2.romajiTextIndex.length, 2);
+      expect(vocab2.romajiTextIndex[0], 'kitto');
+      expect(vocab2.romajiTextIndex[1], 'kito');
 
       final vocab3 = await isar.vocabs.get(1578850);
       expect(vocab3!.commonWord, true);
@@ -248,6 +274,17 @@ void main() {
           vocab3.examples![2].japanese, 'これらの規則はずっと守られてきたし、これからもいつも守られていくだろう。');
       expect(vocab3.examples![2].english,
           'These rules have been and always will be observed.');
+      // Japanese text index
+      expect(vocab3.japaneseTextIndex.length, 5);
+      expect(vocab3.japaneseTextIndex[0], 'いく');
+      expect(vocab3.japaneseTextIndex[1], 'ゆく');
+      expect(vocab3.japaneseTextIndex[2], '行く');
+      expect(vocab3.japaneseTextIndex[3], '逝く');
+      expect(vocab3.japaneseTextIndex[4], '往く');
+      // Romaji text index
+      expect(vocab3.romajiTextIndex.length, 2);
+      expect(vocab3.romajiTextIndex[0], 'iku');
+      expect(vocab3.romajiTextIndex[1], 'yuku');
 
       final vocab4 = await isar.vocabs.get(2002400);
       expect(vocab4!.commonWord, true);
@@ -292,6 +329,15 @@ void main() {
       expect(vocab4.examples![2].japanese, 'ううん、由美ちゃんが魔法瓶に入れて、部室に持って来てくれたの。');
       expect(vocab4.examples![2].english,
           'No, Yumi put it in a thermos flask and brought it into the club room.');
+      // Japanese text index
+      expect(vocab4.japaneseTextIndex.length, 2);
+      expect(vocab4.japaneseTextIndex[0], 'ううん');
+      expect(vocab4.japaneseTextIndex[1], 'うーん');
+      // Romaji text index
+      expect(vocab4.romajiTextIndex.length, 3);
+      expect(vocab4.romajiTextIndex[0], 'uun');
+      expect(vocab4.romajiTextIndex[1], 'un');
+      expect(vocab4.romajiTextIndex[2], 'u-n');
 
       final vocab5 = await isar.vocabs.get(1002360);
       expect(vocab5!.commonWord, false);
@@ -337,6 +383,22 @@ void main() {
           'I\'m sorry to have kept you waiting');
       expect(vocab5.definitions[0].pos!.length, 1);
       expect(vocab5.definitions[0].pos![0], PartOfSpeech.expressions);
+      // Japanese text index
+      expect(vocab5.japaneseTextIndex.length, 9);
+      expect(vocab5.japaneseTextIndex[0], 'おまちどおさま');
+      expect(vocab5.japaneseTextIndex[1], 'お待ちどおさま');
+      expect(vocab5.japaneseTextIndex[2], 'お待ちどお様');
+      expect(vocab5.japaneseTextIndex[3], 'おまちどうさま');
+      expect(vocab5.japaneseTextIndex[4], 'お待ち遠様');
+      expect(vocab5.japaneseTextIndex[5], '御待ち遠様');
+      expect(vocab5.japaneseTextIndex[6], 'お待ち遠さま');
+      expect(vocab5.japaneseTextIndex[7], 'お待ちどうさま');
+      expect(vocab5.japaneseTextIndex[8], 'お待ちどう様');
+      // Romaji text index
+      expect(vocab5.romajiTextIndex.length, 3);
+      expect(vocab5.romajiTextIndex[0], 'omachidoosama');
+      expect(vocab5.romajiTextIndex[1], 'omachidousama');
+      expect(vocab5.romajiTextIndex[2], 'omachidosama');
 
       final vocab6 = await isar.vocabs.get(1001390);
       expect(vocab6!.commonWord, true);
@@ -365,6 +427,14 @@ void main() {
       expect(vocab6.definitions[0].miscInfo!.length, 1);
       expect(vocab6.definitions[0].miscInfo![0],
           MiscellaneousInfo.usuallyKanaAlone);
+      // Japanese text index
+      expect(vocab6.japaneseTextIndex.length, 3);
+      expect(vocab6.japaneseTextIndex[0], 'おでん');
+      expect(vocab6.japaneseTextIndex[1], '御田');
+      expect(vocab6.japaneseTextIndex[2], 'お田');
+      // Romaji text index
+      expect(vocab6.romajiTextIndex.length, 1);
+      expect(vocab6.romajiTextIndex[0], 'oden');
 
       final vocab7 = await isar.vocabs.get(2067590);
       expect(vocab7!.commonWord, false);
@@ -384,6 +454,39 @@ void main() {
       expect(vocab7.definitions[0].dialects!.length, 2);
       expect(vocab7.definitions[0].dialects![0], Dialect.touhokuBen);
       expect(vocab7.definitions[0].dialects![1], Dialect.hokkaidoBen);
+      // Japanese text index
+      expect(vocab7.japaneseTextIndex.length, 3);
+      expect(vocab7.japaneseTextIndex[0], 'めんこい');
+      expect(vocab7.japaneseTextIndex[1], 'めごい');
+      expect(vocab7.japaneseTextIndex[2], 'めんごい');
+      // Romaji text index
+      expect(vocab7.romajiTextIndex.length, 3);
+      expect(vocab7.romajiTextIndex[0], 'menkoi');
+      expect(vocab7.romajiTextIndex[1], 'megoi');
+      expect(vocab7.romajiTextIndex[2], 'mengoi');
+
+      final vocab8 = await isar.vocabs.get(1000160);
+      expect(vocab8!.commonWord, true);
+      // Kanji-reading pairs
+      expect(vocab8.kanjiReadingPairs.length, 1);
+      // Pair 1
+      expect(vocab8.kanjiReadingPairs[0].kanjiWritings!.length, 1);
+      expect(vocab8.kanjiReadingPairs[0].kanjiWritings![0].kanji, 'Ｔシャツ');
+      expect(vocab8.kanjiReadingPairs[0].readings.length, 1);
+      expect(vocab8.kanjiReadingPairs[0].readings[0].reading, 'ティーシャツ');
+      // Definition
+      expect(vocab8.definitions.length, 1);
+      expect(vocab8.definitions[0].definition, 'T-shirt; tee shirt');
+      expect(vocab8.definitions[0].pos!.length, 1);
+      expect(vocab8.definitions[0].pos![0], PartOfSpeech.noun);
+      // Japanese text index
+      expect(vocab8.japaneseTextIndex.length, 2);
+      expect(vocab8.japaneseTextIndex[0], 'てぃいしゃつ');
+      expect(vocab8.japaneseTextIndex[1], 'tしゃつ');
+      // Romaji text index
+      expect(vocab8.romajiTextIndex.length, 2);
+      expect(vocab8.romajiTextIndex[0], 'teiishatsu');
+      expect(vocab8.romajiTextIndex[1], 'teishatsu');
     });
 
     test('Kanji database creation with short source dictionary', () async {

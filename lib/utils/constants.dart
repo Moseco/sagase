@@ -1,6 +1,6 @@
 import 'package:sagase/datamodels/kanji_radical.dart';
 
-const int dictionaryVersion = 1;
+const int dictionaryVersion = 2;
 const int nestedNavigationKey = 1;
 
 const int dictionaryListIdJouyou = 0;

@@ -3,6 +3,28 @@ const shortJMdict = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <JMdict>
 <entry>
+<ent_seq>1000160</ent_seq>
+<k_ele>
+<keb>Ｔシャツ</keb>
+<ke_pri>spec1</ke_pri>
+</k_ele>
+<r_ele>
+<reb>ティーシャツ</reb>
+<re_pri>spec1</re_pri>
+</r_ele>
+<sense>
+<pos>&n;</pos>
+<gloss>T-shirt</gloss>
+<gloss>tee shirt</gloss>
+<example>
+<ex_srce exsrc_type="tat">224042</ex_srce>
+<ex_text>Ｔシャツ</ex_text>
+<ex_sent xml:lang="jpn">このＴシャツはバーゲンで買ったんだ。</ex_sent>
+<ex_sent xml:lang="eng">I bought this T-shirt on sale.</ex_sent>
+</example>
+</sense>
+</entry>
+<entry>
 <ent_seq>1000220</ent_seq>
 <k_ele>
 <keb>明白</keb>

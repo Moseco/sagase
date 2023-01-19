@@ -12,6 +12,7 @@ import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:xml/xml.dart';
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase/utils/string_utils.dart';
 
 // This class contains functions only to be used during development
 class DictionaryUtils {
@@ -151,14 +152,14 @@ class DictionaryUtils {
       vocabList.add(vocab);
 
       // Create index strings
-      const kanaKit = KanaKit();
+      final kanaKit = const KanaKit().copyWithConfig(passRomaji: true);
       final simplifyNonVerbRegex = RegExp(r'(?<=.{1})(う|っ|ー)');
       final simplifyVerbRegex = RegExp(r'(?<=.{1})(ー|っ|(う(?=.)))');
       for (var pair in vocab.kanjiReadingPairs) {
         // Add readings
         for (var reading in pair.readings) {
           // Japanese text
-          vocab.japaneseTextIndex.add(reading.reading);
+          vocab.japaneseTextIndex.add(kanaKit.toHiragana(reading.reading));
           // Romaji text
           vocab.romajiTextIndex
               .add(kanaKit.toRomaji(reading.reading).toLowerCase());
@@ -185,7 +186,9 @@ class DictionaryUtils {
         // Add kanji
         if (pair.kanjiWritings != null) {
           for (var kanjiWriting in pair.kanjiWritings!) {
-            vocab.japaneseTextIndex.add(kanjiWriting.kanji);
+            vocab.japaneseTextIndex.add(kanaKit.toHiragana(
+              kanjiWriting.kanji.toLowerCase().romajiToHalfWidth(),
+            ));
           }
         }
       }

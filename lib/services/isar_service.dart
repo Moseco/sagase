@@ -15,11 +15,12 @@ import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:flutter/foundation.dart' show compute;
+import 'package:sagase/utils/string_utils.dart';
 
 class IsarService {
   final Isar _isar;
 
-  final _kanaKit = const KanaKit();
+  final _kanaKit = const KanaKit().copyWithConfig(passRomaji: true);
 
   bool _myDictionaryListsChanged = false;
   bool get myDictionaryListsChanged => _myDictionaryListsChanged;
@@ -72,14 +73,19 @@ class IsarService {
   }
 
   Future<List<DictionaryItem>> searchDictionary(String value) async {
+    // First convert characters to match what would be in the index
+    String searchString =
+        _kanaKit.toHiragana(value.toLowerCase().romajiToHalfWidth());
+
     // First check if searching single kanji
     Kanji? kanji;
-    if (value.length == 1 && value.contains(constants.kanjiRegExp)) {
-      kanji = await _isar.kanjis.getByKanji(value);
+    if (searchString.length == 1 &&
+        searchString.contains(constants.kanjiRegExp)) {
+      kanji = await _isar.kanjis.getByKanji(searchString);
     }
 
     // Search vocab
-    final vocabList = await searchVocab(value);
+    final vocabList = await searchVocab(searchString);
 
     // Add kanji to the start of results if found
     if (kanji != null) {
