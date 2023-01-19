@@ -23,9 +23,6 @@ class KanjiCompoundsView extends StatelessWidget {
             indent: 8,
             endIndent: 8,
           ),
-          shrinkWrap: true,
-          primary: false,
-          padding: EdgeInsets.zero,
           itemCount: kanji.compounds.length,
           itemBuilder: (context, index) => VocabListItem(
             vocab: kanji.compounds.elementAt(index),
