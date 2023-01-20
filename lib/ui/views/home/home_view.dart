@@ -28,15 +28,14 @@ class HomeView extends StatelessWidget {
                   child: GNav(
                     haptic: false,
                     gap: 8,
-                    activeColor: Colors.deepPurple,
+                    activeColor: Colors.white,
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 12,
                     ),
                     tabBorderRadius: 15,
-                    tabBackgroundColor: Colors.deepPurple.withOpacity(0.2),
-                    color: Colors.grey[600],
+                    tabBackgroundColor: Colors.deepPurple,
                     selectedIndex: viewModel.currentIndex,
                     onTabChange: viewModel.handleNavigation,
                     tabs: const [

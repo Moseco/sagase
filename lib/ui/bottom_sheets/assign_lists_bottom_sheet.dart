@@ -27,9 +27,9 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
     return DefaultTabController(
       length: 3,
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(16),
             topRight: Radius.circular(16),
           ),
@@ -68,17 +68,21 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                 ],
               ),
             ),
-            const Divider(height: 1, color: Colors.black),
-            const TabBar(
-              labelColor: Colors.black,
-              indicatorColor: Colors.black,
-              tabs: [
+            const Divider(height: 1),
+            TabBar(
+              labelColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : null,
+              indicatorColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : null,
+              tabs: const [
                 Tab(text: 'Vocab'),
                 Tab(text: 'Kanji'),
                 Tab(text: 'My lists'),
               ],
             ),
-            const Divider(height: 1, color: Colors.black),
+            const Divider(height: 1),
             Expanded(
               child: TabBarView(
                 children: [

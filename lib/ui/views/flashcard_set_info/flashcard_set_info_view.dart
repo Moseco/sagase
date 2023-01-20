@@ -53,7 +53,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const VerticalDivider(color: Colors.black),
+                            const VerticalDivider(),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -48,7 +48,6 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
             child: ListView.separated(
               separatorBuilder: (_, __) => const Divider(
                 height: 1,
-                color: Colors.grey,
                 indent: 8,
                 endIndent: 8,
               ),
@@ -75,11 +74,7 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
             Expanded(
               child: Column(
                 children: [
-                  const Divider(
-                    color: Colors.black,
-                    height: 1,
-                    thickness: 1,
-                  ),
+                  const Divider(height: 1, thickness: 1),
                   SizedBox(
                     height: 40,
                     child: Row(
@@ -130,11 +125,7 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
                             },
                           ),
                         ),
-                        const VerticalDivider(
-                          color: Colors.black,
-                          width: 1,
-                          thickness: 1,
-                        ),
+                        const VerticalDivider(width: 1, thickness: 1),
                         IconButton(
                           onPressed: () {
                             int cursorPosition =
@@ -167,23 +158,14 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
                       ],
                     ),
                   ),
-                  const Divider(
-                    color: Colors.black,
-                    height: 1,
-                    thickness: 1,
-                  ),
+                  const Divider(height: 1, thickness: 1),
                   Expanded(
                     child: HandWritingCanvas(
                       onHandWritingChanged: viewModel.recognizeWriting,
                       controller: handWritingController,
                     ),
                   ),
-                  const Divider(
-                    color: Colors.black,
-                    indent: 16,
-                    endIndent: 16,
-                    height: 1,
-                  ),
+                  const Divider(indent: 16, endIndent: 16, height: 1),
                   Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).padding.bottom,
@@ -237,6 +219,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
   Widget build(BuildContext context, SearchViewModel viewModel) {
     return KeyboardActions(
       config: KeyboardActionsConfig(
+        keyboardBarColor: Theme.of(context).cardColor,
         actions: [
           KeyboardActionsItem(
             focusNode: keyboardFocusNode,
@@ -281,18 +264,32 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                   decoration: InputDecoration(
                     hintText: 'Search',
                     contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
                     suffixIcon: IconButton(
                       onPressed: () {
                         viewModel.searchOnChange('');
                         searchController.clear();
                         handWritingFocusNode.requestFocus();
                       },
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(
+                        Icons.clear,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                     ),
                   ),
                 )
@@ -308,18 +305,32 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                   decoration: InputDecoration(
                     hintText: 'Search',
                     contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: Colors.transparent),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
                     suffixIcon: IconButton(
                       onPressed: () {
                         viewModel.searchOnChange('');
                         searchController.clear();
                         keyboardFocusNode.requestFocus();
                       },
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(
+                        Icons.clear,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                     ),
                   ),
                 ),

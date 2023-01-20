@@ -19,7 +19,6 @@ class KanjiCompoundsView extends StatelessWidget {
         body: ListView.separated(
           separatorBuilder: (_, __) => const Divider(
             height: 1,
-            color: Colors.grey,
             indent: 8,
             endIndent: 8,
           ),

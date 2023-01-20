@@ -27,11 +27,15 @@ class FlashcardsView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
-          ),
-          iconTheme: const IconThemeData(color: Colors.black),
+          systemOverlayStyle: Theme.of(context).brightness == Brightness.light
+              ? const SystemUiOverlayStyle(
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
+                )
+              : null,
+          iconTheme: Theme.of(context).brightness == Brightness.light
+              ? const IconThemeData(color: Colors.black)
+              : null,
           actions: [
             IconButton(
               onPressed: viewModel.canUndo
@@ -126,7 +130,6 @@ class FlashcardsView extends StatelessWidget {
                 right: 8,
                 bottom: 8 + MediaQuery.of(context).padding.bottom * 1.2,
               ),
-              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -236,7 +239,7 @@ class _FlashcardAnswerButton extends StatelessWidget {
             color: color,
             borderRadius: const BorderRadius.all(Radius.circular(20)),
           ),
-          child: Icon(icon),
+          child: Icon(icon, color: Colors.black),
         ),
       ),
     );

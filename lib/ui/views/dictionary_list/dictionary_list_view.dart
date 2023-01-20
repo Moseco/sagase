@@ -63,7 +63,6 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
     return ListView.separated(
       separatorBuilder: (_, __) => const Divider(
         height: 1,
-        color: Colors.grey,
         indent: 8,
         endIndent: 8,
       ),
@@ -86,7 +85,6 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
     return ListView.separated(
       separatorBuilder: (_, __) => const Divider(
         height: 1,
-        color: Colors.grey,
         indent: 8,
         endIndent: 8,
       ),

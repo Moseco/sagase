@@ -59,7 +59,12 @@ class HandWritingCanvasState extends State<HandWritingCanvas> {
       },
       child: ClipRect(
         child: CustomPaint(
-          painter: _WritingPainter(ink: _ink),
+          painter: _WritingPainter(
+            ink: _ink,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white,
+          ),
           size: Size.infinite,
         ),
       ),
@@ -85,13 +90,14 @@ class HandWritingCanvasState extends State<HandWritingCanvas> {
 
 class _WritingPainter extends CustomPainter {
   Ink ink;
+  Color color;
 
-  _WritingPainter({required this.ink});
+  _WritingPainter({required this.ink, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.black
+      ..color = color
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 4.0;
 

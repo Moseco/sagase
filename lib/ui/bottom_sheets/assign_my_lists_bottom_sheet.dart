@@ -23,9 +23,9 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
@@ -58,12 +58,7 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
               ],
             ),
           ),
-          const Divider(
-            color: Colors.black,
-            height: 1,
-            indent: 16,
-            endIndent: 16,
-          ),
+          const Divider(height: 1),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,

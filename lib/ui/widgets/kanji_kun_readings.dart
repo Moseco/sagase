@@ -22,10 +22,7 @@ class KanjiKunReadings extends StatelessWidget {
       if (leading != null) leading!,
       TextSpan(
         children: [
-          TextSpan(
-            text: split[0],
-            style: const TextStyle(color: Colors.black),
-          ),
+          TextSpan(text: split[0]),
           if (split.length == 2)
             TextSpan(
               text: split[1],
@@ -40,14 +37,8 @@ class KanjiKunReadings extends StatelessWidget {
       kunReadingTextSpans.add(
         TextSpan(
           children: [
-            const TextSpan(
-              text: ', ',
-              style: TextStyle(color: Colors.black),
-            ),
-            TextSpan(
-              text: split[0],
-              style: const TextStyle(color: Colors.black),
-            ),
+            const TextSpan(text: ', '),
+            TextSpan(text: split[0]),
             if (split.length == 2)
               TextSpan(
                 text: split[1],

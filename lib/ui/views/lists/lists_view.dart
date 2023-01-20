@@ -298,10 +298,7 @@ class _DictionaryListItem extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              const Icon(
-                Icons.format_list_bulleted,
-                color: Colors.black,
-              ),
+              const Icon(Icons.format_list_bulleted),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),

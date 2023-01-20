@@ -243,23 +243,19 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
                   ),
                 TextSpan(
                   text: partsOfSpeechStrings[index],
-                  style: const TextStyle(color: Colors.black54),
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 TextSpan(
                   text: '${index + 1}: ',
                   style: const TextStyle(
-                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                TextSpan(
-                  text: viewModel.vocab.definitions[index].definition,
-                  style: const TextStyle(color: Colors.black),
-                ),
+                TextSpan(text: viewModel.vocab.definitions[index].definition),
                 if (otherInfo[index].isNotEmpty)
                   TextSpan(
                     text: otherInfo[index],
-                    style: const TextStyle(color: Colors.black54),
+                    style: const TextStyle(color: Colors.grey),
                   ),
               ],
             ),
@@ -715,7 +711,7 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             ListView.separated(
-              separatorBuilder: (_, __) => const Divider(color: Colors.grey),
+              separatorBuilder: (_, __) => const Divider(),
               shrinkWrap: true,
               primary: false,
               padding: const EdgeInsets.all(8),

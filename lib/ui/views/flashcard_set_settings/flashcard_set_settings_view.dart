@@ -133,7 +133,9 @@ class FlashcardSetSettingsView extends StatelessWidget {
                       padding: const EdgeInsets.all(4),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey.shade300
+                            : Colors.grey.shade800,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -248,7 +250,7 @@ class _ToggleOption extends StatelessWidget {
               text,
               style: TextStyle(
                 fontSize: 18,
-                color: enabled ? Colors.white : Colors.black,
+                color: enabled ? Colors.white : null,
               ),
             ),
           ),

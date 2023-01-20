@@ -16,12 +16,11 @@ class TextFieldDialog extends HookWidget {
   Widget build(BuildContext context) {
     final controller = useTextEditingController(text: request.data);
     return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -38,10 +37,11 @@ class TextFieldDialog extends HookWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
-              child: TextFormField(
+              child: TextField(
                 controller: controller,
                 autofocus: true,
                 decoration: InputDecoration(hintText: request.description!),
+                textCapitalization: TextCapitalization.sentences,
               ),
             ),
             GestureDetector(
@@ -56,7 +56,10 @@ class TextFieldDialog extends HookWidget {
                 ),
                 child: Text(
                   request.mainButtonTitle!,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             )

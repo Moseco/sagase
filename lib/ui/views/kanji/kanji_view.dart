@@ -73,10 +73,7 @@ class KanjiView extends StatelessWidget {
                           kanji.kunReadings!,
                           leading: const TextSpan(
                             text: 'Kun readings: ',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           maxLines: 99,
                         ),
@@ -138,7 +135,6 @@ class KanjiView extends StatelessWidget {
                         ListView.separated(
                           separatorBuilder: (_, __) => const Divider(
                             height: 1,
-                            color: Colors.grey,
                             indent: 8,
                             endIndent: 8,
                           ),
@@ -188,22 +184,13 @@ class _TitleInfoText extends StatelessWidget {
         children: [
           TextSpan(
             text: title,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const TextSpan(
             text: ': ',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          TextSpan(
-            text: content,
-            style: const TextStyle(color: Colors.black),
-          ),
+          TextSpan(text: content),
         ],
       ),
     );
@@ -225,6 +212,8 @@ class _StrokeOrder extends ViewModelWidget<KanjiViewModel> {
     } else {
       final initialCoordinateStarting = RegExp(r'M|m');
       final initialCoordinateEnding = RegExp(r'C|c|S|s');
+      String currentStrokeColor =
+          Theme.of(context).brightness == Brightness.light ? 'black' : 'white';
 
       List<Widget> svgs = [];
 
@@ -247,7 +236,7 @@ class _StrokeOrder extends ViewModelWidget<KanjiViewModel> {
         }
 
         // Add path for current stroke in different color from previous strokes
-        buffer.write('<path stroke="black" d="');
+        buffer.write('<path stroke="$currentStrokeColor" d="');
         buffer.write(strokes![i]);
         buffer.write('"/></g>');
 
@@ -261,7 +250,7 @@ class _StrokeOrder extends ViewModelWidget<KanjiViewModel> {
               .split(',');
 
           buffer.write(
-              '<circle fill="red" r="4" cx="${initialCoordinates[0]}" cy="${initialCoordinates[1]}"/>');
+              '<circle fill="$currentStrokeColor" r="5" cx="${initialCoordinates[0]}" cy="${initialCoordinates[1]}"/>');
         } catch (_) {}
 
         // Add closing svg tag
@@ -277,7 +266,10 @@ class _StrokeOrder extends ViewModelWidget<KanjiViewModel> {
             ),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(width: 1),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1,
+                ),
               ),
               child: SvgPicture.string(
                 buffer.toString(),
