@@ -354,12 +354,10 @@ class _KanjiFlashcardFront extends StatelessWidget {
             kanji.kunReadings!,
             leading: const TextSpan(
               text: 'Kun readings: ',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             maxLines: 99,
+            alignCenter: true,
           ),
         );
       }
@@ -500,10 +498,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
                 kanji.kunReadings!,
                 leading: const TextSpan(
                   text: 'Kun readings: ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 maxLines: 99,
                 alignCenter: true,
@@ -538,22 +533,13 @@ class _KanjiReadingText extends StatelessWidget {
         children: [
           TextSpan(
             text: title,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const TextSpan(
             text: ': ',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          TextSpan(
-            text: content,
-            style: const TextStyle(color: Colors.black),
-          ),
+          TextSpan(text: content),
         ],
       ),
     );
