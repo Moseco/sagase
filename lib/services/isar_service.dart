@@ -462,6 +462,70 @@ class IsarService {
     }
   }
 
+  Future<void> resetFlashcardSetSpacedRepetitionData(
+      FlashcardSet flashcardSet) async {
+    // Load all vocab and kanji and add to maps to avoid duplicates
+    await flashcardSet.predefinedDictionaryListLinks.load();
+    await flashcardSet.myDictionaryListLinks.load();
+
+    Map<int, Vocab> vocabMap = {};
+    Map<String, Kanji> kanjiMap = {};
+
+    // Get predefined lists vocab and kanji
+    for (int i = 0;
+        i < flashcardSet.predefinedDictionaryListLinks.length;
+        i++) {
+      await flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .vocabLinks
+          .load();
+      await flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .kanjiLinks
+          .load();
+
+      for (var vocab in flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .vocabLinks) {
+        vocabMap[vocab.id] = vocab;
+      }
+      for (var kanji in flashcardSet.predefinedDictionaryListLinks
+          .elementAt(i)
+          .kanjiLinks) {
+        kanjiMap[kanji.kanji] = kanji;
+      }
+    }
+
+    // Get my lists vocab and kanji
+    for (int i = 0; i < flashcardSet.myDictionaryListLinks.length; i++) {
+      await flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks.load();
+      await flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks.load();
+
+      for (var vocab
+          in flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks) {
+        vocabMap[vocab.id] = vocab;
+      }
+      for (var kanji
+          in flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks) {
+        kanjiMap[kanji.kanji] = kanji;
+      }
+    }
+
+    await _isar.writeTxn(() async {
+      // Reset vocab spaced repetition data
+      for (var vocab in vocabMap.values) {
+        vocab.spacedRepetitionData = null;
+        await _isar.vocabs.put(vocab);
+      }
+
+      // Reset kanji spaced repetition data
+      for (var kanji in kanjiMap.values) {
+        kanji.spacedRepetitionData = null;
+        await _isar.kanjis.put(kanji);
+      }
+    });
+  }
+
   Future<void> updateSpacedRepetitionData(DictionaryItem item) async {
     return _isar.writeTxn(() async {
       if (item is Vocab) {

@@ -28,7 +28,21 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> renameFlashcardSet() async {
+  void handlePopupMenuButton(PopupMenuItemType type) {
+    switch (type) {
+      case PopupMenuItemType.rename:
+        _renameFlashcardSet();
+        break;
+      case PopupMenuItemType.delete:
+        _deleteFlashcardSet();
+        break;
+      case PopupMenuItemType.reset:
+        _resetSpacedRepetitionData();
+        break;
+    }
+  }
+
+  Future<void> _renameFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.textFieldDialog,
       title: 'Rename flashcards',
@@ -46,7 +60,7 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> deleteFlashcardSet() async {
+  Future<void> _deleteFlashcardSet() async {
     final response = await _dialogService.showConfirmationDialog(
       title: 'Delete flashcards?',
       confirmationTitle: 'Delete',
@@ -58,6 +72,21 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
       _isarService.deleteFlashcardSet(flashcardSet);
       // Send true as result when deleting
       _navigationService.back(result: true);
+    }
+  }
+
+  Future<void> _resetSpacedRepetitionData() async {
+    final response = await _dialogService.showConfirmationDialog(
+      title: 'Reset spaced repetition data?',
+      description:
+          'This will effect all items that are part of this flashcard set and the same items that are part of other flashcard sets. This action cannot be undone.',
+      confirmationTitle: 'Reset',
+      cancelTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      _isarService.resetFlashcardSetSpacedRepetitionData(flashcardSet);
     }
   }
 
@@ -171,4 +200,10 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
   }
+}
+
+enum PopupMenuItemType {
+  rename,
+  delete,
+  reset,
 }

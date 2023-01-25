@@ -175,7 +175,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                               ),
                               _Indicator(
                                 color: Colors.green,
-                                text: '2-4 weeks',
+                                text: '1-4 weeks',
                               ),
                               _Indicator(
                                 color: Colors.blue,
@@ -183,7 +183,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                               ),
                               _Indicator(
                                 color: Colors.deepPurple,
-                                text: '3+ months',
+                                text: '2+ months',
                               ),
                             ],
                           ),

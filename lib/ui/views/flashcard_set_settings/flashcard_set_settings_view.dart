@@ -21,15 +21,25 @@ class FlashcardSetSettingsView extends StatelessWidget {
             if (flashcardSet.usingSpacedRepetition)
               IconButton(
                 onPressed: viewModel.openFlashcardSetInfo,
-                icon: const Icon(Icons.info_outline),
+                icon: const Icon(Icons.query_stats),
               ),
-            IconButton(
-              onPressed: viewModel.renameFlashcardSet,
-              icon: const Icon(Icons.edit),
-            ),
-            IconButton(
-              onPressed: viewModel.deleteFlashcardSet,
-              icon: const Icon(Icons.delete),
+            PopupMenuButton<PopupMenuItemType>(
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: PopupMenuItemType.rename,
+                  child: Text('Rename'),
+                ),
+                const PopupMenuItem(
+                  value: PopupMenuItemType.delete,
+                  child: Text('Delete'),
+                ),
+                if (flashcardSet.usingSpacedRepetition)
+                  const PopupMenuItem(
+                    value: PopupMenuItemType.reset,
+                    child: Text('Reset progress'),
+                  ),
+              ],
+              onSelected: viewModel.handlePopupMenuButton,
             ),
           ],
         ),
