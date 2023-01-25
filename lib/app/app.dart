@@ -1,6 +1,8 @@
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
+import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
@@ -55,6 +57,7 @@ import 'package:stacked_services/stacked_services.dart';
     MaterialRoute(page: DevView),
   ],
   dependencies: [
+    // IsarService is registered in SplashScreen to catch errors
     LazySingleton(classType: NavigationService),
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
@@ -63,7 +66,10 @@ import 'package:stacked_services/stacked_services.dart';
       classType: DigitalInkService,
       presolveUsing: DigitalInkService.initialize,
     ),
-    // IsarService is registered in SplashScreen to catch errors
+    Presolve(
+      classType: SharedPreferencesService,
+      presolveUsing: SharedPreferencesService.initialize,
+    ),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
     LazySingleton(classType: ListsViewModel),
@@ -75,6 +81,7 @@ import 'package:stacked_services/stacked_services.dart';
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),
+    StackedDialog(classType: InitialIntervalDialog),
   ],
 )
 class AppSetup {

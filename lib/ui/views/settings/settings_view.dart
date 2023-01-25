@@ -42,6 +42,17 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
               SettingsSection(
+                title: const Text('Flashcards'),
+                tiles: [
+                  SettingsTile.navigation(
+                    leading: const Icon(Icons.schedule),
+                    title: const Text('Initial spaced repetition interval'),
+                    onPressed: (_) =>
+                        viewModel.setInitialSpacedRepetitionInterval(),
+                  ),
+                ],
+              ),
+              SettingsSection(
                 title: const Text('About Sagase'),
                 tiles: [
                   SettingsTile(

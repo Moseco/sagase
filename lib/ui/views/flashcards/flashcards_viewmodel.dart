@@ -9,6 +9,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -17,6 +18,7 @@ class FlashcardsViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final FlashcardSet flashcardSet;
 
@@ -306,13 +308,18 @@ class FlashcardsViewModel extends BaseViewModel {
     if (quality >= 2) {
       switch (currentData.repetitions) {
         case 0:
-          interval = 1;
+          interval = quality == 2
+              ? _sharedPreferencesService.getInitialCorrectInterval()
+              : _sharedPreferencesService.getInitialVeryCorrectInterval();
           break;
         case 1:
-          interval = 2;
+          interval = 2 * quality == 2
+              ? _sharedPreferencesService.getInitialCorrectInterval()
+              : _sharedPreferencesService.getInitialVeryCorrectInterval();
           break;
         default:
           interval = (currentData.interval * currentData.easeFactor).floor();
+          break;
       }
 
       repetitions = currentData.repetitions + 1;
