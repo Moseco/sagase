@@ -313,9 +313,10 @@ class FlashcardsViewModel extends BaseViewModel {
               : _sharedPreferencesService.getInitialVeryCorrectInterval();
           break;
         case 1:
-          interval = 2 * quality == 2
-              ? _sharedPreferencesService.getInitialCorrectInterval()
-              : _sharedPreferencesService.getInitialVeryCorrectInterval();
+          interval = 2 *
+              (quality == 2
+                  ? _sharedPreferencesService.getInitialCorrectInterval()
+                  : _sharedPreferencesService.getInitialVeryCorrectInterval());
           break;
         default:
           interval = (currentData.interval * currentData.easeFactor).floor();
