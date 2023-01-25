@@ -298,6 +298,23 @@ class FlashcardsViewModel extends BaseViewModel {
     _isarService.updateSpacedRepetitionData(current.flashcard);
   }
 
+  String? getNewInterval(FlashcardAnswer answer) {
+    if (!_sharedPreferencesService.getShowNewInterval()) return null;
+    if (activeFlashcards.isEmpty) return '';
+
+    if (answer == FlashcardAnswer.wrong) {
+      return '0';
+    } else if (answer == FlashcardAnswer.repeat) {
+      return '~';
+    } else {
+      return _calculateSpacedRepetition(
+        answer.index,
+        activeFlashcards[0].spacedRepetitionData ??
+            SpacedRepetitionData.initialData(),
+      ).interval.toString();
+    }
+  }
+
   SpacedRepetitionData _calculateSpacedRepetition(
     int quality,
     SpacedRepetitionData currentData,

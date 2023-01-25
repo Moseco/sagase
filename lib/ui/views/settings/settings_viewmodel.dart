@@ -10,6 +10,8 @@ class SettingsViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
 
+  bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
+
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
   }
@@ -33,5 +35,10 @@ class SettingsViewModel extends BaseViewModel {
 
     _sharedPreferencesService.setInitialCorrectInterval(response!.data![0]);
     _sharedPreferencesService.setInitialVeryCorrectInterval(response.data![1]);
+  }
+
+  void setShowNewInterval(bool value) {
+    _sharedPreferencesService.setShowNewInterval(value);
+    notifyListeners();
   }
 }

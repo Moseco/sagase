@@ -32,4 +32,12 @@ class SharedPreferencesService {
       value,
     );
   }
+
+  bool getShowNewInterval() {
+    return _sharedPreferences.getBool(constants.keyShowNewInterval) ?? false;
+  }
+
+  Future<void> setShowNewInterval(bool value) async {
+    await _sharedPreferences.setBool(constants.keyShowNewInterval, value);
+  }
 }

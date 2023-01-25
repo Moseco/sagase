@@ -14,6 +14,7 @@ final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
 
 const keyInitialCorrectInterval = 'initial_correct_interval';
 const keyInitialVeryCorrectInterval = 'initial_very_correct_interval';
+const keyShowNewInterval = 'show_new_interval';
 
 const radicals = [
   KanjiRadical('', 0, ''), // Empty to align radical number with list index

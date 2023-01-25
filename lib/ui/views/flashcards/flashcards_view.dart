@@ -196,22 +196,30 @@ class FlashcardsView extends StatelessWidget {
                             icon: Icons.close,
                             color: Colors.red,
                             onTap: () => flashcardDeckController.swipeWrong(),
+                            newInterval:
+                                viewModel.getNewInterval(FlashcardAnswer.wrong),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.refresh,
                             color: Colors.yellow,
                             onTap: () => flashcardDeckController.swipeRepeat(),
+                            newInterval: viewModel
+                                .getNewInterval(FlashcardAnswer.repeat),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.check,
                             color: Colors.green,
                             onTap: () => flashcardDeckController.swipeCorrect(),
+                            newInterval: viewModel
+                                .getNewInterval(FlashcardAnswer.correct),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.done_all,
                             color: Colors.blue,
                             onTap: () =>
                                 flashcardDeckController.swipeVeryCorrect(),
+                            newInterval: viewModel
+                                .getNewInterval(FlashcardAnswer.veryCorrect),
                           ),
                         ]
                       : [
@@ -240,11 +248,13 @@ class _FlashcardAnswerButton extends StatelessWidget {
   final IconData icon;
   final Color color;
   final void Function() onTap;
+  final String? newInterval;
 
   const _FlashcardAnswerButton({
     required this.icon,
     required this.color,
     required this.onTap,
+    this.newInterval,
     Key? key,
   }) : super(key: key);
 
@@ -254,13 +264,27 @@ class _FlashcardAnswerButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 40,
           margin: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             color: color,
             borderRadius: const BorderRadius.all(Radius.circular(20)),
           ),
-          child: Icon(icon, color: Colors.black),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.black),
+              if (newInterval != null)
+                Text(
+                  newInterval!,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
