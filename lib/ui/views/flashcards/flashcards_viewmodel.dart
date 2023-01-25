@@ -341,6 +341,8 @@ class FlashcardsViewModel extends BaseViewModel {
   }
 
   void openFlashcardItem() async {
+    if (activeFlashcards.isEmpty) return;
+
     if (activeFlashcards[0] is Vocab) {
       _navigationService.navigateTo(
         Routes.vocabView,
@@ -354,7 +356,7 @@ class FlashcardsViewModel extends BaseViewModel {
     }
   }
 
-  void openFlashcardSetInfo(FlashcardSet flashcardSet) async {
+  void openFlashcardSetInfo() async {
     _navigationService.navigateTo(
       Routes.flashcardSetInfoView,
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),

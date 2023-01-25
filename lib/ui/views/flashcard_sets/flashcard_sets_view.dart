@@ -65,7 +65,7 @@ class _FlashcardSet extends ViewModelWidget<FlashcardSetsViewModel> {
                 onTap: () => viewModel.openFlashcardSetInfo(flashcardSet),
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  child: const Icon(Icons.info_outline),
+                  child: const Icon(Icons.query_stats),
                 ),
               ),
             GestureDetector(

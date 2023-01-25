@@ -9,6 +9,7 @@ import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:stacked/stacked.dart';
 
 import 'flashcards_viewmodel.dart';
+import 'widgets/flashcard_deck.dart';
 
 class FlashcardsView extends StatelessWidget {
   final FlashcardSet flashcardSet;
@@ -17,6 +18,7 @@ class FlashcardsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final flashcardDeckController = FlashcardDeckController();
     final flipCardController = FlipCardController();
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
@@ -38,15 +40,8 @@ class FlashcardsView extends StatelessWidget {
               : null,
           actions: [
             IconButton(
-              onPressed: viewModel.canUndo
-                  ? () {
-                      if (!flipCardController.state!.isFront) {
-                        flipCardController.toggleCardWithoutAnimation();
-                      }
-                      viewModel.undo();
-                    }
-                  : null,
-              icon: const Icon(Icons.undo),
+              onPressed: viewModel.openFlashcardSetInfo,
+              icon: const Icon(Icons.query_stats),
             ),
           ],
         ),
@@ -55,72 +50,130 @@ class FlashcardsView extends StatelessWidget {
             const _ProgressIndicator(),
             Expanded(
               child: Center(
-                child: GestureDetector(
-                  onLongPress: viewModel.openFlashcardItem,
-                  child: FlipCard(
-                    flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
-                    controller: flipCardController,
-                    fill: Fill.fillBack,
-                    direction: FlipDirection.HORIZONTAL,
-                    speed: 300,
-                    front: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: screenWidth * 0.85 * 1.5,
-                        maxWidth: screenWidth * 0.85,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Card(
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  constraints: BoxConstraints(
+                    maxHeight: screenWidth * 0.85 * 1.5,
+                    maxWidth: screenWidth * 0.85,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => FlashcardDeck(
+                      swipeUpEnabled: viewModel.usingSpacedRepetition,
+                      controller: flashcardDeckController,
+                      currentFlashcard: GestureDetector(
+                        onLongPress: viewModel.openFlashcardItem,
+                        child: FlipCard(
+                          flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
+                          controller: flipCardController,
+                          fill: Fill.fillBack,
+                          direction: FlipDirection.HORIZONTAL,
+                          speed: 300,
+                          front: _Flashcard(
+                            constraints: constraints,
+                            child: viewModel.activeFlashcards.isEmpty
+                                ? Container()
+                                : viewModel.activeFlashcards[0] is Vocab
+                                    ? _VocabFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[0]
+                                            as Vocab,
+                                      )
+                                    : _KanjiFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[0]
+                                            as Kanji,
+                                      ),
                           ),
-                          child: viewModel.activeFlashcards.isEmpty
-                              ? Container()
-                              : viewModel.activeFlashcards[0] is Vocab
-                                  ? _VocabFlashcardFront(
-                                      flashcardSet: flashcardSet,
-                                      vocab: viewModel.activeFlashcards[0]
-                                          as Vocab,
-                                    )
-                                  : _KanjiFlashcardFront(
-                                      flashcardSet: flashcardSet,
-                                      kanji: viewModel.activeFlashcards[0]
-                                          as Kanji,
-                                    ),
+                          back: _Flashcard(
+                            constraints: constraints,
+                            child: viewModel.activeFlashcards.isEmpty
+                                ? Container()
+                                : viewModel.activeFlashcards[0] is Vocab
+                                    ? _VocabFlashcardBack(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[0]
+                                            as Vocab,
+                                      )
+                                    : _KanjiFlashcardBack(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[0]
+                                            as Kanji,
+                                      ),
+                          ),
                         ),
                       ),
-                    ),
-                    back: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: screenWidth * 0.85 * 1.5,
-                        maxWidth: screenWidth * 0.85,
+                      nextFlashcard: _Flashcard(
+                        constraints: constraints,
+                        child: viewModel.activeFlashcards.length < 2
+                            ? Container()
+                            : viewModel.activeFlashcards[1] is Vocab
+                                ? _VocabFlashcardFront(
+                                    flashcardSet: flashcardSet,
+                                    vocab:
+                                        viewModel.activeFlashcards[1] as Vocab,
+                                  )
+                                : _KanjiFlashcardFront(
+                                    flashcardSet: flashcardSet,
+                                    kanji:
+                                        viewModel.activeFlashcards[1] as Kanji,
+                                  ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Card(
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: viewModel.activeFlashcards.isEmpty
-                              ? Container()
-                              : viewModel.activeFlashcards[0] is Vocab
-                                  ? _VocabFlashcardBack(
-                                      flashcardSet: flashcardSet,
-                                      vocab: viewModel.activeFlashcards[0]
-                                          as Vocab,
-                                    )
-                                  : _KanjiFlashcardBack(
-                                      flashcardSet: flashcardSet,
-                                      kanji: viewModel.activeFlashcards[0]
-                                          as Kanji,
-                                    ),
-                        ),
+                      blankFlashcard: _Flashcard(
+                        constraints: constraints,
+                        child: Container(),
                       ),
+                      onSwipeFinished: (swipeAnimation) {
+                        if (swipeAnimation != SwipeAnimation.reset) {
+                          if (!flipCardController.state!.isFront) {
+                            flipCardController.toggleCardWithoutAnimation();
+                          }
+                        }
+
+                        switch (swipeAnimation) {
+                          case SwipeAnimation.wrong:
+                            viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                            break;
+                          case SwipeAnimation.correct:
+                            viewModel.answerFlashcard(FlashcardAnswer.correct);
+                            break;
+                          case SwipeAnimation.veryCorrect:
+                            viewModel
+                                .answerFlashcard(FlashcardAnswer.veryCorrect);
+                            break;
+                          case SwipeAnimation.repeat:
+                            viewModel.answerFlashcard(FlashcardAnswer.repeat);
+                            break;
+                          default:
+                            break;
+                        }
+                      },
                     ),
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: viewModel.openFlashcardItem,
+                    icon: const Icon(Icons.info_outline),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: viewModel.canUndo
+                        ? () {
+                            if (!flipCardController.state!.isFront) {
+                              flipCardController.toggleCardWithoutAnimation();
+                            }
+                            viewModel.undo();
+                            flashcardDeckController.undoSwipe();
+                          }
+                        : null,
+                    icon: const Icon(Icons.undo),
+                  ),
+                ],
               ),
             ),
             Card(
@@ -142,67 +195,35 @@ class FlashcardsView extends StatelessWidget {
                           _FlashcardAnswerButton(
                             icon: Icons.close,
                             color: Colors.red,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                            },
+                            onTap: () => flashcardDeckController.swipeWrong(),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.refresh,
                             color: Colors.yellow,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                            },
+                            onTap: () => flashcardDeckController.swipeRepeat(),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.check,
                             color: Colors.green,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel
-                                  .answerFlashcard(FlashcardAnswer.correct);
-                            },
+                            onTap: () => flashcardDeckController.swipeCorrect(),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.done_all,
                             color: Colors.blue,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel
-                                  .answerFlashcard(FlashcardAnswer.veryCorrect);
-                            },
+                            onTap: () =>
+                                flashcardDeckController.swipeVeryCorrect(),
                           ),
                         ]
                       : [
                           _FlashcardAnswerButton(
                             icon: Icons.close,
                             color: Colors.red,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                            },
+                            onTap: () => flashcardDeckController.swipeWrong(),
                           ),
                           _FlashcardAnswerButton(
                             icon: Icons.check,
                             color: Colors.green,
-                            onTap: () {
-                              if (!flipCardController.state!.isFront) {
-                                flipCardController.toggleCardWithoutAnimation();
-                              }
-                              viewModel
-                                  .answerFlashcard(FlashcardAnswer.correct);
-                            },
+                            onTap: () => flashcardDeckController.swipeCorrect(),
                           ),
                         ],
                 ),
@@ -241,6 +262,29 @@ class _FlashcardAnswerButton extends StatelessWidget {
           ),
           child: Icon(icon, color: Colors.black),
         ),
+      ),
+    );
+  }
+}
+
+class _Flashcard extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Widget child;
+
+  const _Flashcard({
+    required this.constraints,
+    required this.child,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: constraints,
+      child: Card(
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: child,
       ),
     );
   }
@@ -590,57 +634,53 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
       emptyBar = 25;
     }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => viewModel.openFlashcardSetInfo(viewModel.flashcardSet),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            Container(
-              height: 10,
-              decoration: const BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
-              child: viewModel.allFlashcards == null || completedBar == 0
-                  ? null
-                  : Row(
-                      children: [
-                        Flexible(
-                          flex: completedBar,
-                          child: Container(
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5),
-                              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Container(
+            height: 10,
+            decoration: const BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            child: viewModel.allFlashcards == null || completedBar == 0
+                ? null
+                : Row(
+                    children: [
+                      Flexible(
+                        flex: completedBar,
+                        child: Container(
+                          height: 10,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5),
                             ),
                           ),
                         ),
-                        Flexible(
-                          flex: emptyBar,
-                          child: Container(),
-                        ),
-                      ],
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(bottomLeftString, textAlign: TextAlign.start),
+                      ),
+                      Flexible(
+                        flex: emptyBar,
+                        child: Container(),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(bottomRightString, textAlign: TextAlign.end),
-                  ),
-                ],
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(bottomLeftString, textAlign: TextAlign.start),
+                ),
+                Expanded(
+                  child: Text(bottomRightString, textAlign: TextAlign.end),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
