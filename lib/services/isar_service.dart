@@ -409,6 +409,19 @@ class IsarService {
     return _isar.flashcardSets.where().sortByTimestampDesc().findAll();
   }
 
+  Future<FlashcardSet?> getRecentFlashcardSet() async {
+    final result = await _isar.flashcardSets
+        .where()
+        .sortByTimestampDesc()
+        .limit(1)
+        .findAll();
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return null;
+    }
+  }
+
   Future<void> deleteFlashcardSet(FlashcardSet flashcardSet) async {
     await _isar.writeTxn(() async {
       await _isar.flashcardSets.delete(flashcardSet.id);
