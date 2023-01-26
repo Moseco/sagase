@@ -13,6 +13,7 @@ import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 
 class FlashcardsViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();
@@ -202,7 +203,11 @@ class FlashcardsViewModel extends BaseViewModel {
       _undoList.removeFirst();
     }
 
-    if (activeFlashcards.isEmpty) await _prepareFlashcards();
+    if (activeFlashcards.isEmpty) {
+      await _prepareFlashcards();
+    } else if (activeFlashcards[0] is Vocab) {
+      _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
+    }
   }
 
   Future<void> _prepareFlashcards({bool initial = false}) async {
@@ -270,6 +275,10 @@ class FlashcardsViewModel extends BaseViewModel {
     }
 
     notifyListeners();
+
+    if (activeFlashcards.isNotEmpty && activeFlashcards[0] is Vocab) {
+      _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
+    }
   }
 
   void undo() {
@@ -386,6 +395,28 @@ class FlashcardsViewModel extends BaseViewModel {
       Routes.flashcardSetInfoView,
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
+  }
+
+  Future<void> _loadVocabFlashcardKanji(Vocab vocab) async {
+    // Don't load included kanji again
+    if (vocab.includedKanji != null) return;
+
+    vocab.includedKanji = [];
+    List<String> kanjiStrings = [];
+    if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
+      final foundKanjiList = kanjiRegExp
+          .allMatches(vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji);
+      for (var foundKanji in foundKanjiList) {
+        // Prevent duplicate kanji
+        if (kanjiStrings.contains(foundKanji[0]!)) continue;
+        kanjiStrings.add(foundKanji[0]!);
+        // Load from database
+        final kanji = await _isarService.getKanji(foundKanji[0]!);
+        if (kanji != null) vocab.includedKanji!.add(kanji);
+      }
+    }
+
+    notifyListeners();
   }
 }
 

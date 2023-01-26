@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/spaced_repetition_data.dart';
@@ -28,6 +29,9 @@ class Vocab extends DictionaryItem {
 
   @Backlink(to: 'vocabLinks')
   final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
+
+  @ignore
+  List<Kanji>? includedKanji;
 
   bool isUsuallyKanaAlone() {
     if (definitions[0].miscInfo == null) return false;

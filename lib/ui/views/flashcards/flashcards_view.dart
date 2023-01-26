@@ -6,6 +6,7 @@ import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
+import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:stacked/stacked.dart';
 
 import 'flashcards_viewmodel.dart';
@@ -514,6 +515,14 @@ class _VocabFlashcardBack extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       );
+    }
+
+    // Add included kanji
+    if (vocab.includedKanji != null) {
+      children.add(const SizedBox(height: 16));
+      for (var kanji in vocab.includedKanji!) {
+        children.add(KanjiListItem(kanji: kanji));
+      }
     }
 
     return Center(

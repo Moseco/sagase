@@ -4,11 +4,11 @@ import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 
 class KanjiListItem extends StatelessWidget {
   final Kanji kanji;
-  final void Function() onPressed;
+  final void Function()? onPressed;
 
   const KanjiListItem({
     required this.kanji,
-    required this.onPressed,
+    this.onPressed,
     super.key,
   });
 
