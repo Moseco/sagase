@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 class FlashcardDeck extends StatefulWidget {
   final bool swipeUpEnabled;
@@ -49,31 +50,11 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   void initState() {
     super.initState();
 
-    widget.controller.addListener(() {
-      // Only start new swipe from controller if currently not doing one
-      if (_currentSwipeAnimation == SwipeAnimation.none) {
-        switch (widget.controller.state) {
-          case SwipeAnimation.wrong:
-            _swipeWrong(context);
-            break;
-          case SwipeAnimation.correct:
-            _swipeCorrect(context);
-            break;
-          case SwipeAnimation.veryCorrect:
-            _swipeVeryCorrect(context);
-            break;
-          case SwipeAnimation.repeat:
-            _swipeRepeat(context);
-            break;
-          case SwipeAnimation.undoSwipe:
-            _undoSwipe(context);
-            break;
-          default:
-            break;
-        }
-        _animationController.forward();
-      }
-    });
+    widget.controller.swipeWrong = _swipeWrong;
+    widget.controller.swipeCorrect = _swipeCorrect;
+    widget.controller.swipeVeryCorrect = _swipeVeryCorrect;
+    widget.controller.swipeRepeat = _swipeRepeat;
+    widget.controller.undoSwipe = _undoSwipe;
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
@@ -162,14 +143,14 @@ class _FlashcardDeckState extends State<FlashcardDeck>
               // Don't allow manually swiping the card during another animation
               if (_currentSwipeAnimation == SwipeAnimation.none) {
                 if (_horizontalOffset < -_swipeThreshold) {
-                  _swipeWrong(context);
+                  _swipeWrong();
                 } else if (_horizontalOffset > _swipeThreshold) {
-                  _swipeCorrect(context);
+                  _swipeCorrect();
                 } else if (widget.swipeUpEnabled &&
                     _verticalOffset < -_swipeThreshold) {
-                  _swipeRepeat(context);
+                  _swipeRepeat();
                 } else {
-                  _resetFlashcard(context);
+                  _resetFlashcard();
                 }
               }
             },
@@ -192,7 +173,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     _verticalDifference = (40 - (_totalOffset / 10)).clamp(0, 40);
   }
 
-  void _resetFlashcard(BuildContext context) {
+  void _resetFlashcard() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.reset;
       _leftAnimation = Tween<double>(
@@ -215,7 +196,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     });
   }
 
-  void _swipeWrong(BuildContext context) {
+  void _swipeWrong() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.wrong;
       _swipeHistory.add(SwipeAnimation.wrong);
@@ -239,7 +220,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     });
   }
 
-  void _swipeCorrect(BuildContext context) {
+  void _swipeCorrect() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.correct;
       _swipeHistory.add(SwipeAnimation.correct);
@@ -263,7 +244,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     });
   }
 
-  void _swipeVeryCorrect(BuildContext context) {
+  void _swipeVeryCorrect() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.veryCorrect;
       _swipeHistory.add(SwipeAnimation.veryCorrect);
@@ -287,7 +268,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     });
   }
 
-  void _swipeRepeat(BuildContext context) {
+  void _swipeRepeat() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.repeat;
       _swipeHistory.add(SwipeAnimation.repeat);
@@ -311,7 +292,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     });
   }
 
-  void _undoSwipe(BuildContext context) {
+  void _undoSwipe() {
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.undoSwipe;
 
@@ -377,33 +358,34 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 }
 
-class FlashcardDeckController extends ChangeNotifier {
-  SwipeAnimation? state;
+class FlashcardDeckController {
+  late VoidCallback swipeWrong;
+  late VoidCallback swipeCorrect;
+  late VoidCallback swipeVeryCorrect;
+  late VoidCallback swipeRepeat;
+  late VoidCallback undoSwipe;
+}
 
-  void swipeWrong() {
-    state = SwipeAnimation.wrong;
-    notifyListeners();
+class FlashcardDeckControllerHook extends Hook<FlashcardDeckController> {
+  const FlashcardDeckControllerHook();
+
+  @override
+  FlashcardDeckControllerHookState createState() =>
+      FlashcardDeckControllerHookState();
+}
+
+class FlashcardDeckControllerHookState
+    extends HookState<FlashcardDeckController, FlashcardDeckControllerHook> {
+  late FlashcardDeckController controller;
+
+  @override
+  void initHook() {
+    super.initHook();
+    controller = FlashcardDeckController();
   }
 
-  void swipeCorrect() {
-    state = SwipeAnimation.correct;
-    notifyListeners();
-  }
-
-  void swipeVeryCorrect() {
-    state = SwipeAnimation.veryCorrect;
-    notifyListeners();
-  }
-
-  void swipeRepeat() {
-    state = SwipeAnimation.repeat;
-    notifyListeners();
-  }
-
-  void undoSwipe() {
-    state = SwipeAnimation.undoSwipe;
-    notifyListeners();
-  }
+  @override
+  FlashcardDeckController build(BuildContext context) => controller;
 }
 
 enum SwipeAnimation {

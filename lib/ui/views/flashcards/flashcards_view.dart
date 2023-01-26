@@ -2,6 +2,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
@@ -12,14 +13,14 @@ import 'package:stacked/stacked.dart';
 import 'flashcards_viewmodel.dart';
 import 'widgets/flashcard_deck.dart';
 
-class FlashcardsView extends StatelessWidget {
+class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
 
   const FlashcardsView(this.flashcardSet, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final flashcardDeckController = FlashcardDeckController();
+    final flashcardDeckController = use(const FlashcardDeckControllerHook());
     final flipCardController = FlipCardController();
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
