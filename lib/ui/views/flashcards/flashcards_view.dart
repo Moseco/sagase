@@ -673,9 +673,8 @@ class _KanjiReadingText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         children: [
           TextSpan(
             text: title,
@@ -688,6 +687,7 @@ class _KanjiReadingText extends StatelessWidget {
           TextSpan(text: content),
         ],
       ),
+      textAlign: TextAlign.center,
     );
   }
 }
