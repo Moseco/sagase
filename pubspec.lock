@@ -214,12 +214,10 @@ packages:
   flip_card:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "54552dea4d8d6c8134e7217ccd58a4298c9506fa"
-      url: "https://github.com/Moseco/flip_card"
-    source: git
-    version: "0.6.0"
+      name: flip_card
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0"
   flutter:
     dependency: "direct main"
     description: flutter
