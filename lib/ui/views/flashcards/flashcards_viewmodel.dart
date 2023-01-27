@@ -104,6 +104,43 @@ class FlashcardsViewModel extends BaseViewModel {
     allFlashcards = vocabMap.values.toList().cast<DictionaryItem>() +
         kanjiMap.values.toList().cast<DictionaryItem>();
 
+    // Go through flashcards and associate flashcards that would have the same front
+    Map<String, List<DictionaryItem>> flashcardMap = {};
+    for (var flashcard in allFlashcards!) {
+      // Create string that represents the front of a flashcard
+      final front = StringBuffer();
+      if (flashcard is Vocab) {
+        if (flashcard.kanjiReadingPairs[0].kanjiWritings != null) {
+          front.write(flashcard.kanjiReadingPairs[0].kanjiWritings![0].kanji);
+        }
+        if (flashcardSet.vocabShowReading ||
+            (flashcard.isUsuallyKanaAlone() &&
+                flashcardSet.vocabShowReadingIfRareKanji)) {
+          front.write(flashcard.kanjiReadingPairs[0].readings[0].reading);
+        }
+      } else {
+        front.write((flashcard as Kanji).kanji);
+      }
+
+      // Check if similar flashcard already found
+      final frontString = front.toString();
+      if (flashcardMap.containsKey(frontString)) {
+        flashcard.similarFlashcards = [];
+        final similarFlashcards = flashcardMap[frontString]!;
+        for (var similarFlashcard in similarFlashcards) {
+          flashcard.similarFlashcards!.add(similarFlashcard);
+          if (similarFlashcard.similarFlashcards == null) {
+            similarFlashcard.similarFlashcards = [flashcard];
+          } else {
+            similarFlashcard.similarFlashcards!.add(flashcard);
+          }
+        }
+        similarFlashcards.add(flashcard);
+      } else {
+        flashcardMap[frontString] = [flashcard];
+      }
+    }
+
     // If using spaced repetition get due words and not started words
     if (_usingSpacedRepetition) {
       int todayAsInt = DateTime.now().toInt();

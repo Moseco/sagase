@@ -8,6 +8,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
+import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
 
 import 'flashcards_viewmodel.dart';
@@ -526,6 +527,38 @@ class _VocabFlashcardBack extends StatelessWidget {
       }
     }
 
+    // Add similar flashcards
+    if (vocab.similarFlashcards != null) {
+      children.addAll([
+        const SizedBox(height: 8),
+        Row(
+          children: const [
+            Expanded(child: Divider(endIndent: 8)),
+            Text(
+              'Similar flashcards',
+              style: TextStyle(color: Colors.grey),
+            ),
+            Expanded(child: Divider(indent: 8)),
+          ],
+        ),
+      ]);
+
+      for (var similarFlashcard in vocab.similarFlashcards!) {
+        if (similarFlashcard is Vocab) {
+          children.add(
+            VocabListItem(
+              vocab: similarFlashcard,
+              showCommonWord: false,
+            ),
+          );
+        } else {
+          children.add(
+            KanjiListItem(kanji: similarFlashcard as Kanji),
+          );
+        }
+      }
+    }
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
@@ -550,43 +583,78 @@ class _KanjiFlashcardBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Create list with base elements
+    List<Widget> children = [
+      Text(
+        kanji.kanji,
+        style: const TextStyle(fontSize: 40),
+      ),
+      const SizedBox(height: 16),
+      Text(
+        kanji.meanings ?? 'NO MEANING',
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 16),
+      if (kanji.onReadings != null)
+        _KanjiReadingText(
+          title: 'On readings',
+          content: kanji.onReadings!.join(', '),
+        ),
+      if (kanji.kunReadings != null)
+        KanjiKunReadings(
+          kanji.kunReadings!,
+          leading: const TextSpan(
+            text: 'Kun readings: ',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          maxLines: 99,
+          alignCenter: true,
+        ),
+      if (kanji.nanori != null)
+        _KanjiReadingText(
+          title: 'Nanori',
+          content: kanji.nanori!.join(', '),
+        ),
+    ];
+
+    // Add similar flashcards
+    if (kanji.similarFlashcards != null) {
+      children.addAll([
+        const SizedBox(height: 8),
+        Row(
+          children: const [
+            Expanded(child: Divider(endIndent: 8)),
+            Text(
+              'Similar flashcards',
+              style: TextStyle(color: Colors.grey),
+            ),
+            Expanded(child: Divider(indent: 8)),
+          ],
+        ),
+      ]);
+
+      for (var similarFlashcard in kanji.similarFlashcards!) {
+        if (similarFlashcard is Vocab) {
+          children.add(
+            VocabListItem(
+              vocab: similarFlashcard,
+              showCommonWord: false,
+            ),
+          );
+        } else {
+          children.add(
+            KanjiListItem(kanji: similarFlashcard as Kanji),
+          );
+        }
+      }
+    }
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              kanji.kanji,
-              style: const TextStyle(fontSize: 40),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              kanji.meanings ?? 'NO MEANING',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            if (kanji.onReadings != null)
-              _KanjiReadingText(
-                title: 'On readings',
-                content: kanji.onReadings!.join(', '),
-              ),
-            if (kanji.kunReadings != null)
-              KanjiKunReadings(
-                kanji.kunReadings!,
-                leading: const TextSpan(
-                  text: 'Kun readings: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                maxLines: 99,
-                alignCenter: true,
-              ),
-            if (kanji.nanori != null)
-              _KanjiReadingText(
-                title: 'Nanori',
-                content: kanji.nanori!.join(', '),
-              ),
-          ],
+          children: children,
         ),
       ),
     );

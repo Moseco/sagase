@@ -4,11 +4,13 @@ import 'package:sagase/ui/widgets/common_vocab.dart';
 
 class VocabListItem extends StatelessWidget {
   final Vocab vocab;
-  final void Function() onPressed;
+  final void Function()? onPressed;
+  final bool showCommonWord;
 
   const VocabListItem({
     required this.vocab,
-    required this.onPressed,
+    this.onPressed,
+    this.showCommonWord = true,
     super.key,
   });
 
@@ -39,7 +41,8 @@ class VocabListItem extends StatelessWidget {
                 ],
               ),
             ),
-            if (vocab.commonWord) const CommonVocab(fontSize: 10),
+            if (vocab.commonWord && showCommonWord)
+              const CommonVocab(fontSize: 10),
           ],
         ),
       ),
