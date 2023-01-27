@@ -114,6 +114,7 @@ class FlashcardsViewModel extends BaseViewModel {
           front.write(flashcard.kanjiReadingPairs[0].kanjiWritings![0].kanji);
         }
         if (flashcardSet.vocabShowReading ||
+            flashcard.kanjiReadingPairs[0].kanjiWritings == null ||
             (flashcard.isUsuallyKanaAlone() &&
                 flashcardSet.vocabShowReadingIfRareKanji)) {
           front.write(flashcard.kanjiReadingPairs[0].readings[0].reading);
