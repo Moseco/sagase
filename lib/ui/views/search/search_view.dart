@@ -103,13 +103,18 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
 
                                   searchController.selection =
                                       TextSelection.fromPosition(TextPosition(
-                                          offset: cursorPosition + 1));
+                                    offset: cursorPosition +
+                                        viewModel
+                                            .handWritingResult[index].length,
+                                  ));
                                   handWritingController.clear();
                                   viewModel
                                       .searchOnChange(searchController.text);
                                 },
                                 child: Container(
-                                  width: 40,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 13,
+                                  ),
                                   decoration: const BoxDecoration(
                                     border: Border(
                                       right: BorderSide(color: Colors.black),
