@@ -55,7 +55,7 @@ class SettingsView extends StatelessWidget {
                     onToggle: viewModel.setShowNewInterval,
                     activeSwitchColor: Theme.of(context).colorScheme.primary,
                     leading: const Icon(Icons.exposure_plus_1),
-                    title: const Text('Show new spaced repetition interval'),
+                    title: const Text('Preview new spaced repetition interval'),
                     description: const Text(
                       'Shown underneath flashcard answer buttons.',
                     ),

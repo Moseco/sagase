@@ -46,7 +46,7 @@ class InitialIntervalDialog extends HookWidget {
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
                 'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Default is 1 and 4.',
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.justify,
                 style: TextStyle(),
               ),
             ),
