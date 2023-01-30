@@ -18,11 +18,6 @@ class FlashcardSetSettingsView extends StatelessWidget {
         appBar: AppBar(
           title: Text(flashcardSet.name),
           actions: [
-            if (flashcardSet.usingSpacedRepetition)
-              IconButton(
-                onPressed: viewModel.openFlashcardSetInfo,
-                icon: const Icon(Icons.query_stats),
-              ),
             PopupMenuButton<PopupMenuItemType>(
               itemBuilder: (context) => [
                 const PopupMenuItem(
@@ -37,6 +32,11 @@ class FlashcardSetSettingsView extends StatelessWidget {
                   const PopupMenuItem(
                     value: PopupMenuItemType.reset,
                     child: Text('Reset progress'),
+                  ),
+                if (flashcardSet.usingSpacedRepetition)
+                  const PopupMenuItem(
+                    value: PopupMenuItemType.statistics,
+                    child: Text('View statistics'),
                   ),
               ],
               onSelected: viewModel.handlePopupMenuButton,
@@ -148,19 +148,21 @@ class FlashcardSetSettingsView extends StatelessWidget {
                             : Colors.grey.shade800,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
-                        children: [
-                          _ToggleOption(
-                            text: 'Spaced repetition',
-                            enabled: flashcardSet.usingSpacedRepetition,
-                            onTap: () => viewModel.setOrderType(true),
-                          ),
-                          _ToggleOption(
-                            text: 'Random',
-                            enabled: !flashcardSet.usingSpacedRepetition,
-                            onTap: () => viewModel.setOrderType(false),
-                          ),
-                        ],
+                      child: IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            _ToggleOption(
+                              text: 'Spaced repetition',
+                              enabled: flashcardSet.usingSpacedRepetition,
+                              onTap: () => viewModel.setOrderType(true),
+                            ),
+                            _ToggleOption(
+                              text: 'Random',
+                              enabled: !flashcardSet.usingSpacedRepetition,
+                              onTap: () => viewModel.setOrderType(false),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     CardWithTitleSection(
@@ -258,6 +260,7 @@ class _ToggleOption extends StatelessWidget {
           child: Center(
             child: Text(
               text,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 color: enabled ? Colors.white : null,

@@ -39,6 +39,9 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
       case PopupMenuItemType.reset:
         _resetSpacedRepetitionData();
         break;
+      case PopupMenuItemType.statistics:
+        _openFlashcardSetInfo();
+        break;
     }
   }
 
@@ -88,6 +91,13 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     if (response != null && response.confirmed) {
       _isarService.resetFlashcardSetSpacedRepetitionData(flashcardSet);
     }
+  }
+
+  void _openFlashcardSetInfo() {
+    _navigationService.navigateTo(
+      Routes.flashcardSetInfoView,
+      arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
+    );
   }
 
   Future<void> editIncludedLists() async {
@@ -193,17 +203,11 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
       arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
     );
   }
-
-  void openFlashcardSetInfo() {
-    _navigationService.navigateTo(
-      Routes.flashcardSetInfoView,
-      arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
-    );
-  }
 }
 
 enum PopupMenuItemType {
   rename,
   delete,
   reset,
+  statistics,
 }
