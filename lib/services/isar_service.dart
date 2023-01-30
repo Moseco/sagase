@@ -260,16 +260,20 @@ class IsarService {
     //    Nested list 5: no exact match found
     List<List<Vocab>> nestedSortingList = [[], [], [], [], [], []];
 
+    final searchRegExp = RegExp(
+      RegExp.escape(searchString),
+      caseSensitive: false,
+    );
     for (int i = 0; i < unsortedList.length; i++) {
       bool noMatch = true;
       for (int j = 0; j < unsortedList[i].definitions.length; j++) {
-        if (unsortedList[i].definitions[j].definition.contains(searchString)) {
+        if (unsortedList[i].definitions[j].definition.contains(searchRegExp)) {
           noMatch = false;
           if (j == 0) {
             if (unsortedList[i]
                 .definitions[j]
                 .definition
-                .startsWith(searchString)) {
+                .startsWith(searchRegExp)) {
               if (unsortedList[i].commonWord) {
                 nestedSortingList[0].add(unsortedList[i]);
               } else {
