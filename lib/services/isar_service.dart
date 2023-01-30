@@ -140,25 +140,28 @@ class IsarService {
 
         // Merge sorted romaji and definition lists
         List<Vocab> sortedList = [];
-        Map<Vocab, bool> vocabRankMap = {};
+        Map<int, bool> vocabRankMap = {};
 
+        // Both romaji and definitions lists are merged in the same loop to
+        // make ranking easier. The last element of the definition list is
+        // then added afterward below this loop
         for (int i = 0; i < nestedRomajiSortingList.length; i++) {
           for (var vocab in nestedRomajiSortingList[i]) {
-            if (!vocabRankMap.containsKey(vocab)) {
+            if (!vocabRankMap.containsKey(vocab.id)) {
               sortedList.add(vocab);
-              vocabRankMap[vocab] = true;
+              vocabRankMap[vocab.id] = true;
             }
           }
           for (var vocab in nestedDefinitionSortingList[i]) {
-            if (!vocabRankMap.containsKey(vocab)) {
+            if (!vocabRankMap.containsKey(vocab.id)) {
               sortedList.add(vocab);
-              vocabRankMap[vocab] = true;
+              vocabRankMap[vocab.id] = true;
             }
           }
         }
 
         for (var vocab in nestedDefinitionSortingList[5]) {
-          if (!vocabRankMap.containsKey(vocab)) {
+          if (!vocabRankMap.containsKey(vocab.id)) {
             sortedList.add(vocab);
           }
         }
