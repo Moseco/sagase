@@ -91,42 +91,42 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       CheckboxListTile(
                         title: const Text('JLPT N5'),
                         value: widget.request.data.predefinedLists[
-                                constants.dictionaryListIdJlptN5] ??
+                                constants.dictionaryListIdJlptVocabN5] ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
-                            constants.dictionaryListIdJlptN5, value),
+                            constants.dictionaryListIdJlptVocabN5, value),
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N4'),
                         value: widget.request.data.predefinedLists[
-                                constants.dictionaryListIdJlptN4] ??
+                                constants.dictionaryListIdJlptVocabN4] ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
-                            constants.dictionaryListIdJlptN4, value),
+                            constants.dictionaryListIdJlptVocabN4, value),
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N3'),
                         value: widget.request.data.predefinedLists[
-                                constants.dictionaryListIdJlptN3] ??
+                                constants.dictionaryListIdJlptVocabN3] ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
-                            constants.dictionaryListIdJlptN3, value),
+                            constants.dictionaryListIdJlptVocabN3, value),
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N2'),
                         value: widget.request.data.predefinedLists[
-                                constants.dictionaryListIdJlptN2] ??
+                                constants.dictionaryListIdJlptVocabN2] ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
-                            constants.dictionaryListIdJlptN2, value),
+                            constants.dictionaryListIdJlptVocabN2, value),
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N1'),
                         value: widget.request.data.predefinedLists[
-                                constants.dictionaryListIdJlptN1] ??
+                                constants.dictionaryListIdJlptVocabN1] ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
-                            constants.dictionaryListIdJlptN1, value),
+                            constants.dictionaryListIdJlptVocabN1, value),
                       ),
                     ],
                   ),
@@ -139,6 +139,102 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             constants.dictionaryListIdJouyou, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Jinmeiyou'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJinmeiyou] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJinmeiyou, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('JLPT N5'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJlptKanjiN5] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJlptKanjiN5, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('JLPT N4'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJlptKanjiN4] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJlptKanjiN4, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('JLPT N3'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJlptKanjiN3] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJlptKanjiN3, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('JLPT N2'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJlptKanjiN2] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJlptKanjiN2, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('JLPT N1'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdJlptKanjiN1] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdJlptKanjiN1, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('1st Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel1] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel1, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('2nd Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel2] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel2, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('3rd Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel3] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel3, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('4th Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel4] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel4, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('5th Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel5] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel5, value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('6th Grade'),
+                        value: widget.request.data.predefinedLists[
+                                constants.dictionaryListIdGradeLevel6] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            constants.dictionaryListIdGradeLevel6, value),
                       ),
                     ],
                   ),

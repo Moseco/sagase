@@ -24,7 +24,7 @@ class ListsView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: IconButton(
-                  onPressed: () => viewModel.setListSelection(null),
+                  onPressed: () => viewModel.back(),
                   color: viewModel.listSelection == null
                       ? Colors.transparent
                       : Colors.white,
@@ -57,7 +57,7 @@ class ListsView extends StatelessWidget {
           child: WillPopScope(
             onWillPop: () async {
               if (viewModel.listSelection != null) {
-                viewModel.setListSelection(null);
+                viewModel.back();
                 return false;
               }
               return true;
@@ -77,6 +77,10 @@ class ListsView extends StatelessWidget {
         return 'Kanji Lists';
       case ListSelection.myLists:
         return 'My Lists';
+      case ListSelection.jlptKanji:
+        return 'JLPT Kanji';
+      case ListSelection.schoolKanji:
+        return 'School Kanji';
       default:
         return 'Lists';
     }
@@ -93,6 +97,10 @@ class _Body extends ViewModelWidget<ListsViewModel> {
         return _KanjiList();
       case ListSelection.myLists:
         return _MyLists();
+      case ListSelection.jlptKanji:
+        return _JlptKanjiList();
+      case ListSelection.schoolKanji:
+        return _SchoolKanjiList();
       default:
         return _MainList();
     }
@@ -144,30 +152,31 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
         _DictionaryListItem(
           text: 'JLPT N5',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptN5),
+              constants.dictionaryListIdJlptVocabN5),
         ),
         _DictionaryListItem(
           text: 'JLPT N4',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptN4),
+              constants.dictionaryListIdJlptVocabN4),
         ),
         _DictionaryListItem(
           text: 'JLPT N3',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptN3),
+              constants.dictionaryListIdJlptVocabN3),
         ),
         _DictionaryListItem(
           text: 'JLPT N2',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptN2),
+              constants.dictionaryListIdJlptVocabN2),
         ),
         _DictionaryListItem(
           text: 'JLPT N1',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptN1),
+              constants.dictionaryListIdJlptVocabN1),
         ),
         const Text(
           'These are not official lists. They are a best guess of the required vocabulary.',
+          textAlign: TextAlign.justify,
         ),
       ],
     );
@@ -184,6 +193,106 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
           text: 'Jouyou',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
               constants.dictionaryListIdJouyou),
+        ),
+        _DictionaryListItem(
+          text: 'Jinmeiyou',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJinmeiyou),
+        ),
+        _DictionaryListItem(
+          text: 'JLPT Kanji',
+          onTap: () => viewModel.setListSelection(ListSelection.jlptKanji),
+          isFolder: true,
+        ),
+        _DictionaryListItem(
+          text: 'Kanji by Grade Level',
+          onTap: () => viewModel.setListSelection(ListSelection.schoolKanji),
+          isFolder: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _JlptKanjiList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _DictionaryListItem(
+          text: 'JLPT N5',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptKanjiN5),
+        ),
+        _DictionaryListItem(
+          text: 'JLPT N4',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptKanjiN4),
+        ),
+        _DictionaryListItem(
+          text: 'JLPT N3',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptKanjiN3),
+        ),
+        _DictionaryListItem(
+          text: 'JLPT N2',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptKanjiN2),
+        ),
+        _DictionaryListItem(
+          text: 'JLPT N1',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdJlptKanjiN1),
+        ),
+        const Text(
+          'These are not official lists. They are a best guess of the required kanji.',
+          textAlign: TextAlign.justify,
+        ),
+      ],
+    );
+  }
+}
+
+class _SchoolKanjiList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _DictionaryListItem(
+          text: '1st Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel1),
+        ),
+        _DictionaryListItem(
+          text: '2nd Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel2),
+        ),
+        _DictionaryListItem(
+          text: '3rd Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel3),
+        ),
+        _DictionaryListItem(
+          text: '4th Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel4),
+        ),
+        _DictionaryListItem(
+          text: '5th Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel5),
+        ),
+        _DictionaryListItem(
+          text: '6th Grade',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              constants.dictionaryListIdGradeLevel6),
+        ),
+        const Text(
+          'These lists represent the 1,026 kanji that are to be learned at each grade level as defined by the Japanese Ministry of Education. The remainder of the jouyou set is expected to be learned during middle school and high school, but there is no official order and it can vary by textbook and school.',
+          textAlign: TextAlign.justify,
         ),
       ],
     );
@@ -280,10 +389,12 @@ class _MainListItem extends StatelessWidget {
 class _DictionaryListItem extends StatelessWidget {
   final String text;
   final void Function() onTap;
+  final bool isFolder;
 
   const _DictionaryListItem({
     required this.text,
     required this.onTap,
+    this.isFolder = false,
     Key? key,
   }) : super(key: key);
 
@@ -298,14 +409,14 @@ class _DictionaryListItem extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              const Icon(Icons.format_list_bulleted),
+              Icon(isFolder ? Icons.folder : Icons.format_list_bulleted),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     text,
                     style: const TextStyle(fontSize: 24),
-                    maxLines: 1,
+                    maxLines: 2,
                   ),
                 ),
               ),

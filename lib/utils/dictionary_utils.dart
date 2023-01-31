@@ -72,7 +72,7 @@ class DictionaryUtils {
     // Top level of vocab items
     for (int i = 0; i < rawVocabList.length; i++) {
       // Write to database every 10,000 iterations
-      if (i % 10000 == 0) {
+      if (i % 5000 == 0) {
         print("At vocab $i");
         await isar.writeTxn(() async {
           for (var vocab in vocabList) {
@@ -1210,74 +1210,74 @@ class DictionaryUtils {
     // Parse vocab lists
     final vocabMap = jsonDecode(vocabLists);
 
-    // JLPT N5
-    final jlptN5List = PredefinedDictionaryList()
-      ..id = constants.dictionaryListIdJlptN5
-      ..name = 'N5';
-    final jlptN5ListRaw = vocabMap['jlpt_n5'];
+    // JLPT vocab N5
+    final jlptVocabN5List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptVocabN5
+      ..name = 'N5 Vocab';
+    final jlptVocabN5ListRaw = vocabMap['jlpt_n5'];
     await isar.writeTxn(() async {
-      for (int i = 0; i < jlptN5ListRaw.length; i++) {
-        final vocab = await isar.vocabs.get(jlptN5ListRaw[i]);
-        jlptN5List.vocabLinks.add(vocab!);
+      for (int i = 0; i < jlptVocabN5ListRaw.length; i++) {
+        final vocab = await isar.vocabs.get(jlptVocabN5ListRaw[i]);
+        jlptVocabN5List.vocabLinks.add(vocab!);
       }
-      await isar.predefinedDictionaryLists.put(jlptN5List);
-      await jlptN5List.vocabLinks.save();
+      await isar.predefinedDictionaryLists.put(jlptVocabN5List);
+      await jlptVocabN5List.vocabLinks.save();
     });
 
-    // JLPT N4
-    final jlptN4List = PredefinedDictionaryList()
-      ..id = constants.dictionaryListIdJlptN4
-      ..name = 'N4';
-    final jlptN4ListRaw = vocabMap['jlpt_n4'];
+    // JLPT vocab N4
+    final jlptVocabN4List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptVocabN4
+      ..name = 'N4 Vocab';
+    final jlptVocabN4ListRaw = vocabMap['jlpt_n4'];
     await isar.writeTxn(() async {
-      for (int i = 0; i < jlptN4ListRaw.length; i++) {
-        final vocab = await isar.vocabs.get(jlptN4ListRaw[i]);
-        jlptN4List.vocabLinks.add(vocab!);
+      for (int i = 0; i < jlptVocabN4ListRaw.length; i++) {
+        final vocab = await isar.vocabs.get(jlptVocabN4ListRaw[i]);
+        jlptVocabN4List.vocabLinks.add(vocab!);
       }
-      await isar.predefinedDictionaryLists.put(jlptN4List);
-      await jlptN4List.vocabLinks.save();
+      await isar.predefinedDictionaryLists.put(jlptVocabN4List);
+      await jlptVocabN4List.vocabLinks.save();
     });
 
-    // JLPT N3
-    final jlptN3List = PredefinedDictionaryList()
-      ..id = constants.dictionaryListIdJlptN3
-      ..name = 'N3';
-    final jlptN3ListRaw = vocabMap['jlpt_n3'];
+    // JLPT vocab N3
+    final jlptVocabN3List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptVocabN3
+      ..name = 'N3 Vocab';
+    final jlptVocabN3ListRaw = vocabMap['jlpt_n3'];
     await isar.writeTxn(() async {
-      for (int i = 0; i < jlptN3ListRaw.length; i++) {
-        final vocab = await isar.vocabs.get(jlptN3ListRaw[i]);
-        jlptN3List.vocabLinks.add(vocab!);
+      for (int i = 0; i < jlptVocabN3ListRaw.length; i++) {
+        final vocab = await isar.vocabs.get(jlptVocabN3ListRaw[i]);
+        jlptVocabN3List.vocabLinks.add(vocab!);
       }
-      await isar.predefinedDictionaryLists.put(jlptN3List);
-      await jlptN3List.vocabLinks.save();
+      await isar.predefinedDictionaryLists.put(jlptVocabN3List);
+      await jlptVocabN3List.vocabLinks.save();
     });
 
-    // JLPT N2
-    final jlptN2List = PredefinedDictionaryList()
-      ..id = constants.dictionaryListIdJlptN2
-      ..name = 'N2';
-    final jlptN2ListRaw = vocabMap['jlpt_n2'];
+    // JLPT vocab N2
+    final jlptVocabN2List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptVocabN2
+      ..name = 'N2 Vocab';
+    final jlptVocabN2ListRaw = vocabMap['jlpt_n2'];
     await isar.writeTxn(() async {
-      for (int i = 0; i < jlptN2ListRaw.length; i++) {
-        final vocab = await isar.vocabs.get(jlptN2ListRaw[i]);
-        jlptN2List.vocabLinks.add(vocab!);
+      for (int i = 0; i < jlptVocabN2ListRaw.length; i++) {
+        final vocab = await isar.vocabs.get(jlptVocabN2ListRaw[i]);
+        jlptVocabN2List.vocabLinks.add(vocab!);
       }
-      await isar.predefinedDictionaryLists.put(jlptN2List);
-      await jlptN2List.vocabLinks.save();
+      await isar.predefinedDictionaryLists.put(jlptVocabN2List);
+      await jlptVocabN2List.vocabLinks.save();
     });
 
-    // JLPT N1
-    final jlptN1List = PredefinedDictionaryList()
-      ..id = constants.dictionaryListIdJlptN1
-      ..name = 'N1';
-    final jlptN1ListRaw = vocabMap['jlpt_n1'];
+    // JLPT vocab N1
+    final jlptVocabN1List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptVocabN1
+      ..name = 'N1 Vocab';
+    final jlptVocabN1ListRaw = vocabMap['jlpt_n1'];
     await isar.writeTxn(() async {
-      for (int i = 0; i < jlptN1ListRaw.length; i++) {
-        final vocab = await isar.vocabs.get(jlptN1ListRaw[i]);
-        jlptN1List.vocabLinks.add(vocab!);
+      for (int i = 0; i < jlptVocabN1ListRaw.length; i++) {
+        final vocab = await isar.vocabs.get(jlptVocabN1ListRaw[i]);
+        jlptVocabN1List.vocabLinks.add(vocab!);
       }
-      await isar.predefinedDictionaryLists.put(jlptN1List);
-      await jlptN1List.vocabLinks.save();
+      await isar.predefinedDictionaryLists.put(jlptVocabN1List);
+      await jlptVocabN1List.vocabLinks.save();
     });
 
     // Parse kanji lists
@@ -1295,6 +1295,174 @@ class DictionaryUtils {
       }
       await isar.predefinedDictionaryLists.put(jouyouList);
       await jouyouList.kanjiLinks.save();
+    });
+
+    // JLPT kanji N5
+    final jlptKanjiN5List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptKanjiN5
+      ..name = 'N5 Kanji';
+    final jlptKanjiN5ListRaw = kanjiListsMap['jlpt_n5'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jlptKanjiN5ListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jlptKanjiN5ListRaw[i]);
+        jlptKanjiN5List.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jlptKanjiN5List);
+      await jlptKanjiN5List.kanjiLinks.save();
+    });
+
+    // JLPT kanji N4
+    final jlptKanjiN4List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptKanjiN4
+      ..name = 'N4 Kanji';
+    final jlptKanjiN4ListRaw = kanjiListsMap['jlpt_n4'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jlptKanjiN4ListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jlptKanjiN4ListRaw[i]);
+        jlptKanjiN4List.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jlptKanjiN4List);
+      await jlptKanjiN4List.kanjiLinks.save();
+    });
+
+    // JLPT kanji N3
+    final jlptKanjiN3List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptKanjiN3
+      ..name = 'N3 Kanji';
+    final jlptKanjiN3ListRaw = kanjiListsMap['jlpt_n3'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jlptKanjiN3ListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jlptKanjiN3ListRaw[i]);
+        jlptKanjiN3List.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jlptKanjiN3List);
+      await jlptKanjiN3List.kanjiLinks.save();
+    });
+
+    // JLPT kanji N2
+    final jlptKanjiN2List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptKanjiN2
+      ..name = 'N2 Kanji';
+    final jlptKanjiN2ListRaw = kanjiListsMap['jlpt_n2'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jlptKanjiN2ListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jlptKanjiN2ListRaw[i]);
+        jlptKanjiN2List.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jlptKanjiN2List);
+      await jlptKanjiN2List.kanjiLinks.save();
+    });
+
+    // JLPT kanji N1
+    final jlptKanjiN1List = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJlptKanjiN1
+      ..name = 'N1 Kanji';
+    final jlptKanjiN1ListRaw = kanjiListsMap['jlpt_n1'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jlptKanjiN1ListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jlptKanjiN1ListRaw[i]);
+        jlptKanjiN1List.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jlptKanjiN1List);
+      await jlptKanjiN1List.kanjiLinks.save();
+    });
+
+    // Grade level 1
+    final gradeLevel1 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel1
+      ..name = '1st Grade Kanji';
+    final gradeLevel1Raw = kanjiListsMap['grade_level_1'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel1Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel1Raw[i]);
+        gradeLevel1.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel1);
+      await gradeLevel1.kanjiLinks.save();
+    });
+
+    // Grade level 2
+    final gradeLevel2 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel2
+      ..name = '2nd Grade Kanji';
+    final gradeLevel2Raw = kanjiListsMap['grade_level_2'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel2Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel2Raw[i]);
+        gradeLevel2.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel2);
+      await gradeLevel2.kanjiLinks.save();
+    });
+
+    // Grade level 3
+    final gradeLevel3 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel3
+      ..name = '3rd Grade Kanji';
+    final gradeLevel3Raw = kanjiListsMap['grade_level_3'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel3Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel3Raw[i]);
+        gradeLevel3.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel3);
+      await gradeLevel3.kanjiLinks.save();
+    });
+
+    // Grade level 4
+    final gradeLevel4 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel4
+      ..name = '4th Grade Kanji';
+    final gradeLevel4Raw = kanjiListsMap['grade_level_4'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel4Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel4Raw[i]);
+        gradeLevel4.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel4);
+      await gradeLevel4.kanjiLinks.save();
+    });
+
+    // Grade level 5
+    final gradeLevel5 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel5
+      ..name = '5th Grade Kanji';
+    final gradeLevel5Raw = kanjiListsMap['grade_level_5'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel5Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel5Raw[i]);
+        gradeLevel5.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel5);
+      await gradeLevel5.kanjiLinks.save();
+    });
+
+    // Grade level 6
+    final gradeLevel6 = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdGradeLevel6
+      ..name = '6th Grade Kanji';
+    final gradeLevel6Raw = kanjiListsMap['grade_level_6'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < gradeLevel6Raw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(gradeLevel6Raw[i]);
+        gradeLevel6.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(gradeLevel6);
+      await gradeLevel6.kanjiLinks.save();
+    });
+
+    // Jinmeiyou
+    final jinmeiyouList = PredefinedDictionaryList()
+      ..id = constants.dictionaryListIdJinmeiyou
+      ..name = 'Jinmeiyou';
+    final jinmeiyouListRaw = kanjiListsMap['jinmeiyou'];
+    await isar.writeTxn(() async {
+      for (int i = 0; i < jinmeiyouListRaw.length; i++) {
+        final kanji = await isar.kanjis.getByKanji(jinmeiyouListRaw[i]);
+        jinmeiyouList.kanjiLinks.add(kanji!);
+      }
+      await isar.predefinedDictionaryLists.put(jinmeiyouList);
+      await jinmeiyouList.kanjiLinks.save();
     });
   }
 

@@ -34,6 +34,16 @@ class ListsViewModel extends BaseViewModel {
     }
   }
 
+  void back() {
+    if (_listSelection == null) return;
+    if (_listSelection!.index >= ListSelection.jlptKanji.index) {
+      _listSelection = ListSelection.kanji;
+    } else {
+      _listSelection = null;
+    }
+    notifyListeners();
+  }
+
   Future<void> navigateToPredefinedDictionaryList(int id) async {
     final list = await _isarService.getPredefinedDictionaryList(id);
     _navigationService.navigateTo(
@@ -73,4 +83,6 @@ enum ListSelection {
   vocab,
   kanji,
   myLists,
+  jlptKanji,
+  schoolKanji,
 }

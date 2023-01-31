@@ -1,14 +1,26 @@
 import 'package:sagase/datamodels/kanji_radical.dart';
 
-const int dictionaryVersion = 2;
+const int dictionaryVersion = 3;
 const int nestedNavigationKey = 1;
 
 const int dictionaryListIdJouyou = 0;
-const int dictionaryListIdJlptN1 = 1;
-const int dictionaryListIdJlptN2 = 2;
-const int dictionaryListIdJlptN3 = 3;
-const int dictionaryListIdJlptN4 = 4;
-const int dictionaryListIdJlptN5 = 5;
+const int dictionaryListIdJlptVocabN1 = 1;
+const int dictionaryListIdJlptVocabN2 = 2;
+const int dictionaryListIdJlptVocabN3 = 3;
+const int dictionaryListIdJlptVocabN4 = 4;
+const int dictionaryListIdJlptVocabN5 = 5;
+const int dictionaryListIdJlptKanjiN1 = 6;
+const int dictionaryListIdJlptKanjiN2 = 7;
+const int dictionaryListIdJlptKanjiN3 = 8;
+const int dictionaryListIdJlptKanjiN4 = 9;
+const int dictionaryListIdJlptKanjiN5 = 10;
+const int dictionaryListIdGradeLevel1 = 11;
+const int dictionaryListIdGradeLevel2 = 12;
+const int dictionaryListIdGradeLevel3 = 13;
+const int dictionaryListIdGradeLevel4 = 14;
+const int dictionaryListIdGradeLevel5 = 15;
+const int dictionaryListIdGradeLevel6 = 16;
+const int dictionaryListIdJinmeiyou = 17;
 
 final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
 
