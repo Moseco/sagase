@@ -28,6 +28,7 @@ class HomeView extends StatelessWidget {
                   child: GNav(
                     haptic: false,
                     gap: 8,
+                    color: Theme.of(context).iconTheme.color,
                     activeColor: Colors.white,
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(
