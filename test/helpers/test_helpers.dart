@@ -13,6 +13,7 @@ import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:path/path.dart' as path;
 
@@ -24,6 +25,8 @@ import 'test_helpers.mocks.dart';
   MockSpec<NavigationService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<IsarService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<SharedPreferencesService>(
+      onMissingStub: OnMissingStub.throwException),
 ])
 MockNavigationService getAndRegisterNavigationService() {
   _removeRegistrationIfExists<NavigationService>();
@@ -71,16 +74,29 @@ Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
   return service;
 }
 
+MockSharedPreferencesService getAndRegisterSharedPreferencesService() {
+  _removeRegistrationIfExists<SharedPreferencesService>();
+  final service = MockSharedPreferencesService();
+
+  when(service.getInitialCorrectInterval()).thenReturn(1);
+  when(service.getInitialVeryCorrectInterval()).thenReturn(4);
+
+  locator.registerSingleton<SharedPreferencesService>(service);
+  return service;
+}
+
 void registerServices() {
   getAndRegisterNavigationService();
   getAndRegisterDialogService();
   getAndRegisterIsarService();
+  getAndRegisterSharedPreferencesService();
 }
 
 void unregisterServices() {
   locator.unregister<NavigationService>();
   locator.unregister<DialogService>();
   locator.unregister<IsarService>();
+  locator.unregister<SharedPreferencesService>();
 }
 
 void _removeRegistrationIfExists<T extends Object>() {

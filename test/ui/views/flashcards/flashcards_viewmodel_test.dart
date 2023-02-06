@@ -42,23 +42,32 @@ void main() {
 
     test('Initialize with spaced repetition flashcard set', () async {
       // Create vocab and kanji to use
-      final vocab1 = Vocab()..id = 1;
-      final vocab2 = Vocab()..id = 2;
-      final vocab3 = Vocab()..id = 3;
+      final vocab1 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1']
+        ];
+      final vocab2 = Vocab()
+        ..id = 2
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '2']
+        ];
+      final vocab3 = Vocab()
+        ..id = 3
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '3']
+        ];
       final kanji1 = Kanji()
         ..id = 1
         ..kanji = '1'
-        ..radical = 0
         ..strokeCount = 0;
       final kanji2 = Kanji()
         ..id = 2
         ..kanji = '2'
-        ..radical = 0
         ..strokeCount = 0;
       final kanji3 = Kanji()
         ..id = 3
         ..kanji = '3'
-        ..radical = 0
         ..strokeCount = 0;
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -145,11 +154,11 @@ void main() {
       tempFlashcard = viewModel.activeFlashcards[0];
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 4);
-      expect(tempFlashcard.spacedRepetitionData!.interval, 1);
+      expect(tempFlashcard.spacedRepetitionData!.interval, 4);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 1);
       expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.6);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
-          DateTime.now().add(const Duration(days: 1)).toInt());
+          DateTime.now().add(const Duration(days: 4)).toInt());
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
       viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
@@ -214,12 +223,12 @@ void main() {
       tempFlashcard = viewModel.activeFlashcards[0];
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 4);
-      expect(tempFlashcard.spacedRepetitionData!.interval, 1);
+      expect(tempFlashcard.spacedRepetitionData!.interval, 4);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 1);
       expect(
           tempFlashcard.spacedRepetitionData!.easeFactor, 2.3800000000000003);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
-          DateTime.now().add(const Duration(days: 1)).toInt());
+          DateTime.now().add(const Duration(days: 4)).toInt());
 
       // Answer the rest of the words without checking
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
@@ -246,17 +255,23 @@ void main() {
 
     test('Initialize with random-order flashcard set', () async {
       // Create vocab and kanji to use
-      final vocab1 = Vocab()..id = 1;
-      final vocab2 = Vocab()..id = 2;
+      final vocab1 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1']
+        ];
+      final vocab2 = Vocab()
+        ..id = 2
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '2']
+        ];
       final kanji1 = Kanji()
         ..id = 1
         ..kanji = '1'
-        ..radical = 0
         ..strokeCount = 0;
       final kanji2 = Kanji()
         ..id = 2
         ..kanji = '2'
-        ..radical = 0
         ..strokeCount = 0;
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -337,7 +352,11 @@ void main() {
     test('Spaced repetition flashcard set and switch to random order',
         () async {
       // Create vocab to use
-      final vocab1 = Vocab()..id = 1;
+      final vocab1 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1']
+        ];
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
       });
@@ -396,7 +415,11 @@ void main() {
 
     test('Random-order flashcard set and go again', () async {
       // Create vocab to use
-      final vocab1 = Vocab()..id = 1;
+      final vocab1 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1']
+        ];
       isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
       });
@@ -454,7 +477,12 @@ void main() {
       // Create 12 vocab to use
       isar.writeTxn(() async {
         for (int i = 1; i < 13; i++) {
-          await isar.vocabs.put(Vocab()..id = i);
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]);
         }
       });
 
