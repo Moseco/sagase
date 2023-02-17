@@ -32,14 +32,14 @@ class KanjiListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    kanji.meanings!,
+                    kanji.meanings ?? 'NO MEANING',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   kanji.kunReadings != null
                       ? KanjiKunReadings(kanji.kunReadings!)
                       : Text(
-                          kanji.onReadings!.join(', '),
+                          _getReadingString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -50,5 +50,11 @@ class KanjiListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getReadingString() {
+    if (kanji.onReadings != null) return kanji.onReadings!.join(', ');
+    if (kanji.nanori != null) return kanji.nanori!.join(', ');
+    return '';
   }
 }
