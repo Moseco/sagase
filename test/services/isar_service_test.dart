@@ -25,17 +25,14 @@ void main() {
         final kanji1 = Kanji()
           ..id = 1
           ..kanji = '1'
-          ..radical = 0
           ..strokeCount = 0;
         final kanji2 = Kanji()
           ..id = 2
           ..kanji = '2'
-          ..radical = 0
           ..strokeCount = 0;
         final kanji3 = Kanji()
           ..id = 3
           ..kanji = '3'
-          ..radical = 0
           ..strokeCount = 0
           ..spacedRepetitionData = SpacedRepetitionData.initialData();
         kanji3.spacedRepetitionData!.dueDate = 0;
@@ -78,17 +75,14 @@ void main() {
         final kanji1 = Kanji()
           ..id = 1
           ..kanji = '1'
-          ..radical = 0
           ..strokeCount = 0;
         final kanji2 = Kanji()
           ..id = 2
           ..kanji = '2'
-          ..radical = 0
           ..strokeCount = 0;
         final kanji3 = Kanji()
           ..id = 3
           ..kanji = '3'
-          ..radical = 0
           ..strokeCount = 0;
 
         await newIsar.vocabs.put(vocab1);

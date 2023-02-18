@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
@@ -13,7 +14,7 @@ class Kanji extends DictionaryItem {
   @Index(unique: true)
   late String kanji;
 
-  late byte radical;
+  final radical = IsarLink<KanjiRadical>();
   List<String>? components;
   byte grade = 255;
   late byte strokeCount;

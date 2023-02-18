@@ -27,6 +27,7 @@ dependencies:
   keyboard_actions: ^4.1.0
   fl_chart: ^0.55.2
   flutter_svg: ^1.1.6
+  flutter_sticky_header: ^0.6.5
 
   # Other
   isar: ^3.0.2
@@ -64,6 +65,8 @@ flutter:
 
   assets:
     # Uncommented for building the dictionary
-    # - assets/dictionary_source/ 
+    - assets/dictionary_source/ 
     - assets/dictionary_source/db_export.zip
+    # Kanji radical positions images
+    - assets/images/kanji_radical_positions/
     

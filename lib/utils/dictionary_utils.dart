@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' show visibleForTesting;
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
@@ -30,6 +31,7 @@ class DictionaryUtils {
           PredefinedDictionaryListSchema,
           MyDictionaryListSchema,
           FlashcardSetSchema,
+          KanjiRadicalSchema,
         ]);
 
     await isar.writeTxn(() async {
@@ -40,6 +42,11 @@ class DictionaryUtils {
     });
 
     await createVocabDictionaryIsolate(source.vocabDict, isar);
+    await createRadicalDictionaryIsolate(
+      source.kanjiRadicals,
+      source.kanjiStrokeData,
+      isar,
+    );
     await createKanjiDictionaryIsolate(
       source.kanjiDict,
       source.kanjiComponents,
@@ -71,8 +78,8 @@ class DictionaryUtils {
     final rawVocabList = jmdictDoc.childElements.first.childElements;
     // Top level of vocab items
     for (int i = 0; i < rawVocabList.length; i++) {
-      // Write to database every 10,000 iterations
-      if (i % 5000 == 0) {
+      // Write to database every 1000 iterations
+      if (i % 1000 == 0 && i != 0) {
         print("At vocab $i");
         await isar.writeTxn(() async {
           for (var vocab in vocabList) {
@@ -969,6 +976,42 @@ class DictionaryUtils {
     }
   }
 
+  // Creates the radical database from the radical json
+  @visibleForTesting
+  static Future<void> createRadicalDictionaryIsolate(
+    String kanjiRadicalsString,
+    String kanjiStrokeDataString,
+    Isar isar,
+  ) async {
+    Map<String, dynamic> kanjiRadicalMap = jsonDecode(kanjiRadicalsString);
+    Map<String, dynamic> strokeMap = jsonDecode(kanjiStrokeDataString);
+
+    // Loop through and add the basic data
+    await isar.writeTxn(() async {
+      for (var entry in kanjiRadicalMap.entries) {
+        final kanjiRadical = KanjiRadical()
+          ..radical = entry.key
+          ..kangxiId = entry.value['kanjix']
+          ..strokeCount = entry.value['strokes']
+          ..meaning = entry.value['meaning']
+          ..reading = entry.value['reading']
+          ..position = entry.value.containsKey('position')
+              ? KanjiRadicalPosition.values[entry.value['position']]
+              : KanjiRadicalPosition.none
+          ..importance = entry.value.containsKey('importance')
+              ? KanjiRadicalImportance.values[entry.value['importance']]
+              : KanjiRadicalImportance.none
+          ..strokes = strokeMap[entry.key]?.cast<String>()
+          ..variants = entry.value.containsKey('variants')
+              ? entry.value['variants'].cast<String>()
+              : null
+          ..variantOf = entry.value['variant_of'];
+
+        await isar.kanjiRadicals.put(kanjiRadical);
+      }
+    });
+  }
+
   // Creates the kanji database from the raw dictionary file
   @visibleForTesting
   static Future<void> createKanjiDictionaryIsolate(
@@ -985,8 +1028,18 @@ class DictionaryUtils {
 
     // Top level of kanji items (skip first element which is header)
     for (int i = 1; i < rawKanjiList.length; i++) {
-      // // Write to database every 10,000 iterations
-      if (i % 1000 == 0) print("At kanji $i");
+      // Write to database every 1000 iterations
+      if (i % 1000 == 0 && i != 0) {
+        print("At kanji $i");
+        await isar.writeTxn(() async {
+          for (var kanji in kanjiList) {
+            await isar.kanjis.put(kanji);
+            await kanji.radical.save();
+            await kanji.compounds.save();
+          }
+        });
+        kanjiList.clear();
+      }
 
       final kanji = Kanji();
 
@@ -1001,7 +1054,11 @@ class DictionaryUtils {
             _handleKanjiCodepointElements(kanjiElement.childElements, kanji);
             break;
           case 'radical':
-            _handleKanjiRadicalElements(kanjiElement.childElements, kanji);
+            await _handleKanjiRadicalElements(
+              kanjiElement.childElements,
+              kanji,
+              isar,
+            );
             break;
           case 'misc':
             _handleKanjiMiscElements(kanjiElement.childElements, kanji);
@@ -1035,6 +1092,7 @@ class DictionaryUtils {
     await isar.writeTxn(() async {
       for (var kanji in kanjiList) {
         await isar.kanjis.put(kanji);
+        await kanji.radical.save();
         await kanji.compounds.save();
       }
     });
@@ -1047,11 +1105,12 @@ class DictionaryUtils {
           final splits = line.split(':');
           final kanji = await isar.kanjis.getByKanji(splits[0].trim());
           if (kanji != null) {
+            await kanji.radical.load();
             final componentStrings = splits[1].split(' ');
             for (var component in componentStrings) {
               // If component is the same as the radical, don't add it
               if (component.isEmpty ||
-                  component == constants.radicals[kanji.radical].radical) {
+                  component == kanji.radical.value?.radical) {
                 continue;
               }
               kanji.components ??= [];
@@ -1092,13 +1151,17 @@ class DictionaryUtils {
     }
   }
 
-  static void _handleKanjiRadicalElements(
+  static Future<void> _handleKanjiRadicalElements(
     Iterable<XmlElement> elements,
     Kanji kanji,
-  ) {
+    Isar isar,
+  ) async {
     for (var element in elements) {
       if (element.getAttribute('rad_type') == 'classical') {
-        kanji.radical = int.parse(element.text);
+        kanji.radical.value = (await isar.kanjiRadicals
+            .filter()
+            .kangxiIdEqualTo(int.parse(element.text))
+            .findFirst());
         return;
       }
     }
@@ -1475,6 +1538,7 @@ class DictionaryUtils {
       PredefinedDictionaryListSchema,
       MyDictionaryListSchema,
       FlashcardSetSchema,
+      KanjiRadicalSchema,
     ]);
 
     await isar.copyToFile('$path/db_export.isar');
@@ -1490,6 +1554,7 @@ class DictionarySource {
   final String vocabLists;
   final String kanjiLists;
   final String kanjiStrokeData;
+  final String kanjiRadicals;
 
   const DictionarySource(
     this.vocabDict,
@@ -1498,5 +1563,6 @@ class DictionarySource {
     this.vocabLists,
     this.kanjiLists,
     this.kanjiStrokeData,
+    this.kanjiRadicals,
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/dictionary_utils.dart';
 
@@ -489,7 +490,57 @@ void main() {
       expect(vocab8.romajiTextIndex[1], 'teishatsu');
     });
 
+    test('Kanji radicals database creation with short source', () async {
+      await DictionaryUtils.createRadicalDictionaryIsolate(
+        shortKanjiRadicalData,
+        shortKanjiStrokeData,
+        isar,
+      );
+
+      final radical1 = await isar.kanjiRadicals.getByRadical('一');
+      expect(radical1!.radical, '一');
+      expect(radical1.kangxiId, 1);
+      expect(radical1.strokeCount, 1);
+      expect(radical1.meaning, 'one');
+      expect(radical1.reading, 'イチ');
+      expect(radical1.position, KanjiRadicalPosition.none);
+      expect(radical1.importance, KanjiRadicalImportance.top75);
+      expect(radical1.strokes!.length, 1);
+      expect(radical1.variants, null);
+      expect(radical1.variantOf, null);
+
+      final radical2 = await isar.kanjiRadicals.getByRadical('乙');
+      expect(radical2!.radical, '乙');
+      expect(radical2.strokeCount, 1);
+      expect(radical2.meaning, 'second');
+      expect(radical2.kangxiId, 5);
+      expect(radical2.reading, 'オツ, おつにょう, つりばり');
+      expect(radical2.position, KanjiRadicalPosition.none);
+      expect(radical2.importance, KanjiRadicalImportance.none);
+      expect(radical2.variants, ['乚']);
+      expect(radical2.variantOf, null);
+
+      final radical3 = await isar.kanjiRadicals.getByRadical('乚');
+      expect(radical3!.radical, '乚');
+      expect(radical3.kangxiId, null);
+      expect(radical3.strokeCount, 1);
+      expect(radical3.meaning, 'second');
+      expect(radical3.reading, 'オツ, おつにょう, つりばり');
+      expect(radical3.position, KanjiRadicalPosition.none);
+      expect(radical3.importance, KanjiRadicalImportance.none);
+      expect(radical3.variants, null);
+      expect(radical3.variantOf, '乙');
+    });
+
     test('Kanji database creation with short source dictionary', () async {
+      // First create radicals
+      await DictionaryUtils.createRadicalDictionaryIsolate(
+        shortKanjiRadicalData,
+        shortKanjiStrokeData,
+        isar,
+      );
+
+      // Create kanji dictionary
       await DictionaryUtils.createKanjiDictionaryIsolate(
         shortKanjidic2,
         shortKanjiComponents,
@@ -499,7 +550,8 @@ void main() {
 
       final kanji1 = await isar.kanjis.get(20811601);
       expect(kanji1!.kanji, '亜');
-      expect(kanji1.radical, 7);
+      await kanji1.radical.load();
+      expect(kanji1.radical.value!.kangxiId, 7);
       expect(kanji1.components!.length, 3);
       expect(kanji1.components![0], '｜');
       expect(kanji1.components![1], '一');
@@ -521,7 +573,8 @@ void main() {
 
       final kanji2 = await isar.kanjis.get(20811613);
       expect(kanji2!.kanji, '悪');
-      expect(kanji2.radical, 61);
+      await kanji2.radical.load();
+      expect(kanji2.radical.value!.kangxiId, 61);
       expect(kanji2.components!.length, 3);
       expect(kanji2.components![0], '｜');
       expect(kanji2.components![1], '一');
@@ -548,7 +601,8 @@ void main() {
 
       final kanji3 = await isar.kanjis.get(20814819);
       expect(kanji3!.kanji, '亞');
-      expect(kanji3.radical, 7);
+      await kanji3.radical.load();
+      expect(kanji3.radical.value!.kangxiId, 7);
       expect(kanji3.components!.length, 1);
       expect(kanji3.components![0], '一');
       expect(kanji3.grade, 255);
@@ -571,6 +625,7 @@ void main() {
           '# Nothing',
           '',
           '',
+          '{}',
           '{}',
         ),
         testingIsar: isar,

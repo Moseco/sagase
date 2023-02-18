@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/utils/constants.dart' show radicals;
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
+import 'package:sagase/ui/widgets/kanji_radical_position.dart';
 import 'package:stacked/stacked.dart';
 
 import 'kanji_radicals_viewmodel.dart';
@@ -9,80 +11,212 @@ class KanjiRadicalsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<KanjiRadicalsViewModel>.nonReactive(
+    return ViewModelBuilder<KanjiRadicalsViewModel>.reactive(
       viewModelBuilder: () => KanjiRadicalsViewModel(),
-      builder: (context, viewModel, child) {
-        final List<_RadicalStrokeCountGroup> radicalGroups = [];
-        for (int i = 0; i < radicals.last.strokes; i++) {
-          radicalGroups.add(_RadicalStrokeCountGroup(i + 1, []));
-        }
-        for (int i = 1; i < radicals.length; i++) {
-          radicalGroups[radicals[i].strokes - 1].radicals.add(
-                SizedBox(
-                  width: 64,
-                  child: Column(
-                    children: [
-                      Text(
-                        radicals[i].radical,
-                        style: const TextStyle(fontSize: 32),
-                      ),
-                      Text(
-                        radicals[i].meaning,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      if (radicals[i].variants != null)
-                        Text(
-                          radicals[i].variants!,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                    ],
-                  ),
+      builder: (context, viewModel, child) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Radicals'),
+          actions: [
+            PopupMenuButton<RadicalSorting>(
+              onSelected: viewModel.handleSortingChanged,
+              itemBuilder: (context) => [
+                CheckedPopupMenuItem<RadicalSorting>(
+                  value: RadicalSorting.all,
+                  checked: viewModel.radicalSorting == RadicalSorting.all,
+                  child: const Text('All radicals'),
                 ),
-              );
-        }
-
-        return Scaffold(
-          appBar: AppBar(title: const Text('Radicals')),
-          body: SelectionArea(
-            child: ListView.builder(
-              itemCount: radicalGroups.length,
-              itemBuilder: (context, groupIndex) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      color: Colors.deepPurple,
-                      padding: const EdgeInsets.all(8),
-                      child: SelectionContainer.disabled(
-                        child: Text(
-                          radicalGroups[groupIndex].strokes == 1
-                              ? '${radicalGroups[groupIndex].strokes} stroke'
-                              : '${radicalGroups[groupIndex].strokes} strokes',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
+                CheckedPopupMenuItem<RadicalSorting>(
+                  value: RadicalSorting.classic,
+                  checked: viewModel.radicalSorting == RadicalSorting.classic,
+                  child: const Text('Classic 214 radicals'),
+                ),
+                CheckedPopupMenuItem<RadicalSorting>(
+                  value: RadicalSorting.important,
+                  checked: viewModel.radicalSorting == RadicalSorting.important,
+                  child: const Text('Important radicals'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: viewModel.kanjiRadicals == null
+            ? Container()
+            : CustomScrollView(
+                slivers: viewModel.radicalSorting == RadicalSorting.important
+                    ? _getRadicalListByImportance(
+                        context,
+                        viewModel.kanjiRadicals!,
+                      )
+                    : _getRadicalListByStrokeCount(
+                        context,
+                        viewModel.kanjiRadicals!,
                       ),
-                    ),
-                    Wrap(children: radicalGroups[groupIndex].radicals),
-                  ],
+              ),
+      ),
+    );
+  }
+
+  List<SliverStickyHeader> _getRadicalListByStrokeCount(
+    BuildContext context,
+    List<KanjiRadical> radicals,
+  ) {
+    final List<SliverStickyHeader> radicalGroups = [];
+
+    int currentStrokeCount = -1;
+    late List<Widget> currentRadicals;
+    for (var radical in radicals) {
+      if (radical.strokeCount != currentStrokeCount) {
+        currentStrokeCount = radical.strokeCount;
+        currentRadicals = [];
+        radicalGroups.add(
+          SliverStickyHeader(
+            header: Container(
+              width: double.infinity,
+              color: Theme.of(context).appBarTheme.backgroundColor,
+              padding: const EdgeInsets.all(12),
+              child: SelectionContainer.disabled(
+                child: Text(
+                  currentStrokeCount == 1
+                      ? '$currentStrokeCount stroke'
+                      : '$currentStrokeCount strokes',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate(currentRadicals),
+            ),
           ),
         );
-      },
-    );
+      }
+
+      currentRadicals.add(_KanjiRadicalItem(radical));
+    }
+
+    return radicalGroups;
+  }
+
+  List<SliverStickyHeader> _getRadicalListByImportance(
+    BuildContext context,
+    List<KanjiRadical> radicals,
+  ) {
+    final List<SliverStickyHeader> radicalGroups = [];
+
+    KanjiRadicalImportance currentImportance = KanjiRadicalImportance.none;
+    late List<Widget> currentRadicals;
+    for (var radical in radicals) {
+      if (radical.importance != currentImportance) {
+        currentImportance = radical.importance;
+        currentRadicals = [];
+        late String headerText;
+        switch (currentImportance) {
+          case KanjiRadicalImportance.none:
+            break;
+          case KanjiRadicalImportance.top25:
+            headerText = 'Top 25%';
+            break;
+          case KanjiRadicalImportance.top50:
+            headerText = 'Top 50%';
+            break;
+          case KanjiRadicalImportance.top75:
+            headerText = 'Top 75%';
+            break;
+        }
+        radicalGroups.add(
+          SliverStickyHeader(
+            header: Container(
+              width: double.infinity,
+              color: Theme.of(context).appBarTheme.backgroundColor,
+              padding: const EdgeInsets.all(12),
+              child: SelectionContainer.disabled(
+                child: Text(
+                  headerText,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate(currentRadicals),
+            ),
+          ),
+        );
+      }
+
+      currentRadicals.add(_KanjiRadicalItem(radical));
+    }
+
+    return radicalGroups;
   }
 }
 
-class _RadicalStrokeCountGroup {
-  final int strokes;
-  final List<Widget> radicals;
+class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
+  final KanjiRadical radical;
+  final bool showKangxiId;
 
-  _RadicalStrokeCountGroup(this.strokes, this.radicals);
+  const _KanjiRadicalItem(
+    this.radical, {
+    this.showKangxiId = true,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, KanjiRadicalsViewModel viewModel) {
+    return InkWell(
+      onTap: () => viewModel.openKanjiRadical(radical),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 12),
+              child: Text(
+                radical.radical,
+                style: const TextStyle(fontSize: 32),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  radical.kangxiId != null && showKangxiId
+                      ? Text(
+                          '#${radical.kangxiId} - ${radical.meaning}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : Text(radical.meaning, maxLines: 1),
+                  Text(
+                    radical.reading,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (radical.variants != null)
+                    Text(
+                      "Variants: ${radical.variants!.join(', ')}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  if (radical.variantOf != null)
+                    Text(
+                      'Variant of ${radical.variantOf}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
+            if (radical.position != KanjiRadicalPosition.none)
+              KanjiRadicalPositionImage(radical.position),
+          ],
+        ),
+      ),
+    );
+  }
 }

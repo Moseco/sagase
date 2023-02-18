@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
                 : Colors.black,
           ),
         ),
+        appBarTheme: const AppBarTheme(color: Colors.deepPurple),
         fontFamily: 'NotoSansJP',
       ),
       darkTheme: ThemeData(

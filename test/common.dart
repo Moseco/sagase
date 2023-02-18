@@ -1172,6 +1172,65 @@ const shortKanjiStrokeData = '''
 "M42.12,24c1.09,1.56,1.57,3.23,1.46,5.01c0,7.22,0.03,50.43,0.03,58.99",
 "M62.62,22.75c0.91,1.63,1.32,3.09,1.21,4.88c0,8.29,0.03,52.17,0.03,58.88",
 "M15.88,89.23c3.62,0.65,7.25,0.71,10.62,0.49c18.61-1.21,42.5-2.34,60.12-2.56c3.21-0.04,6.34,0.23,9.5,0.91"
+],
+"一": [
+    "M11,54.25c3.19,0.62,6.25,0.75,9.73,0.5c20.64-1.5,50.39-5.12,68.58-5.24c3.6-0.02,5.77,0.24,7.57,0.49"
 ]
+}
+''';
+
+const shortKanjiRadicalData = '''
+{
+"一": {
+    "strokes": 1,
+    "kanjix": 1,
+    "meaning": "one",
+    "importance": 2,
+    "reading": "イチ"
+},
+"乙": {
+    "strokes": 1,
+    "kanjix": 5,
+    "meaning": "second",
+    "reading": "オツ, おつにょう, つりばり",
+    "variants": [
+        "乚"
+    ]
+},
+"乚": {
+    "strokes": 1,
+    "meaning": "second",
+    "reading": "オツ, おつにょう, つりばり",
+    "variant_of": "乙"
+},
+"二": {
+    "strokes": 2,
+    "kanjix": 7,
+    "meaning": "two",
+    "reading": "ニ"
+},
+"心": {
+    "strokes": 4,
+    "kanjix": 61,
+    "meaning": "heart",
+    "reading": "こころ, りっしんべん, したごころ",
+    "importance": 0,
+    "variants": [
+        "忄",
+        "㣺"
+    ]
+},
+"忄": {
+    "strokes": 3,
+    "meaning": "heart",
+    "reading": "こころ, りっしんべん, したごころ",
+    "variant_of": "心"
+},
+"㣺": {
+    "strokes": 4,
+    "meaning": "heart",
+    "reading": "こころ, りっしんべん, したごころ",
+    "variant_of": "心"
+}
 }
 ''';

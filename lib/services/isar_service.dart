@@ -6,6 +6,7 @@ import 'package:kana_kit/kana_kit.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
@@ -41,6 +42,7 @@ class IsarService {
         PredefinedDictionaryListSchema,
         MyDictionaryListSchema,
         FlashcardSetSchema,
+        KanjiRadicalSchema,
       ],
     );
 
@@ -556,6 +558,31 @@ class IsarService {
     });
   }
 
+  Future<KanjiRadical?> getKanjiRadical(String radical) async {
+    return _isar.kanjiRadicals.getByRadical(radical);
+  }
+
+  Future<List<KanjiRadical>> getAllKanjiRadicals() async {
+    return _isar.kanjiRadicals.where().findAll();
+  }
+
+  Future<List<KanjiRadical>> getClassicKanjiRadicals() async {
+    return _isar.kanjiRadicals
+        .filter()
+        .kangxiIdIsNotNull()
+        .sortByKangxiId()
+        .findAll();
+  }
+
+  Future<List<KanjiRadical>> getImportantKanjiRadicals() async {
+    return _isar.kanjiRadicals
+        .filter()
+        .importanceLessThan(KanjiRadicalImportance.none)
+        .sortByImportance()
+        .thenByKangxiId()
+        .findAll();
+  }
+
   static Future<void> importDatabase(DictionaryStatus status) async {
     // Copy db_export.zip asset to temporary directory file
     final ByteData byteData =
@@ -604,6 +631,7 @@ class IsarService {
             PredefinedDictionaryListSchema,
             MyDictionaryListSchema,
             FlashcardSetSchema,
+            KanjiRadicalSchema,
           ],
         );
 
@@ -616,6 +644,7 @@ class IsarService {
             PredefinedDictionaryListSchema,
             MyDictionaryListSchema,
             FlashcardSetSchema,
+            KanjiRadicalSchema,
           ],
           name: 'db_export',
         );
