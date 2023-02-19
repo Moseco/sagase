@@ -558,6 +558,21 @@ class IsarService {
     });
   }
 
+  Future<void> setSpacedRepetitionDataToNull(DictionaryItem item) async {
+    // Get instance, set spaced repetition data to null, then update database
+    return _isar.writeTxn(() async {
+      if (item is Vocab) {
+        var vocab = await _isar.vocabs.get(item.id);
+        vocab!.spacedRepetitionData = null;
+        await _isar.vocabs.put(vocab);
+      } else {
+        var kanji = await _isar.kanjis.get(item.id);
+        kanji!.spacedRepetitionData = null;
+        await _isar.kanjis.put(kanji);
+      }
+    });
+  }
+
   Future<KanjiRadical?> getKanjiRadical(String radical) async {
     return _isar.kanjiRadicals.getByRadical(radical);
   }

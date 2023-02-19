@@ -352,7 +352,7 @@ class FlashcardsViewModel extends BaseViewModel {
     }
   }
 
-  void undo() {
+  Future<void> undo() async {
     if (_undoList.isEmpty) return;
 
     // Current card to go back to
@@ -375,7 +375,12 @@ class FlashcardsViewModel extends BaseViewModel {
     notifyListeners();
 
     // Update in database with old data
-    _isarService.updateSpacedRepetitionData(current.flashcard);
+    // If old data was keeping track of initial correct count for new cards, set to null
+    if (current.previousData != null && current.previousData!.dueDate == null) {
+      return _isarService.setSpacedRepetitionDataToNull(current.flashcard);
+    } else {
+      return _isarService.updateSpacedRepetitionData(current.flashcard);
+    }
   }
 
   String? getNewInterval(FlashcardAnswer answer) {

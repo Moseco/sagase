@@ -903,13 +903,23 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 1);
 
-      // Answer flashcard and undo
+      // Answer flashcard
       DictionaryItem flashcard = viewModel.activeFlashcards[0];
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.repetitions, 2);
-      viewModel.undo();
+
+      // Verify database has new spaced repetition data
+      var fetchedVocab = await isar.vocabs.get(1);
+      expect(fetchedVocab!.spacedRepetitionData!.repetitions, 2);
+
+      // Undo
+      await viewModel.undo();
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
+
+      // Verify database has old spaced repetition data
+      fetchedVocab = await isar.vocabs.get(1);
+      expect(fetchedVocab!.spacedRepetitionData!.repetitions, 1);
     });
 
     test('Undo with new card initial correct requirement', () async {
@@ -955,6 +965,30 @@ void main() {
       expect(flashcard.spacedRepetitionData!.initialCorrectCount, 1);
       viewModel.undo();
       expect(flashcard.spacedRepetitionData, null);
+
+      // Answer the flashcard so spaced repetition data gets set in database
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.activeFlashcards.length, 0);
+      expect(flashcard.spacedRepetitionData!.interval, 1);
+      expect(flashcard.spacedRepetitionData!.repetitions, 1);
+      expect(flashcard.spacedRepetitionData!.easeFactor, 2.5);
+      expect(flashcard.spacedRepetitionData!.dueDate,
+          DateTime.now().add(const Duration(days: 1)).toInt());
+
+      // Verify database has spaced repetition data
+      var fetchedVocab = await isar.vocabs.get(1);
+      expect(fetchedVocab!.spacedRepetitionData!.repetitions, 1);
+
+      // Undo
+      await viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.dueDate, null);
+      expect(flashcard.spacedRepetitionData!.initialCorrectCount, 2);
+
+      // Verify database has set spaced repetition data to null
+      fetchedVocab = await isar.vocabs.get(1);
+      expect(fetchedVocab!.spacedRepetitionData, null);
     });
 
     test('Multiple wrong answers in a row', () async {
