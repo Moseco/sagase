@@ -65,7 +65,7 @@ flutter:
 
   assets:
     # Uncommented for building the dictionary
-    - assets/dictionary_source/ 
+    # - assets/dictionary_source/ 
     - assets/dictionary_source/db_export.zip
     # Kanji radical positions images
     - assets/images/kanji_radical_positions/
