@@ -583,6 +583,66 @@ void main() {
       expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
     });
 
+    test('Undo with previous spaced repetition data', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt()
+        ..totalAnswers = 1;
+
+      var vocab1 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1'],
+        ]
+        ..spacedRepetitionData = spacedRepetitionData;
+      var vocab2 = Vocab()
+        ..id = 2
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '2'],
+        ];
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab1);
+        await isar.vocabs.put(vocab2);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab1);
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab2);
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 2);
+      expect(viewModel.activeFlashcards.length, 1);
+
+      // Answer flashcard and undo
+      DictionaryItem flashcard = viewModel.activeFlashcards[0];
+      expect(flashcard.spacedRepetitionData!.repetitions, 1);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.repetitions, 1);
+    });
+
     test('Multiple wrong answers in a row', () async {
       // Create vocab to use
       var spacedRepetitionData = SpacedRepetitionData()
@@ -632,6 +692,68 @@ void main() {
       expect(flashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
       await viewModel.answerFlashcard(FlashcardAnswer.wrong);
       expect(flashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
+    });
+
+    test('Performance tracking', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt()
+        ..totalAnswers = 1;
+
+      var vocab = Vocab()
+        ..id = 0
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '0'],
+        ]
+        ..spacedRepetitionData = spacedRepetitionData;
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab);
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 1);
+      expect(viewModel.activeFlashcards.length, 1);
+
+      // Answer flashcard
+      DictionaryItem flashcard = viewModel.activeFlashcards[0];
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 1);
+      expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 0);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 2);
+      expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 1);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 3);
+      expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 2);
+      // Make sure undo changes values back
+      viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 2);
+      expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 1);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 3);
+      expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 1);
     });
   });
 }

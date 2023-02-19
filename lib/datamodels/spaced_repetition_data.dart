@@ -4,17 +4,11 @@ part 'spaced_repetition_data.g.dart';
 
 @embedded
 class SpacedRepetitionData {
-  late int interval;
-  late int repetitions;
-  late double easeFactor;
-  late int dueDate;
+  int interval = 0;
+  int repetitions = 0;
+  double easeFactor = 2.5;
+  int? dueDate;
 
-  SpacedRepetitionData();
-
-  factory SpacedRepetitionData.initialData() {
-    return SpacedRepetitionData()
-      ..interval = 0
-      ..repetitions = 0
-      ..easeFactor = 2.5;
-  }
+  int totalAnswers = 0;
+  int totalWrongAnswers = 0;
 }

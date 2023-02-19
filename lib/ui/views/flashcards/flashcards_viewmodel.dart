@@ -149,13 +149,13 @@ class FlashcardsViewModel extends BaseViewModel {
         if (item is Vocab) {
           if (item.spacedRepetitionData == null) {
             freshFlashcards.add(item);
-          } else if (item.spacedRepetitionData!.dueDate <= todayAsInt) {
+          } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
             dueFlashcards.add(item);
           }
         } else {
           if ((item as Kanji).spacedRepetitionData == null) {
             freshFlashcards.add(item);
-          } else if (item.spacedRepetitionData!.dueDate <= todayAsInt) {
+          } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
             dueFlashcards.add(item);
           }
         }
@@ -217,8 +217,7 @@ class FlashcardsViewModel extends BaseViewModel {
         // Get new spaced repetition date and use enum index as argument
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
           answer.index,
-          currentFlashcard.spacedRepetitionData ??
-              SpacedRepetitionData.initialData(),
+          currentFlashcard.spacedRepetitionData ?? SpacedRepetitionData(),
         );
 
         notifyListeners();
@@ -360,8 +359,7 @@ class FlashcardsViewModel extends BaseViewModel {
     } else {
       return _calculateSpacedRepetition(
         answer.index,
-        activeFlashcards[0].spacedRepetitionData ??
-            SpacedRepetitionData.initialData(),
+        activeFlashcards[0].spacedRepetitionData ?? SpacedRepetitionData(),
       ).interval.toString();
     }
   }
@@ -393,9 +391,6 @@ class FlashcardsViewModel extends BaseViewModel {
 
       repetitions = currentData.repetitions + 1;
     } else {
-      // If current repetitions is already 0 then the previous answer was also incorrect
-      // Return same data so ease factor is not further decreased before a correct answer
-      if (currentData.repetitions == 0) return currentData;
       interval = 0;
       repetitions = 0;
       easeFactor = currentData.easeFactor;
@@ -411,11 +406,18 @@ class FlashcardsViewModel extends BaseViewModel {
       easeFactor = 1.3;
     }
 
+    // If current repetitions is 0 and answer was incorrect then the previous answer was also incorrect
+    // Use previous ease factor so it is not further decreased before a correct answer
     return SpacedRepetitionData()
       ..interval = interval
       ..repetitions = repetitions
-      ..easeFactor = easeFactor
-      ..dueDate = DateTime.now().add(Duration(days: interval)).toInt();
+      ..easeFactor = currentData.repetitions == 0 && quality == 0
+          ? currentData.easeFactor
+          : easeFactor
+      ..dueDate = DateTime.now().add(Duration(days: interval)).toInt()
+      ..totalAnswers = currentData.totalAnswers + 1
+      ..totalWrongAnswers =
+          currentData.totalWrongAnswers + (quality == 0 ? 1 : 0);
   }
 
   void back() {

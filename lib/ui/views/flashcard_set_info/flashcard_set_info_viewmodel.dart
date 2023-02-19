@@ -103,7 +103,7 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     for (var flashcard in flashcards) {
       if (flashcard.spacedRepetitionData != null) {
         upcomingDueFlashcards[
-            (flashcard.spacedRepetitionData!.dueDate - today).clamp(0, 7)]++;
+            (flashcard.spacedRepetitionData!.dueDate! - today).clamp(0, 7)]++;
 
         if (flashcard.spacedRepetitionData!.interval <= 7) {
           flashcardIntervalCounts[1]++;

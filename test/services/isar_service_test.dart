@@ -20,7 +20,7 @@ void main() {
         final vocab2 = Vocab()..id = 2;
         final vocab3 = Vocab()
           ..id = 3
-          ..spacedRepetitionData = SpacedRepetitionData.initialData();
+          ..spacedRepetitionData = SpacedRepetitionData();
         vocab3.spacedRepetitionData!.dueDate = 0;
         final kanji1 = Kanji()
           ..id = 1
@@ -34,7 +34,7 @@ void main() {
           ..id = 3
           ..kanji = '3'
           ..strokeCount = 0
-          ..spacedRepetitionData = SpacedRepetitionData.initialData();
+          ..spacedRepetitionData = SpacedRepetitionData();
         kanji3.spacedRepetitionData!.dueDate = 0;
 
         await oldIsar.vocabs.put(vocab1);
