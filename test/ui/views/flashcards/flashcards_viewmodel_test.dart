@@ -744,9 +744,9 @@ void main() {
     });
 
     test('Undo', () async {
-      // Create 12 vocab to use
+      // Create 20 vocab to use
       await isar.writeTxn(() async {
-        for (int i = 1; i < 13; i++) {
+        for (int i = 0; i < 20; i++) {
           await isar.vocabs.put(Vocab()
             ..id = i
             ..kanjiReadingPairs = [
@@ -758,7 +758,7 @@ void main() {
 
       // Create dictionary lists to use
       await isarService.createMyDictionaryList('list1');
-      for (int i = 1; i < 13; i++) {
+      for (int i = 0; i < 20; i++) {
         await isarService.addVocabToMyDictionaryList(
             isarService.myDictionaryLists![0], Vocab()..id = i);
       }
@@ -785,8 +785,8 @@ void main() {
       expect(viewModel.usingSpacedRepetition, true);
 
       // Flashcard contents
-      expect(viewModel.allFlashcards!.length, 12);
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.allFlashcards!.length, 20);
+      expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.dueFlashcards.length, 0);
       expect(viewModel.freshFlashcards.length, 0);
 
@@ -805,50 +805,50 @@ void main() {
       expect(secondFlashcard.spacedRepetitionData == null, true);
 
       // Answer 10 flashcards and undo to check undo length limit
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
       for (int i = 0; i < 10; i++) {
         await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       }
-      expect(viewModel.activeFlashcards.length, 2);
+      expect(viewModel.activeFlashcards.length, 10);
       for (int i = 0; i < 10; i++) {
         viewModel.undo();
-        expect(viewModel.activeFlashcards.length, 3 + i);
+        expect(viewModel.activeFlashcards.length, 11 + i);
       }
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
 
       // Answer 11 flashcards and undo to check undo length limit (will lose 1)
       for (int i = 0; i < 11; i++) {
         await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       }
-      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards.length, 9);
       for (int i = 0; i < 10; i++) {
         viewModel.undo();
-        expect(viewModel.activeFlashcards.length, 2 + i);
+        expect(viewModel.activeFlashcards.length, 10 + i);
       }
 
       // This undo does nothing because limit has been reached
-      expect(viewModel.activeFlashcards.length, 11);
+      expect(viewModel.activeFlashcards.length, 19);
       viewModel.undo();
-      expect(viewModel.activeFlashcards.length, 11);
+      expect(viewModel.activeFlashcards.length, 19);
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
 
       // Answer all flashcards and check that undo does not work after starting random
-      for (int i = 0; i < 11; i++) {
+      for (int i = 0; i < 19; i++) {
         await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       }
 
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
       viewModel.undo();
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
 
       // Make sure undo removes when undoing a wrong answer
       firstFlashcard = viewModel.activeFlashcards[0];
       await viewModel.answerFlashcard(FlashcardAnswer.wrong);
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.activeFlashcards[0] != firstFlashcard, true);
-      expect(viewModel.activeFlashcards[9] == firstFlashcard, true);
+      expect(viewModel.activeFlashcards[14] == firstFlashcard, true);
       viewModel.undo();
-      expect(viewModel.activeFlashcards.length, 12);
+      expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
     });
 

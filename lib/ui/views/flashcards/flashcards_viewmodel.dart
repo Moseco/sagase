@@ -191,16 +191,16 @@ class FlashcardsViewModel extends BaseViewModel {
 
     if (usingSpacedRepetition) {
       if (answer == FlashcardAnswer.repeat) {
-        // Put current flashcard at 10th or end of the active flashcard list
+        // Put current flashcard at 15th or end of the active flashcard list
         activeFlashcards.insert(
-          min(9, activeFlashcards.length),
+          min(14, activeFlashcards.length),
           currentFlashcard,
         );
         notifyListeners();
       } else if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard at 10th or end of the active flashcard list
+        // Put current flashcard at 15th or end of the active flashcard list
         activeFlashcards.insert(
-          min(9, activeFlashcards.length),
+          min(14, activeFlashcards.length),
           currentFlashcard,
         );
         notifyListeners();
@@ -240,8 +240,9 @@ class FlashcardsViewModel extends BaseViewModel {
           await _isarService.updateSpacedRepetitionData(currentFlashcard);
         } else {
           // Not enough initial correct answers for new cards, reinsert to list
+          // at 15th or end of the list
           activeFlashcards.insert(
-            min(9, activeFlashcards.length),
+            min(14, activeFlashcards.length),
             currentFlashcard,
           );
           notifyListeners();
@@ -259,9 +260,9 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     } else {
       if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard at 10th or end of the active flashcard list
+        // Put current flashcard at 15th or end of the active flashcard list
         activeFlashcards.insert(
-          min(9, activeFlashcards.length),
+          min(14, activeFlashcards.length),
           currentFlashcard,
         );
       }
@@ -357,9 +358,9 @@ class FlashcardsViewModel extends BaseViewModel {
     // Current card to go back to
     final current = _undoList.removeLast();
 
-    // Go through the first 10 elements in the active list and
+    // Go through the first 15 elements in the active list and
     // remove the same flashcard if present
-    int limit = min(10, activeFlashcards.length);
+    int limit = min(15, activeFlashcards.length);
     for (int i = 0; i < limit; i++) {
       if (current.flashcard == activeFlashcards[i]) {
         activeFlashcards.removeAt(i);
