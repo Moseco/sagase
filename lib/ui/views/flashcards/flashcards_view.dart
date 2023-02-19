@@ -712,14 +712,14 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
             viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
         bottomLeftString = '$completedBar completed';
-        bottomRightString = '${viewModel.initialDueFlashcardCount} cards due';
+        bottomRightString = '$emptyBar due cards left';
       } else {
         // Answering fresh flashcards
         completedBar =
             viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
         bottomLeftString = '$completedBar completed';
-        bottomRightString = '${viewModel.allFlashcards!.length} cards';
+        bottomRightString = '$emptyBar new cards left';
       }
     } else {
       completedBar =
