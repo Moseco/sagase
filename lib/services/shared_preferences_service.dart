@@ -11,7 +11,8 @@ class SharedPreferencesService {
   }
 
   int getInitialCorrectInterval() {
-    return _sharedPreferences.getInt(constants.keyInitialCorrectInterval) ?? 1;
+    return _sharedPreferences.getInt(constants.keyInitialCorrectInterval) ??
+        constants.defaultInitialCorrectInterval;
   }
 
   Future<void> setInitialCorrectInterval(int value) async {
@@ -23,7 +24,7 @@ class SharedPreferencesService {
 
   int getInitialVeryCorrectInterval() {
     return _sharedPreferences.getInt(constants.keyInitialVeryCorrectInterval) ??
-        4;
+        constants.defaultInitialVeryCorrectInterval;
   }
 
   Future<void> setInitialVeryCorrectInterval(int value) async {

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:sagase/utils/constants.dart'
+    show defaultInitialCorrectInterval, defaultInitialVeryCorrectInterval;
 
 class InitialIntervalDialog extends HookWidget {
   final _snackbarService = locator<SnackbarService>();
@@ -45,7 +47,7 @@ class InitialIntervalDialog extends HookWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
-                'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Default is 1 and 4.',
+                'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Default is $defaultInitialCorrectInterval and $defaultInitialVeryCorrectInterval.',
                 textAlign: TextAlign.justify,
                 style: TextStyle(),
               ),
