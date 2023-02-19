@@ -17,7 +17,7 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
 
   // Information about when flashcards are due
   // index 0-6 is days of the week starting from today
-  // last index is words due afterwards
+  // last index is cards due afterwards
   List<int> upcomingDueFlashcards = [];
   // Information about the length of the due date for flashcards
   // 0 : fresh flashcards

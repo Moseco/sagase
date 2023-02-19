@@ -33,7 +33,7 @@ class FlashcardsViewModel extends BaseViewModel {
   bool get initialLoading => allFlashcards == null;
 
   // Use this bool instead of flashcardSet variable because a spaced
-  // repetition set can switch to random when out of due words
+  // repetition set can switch to random when out of due cards
   bool _usingSpacedRepetition = true;
   bool get usingSpacedRepetition => _usingSpacedRepetition;
 
@@ -142,7 +142,7 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     }
 
-    // If using spaced repetition get due words and not started words
+    // If using spaced repetition get due cards and not started cards
     if (_usingSpacedRepetition) {
       int todayAsInt = DateTime.now().toInt();
       for (var item in allFlashcards!) {
@@ -204,14 +204,47 @@ class FlashcardsViewModel extends BaseViewModel {
           currentFlashcard,
         );
         notifyListeners();
-        // Only get new spaced repetition date if flashcard has previous data
+        // Only modify spaced repetition data if flashcard has previous data
         if (currentFlashcard.spacedRepetitionData != null) {
+          // If answering a new card decrease the initial counter
+          if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
+            currentFlashcard.spacedRepetitionData = currentFlashcard
+                .spacedRepetitionData!
+                .copyWithInitialCorrectCount(-1);
+          } else {
+            // Not fresh card, get new spaced repetition data
+            currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
+              answer.index,
+              currentFlashcard.spacedRepetitionData!,
+            );
+            // Update in database
+            await _isarService.updateSpacedRepetitionData(currentFlashcard);
+          }
+        }
+      } else if (answer == FlashcardAnswer.correct) {
+        currentFlashcard.spacedRepetitionData ??= SpacedRepetitionData();
+        currentFlashcard.spacedRepetitionData = currentFlashcard
+            .spacedRepetitionData!
+            .copyWithInitialCorrectCount(1);
+        // If answering not new card or have answered new card correctly 3 times, get new spaced repetition data
+        if (currentFlashcard.spacedRepetitionData!.dueDate != null ||
+            currentFlashcard.spacedRepetitionData!.initialCorrectCount >= 3) {
+          // Get new spaced repetition date and use enum index as argument
           currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
             answer.index,
             currentFlashcard.spacedRepetitionData!,
           );
+
+          notifyListeners();
           // Update in database
           await _isarService.updateSpacedRepetitionData(currentFlashcard);
+        } else {
+          // Not enough initial correct answers for new cards, reinsert to list
+          activeFlashcards.insert(
+            min(9, activeFlashcards.length),
+            currentFlashcard,
+          );
+          notifyListeners();
         }
       } else {
         // Get new spaced repetition date and use enum index as argument

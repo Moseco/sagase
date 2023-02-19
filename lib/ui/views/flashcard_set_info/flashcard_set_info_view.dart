@@ -83,7 +83,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                     ),
                   ),
                   CardWithTitleSection(
-                    title: 'Flashcard due date length',
+                    title: 'Flashcard interval length',
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Column(
