@@ -350,7 +350,11 @@ class FlashcardsViewModel extends BaseViewModel {
     if (activeFlashcards.isEmpty) return '';
 
     if (answer == FlashcardAnswer.wrong) {
-      return '0';
+      if (activeFlashcards[0].spacedRepetitionData == null) {
+        return '~';
+      } else {
+        return '0';
+      }
     } else if (answer == FlashcardAnswer.repeat) {
       return '~';
     } else {
@@ -389,6 +393,9 @@ class FlashcardsViewModel extends BaseViewModel {
 
       repetitions = currentData.repetitions + 1;
     } else {
+      // If current repetitions is already 0 then the previous answer was also incorrect
+      // Return same data so ease factor is not further decreased before a correct answer
+      if (currentData.repetitions == 0) return currentData;
       interval = 0;
       repetitions = 0;
       easeFactor = currentData.easeFactor;
@@ -396,6 +403,9 @@ class FlashcardsViewModel extends BaseViewModel {
 
     easeFactor = currentData.easeFactor +
         (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
+
+    // Give a slight bump if have a low ease factor for correct answer
+    if (quality == 2 && easeFactor < 1.85) easeFactor += 0.15;
 
     if (easeFactor < 1.3) {
       easeFactor = 1.3;

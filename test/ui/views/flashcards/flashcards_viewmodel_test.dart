@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
@@ -69,7 +70,7 @@ void main() {
         ..id = 3
         ..kanji = '3'
         ..strokeCount = 0;
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
         await isar.vocabs.put(vocab2);
         await isar.vocabs.put(vocab3);
@@ -273,7 +274,7 @@ void main() {
         ..id = 2
         ..kanji = '2'
         ..strokeCount = 0;
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
         await isar.vocabs.put(vocab2);
 
@@ -357,7 +358,7 @@ void main() {
         ..kanjiReadingPairs = [
           KanjiReadingPair()..readings = [VocabReading()..reading = '1']
         ];
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
       });
 
@@ -420,7 +421,7 @@ void main() {
         ..kanjiReadingPairs = [
           KanjiReadingPair()..readings = [VocabReading()..reading = '1']
         ];
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
       });
 
@@ -475,7 +476,7 @@ void main() {
 
     test('Undo', () async {
       // Create 12 vocab to use
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         for (int i = 1; i < 13; i++) {
           await isar.vocabs.put(Vocab()
             ..id = i
@@ -580,6 +581,57 @@ void main() {
       viewModel.undo();
       expect(viewModel.activeFlashcards.length, 12);
       expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
+    });
+
+    test('Multiple wrong answers in a row', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt();
+
+      var vocab = Vocab()
+        ..id = 0
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '0'],
+        ]
+        ..spacedRepetitionData = spacedRepetitionData;
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab);
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 1);
+      expect(viewModel.activeFlashcards.length, 1);
+
+      // Answer flashcard as incorrect
+      DictionaryItem flashcard = viewModel.activeFlashcards[0];
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(flashcard.spacedRepetitionData!.repetitions, 0);
+      expect(flashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(flashcard.spacedRepetitionData!.easeFactor, 2.1799999999999997);
     });
   });
 }
