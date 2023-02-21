@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sagase/app/app.bottomsheets.dart';
+import 'package:sagase/app/app.locator.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class StrokeOrderDiagram extends StatelessWidget {
   final List<String>? strokes;
@@ -82,10 +85,16 @@ class StrokeOrderDiagram extends StatelessWidget {
         );
       }
 
-      return Wrap(
-        spacing: -1,
-        runSpacing: -1,
-        children: svgs,
+      return GestureDetector(
+        onTap: () => locator<BottomSheetService>().showCustomSheet(
+          variant: BottomsheetType.strokeOrderBottomSheet,
+          data: strokes,
+        ),
+        child: Wrap(
+          spacing: -1,
+          runSpacing: -1,
+          children: svgs,
+        ),
       );
     }
   }
