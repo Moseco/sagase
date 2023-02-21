@@ -40,28 +40,123 @@ class KanjiView extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(8),
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Text(
-                      kanji.kanji,
-                      style: const TextStyle(fontSize: 40),
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          kanji.kanji,
+                          style: const TextStyle(fontSize: 80),
+                        ),
+                      ),
                     ),
-                  ),
-                  Expanded(child: Text(kanji.meanings ?? 'NO MEANING')),
-                ],
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: kanji.grade != 255
+                                        ? kanji.grade.toString()
+                                        : '—',
+                                  ),
+                                  const TextSpan(
+                                    text: '\nGrade',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(text: kanji.strokeCount.toString()),
+                                  const TextSpan(
+                                    text: '\nStrokes',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: kanji.frequency != null
+                                        ? kanji.frequency.toString()
+                                        : '—',
+                                  ),
+                                  const TextSpan(
+                                    text: '\nRank',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: kanji.jlpt != 255
+                                        ? 'N${kanji.jlpt}'
+                                        : '—',
+                                  ),
+                                  const TextSpan(
+                                    text: '\nJLPT',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               StrokeOrderDiagram(kanji.strokes),
               CardWithTitleSection(
-                title: 'Reading',
+                title: 'Kanji info',
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _TitleInfoText(
+                        title: 'Meaning',
+                        content: kanji.meanings ?? 'NO MEANING',
+                      ),
                       if (kanji.onReadings != null)
                         _TitleInfoText(
                           title: 'On readings',
@@ -80,46 +175,6 @@ class KanjiView extends StatelessWidget {
                         _TitleInfoText(
                           title: 'Nanori',
                           content: kanji.nanori!.join(', '),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              CardWithTitleSection(
-                title: 'Info',
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _TitleInfoText(
-                        title: 'Radical',
-                        content: kanji.radical.value?.radical ?? 'UNKNOWN',
-                      ),
-                      if (kanji.components != null)
-                        _TitleInfoText(
-                          title: 'Components',
-                          content: kanji.components!.join(', '),
-                        ),
-                      _TitleInfoText(
-                        title: 'Stroke count',
-                        content: kanji.strokeCount.toString(),
-                      ),
-                      if (kanji.grade != 255)
-                        _TitleInfoText(
-                          title: 'Grade',
-                          content: kanji.grade.toString(),
-                        ),
-                      if (kanji.frequency != null)
-                        _TitleInfoText(
-                          title: 'Frequency',
-                          content: kanji.frequency.toString(),
-                        ),
-                      if (kanji.jlpt != 255)
-                        _TitleInfoText(
-                          title: 'JLPT',
-                          content: kanji.jlpt.toString(),
                         ),
                     ],
                   ),
