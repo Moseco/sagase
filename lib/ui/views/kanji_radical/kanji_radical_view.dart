@@ -30,9 +30,14 @@ class KanjiRadicalView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Center(
-                        child: Text(
-                          kanjiRadical.radical,
-                          style: const TextStyle(fontSize: 80),
+                        child: SelectionContainer.disabled(
+                          child: GestureDetector(
+                            onLongPress: viewModel.copyKanjiRadical,
+                            child: Text(
+                              kanjiRadical.radical,
+                              style: const TextStyle(fontSize: 80),
+                            ),
+                          ),
                         ),
                       ),
                     ),

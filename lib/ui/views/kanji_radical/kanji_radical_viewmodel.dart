@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/kanji.dart';
@@ -9,6 +10,7 @@ import 'package:stacked_services/stacked_services.dart';
 class KanjiRadicalViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final KanjiRadical kanjiRadical;
 
@@ -46,6 +48,14 @@ class KanjiRadicalViewModel extends BaseViewModel {
         title: kanjiRadical.radical,
         links: kanjiRadical.kanjiWithRadical,
       ),
+    );
+  }
+
+  void copyKanjiRadical() {
+    Clipboard.setData(ClipboardData(text: kanjiRadical.radical));
+    _snackbarService.showSnackbar(
+      message: 'Copied to clipboard',
+      duration: const Duration(seconds: 1),
     );
   }
 }
