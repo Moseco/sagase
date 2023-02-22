@@ -15,7 +15,7 @@ class Kanji extends DictionaryItem {
   late String kanji;
 
   final radical = IsarLink<KanjiRadical>();
-  List<String>? components;
+  final componentLinks = IsarLinks<Kanji>();
   byte grade = 255;
   late byte strokeCount;
   int? frequency;

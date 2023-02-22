@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -12,12 +13,22 @@ class KanjiViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final Kanji kanji;
 
-  KanjiViewModel(this.kanji);
+  KanjiViewModel(this.kanji) {
+    _initialize();
+  }
 
-  Future<void> initialize() async {
+  Future<void> _initialize() async {
+    await _refreshMyDictionaryListLinks();
+    await kanji.radical.load();
+    await kanji.componentLinks.load();
+    notifyListeners();
+  }
+
+  Future<void> _refreshMyDictionaryListLinks() async {
     // If my lists have been changed, reload back links
     if (_isarService.myDictionaryListsChanged) {
       final newKanji = await _isarService.getKanji(kanji.kanji);
@@ -28,18 +39,36 @@ class KanjiViewModel extends BaseViewModel {
     }
   }
 
-  void navigateToVocab(Vocab vocab) {
-    _navigationService.navigateTo(
+  Future<void> navigateToKanjiRadical() async {
+    await _navigationService.navigateTo(
+      Routes.kanjiRadicalView,
+      arguments: KanjiRadicalViewArguments(kanjiRadical: kanji.radical.value!),
+    );
+    await _refreshMyDictionaryListLinks();
+  }
+
+  Future<void> navigateToKanji(Kanji kanji) async {
+    await _navigationService.navigateTo(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(kanji: kanji),
+    );
+    await _refreshMyDictionaryListLinks();
+  }
+
+  Future<void> navigateToVocab(Vocab vocab) async {
+    await _navigationService.navigateTo(
       Routes.vocabView,
       arguments: VocabViewArguments(vocab: vocab),
     );
+    await _refreshMyDictionaryListLinks();
   }
 
-  void showAllCompounds() {
-    _navigationService.navigateTo(
+  Future<void> showAllCompounds() async {
+    await _navigationService.navigateTo(
       Routes.kanjiCompoundsView,
       arguments: KanjiCompoundsViewArguments(kanji: kanji),
     );
+    await _refreshMyDictionaryListLinks();
   }
 
   Future<void> openMyDictionaryListsSheet() async {
@@ -82,11 +111,15 @@ class KanjiViewModel extends BaseViewModel {
       }
 
       // Reload back links
-      final newKanji = await _isarService.getKanji(kanji.kanji);
-      kanji.myDictionaryListLinks.clear();
-      kanji.myDictionaryListLinks
-          .addAll(newKanji!.myDictionaryListLinks.toList());
-      notifyListeners();
+      await _refreshMyDictionaryListLinks();
     }
+  }
+
+  void copyKanji() {
+    Clipboard.setData(ClipboardData(text: kanji.kanji));
+    _snackbarService.showSnackbar(
+      message: 'Copied to clipboard',
+      duration: const Duration(seconds: 1),
+    );
   }
 }

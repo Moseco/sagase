@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
+import 'package:sagase/ui/widgets/kanji_list_item.dart';
+import 'package:sagase/ui/widgets/list_item_loading.dart';
 import 'package:sagase/ui/widgets/stroke_order_diagram.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
@@ -17,8 +22,6 @@ class KanjiView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<KanjiViewModel>.reactive(
       viewModelBuilder: () => KanjiViewModel(kanji),
-      fireOnModelReadyOnce: true,
-      onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           title: Text(kanji.kanji),
@@ -45,9 +48,14 @@ class KanjiView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Center(
-                        child: Text(
-                          kanji.kanji,
-                          style: const TextStyle(fontSize: 80),
+                        child: SelectionContainer.disabled(
+                          child: GestureDetector(
+                            onLongPress: viewModel.copyKanji,
+                            child: Text(
+                              kanji.kanji,
+                              style: const TextStyle(fontSize: 80),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -180,6 +188,79 @@ class KanjiView extends StatelessWidget {
                   ),
                 ),
               ),
+              SelectionContainer.disabled(
+                child: CardWithTitleSection(
+                  title: 'Components',
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8, left: 8),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Radical',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16),
+                          child: kanji.radical.isLoaded
+                              ? _KanjiRadicalItem(
+                                  radical: kanji.radical.value!,
+                                  onPressed: viewModel.navigateToKanjiRadical,
+                                )
+                              : const ListItemLoading(showLeading: true),
+                        ),
+                        if (kanji.componentLinks.isNotEmpty)
+                          Column(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8),
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    'Other components',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ListView.separated(
+                                separatorBuilder: (_, __) => const Divider(
+                                  height: 1,
+                                  indent: 8,
+                                  endIndent: 8,
+                                ),
+                                shrinkWrap: true,
+                                primary: false,
+                                padding: const EdgeInsets.only(
+                                  bottom: 8,
+                                  left: 16,
+                                ),
+                                itemCount: kanji.componentLinks.length,
+                                itemBuilder: (context, index) => kanji
+                                        .componentLinks.isLoaded
+                                    ? KanjiListItem(
+                                        kanji: kanji.componentLinks
+                                            .elementAt(index),
+                                        onPressed: () =>
+                                            viewModel.navigateToKanji(
+                                          kanji.componentLinks.elementAt(index),
+                                        ),
+                                      )
+                                    : const ListItemLoading(showLeading: true),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               if (kanji.compounds.isNotEmpty)
                 SelectionContainer.disabled(
                   child: CardWithTitleSection(
@@ -195,9 +276,7 @@ class KanjiView extends StatelessWidget {
                           shrinkWrap: true,
                           primary: false,
                           padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: kanji.compounds.length < 10
-                              ? kanji.compounds.length
-                              : 10,
+                          itemCount: min(kanji.compounds.length, 10),
                           itemBuilder: (context, index) => VocabListItem(
                             vocab: kanji.compounds.elementAt(index),
                             onPressed: () => viewModel.navigateToVocab(
@@ -247,6 +326,67 @@ class _TitleInfoText extends StatelessWidget {
           ),
           TextSpan(text: content),
         ],
+      ),
+    );
+  }
+}
+
+class _KanjiRadicalItem extends StatelessWidget {
+  final KanjiRadical radical;
+  final void Function() onPressed;
+
+  const _KanjiRadicalItem({
+    required this.radical,
+    required this.onPressed,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Text(
+                radical.radical,
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Radical #${radical.kangxiId} - ${radical.meaning}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    radical.reading,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (radical.variants != null)
+                    Text(
+                      "Variants: ${radical.variants!.join(', ')}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  if (radical.variantOf != null)
+                    Text(
+                      'Variant of ${radical.variantOf}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

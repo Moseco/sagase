@@ -1101,24 +1101,24 @@ class DictionaryUtils {
     await isar.writeTxn(() async {
       final lines = kanjiComponentsString.split('\n');
       for (var line in lines) {
-        if (line.isNotEmpty && !line.startsWith('#')) {
-          final splits = line.split(':');
-          final kanji = await isar.kanjis.getByKanji(splits[0].trim());
-          if (kanji != null) {
-            await kanji.radical.load();
-            final componentStrings = splits[1].split(' ');
-            for (var component in componentStrings) {
-              // If component is the same as the radical, don't add it
-              if (component.isEmpty ||
-                  component == kanji.radical.value?.radical) {
-                continue;
-              }
-              kanji.components ??= [];
-              kanji.components!.add(component);
-            }
-            await isar.kanjis.put(kanji);
-          }
+        if (line.isEmpty || line.startsWith('#')) continue;
+
+        final splits = line.split(':');
+        final kanji = await isar.kanjis.getByKanji(splits[0].trim());
+        if (kanji == null) continue;
+
+        await kanji.radical.load();
+        final componentStrings = splits[1].split(' ');
+        for (var componentString in componentStrings) {
+          final componentKanji = await isar.kanjis.getByKanji(componentString);
+          if (componentString.isEmpty ||
+              componentString == kanji.radical.value?.radical ||
+              componentKanji == null) continue;
+
+          kanji.componentLinks.add(componentKanji);
         }
+
+        await kanji.componentLinks.save();
       }
     });
 
