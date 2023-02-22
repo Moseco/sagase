@@ -13,7 +13,12 @@ class SplashScreenView extends StatelessWidget {
       fireOnModelReadyOnce: true,
       onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
-        body: Center(child: Text(viewModel.getStatusText())),
+        body: Center(
+          child: Text(
+            viewModel.getStatusText(),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }

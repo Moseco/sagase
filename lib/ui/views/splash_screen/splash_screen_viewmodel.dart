@@ -72,7 +72,7 @@ class SplashScreenViewModel extends BaseViewModel {
       case _Status.waiting:
         return '';
       case _Status.importingDatabase:
-        return 'Preparing dictionary';
+        return 'Preparing dictionary\nShould take less than 30 seconds';
       case _Status.upgradingDatabase:
         return 'Upgrading dictionary\nThis can take about 30 seconds';
       case _Status.downloadingModel:
