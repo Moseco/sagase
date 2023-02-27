@@ -28,10 +28,10 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
   List<double> flashcardIntervalCounts = [0, 0, 0, 0, 0];
 
   FlashcardSetInfoViewModel(this.flashcardSet) {
-    _loadLists();
+    _initialize();
   }
 
-  Future<void> _loadLists() async {
+  Future<void> _initialize() async {
     // Load all vocab and kanji and add to maps to avoid duplicates
     await flashcardSet.predefinedDictionaryListLinks.load();
     await flashcardSet.myDictionaryListLinks.load();
@@ -98,12 +98,16 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     }
 
     // Go through and assemble data
-    final today = DateTime.now().toInt();
+    // Make sure there are only day differences
+    final today = DateTime.parse(DateTime.now().toInt().toString());
     upcomingDueFlashcards = List<int>.filled(8, 0);
     for (var flashcard in flashcards) {
       if (flashcard.spacedRepetitionData != null) {
         upcomingDueFlashcards[
-            (flashcard.spacedRepetitionData!.dueDate! - today).clamp(0, 7)]++;
+            (DateTime.parse(flashcard.spacedRepetitionData!.dueDate!.toString())
+                    .difference(today)
+                    .inDays)
+                .clamp(0, 7)]++;
 
         if (flashcard.spacedRepetitionData!.interval <= 7) {
           flashcardIntervalCounts[1]++;
