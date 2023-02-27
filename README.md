@@ -57,11 +57,11 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Vocab
     - [x] Kanji
     - [x] Hand writing character recognition
-- [ ] Kanji radicals
+- [x] Kanji radicals
     - [x] 214 classic kanji radicals
     - [x] Meaning
     - [x] Variants
-    - [ ] Kanji using the radical
+    - [x] Kanji using the radical
 - [x] Hiragana and katakana table
 - [x] Export/import database
 - [x] Predefined vocab and kanji lists
