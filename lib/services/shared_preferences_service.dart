@@ -41,4 +41,29 @@ class SharedPreferencesService {
   Future<void> setShowNewInterval(bool value) async {
     await _sharedPreferences.setBool(constants.keyShowNewInterval, value);
   }
+
+  bool getFlashcardLearningModeEnabled() {
+    return _sharedPreferences
+            .getBool(constants.keyFlashcardLearningModeEnabled) ??
+        false;
+  }
+
+  Future<void> setFlashcardLearningModeEnabled(bool value) async {
+    await _sharedPreferences.setBool(
+      constants.keyFlashcardLearningModeEnabled,
+      value,
+    );
+  }
+
+  int getNewFlashcardsPerDay() {
+    return _sharedPreferences.getInt(constants.keyNewFlashcardsPerDay) ??
+        constants.defaultNewFlashcardsPerDay;
+  }
+
+  Future<void> setNewFlashcardsPerDay(int value) async {
+    await _sharedPreferences.setInt(
+      constants.keyNewFlashcardsPerDay,
+      value,
+    );
+  }
 }

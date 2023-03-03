@@ -25,6 +25,9 @@ final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
 const keyInitialCorrectInterval = 'initial_correct_interval';
 const keyInitialVeryCorrectInterval = 'initial_very_correct_interval';
 const keyShowNewInterval = 'show_new_interval';
+const keyFlashcardLearningModeEnabled = 'flashcard_learning_mode_enabled';
+const keyNewFlashcardsPerDay = 'new_flashcards_per_day';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
+const defaultNewFlashcardsPerDay = 10;

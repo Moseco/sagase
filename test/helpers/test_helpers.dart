@@ -17,6 +17,7 @@ import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:path/path.dart' as path;
+import 'package:sagase/utils/constants.dart' as constants;
 
 import 'test_helpers.mocks.dart';
 
@@ -75,12 +76,20 @@ Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
   return service;
 }
 
-MockSharedPreferencesService getAndRegisterSharedPreferencesService() {
+MockSharedPreferencesService getAndRegisterSharedPreferencesService({
+  bool flashcardLearningModeEnabled = false,
+  int newFlashcardsPerDay = constants.defaultNewFlashcardsPerDay,
+}) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
 
-  when(service.getInitialCorrectInterval()).thenReturn(1);
-  when(service.getInitialVeryCorrectInterval()).thenReturn(4);
+  when(service.getInitialCorrectInterval())
+      .thenReturn(constants.defaultInitialCorrectInterval);
+  when(service.getInitialVeryCorrectInterval())
+      .thenReturn(constants.defaultInitialVeryCorrectInterval);
+  when(service.getFlashcardLearningModeEnabled())
+      .thenReturn(flashcardLearningModeEnabled);
+  when(service.getNewFlashcardsPerDay()).thenReturn(newFlashcardsPerDay);
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

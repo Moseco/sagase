@@ -22,13 +22,14 @@ class FlashcardsViewModel extends BaseViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final FlashcardSet flashcardSet;
+  FlashcardStartMode? startMode;
 
   late final Random _random;
 
   List<DictionaryItem>? allFlashcards;
   final List<DictionaryItem> activeFlashcards = [];
   final List<DictionaryItem> dueFlashcards = [];
-  final List<DictionaryItem> freshFlashcards = [];
+  final List<DictionaryItem> newFlashcards = [];
 
   bool get initialLoading => allFlashcards == null;
 
@@ -45,14 +46,25 @@ class FlashcardsViewModel extends BaseViewModel {
   final ListQueue<_UndoItem> _undoList = ListQueue<_UndoItem>();
   bool get canUndo => _undoList.isNotEmpty;
 
-  FlashcardsViewModel(this.flashcardSet, {int? randomSeed})
-      : _random = Random(randomSeed);
+  FlashcardsViewModel(
+    this.flashcardSet,
+    this.startMode, {
+    int? randomSeed,
+  }) : _random = Random(randomSeed);
 
   Future<void> initialize() async {
-    // Update flashcard set to update timestamp
+    // If flashcard set timestamp is previous day, reset new flashcard completed count
+    if (flashcardSet.timestamp.isDifferentDay(DateTime.now())) {
+      flashcardSet.newFlashcardsCompletedToday = 0;
+    }
+    // Update flashcard set to also update timestamp
     _isarService.updateFlashcardSet(flashcardSet);
-
+    // Set if using spaced repetition
     _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
+    // If not given start mode in constructor, get default start mode
+    startMode ??= _sharedPreferencesService.getFlashcardLearningModeEnabled()
+        ? FlashcardStartMode.learning
+        : FlashcardStartMode.normal;
     // Load all vocab and kanji and add to maps to avoid duplicates
     await flashcardSet.predefinedDictionaryListLinks.load();
     await flashcardSet.myDictionaryListLinks.load();
@@ -148,13 +160,13 @@ class FlashcardsViewModel extends BaseViewModel {
       for (var item in allFlashcards!) {
         if (item is Vocab) {
           if (item.spacedRepetitionData == null) {
-            freshFlashcards.add(item);
+            newFlashcards.add(item);
           } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
             dueFlashcards.add(item);
           }
         } else {
           if ((item as Kanji).spacedRepetitionData == null) {
-            freshFlashcards.add(item);
+            newFlashcards.add(item);
           } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
             dueFlashcards.add(item);
           }
@@ -212,7 +224,7 @@ class FlashcardsViewModel extends BaseViewModel {
                 .spacedRepetitionData!
                 .copyWithInitialCorrectCount(-1);
           } else {
-            // Not fresh card, get new spaced repetition data
+            // Not new card, get new spaced repetition data
             currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
               answer.index,
               currentFlashcard.spacedRepetitionData!,
@@ -229,6 +241,11 @@ class FlashcardsViewModel extends BaseViewModel {
         // If answering not new card or have answered new card correctly 3 times, get new spaced repetition data
         if (currentFlashcard.spacedRepetitionData!.dueDate != null ||
             currentFlashcard.spacedRepetitionData!.initialCorrectCount >= 3) {
+          // If completing a new card, increase count
+          if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
+            flashcardSet.newFlashcardsCompletedToday++;
+            _isarService.updateFlashcardSet(flashcardSet);
+          }
           // Get new spaced repetition date and use enum index as argument
           currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
             answer.index,
@@ -248,6 +265,12 @@ class FlashcardsViewModel extends BaseViewModel {
           notifyListeners();
         }
       } else {
+        // Very correct answer
+        // If completing a new card, increase count
+        if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
+          flashcardSet.newFlashcardsCompletedToday++;
+          _isarService.updateFlashcardSet(flashcardSet);
+        }
         // Get new spaced repetition date and use enum index as argument
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
           answer.index,
@@ -283,15 +306,30 @@ class FlashcardsViewModel extends BaseViewModel {
 
   Future<void> _prepareFlashcards({bool initial = false}) async {
     if (_usingSpacedRepetition) {
-      // Add due cards
-      activeFlashcards.addAll(dueFlashcards);
+      // Add due cards if not in skip start mode
+      if (startMode != FlashcardStartMode.skip) {
+        activeFlashcards.addAll(dueFlashcards);
+      }
       dueFlashcards.clear();
 
-      // If active flashcards is still empty then try to add fresh flashcards
+      // If active flashcards is still empty then try to add new flashcards
       if (activeFlashcards.isEmpty) {
-        activeFlashcards.addAll(freshFlashcards);
-        freshFlashcards.clear();
+        activeFlashcards.addAll(newFlashcards);
+        newFlashcards.clear();
         _answeringDueFlashcards = false;
+      } else if (startMode == FlashcardStartMode.learning) {
+        // If active list was not empty and in learning mode, add new cards with the due cards
+        int flashcardsToAdd = min(
+          _sharedPreferencesService.getNewFlashcardsPerDay() -
+              flashcardSet.newFlashcardsCompletedToday,
+          newFlashcards.length,
+        );
+        for (int i = 0; i < flashcardsToAdd; i++) {
+          activeFlashcards.add(
+              newFlashcards.removeAt(_random.nextInt(newFlashcards.length)));
+        }
+        // Also change initial due flashcard count
+        _initialDueFlashcardCount += flashcardsToAdd;
       }
 
       // Randomize active flashcards
@@ -375,8 +413,10 @@ class FlashcardsViewModel extends BaseViewModel {
     notifyListeners();
 
     // Update in database with old data
-    // If old data was keeping track of initial correct count for new cards, set to null
+    // If old data was keeping track of initial correct count for new cards, set to null and decrease count
     if (current.previousData != null && current.previousData!.dueDate == null) {
+      flashcardSet.newFlashcardsCompletedToday--;
+      _isarService.updateFlashcardSet(flashcardSet);
       return _isarService.setSpacedRepetitionDataToNull(current.flashcard);
     } else {
       return _isarService.updateSpacedRepetitionData(current.flashcard);
@@ -524,4 +564,10 @@ class _UndoItem {
     this.flashcard,
     this.previousData,
   );
+}
+
+enum FlashcardStartMode {
+  normal,
+  learning,
+  skip,
 }

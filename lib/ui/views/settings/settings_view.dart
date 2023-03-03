@@ -45,7 +45,6 @@ class SettingsView extends StatelessWidget {
                 title: const Text('Flashcards'),
                 tiles: [
                   SettingsTile.navigation(
-                    leading: const Icon(Icons.schedule),
                     title: const Text('Initial spaced repetition interval'),
                     onPressed: (_) =>
                         viewModel.setInitialSpacedRepetitionInterval(),
@@ -54,11 +53,28 @@ class SettingsView extends StatelessWidget {
                     initialValue: viewModel.showNewInterval,
                     onToggle: viewModel.setShowNewInterval,
                     activeSwitchColor: Theme.of(context).colorScheme.primary,
-                    leading: const Icon(Icons.exposure_plus_1),
                     title: const Text('Preview new spaced repetition interval'),
                     description: const Text(
                       'Shown underneath flashcard answer buttons.',
                     ),
+                  ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.flashcardLearningModeEnabled,
+                    onToggle: viewModel.setFlashcardLearningModeEnabled,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Learning mode'),
+                    description: const Text(
+                      'If enabled, a set amount of new flashcards will be included with due flashcards. You can also long press a flashcard set to open in a different mode.',
+                    ),
+                  ),
+                  SettingsTile.navigation(
+                    enabled: viewModel.flashcardLearningModeEnabled,
+                    title: const Text('New flashcards per day'),
+                    trailing: Text(viewModel.newFlashcardsPerDay.toString()),
+                    description: const Text(
+                      'The amount of new flashcards to be added along with due cards while in learning mode.',
+                    ),
+                    onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
                   ),
                 ],
               ),

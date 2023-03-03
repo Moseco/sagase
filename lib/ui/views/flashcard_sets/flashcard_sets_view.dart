@@ -47,6 +47,7 @@ class _FlashcardSet extends ViewModelWidget<FlashcardSetsViewModel> {
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: () => viewModel.openFlashcardSet(flashcardSet),
+        onLongPress: () => viewModel.selectFlashcardStartMode(flashcardSet),
         child: Row(
           children: [
             Expanded(

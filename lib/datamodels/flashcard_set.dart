@@ -17,6 +17,8 @@ class FlashcardSet {
   bool kanjiShowReading = false;
   late DateTime timestamp;
 
+  int newFlashcardsCompletedToday = 0;
+
   final predefinedDictionaryListLinks = IsarLinks<PredefinedDictionaryList>();
   final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
 }

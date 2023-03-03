@@ -55,6 +55,25 @@ class FlashcardSetsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<void> selectFlashcardStartMode(FlashcardSet flashcardSet) async {
+    if (!flashcardSet.usingSpacedRepetition) return;
+
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.flashcardStartDialog,
+      barrierDismissible: true,
+    );
+
+    if (response?.data == null) return;
+
+    _navigationService.navigateTo(
+      Routes.flashcardsView,
+      arguments: FlashcardsViewArguments(
+        flashcardSet: flashcardSet,
+        startMode: response!.data,
+      ),
+    );
+  }
+
   Future<void> editFlashcardSet(FlashcardSet flashcardSet) async {
     DateTime initialDateTime = flashcardSet.timestamp;
     final result = await _navigationService.navigateTo(

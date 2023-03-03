@@ -34,7 +34,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet);
+      var viewModel = FlashcardsViewModel(flashcardSet, null);
       await viewModel.initialize();
 
       // Verify that back was called correctly
@@ -112,7 +112,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -125,7 +125,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 6);
       expect(viewModel.activeFlashcards.length, 6);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       late DictionaryItem tempFlashcard;
@@ -204,7 +204,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -217,7 +217,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 2);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       late DictionaryItem tempFlashcard;
@@ -232,7 +232,7 @@ void main() {
           DateTime.now().add(const Duration(days: 4)).toInt());
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
-      viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -245,7 +245,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Finish last flashcard
       tempFlashcard = viewModel.activeFlashcards[0];
@@ -294,7 +294,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -307,7 +307,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 2);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       late DictionaryItem tempFlashcard;
@@ -430,7 +430,7 @@ void main() {
           getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -443,7 +443,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 1);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       final tempFlashcard = viewModel.activeFlashcards[0];
@@ -464,7 +464,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 1);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
     });
 
     test('Spaced repetition set with mixed starting spaced repetition data',
@@ -524,7 +524,7 @@ void main() {
       );
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Using spaced repetition
@@ -534,7 +534,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 3);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 1);
+      expect(viewModel.newFlashcards.length, 1);
 
       // Answer flashcards
       late DictionaryItem tempFlashcard;
@@ -562,7 +562,7 @@ void main() {
       tempFlashcard = viewModel.activeFlashcards[0];
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
       expect(tempFlashcard.spacedRepetitionData!.interval, 2);
       expect(tempFlashcard.spacedRepetitionData!.repetitions, 2);
       expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.5);
@@ -636,7 +636,7 @@ void main() {
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -649,7 +649,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 4);
       expect(viewModel.activeFlashcards.length, 4);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       late DictionaryItem tempFlashcard;
@@ -711,7 +711,7 @@ void main() {
           getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -724,7 +724,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 1);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcards
       viewModel.activeFlashcards[0];
@@ -740,7 +740,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 1);
       expect(viewModel.activeFlashcards.length, 1);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
     });
 
     test('Undo', () async {
@@ -775,7 +775,7 @@ void main() {
           getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Verify that back was not called
@@ -788,7 +788,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 20);
       expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.dueFlashcards.length, 0);
-      expect(viewModel.freshFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
 
       // Answer flashcard and then undo
       DictionaryItem firstFlashcard = viewModel.activeFlashcards[0];
@@ -893,7 +893,7 @@ void main() {
       );
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Using spaced repetition
@@ -947,7 +947,7 @@ void main() {
       );
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Using spaced repetition
@@ -1023,7 +1023,7 @@ void main() {
       );
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Using spaced repetition
@@ -1075,7 +1075,7 @@ void main() {
       );
 
       // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, randomSeed: 123);
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.initialize();
 
       // Using spaced repetition
@@ -1102,6 +1102,295 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.totalAnswers, 3);
       expect(flashcard.spacedRepetitionData!.totalWrongAnswers, 1);
+    });
+
+    test('Flashcard learning mode enabled', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt();
+
+      var vocab1 = Vocab()
+        ..id = 0
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '0'],
+        ]
+        ..spacedRepetitionData = spacedRepetitionData;
+
+      var vocab2 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1'],
+        ];
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab1);
+        await isar.vocabs.put(vocab2);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab1);
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab2);
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(
+          flashcardLearningModeEnabled: true);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition with learning mode enabled
+      expect(viewModel.usingSpacedRepetition, true);
+      expect(viewModel.startMode, FlashcardStartMode.learning);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 2);
+      expect(viewModel.activeFlashcards.length, 2);
+
+      // Complete the due card (not a new card with current seed)
+      viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      // Complete the new card with correct
+      viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.answerFlashcard(FlashcardAnswer.correct);
+      viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.activeFlashcards.length, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Undo and complete with very correct instead
+      viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      expect(viewModel.activeFlashcards.length, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+    });
+
+    test('Flashcard start in learning mode', () async {
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        FlashcardStartMode.learning,
+        randomSeed: 123,
+      );
+      await viewModel.initialize();
+
+      // Using spaced repetition with learning mode enabled
+      expect(viewModel.usingSpacedRepetition, true);
+      expect(viewModel.startMode, FlashcardStartMode.learning);
+    });
+
+    test('Flashcard start in skip due cards mode', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt();
+
+      var vocab1 = Vocab()
+        ..id = 0
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '0'],
+        ]
+        ..spacedRepetitionData = spacedRepetitionData;
+
+      var vocab2 = Vocab()
+        ..id = 1
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '1'],
+        ];
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab1);
+        await isar.vocabs.put(vocab2);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab1);
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab2);
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        FlashcardStartMode.skip,
+        randomSeed: 123,
+      );
+      await viewModel.initialize();
+
+      // Using spaced repetition with learning mode enabled
+      expect(viewModel.usingSpacedRepetition, true);
+      expect(viewModel.startMode, FlashcardStartMode.skip);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 2);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, 1);
+    });
+
+    test('Flashcard start in normal mode with learning mode enabled', () async {
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(
+          flashcardLearningModeEnabled: true);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        FlashcardStartMode.normal,
+        randomSeed: 123,
+      );
+      await viewModel.initialize();
+
+      // Using spaced repetition with learning mode enabled
+      expect(viewModel.usingSpacedRepetition, true);
+      expect(viewModel.startMode, FlashcardStartMode.normal);
+    });
+
+    test('Learning mode with more new cards than will be added', () async {
+      // Create vocab to use
+      var spacedRepetitionData = SpacedRepetitionData()
+        ..interval = 1
+        ..repetitions = 1
+        ..easeFactor = 2.5
+        ..dueDate = DateTime.now().toInt();
+
+      List<Vocab> vocabs = [
+        Vocab()
+          ..id = 0
+          ..kanjiReadingPairs = [
+            KanjiReadingPair()..readings = [VocabReading()..reading = '0'],
+          ]
+          ..spacedRepetitionData = spacedRepetitionData,
+      ];
+
+      for (int i = 0; i < 10; i++) {
+        vocabs.add(
+          Vocab()
+            ..id = i + 1
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = (i + 1).toString()],
+            ],
+        );
+      }
+
+      await isar.writeTxn(() async {
+        for (var vocab in vocabs) {
+          await isar.vocabs.put(vocab);
+        }
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      for (var vocab in vocabs) {
+        await isarService.addVocabToMyDictionaryList(
+            isarService.myDictionaryLists![0], vocab);
+      }
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(newFlashcardsPerDay: 4);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        FlashcardStartMode.learning,
+        randomSeed: 123,
+      );
+      await viewModel.initialize();
+
+      // Using spaced repetition with learning mode enabled
+      expect(viewModel.usingSpacedRepetition, true);
+      expect(viewModel.startMode, FlashcardStartMode.learning);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 11);
+      expect(viewModel.activeFlashcards.length, 5);
+      expect(viewModel.newFlashcards.length, 6);
+
+      // Complete one of the new flashcards (works with the current seed)
+      expect(viewModel.activeFlashcards[0].id != 0, true);
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      expect(viewModel.activeFlashcards.length, 4);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Recreate viewModel (simulate leaving and coming back)
+      viewModel = FlashcardsViewModel(
+        flashcardSet,
+        FlashcardStartMode.learning,
+        randomSeed: 123,
+      );
+      await viewModel.initialize();
+
+      // Flashcard contents
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.allFlashcards!.length, 11);
+      expect(viewModel.activeFlashcards.length, 4);
+      expect(viewModel.newFlashcards.length, 6);
+
+      // Finish the rest of the cards
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 3);
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 4);
+
+      // Rest of the new cards should be in the list now
+      expect(viewModel.activeFlashcards.length, 6);
     });
   });
 }

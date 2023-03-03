@@ -11,6 +11,10 @@ class SettingsViewModel extends BaseViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
+  bool get flashcardLearningModeEnabled =>
+      _sharedPreferencesService.getFlashcardLearningModeEnabled();
+  int get newFlashcardsPerDay =>
+      _sharedPreferencesService.getNewFlashcardsPerDay();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -40,5 +44,29 @@ class SettingsViewModel extends BaseViewModel {
   void setShowNewInterval(bool value) {
     _sharedPreferencesService.setShowNewInterval(value);
     notifyListeners();
+  }
+
+  void setFlashcardLearningModeEnabled(bool value) {
+    _sharedPreferencesService.setFlashcardLearningModeEnabled(value);
+    notifyListeners();
+  }
+
+  Future<void> setNewFlashcardsPerDay() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.numberTextFieldDialog,
+      title: 'New flashcards per day',
+      description: 'Amount',
+      mainButtonTitle: 'Set',
+      data: newFlashcardsPerDay.toString(),
+      barrierDismissible: true,
+    );
+
+    String? amount = response?.data?.trim();
+    if (amount == null || amount.isEmpty) return;
+
+    try {
+      _sharedPreferencesService.setNewFlashcardsPerDay(int.parse(amount));
+      notifyListeners();
+    } catch (_) {}
   }
 }

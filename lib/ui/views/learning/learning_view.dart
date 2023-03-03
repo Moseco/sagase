@@ -107,7 +107,8 @@ class _RecentFlashcardSet extends ViewModelWidget<LearningViewModel> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () => viewModel.openRecentFlashcardSet(),
+        onTap: viewModel.openRecentFlashcardSet,
+        onLongPress: viewModel.selectFlashcardStartMode,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

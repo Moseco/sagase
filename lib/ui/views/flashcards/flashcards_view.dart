@@ -16,8 +16,9 @@ import 'widgets/flashcard_deck.dart';
 
 class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
+  final FlashcardStartMode? startMode;
 
-  const FlashcardsView(this.flashcardSet, {super.key});
+  const FlashcardsView(this.flashcardSet, {this.startMode, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class FlashcardsView extends HookWidget {
     final flipCardController = FlipCardController();
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
-      viewModelBuilder: () => FlashcardsViewModel(flashcardSet),
+      viewModelBuilder: () => FlashcardsViewModel(flashcardSet, startMode),
       fireOnModelReadyOnce: true,
       onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
@@ -714,11 +715,12 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
         bottomLeftString = '$completedBar completed';
         bottomRightString = '$emptyBar due cards left';
       } else {
-        // Answering fresh flashcards
+        // Answering new flashcards
         completedBar =
             viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
-        bottomLeftString = '$completedBar completed';
+        bottomLeftString =
+            '${viewModel.flashcardSet.newFlashcardsCompletedToday} new cards done today';
         bottomRightString = '$emptyBar new cards left';
       }
     } else {
@@ -727,7 +729,7 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
       emptyBar = viewModel.activeFlashcards.length;
       bottomLeftString =
           '${viewModel.allFlashcards!.length - viewModel.activeFlashcards.length} completed';
-      bottomRightString = '${viewModel.allFlashcards!.length} cards';
+      bottomRightString = '${viewModel.allFlashcards!.length} cards left';
     }
 
     // If completedBar would be too small, set minimum size
@@ -772,6 +774,7 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(bottomLeftString, textAlign: TextAlign.start),
