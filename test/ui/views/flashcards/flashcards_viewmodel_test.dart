@@ -789,6 +789,7 @@ void main() {
       expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.dueFlashcards.length, 0);
       expect(viewModel.newFlashcards.length, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Answer flashcard and then undo
       DictionaryItem firstFlashcard = viewModel.activeFlashcards[0];
@@ -797,12 +798,14 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(firstFlashcard.spacedRepetitionData != null, true);
       expect(secondFlashcard.spacedRepetitionData != null, true);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 2);
       viewModel.undo();
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
       viewModel.undo();
       expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
       expect(firstFlashcard.spacedRepetitionData == null, true);
       expect(secondFlashcard.spacedRepetitionData == null, true);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Answer 10 flashcards and undo to check undo length limit
       expect(viewModel.activeFlashcards.length, 20);
@@ -906,8 +909,10 @@ void main() {
       // Answer flashcard
       DictionaryItem flashcard = viewModel.activeFlashcards[0];
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Verify database has new spaced repetition data
       var fetchedVocab = await isar.vocabs.get(1);
@@ -916,6 +921,7 @@ void main() {
       // Undo
       await viewModel.undo();
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Verify database has old spaced repetition data
       fetchedVocab = await isar.vocabs.get(1);
@@ -963,8 +969,10 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.dueDate, null);
       expect(flashcard.spacedRepetitionData!.initialCorrectCount, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
       viewModel.undo();
       expect(flashcard.spacedRepetitionData, null);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Answer the flashcard so spaced repetition data gets set in database
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
@@ -976,6 +984,7 @@ void main() {
       expect(flashcard.spacedRepetitionData!.easeFactor, 2.5);
       expect(flashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 1)).toInt());
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
 
       // Verify database has spaced repetition data
       var fetchedVocab = await isar.vocabs.get(1);
@@ -985,6 +994,7 @@ void main() {
       await viewModel.undo();
       expect(flashcard.spacedRepetitionData!.dueDate, null);
       expect(flashcard.spacedRepetitionData!.initialCorrectCount, 2);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
 
       // Verify database has set spaced repetition data to null
       fetchedVocab = await isar.vocabs.get(1);
@@ -1180,6 +1190,11 @@ void main() {
       viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 0);
       expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Undo again to check count
+      viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
     });
 
     test('Flashcard start in learning mode', () async {

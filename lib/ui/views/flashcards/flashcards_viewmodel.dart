@@ -406,6 +406,13 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     }
 
+    // If undoing a newly completed card, decrease new flashcard completed count
+    if (current.previousData?.dueDate == null &&
+        current.flashcard.spacedRepetitionData?.dueDate != null) {
+      flashcardSet.newFlashcardsCompletedToday--;
+      _isarService.updateFlashcardSet(flashcardSet);
+    }
+
     // Put flashcard at the front of active list with the previous data
     activeFlashcards.insert(0, current.flashcard);
     current.flashcard.spacedRepetitionData = current.previousData;
@@ -413,10 +420,8 @@ class FlashcardsViewModel extends BaseViewModel {
     notifyListeners();
 
     // Update in database with old data
-    // If old data was keeping track of initial correct count for new cards, set to null and decrease count
+    // If old data was keeping track of initial correct count for new cards, set to null
     if (current.previousData != null && current.previousData!.dueDate == null) {
-      flashcardSet.newFlashcardsCompletedToday--;
-      _isarService.updateFlashcardSet(flashcardSet);
       return _isarService.setSpacedRepetitionDataToNull(current.flashcard);
     } else {
       return _isarService.updateSpacedRepetitionData(current.flashcard);
