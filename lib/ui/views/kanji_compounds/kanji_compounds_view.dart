@@ -12,23 +12,25 @@ class KanjiCompoundsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<KanjiCompoundsViewModel>.nonReactive(
-      viewModelBuilder: () => KanjiCompoundsViewModel(),
+    return ViewModelBuilder<KanjiCompoundsViewModel>.reactive(
+      viewModelBuilder: () => KanjiCompoundsViewModel(kanji),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(title: Text('${kanji.kanji} Compounds')),
-        body: ListView.separated(
-          separatorBuilder: (_, __) => const Divider(
-            height: 1,
-            indent: 8,
-            endIndent: 8,
-          ),
-          itemCount: kanji.compounds.length,
-          itemBuilder: (context, index) => VocabListItem(
-            vocab: kanji.compounds.elementAt(index),
-            onPressed: () =>
-                viewModel.navigateToVocab(kanji.compounds.elementAt(index)),
-          ),
-        ),
+        body: viewModel.vocabList == null
+            ? const Center(child: CircularProgressIndicator())
+            : ListView.separated(
+                separatorBuilder: (_, __) => const Divider(
+                  height: 1,
+                  indent: 8,
+                  endIndent: 8,
+                ),
+                itemCount: viewModel.vocabList!.length,
+                itemBuilder: (context, index) => VocabListItem(
+                  vocab: viewModel.vocabList![index],
+                  onPressed: () =>
+                      viewModel.navigateToVocab(viewModel.vocabList![index]),
+                ),
+              ),
       ),
     );
   }

@@ -229,12 +229,7 @@ class KanjiView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              ListView.separated(
-                                separatorBuilder: (_, __) => const Divider(
-                                  height: 1,
-                                  indent: 8,
-                                  endIndent: 8,
-                                ),
+                              ListView.builder(
                                 shrinkWrap: true,
                                 primary: false,
                                 padding: const EdgeInsets.only(
@@ -286,7 +281,7 @@ class KanjiView extends StatelessWidget {
                         if (kanji.compounds.length > 10)
                           TextButton(
                             onPressed: viewModel.showAllCompounds,
-                            child: const Text('Show all'),
+                            child: Text('Show all ${kanji.compounds.length}'),
                           ),
                       ],
                     ),
