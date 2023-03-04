@@ -45,7 +45,7 @@ class SettingsView extends StatelessWidget {
                 title: const Text('Flashcards'),
                 tiles: [
                   SettingsTile.navigation(
-                    title: const Text('Initial spaced repetition interval'),
+                    title: const Text('Set initial spaced repetition interval'),
                     onPressed: (_) =>
                         viewModel.setInitialSpacedRepetitionInterval(),
                   ),
@@ -69,12 +69,24 @@ class SettingsView extends StatelessWidget {
                   ),
                   SettingsTile.navigation(
                     enabled: viewModel.flashcardLearningModeEnabled,
-                    title: const Text('New flashcards per day'),
-                    trailing: Text(viewModel.newFlashcardsPerDay.toString()),
+                    title: const Text('Set new flashcards per day'),
                     description: const Text(
                       'The amount of new flashcards to be added along with due cards while in learning mode.',
                     ),
                     onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
+                  ),
+                  SettingsTile.navigation(
+                    title: const Text('Set flashcard distance'),
+                    description: const Text(
+                      'How far into the stack a flashcard is put after a wrong answer, repeat answer, or while completing a new flashcard.',
+                    ),
+                    onPressed: (_) => viewModel.setFlashcardDistance(),
+                  ),
+                  SettingsTile.navigation(
+                    title: const Text(
+                        'Set correct answers required to complete a new flashcard'),
+                    onPressed: (_) =>
+                        viewModel.setFlashcardCorrectAnswersRequired(),
                   ),
                 ],
               ),

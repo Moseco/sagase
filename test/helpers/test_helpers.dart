@@ -77,8 +77,12 @@ Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
 }
 
 MockSharedPreferencesService getAndRegisterSharedPreferencesService({
-  bool flashcardLearningModeEnabled = false,
+  bool flashcardLearningModeEnabled =
+      constants.defaultFlashcardLearningModeEnabled,
   int newFlashcardsPerDay = constants.defaultNewFlashcardsPerDay,
+  int flashcardDistance = constants.defaultFlashcardDistance,
+  int flashcardCorrectAnswersRequired =
+      constants.defaultFlashcardCorrectAnswersRequired,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -90,6 +94,9 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getFlashcardLearningModeEnabled())
       .thenReturn(flashcardLearningModeEnabled);
   when(service.getNewFlashcardsPerDay()).thenReturn(newFlashcardsPerDay);
+  when(service.getFlashcardDistance()).thenReturn(flashcardDistance);
+  when(service.getFlashcardCorrectAnswersRequired())
+      .thenReturn(flashcardCorrectAnswersRequired);
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

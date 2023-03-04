@@ -30,6 +30,7 @@ class NumberTextFieldDialog extends HookWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
                 request.title!,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

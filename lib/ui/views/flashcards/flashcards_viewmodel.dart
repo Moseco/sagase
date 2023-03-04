@@ -203,16 +203,22 @@ class FlashcardsViewModel extends BaseViewModel {
 
     if (usingSpacedRepetition) {
       if (answer == FlashcardAnswer.repeat) {
-        // Put current flashcard at 15th or end of the active flashcard list
+        // Put current flashcard at a set amount or end of the active flashcard list
         activeFlashcards.insert(
-          min(14, activeFlashcards.length),
+          min(
+            _sharedPreferencesService.getFlashcardDistance() - 1,
+            activeFlashcards.length,
+          ),
           currentFlashcard,
         );
         notifyListeners();
       } else if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard at 15th or end of the active flashcard list
+        // Put current flashcard at a set amount or end of the active flashcard list
         activeFlashcards.insert(
-          min(14, activeFlashcards.length),
+          min(
+            _sharedPreferencesService.getFlashcardDistance() - 1,
+            activeFlashcards.length,
+          ),
           currentFlashcard,
         );
         notifyListeners();
@@ -238,9 +244,11 @@ class FlashcardsViewModel extends BaseViewModel {
         currentFlashcard.spacedRepetitionData = currentFlashcard
             .spacedRepetitionData!
             .copyWithInitialCorrectCount(1);
-        // If answering not new card or have answered new card correctly 3 times, get new spaced repetition data
+        // If answering not new card or have answered new card correctly a set number of times, get new spaced repetition data
         if (currentFlashcard.spacedRepetitionData!.dueDate != null ||
-            currentFlashcard.spacedRepetitionData!.initialCorrectCount >= 3) {
+            currentFlashcard.spacedRepetitionData!.initialCorrectCount >=
+                _sharedPreferencesService
+                    .getFlashcardCorrectAnswersRequired()) {
           // If completing a new card, increase count
           if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
             flashcardSet.newFlashcardsCompletedToday++;
@@ -257,9 +265,12 @@ class FlashcardsViewModel extends BaseViewModel {
           await _isarService.updateSpacedRepetitionData(currentFlashcard);
         } else {
           // Not enough initial correct answers for new cards, reinsert to list
-          // at 15th or end of the list
+          // at a set amount or end of the list
           activeFlashcards.insert(
-            min(14, activeFlashcards.length),
+            min(
+              _sharedPreferencesService.getFlashcardDistance() - 1,
+              activeFlashcards.length,
+            ),
             currentFlashcard,
           );
           notifyListeners();
@@ -283,9 +294,12 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     } else {
       if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard at 15th or end of the active flashcard list
+        // Put current flashcard at a set amount or end of the active flashcard list
         activeFlashcards.insert(
-          min(14, activeFlashcards.length),
+          min(
+            _sharedPreferencesService.getFlashcardDistance() - 1,
+            activeFlashcards.length,
+          ),
           currentFlashcard,
         );
       }
@@ -396,9 +410,12 @@ class FlashcardsViewModel extends BaseViewModel {
     // Current card to go back to
     final current = _undoList.removeLast();
 
-    // Go through the first 15 elements in the active list and
+    // Go through the first x elements in the active list and
     // remove the same flashcard if present
-    int limit = min(15, activeFlashcards.length);
+    int limit = min(
+      _sharedPreferencesService.getFlashcardDistance(),
+      activeFlashcards.length,
+    );
     for (int i = 0; i < limit; i++) {
       if (current.flashcard == activeFlashcards[i]) {
         activeFlashcards.removeAt(i);

@@ -35,7 +35,8 @@ class SharedPreferencesService {
   }
 
   bool getShowNewInterval() {
-    return _sharedPreferences.getBool(constants.keyShowNewInterval) ?? false;
+    return _sharedPreferences.getBool(constants.keyShowNewInterval) ??
+        constants.defaultShowNewInterval;
   }
 
   Future<void> setShowNewInterval(bool value) async {
@@ -45,7 +46,7 @@ class SharedPreferencesService {
   bool getFlashcardLearningModeEnabled() {
     return _sharedPreferences
             .getBool(constants.keyFlashcardLearningModeEnabled) ??
-        false;
+        constants.defaultFlashcardLearningModeEnabled;
   }
 
   Future<void> setFlashcardLearningModeEnabled(bool value) async {
@@ -63,6 +64,31 @@ class SharedPreferencesService {
   Future<void> setNewFlashcardsPerDay(int value) async {
     await _sharedPreferences.setInt(
       constants.keyNewFlashcardsPerDay,
+      value,
+    );
+  }
+
+  int getFlashcardDistance() {
+    return _sharedPreferences.getInt(constants.keyFlashcardDistance) ??
+        constants.defaultFlashcardDistance;
+  }
+
+  Future<void> setFlashcardDistance(int value) async {
+    await _sharedPreferences.setInt(
+      constants.keyFlashcardDistance,
+      value,
+    );
+  }
+
+  int getFlashcardCorrectAnswersRequired() {
+    return _sharedPreferences
+            .getInt(constants.keyFlashcardCorrectAnswersRequired) ??
+        constants.defaultFlashcardCorrectAnswersRequired;
+  }
+
+  Future<void> setFlashcardCorrectAnswersRequired(int value) async {
+    await _sharedPreferences.setInt(
+      constants.keyFlashcardCorrectAnswersRequired,
       value,
     );
   }

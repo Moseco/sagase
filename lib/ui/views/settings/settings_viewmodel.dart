@@ -9,12 +9,16 @@ class SettingsViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _snackbarService = locator<SnackbarService>();
 
   bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
   bool get flashcardLearningModeEnabled =>
       _sharedPreferencesService.getFlashcardLearningModeEnabled();
   int get newFlashcardsPerDay =>
       _sharedPreferencesService.getNewFlashcardsPerDay();
+  int get flashcardDistance => _sharedPreferencesService.getFlashcardDistance();
+  int get flashcardCorrectAnswersRequired =>
+      _sharedPreferencesService.getFlashcardCorrectAnswersRequired();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -54,18 +58,71 @@ class SettingsViewModel extends BaseViewModel {
   Future<void> setNewFlashcardsPerDay() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.numberTextFieldDialog,
-      title: 'New flashcards per day',
+      title: 'New Flashcards Per Day',
       description: 'Amount',
       mainButtonTitle: 'Set',
       data: newFlashcardsPerDay.toString(),
       barrierDismissible: true,
     );
 
-    String? amount = response?.data?.trim();
-    if (amount == null || amount.isEmpty) return;
+    String? data = response?.data?.trim();
+    if (data == null || data.isEmpty) return;
 
     try {
-      _sharedPreferencesService.setNewFlashcardsPerDay(int.parse(amount));
+      int amount = int.parse(data);
+      if (amount <= 0) {
+        _snackbarService.showSnackbar(message: 'Must be greater than 0');
+        return;
+      }
+      _sharedPreferencesService.setNewFlashcardsPerDay(amount);
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  Future<void> setFlashcardDistance() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.numberTextFieldDialog,
+      title: 'Flashcard Distance',
+      description: 'Amount',
+      mainButtonTitle: 'Set',
+      data: flashcardDistance.toString(),
+      barrierDismissible: true,
+    );
+
+    String? data = response?.data?.trim();
+    if (data == null || data.isEmpty) return;
+
+    try {
+      int amount = int.parse(data);
+      if (amount <= 0) {
+        _snackbarService.showSnackbar(message: 'Must be greater than 0');
+        return;
+      }
+      _sharedPreferencesService.setFlashcardDistance(amount);
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  Future<void> setFlashcardCorrectAnswersRequired() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.numberTextFieldDialog,
+      title: 'Correct Answers Required',
+      description: 'Amount',
+      mainButtonTitle: 'Set',
+      data: flashcardCorrectAnswersRequired.toString(),
+      barrierDismissible: true,
+    );
+
+    String? data = response?.data?.trim();
+    if (data == null || data.isEmpty) return;
+
+    try {
+      int amount = int.parse(data);
+      if (amount <= 0) {
+        _snackbarService.showSnackbar(message: 'Must be greater than 0');
+        return;
+      }
+      _sharedPreferencesService.setFlashcardCorrectAnswersRequired(amount);
       notifyListeners();
     } catch (_) {}
   }

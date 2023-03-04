@@ -1407,5 +1407,123 @@ void main() {
       // Rest of the new cards should be in the list now
       expect(viewModel.activeFlashcards.length, 6);
     });
+
+    test('Custom flashcard distance', () async {
+      // Create vocab to use
+      List<Vocab> vocabs = [];
+
+      for (int i = 0; i < 10; i++) {
+        vocabs.add(
+          Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()],
+            ],
+        );
+      }
+
+      await isar.writeTxn(() async {
+        for (var vocab in vocabs) {
+          await isar.vocabs.put(vocab);
+        }
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      for (var vocab in vocabs) {
+        await isarService.addVocabToMyDictionaryList(
+            isarService.myDictionaryLists![0], vocab);
+      }
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(flashcardDistance: 5);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 10);
+      expect(viewModel.activeFlashcards.length, 10);
+
+      // Confirm how far back flashcard is put with different answers
+      var flashcard = viewModel.activeFlashcards[0];
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(flashcard == viewModel.activeFlashcards[4], true);
+
+      flashcard = viewModel.activeFlashcards[0];
+      await viewModel.answerFlashcard(FlashcardAnswer.repeat);
+      expect(flashcard == viewModel.activeFlashcards[4], true);
+
+      flashcard = viewModel.activeFlashcards[0];
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard == viewModel.activeFlashcards[4], true);
+    });
+
+    test('Custom flashcard correct answers required', () async {
+      // Create vocab to use
+      final vocab = Vocab()
+        ..id = 0
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..readings = [VocabReading()..reading = '0']
+        ];
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab);
+      });
+
+      // Create dictionary list to use
+      await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(
+          isarService.myDictionaryLists![0], vocab);
+
+      // Create flashcard set and assign list
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.updateFlashcardSet(flashcardSet);
+      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
+          myDictionaryLists: [isarService.myDictionaryLists![0]]);
+
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(
+          flashcardCorrectAnswersRequired: 2);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.initialize();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 1);
+      expect(viewModel.activeFlashcards.length, 1);
+
+      // Answer flashcards
+      final flashcard = viewModel.activeFlashcards[0];
+      expect(flashcard.spacedRepetitionData, null);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.initialCorrectCount, 1);
+      expect(flashcard.spacedRepetitionData!.dueDate, null);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.dueDate != null, true);
+
+      // Undo and correct again
+      await viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.initialCorrectCount, 1);
+      expect(flashcard.spacedRepetitionData!.dueDate, null);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.dueDate != null, true);
+    });
   });
 }
