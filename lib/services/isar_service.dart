@@ -13,6 +13,7 @@ import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/dictionary_list.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
+import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:flutter/foundation.dart' show compute;
@@ -43,6 +44,7 @@ class IsarService {
         MyDictionaryListSchema,
         FlashcardSetSchema,
         KanjiRadicalSchema,
+        SearchHistoryItemSchema,
       ],
     );
 
@@ -596,6 +598,38 @@ class IsarService {
         .sortByImportance()
         .thenByKangxiId()
         .findAll();
+  }
+
+  Future<List<SearchHistoryItem>> getSearchHistory() async {
+    // Delete old entries first
+    List<int> idsToDelete = (await _isar.searchHistoryItems
+            .where()
+            .sortByTimestampDesc()
+            .offset(20)
+            .findAll())
+        .map((e) => e.id)
+        .toList();
+
+    if (idsToDelete.isNotEmpty) {
+      await _isar.writeTxn(() async {
+        await _isar.searchHistoryItems.deleteAll(idsToDelete);
+      });
+    }
+
+    // Return actual search history
+    return _isar.searchHistoryItems.where().sortByTimestampDesc().findAll();
+  }
+
+  Future<void> setSearchHistoryItem(SearchHistoryItem item) async {
+    await _isar.writeTxn(() async {
+      await _isar.searchHistoryItems.put(item);
+    });
+  }
+
+  Future<void> deleteSearchHistoryItem(SearchHistoryItem item) async {
+    await _isar.writeTxn(() async {
+      await _isar.searchHistoryItems.delete(item.id);
+    });
   }
 
   static Future<void> importDatabase(DictionaryStatus status) async {

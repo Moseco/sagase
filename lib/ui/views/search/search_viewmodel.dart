@@ -4,6 +4,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -19,8 +20,7 @@ class SearchViewModel extends BaseViewModel {
 
   String _searchString = '';
   String get searchString => _searchString;
-  List<DictionaryItem> _searchResult = [];
-  List<DictionaryItem> get searchResult => _searchResult;
+  List<DictionaryItem>? searchResult;
 
   CancelableOperation<List<DictionaryItem>>? _searchOperation;
 
@@ -29,6 +29,18 @@ class SearchViewModel extends BaseViewModel {
 
   List<String> _handWritingResult = [];
   List<String> get handWritingResult => _handWritingResult;
+
+  List<SearchHistoryItem> searchHistory = [];
+  SearchHistoryItem? _currentSearchHistoryItem;
+
+  SearchViewModel() {
+    _loadSearchHistory();
+  }
+
+  Future<void> _loadSearchHistory() async {
+    searchHistory = await _isarService.getSearchHistory();
+    notifyListeners();
+  }
 
   void navigateToVocab(Vocab vocab) {
     _navigationService.navigateTo(
@@ -50,22 +62,33 @@ class SearchViewModel extends BaseViewModel {
     if (stringToSearch == _searchString) return;
     _searchString = stringToSearch;
 
-    if (_searchString.isNotEmpty) {
-      if (_searchOperation != null) {
-        _searchOperation!.cancel();
-      }
+    if (_searchOperation != null) _searchOperation!.cancel();
 
+    if (_searchString.isNotEmpty) {
       _searchOperation = CancelableOperation.fromFuture(
         _isarService.searchDictionary(_searchString),
       );
 
       _searchOperation!.value.then((value) {
-        _searchResult = value;
+        searchResult = value;
         _searchOperation = null;
         notifyListeners();
       });
+
+      if (_currentSearchHistoryItem == null) {
+        _currentSearchHistoryItem = SearchHistoryItem()
+          ..searchQuery = _searchString
+          ..timestamp = DateTime.now();
+        searchHistory.insert(0, _currentSearchHistoryItem!);
+        _isarService.setSearchHistoryItem(_currentSearchHistoryItem!);
+      } else if (!_currentSearchHistoryItem!.searchQuery
+          .startsWith(_searchString)) {
+        searchHistory[0].searchQuery = _searchString;
+        _isarService.setSearchHistoryItem(_currentSearchHistoryItem!);
+      }
     } else {
-      _searchResult.clear();
+      _currentSearchHistoryItem = null;
+      searchResult = null;
       notifyListeners();
     }
   }
@@ -86,6 +109,23 @@ class SearchViewModel extends BaseViewModel {
 
   Future<void> recognizeWriting(Ink ink) async {
     _handWritingResult = await _digitalInkService.recognizeWriting(ink);
+    notifyListeners();
+  }
+
+  void searchHistoryItemSelected(SearchHistoryItem item) {
+    // Remove the selected one form the list
+    searchHistory.remove(item);
+    // Update in database
+    _isarService.deleteSearchHistoryItem(item);
+    // Do the actual search
+    searchOnChange(item.searchQuery);
+  }
+
+  void searchHistoryItemDeleted(SearchHistoryItem item) {
+    // Remove the selected one form the list
+    searchHistory.remove(item);
+    // Update in database
+    _isarService.deleteSearchHistoryItem(item);
     notifyListeners();
   }
 }

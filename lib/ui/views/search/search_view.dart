@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -27,9 +28,9 @@ class SearchView extends StatelessWidget {
   }
 }
 
-class _Body extends HookViewModelWidget<SearchViewModel> {
+class _Body extends StackedHookView<SearchViewModel> {
   @override
-  Widget buildViewModelWidget(BuildContext context, SearchViewModel viewModel) {
+  Widget builder(BuildContext context, SearchViewModel viewModel) {
     final searchController =
         useTextEditingController(text: viewModel.searchString);
     final keyboardFocusNode = useFocusNode();
@@ -44,32 +45,35 @@ class _Body extends HookViewModelWidget<SearchViewModel> {
       ),
       child: Column(
         children: [
-          Expanded(
-            child: ListView.separated(
-              separatorBuilder: (_, __) => const Divider(
-                height: 1,
-                indent: 8,
-                endIndent: 8,
-              ),
-              padding: EdgeInsets.zero,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              itemCount: viewModel.searchResult.length,
-              itemBuilder: (context, index) {
-                final current = viewModel.searchResult[index];
-                if (current is Vocab) {
-                  return VocabListItem(
-                    vocab: current,
-                    onPressed: () => viewModel.navigateToVocab(current),
-                  );
-                } else {
-                  return KanjiListItem(
-                    kanji: current as Kanji,
-                    onPressed: () => viewModel.navigateToKanji(current),
-                  );
-                }
-              },
-            ),
-          ),
+          viewModel.searchResult == null
+              ? _SearchHistory(searchController)
+              : Expanded(
+                  child: ListView.separated(
+                    separatorBuilder: (_, __) => const Divider(
+                      height: 1,
+                      indent: 8,
+                      endIndent: 8,
+                    ),
+                    padding: EdgeInsets.zero,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    itemCount: viewModel.searchResult!.length,
+                    itemBuilder: (context, index) {
+                      final current = viewModel.searchResult![index];
+                      if (current is Vocab) {
+                        return VocabListItem(
+                          vocab: current,
+                          onPressed: () => viewModel.navigateToVocab(current),
+                        );
+                      } else {
+                        return KanjiListItem(
+                          kanji: current as Kanji,
+                          onPressed: () => viewModel.navigateToKanji(current),
+                        );
+                      }
+                    },
+                  ),
+                ),
           if (viewModel.showHandWriting)
             Expanded(
               child: Column(
@@ -340,6 +344,73 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                   ),
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _SearchHistory extends ViewModelWidget<SearchViewModel> {
+  final TextEditingController searchController;
+
+  const _SearchHistory(this.searchController, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, SearchViewModel viewModel) {
+    return Expanded(
+      child: Column(
+        children: [
+          ListTile(
+            title: const Text(
+              'Recent searches',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            trailing: TextButton.icon(
+              icon: const Icon(Icons.paste),
+              label: const Text('Paste'),
+              onPressed: () async {
+                final cdata = await Clipboard.getData(Clipboard.kTextPlain);
+                if (cdata?.text != null) {
+                  searchController.text = cdata!.text!;
+                  searchController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: cdata.text!.length));
+                  viewModel.searchOnChange(cdata.text!);
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              separatorBuilder: (_, __) => const Divider(
+                height: 1,
+                indent: 8,
+                endIndent: 8,
+              ),
+              padding: EdgeInsets.zero,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              itemCount: viewModel.searchHistory.length,
+              itemBuilder: (context, index) {
+                final current = viewModel.searchHistory[index];
+                return Dismissible(
+                  key: ObjectKey(current),
+                  background: Container(color: Colors.red),
+                  onDismissed: (DismissDirection direction) {
+                    viewModel.searchHistoryItemDeleted(current);
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.search),
+                    title: Text(current.searchQuery),
+                    onTap: () {
+                      searchController.text = current.searchQuery;
+                      searchController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: current.searchQuery.length));
+                      viewModel.searchHistoryItemSelected(current);
+                    },
+                  ),
+                );
+              },
+            ),
+          )
+        ],
       ),
     );
   }
