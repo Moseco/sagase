@@ -104,6 +104,7 @@ class IsarService {
     if (_kanaKit.isRomaji(value)) {
       List<String> split = Isar.splitWords(value);
 
+      if (split.isEmpty) return [];
       if (split.length == 1) {
         // Check both readings and definition
         List<Vocab> unsortedRomajiList = await _isar.vocabs
