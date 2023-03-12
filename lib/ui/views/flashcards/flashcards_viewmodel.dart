@@ -338,6 +338,7 @@ class FlashcardsViewModel extends BaseViewModel {
               flashcardSet.newFlashcardsCompletedToday,
           newFlashcards.length,
         );
+        if (flashcardsToAdd < 0) flashcardsToAdd = 0;
         for (int i = 0; i < flashcardsToAdd; i++) {
           activeFlashcards.add(
               newFlashcards.removeAt(_random.nextInt(newFlashcards.length)));
