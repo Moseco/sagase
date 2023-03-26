@@ -4,11 +4,11 @@ import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 
 class KanjiListItemLarge extends StatelessWidget {
   final Kanji kanji;
-  final void Function() onPressed;
+  final void Function()? onPressed;
 
   const KanjiListItemLarge({
     required this.kanji,
-    required this.onPressed,
+    this.onPressed,
     super.key,
   });
 
@@ -32,20 +32,23 @@ class KanjiListItemLarge extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (kanji.meanings != null)
-                    Text(
-                      kanji.meanings!,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  if (kanji.kunReadings != null)
-                    KanjiKunReadings(kanji.kunReadings!),
-                  if (kanji.onReadings != null)
-                    Text(
-                      kanji.onReadings!.join(', '),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                  Text(
+                    kanji.meanings ?? 'NO MEANING',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  kanji.kunReadings != null
+                      ? KanjiKunReadings(kanji.kunReadings!)
+                      : const Text(
+                          'No kun reading',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                  Text(
+                    kanji.onReadings?.join(', ') ?? 'No on reading',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ],
               ),
             ),
