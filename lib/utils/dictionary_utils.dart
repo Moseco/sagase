@@ -10,6 +10,7 @@ import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
+import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:xml/xml.dart';
 import 'package:sagase/utils/constants.dart' as constants;
@@ -32,6 +33,7 @@ class DictionaryUtils {
           MyDictionaryListSchema,
           FlashcardSetSchema,
           KanjiRadicalSchema,
+          SearchHistoryItemSchema,
         ]);
 
     await isar.writeTxn(() async {
@@ -462,37 +464,37 @@ class DictionaryUtils {
   static PartOfSpeech _handlePartOfSpeechElement(String partOfSpeech) {
     switch (partOfSpeech) {
       case "&adj-f;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveF;
       case "&adj-i;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveI;
       case "&adj-ix;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveIx;
       case "&adj-kari;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveKari;
       case "&adj-ku;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveKu;
       case "&adj-na;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveNa;
       case "&adj-nari;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveNari;
       case "&adj-no;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveNo;
       case "&adj-pn;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectivePn;
       case "&adj-shiku;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveShiku;
       case "&adj-t;":
-        return PartOfSpeech.adjective;
+        return PartOfSpeech.adjectiveT;
       case "&adv;":
         return PartOfSpeech.adverb;
       case "&adv-to;":
-        return PartOfSpeech.adverb;
+        return PartOfSpeech.adverbTo;
       case "&aux;":
         return PartOfSpeech.auxiliary;
       case "&aux-adj;":
-        return PartOfSpeech.auxiliary;
+        return PartOfSpeech.auxiliaryAdj;
       case "&aux-v;":
-        return PartOfSpeech.auxiliary;
+        return PartOfSpeech.auxiliaryV;
       case "&conj;":
         return PartOfSpeech.conjunction;
       case "&cop;":
@@ -532,115 +534,115 @@ class DictionaryUtils {
       case "&v1;":
         return PartOfSpeech.verbIchidan;
       case "&v1-s;":
-        return PartOfSpeech.verbIchidan;
+        return PartOfSpeech.verbIchidanS;
       case "&v2a-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanAS;
       case "&v2b-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanBK;
       case "&v2b-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanBS;
       case "&v2d-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanDK;
       case "&v2d-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanDS;
       case "&v2g-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanGK;
       case "&v2g-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanGS;
       case "&v2h-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanHK;
       case "&v2h-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanHS;
       case "&v2k-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanKK;
       case "&v2k-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanKS;
       case "&v2m-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanMK;
       case "&v2m-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanMS;
       case "&v2n-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanNS;
       case "&v2r-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanRK;
       case "&v2r-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanRS;
       case "&v2s-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanSS;
       case "&v2t-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanTK;
       case "&v2t-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanTS;
       case "&v2w-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanWS;
       case "&v2y-k;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanYK;
       case "&v2y-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanYS;
       case "&v2z-s;":
-        return PartOfSpeech.verbNidan;
+        return PartOfSpeech.verbNidanZS;
       case "&v4b;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanB;
       case "&v4g;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanG;
       case "&v4h;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanH;
       case "&v4k;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanK;
       case "&v4m;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanM;
       case "&v4n;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanN;
       case "&v4r;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanR;
       case "&v4s;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanS;
       case "&v4t;":
-        return PartOfSpeech.verbYodan;
+        return PartOfSpeech.verbYodanT;
       case "&v5aru;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanAru;
       case "&v5b;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanB;
       case "&v5g;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanG;
       case "&v5k;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanK;
       case "&v5k-s;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanKS;
       case "&v5m;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanM;
       case "&v5n;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanN;
       case "&v5r;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanR;
       case "&v5r-i;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanRI;
       case "&v5s;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanS;
       case "&v5t;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanT;
       case "&v5u;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanU;
       case "&v5u-s;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanUS;
       case "&v5uru;":
-        return PartOfSpeech.verbGodan;
+        return PartOfSpeech.verbGodanUru;
       case "&vi;":
         return PartOfSpeech.verbIntransitive;
       case "&vk;":
         return PartOfSpeech.verbKuru;
       case "&vn;":
-        return PartOfSpeech.verbIrregular;
+        return PartOfSpeech.verbIrregularN;
       case "&vr;":
-        return PartOfSpeech.verbIrregular;
+        return PartOfSpeech.verbIrregularR;
       case "&vs;":
         return PartOfSpeech.verbSuru;
       case "&vs-c;":
-        return PartOfSpeech.verbSuru;
+        return PartOfSpeech.verbSu;
       case "&vs-i;":
-        return PartOfSpeech.verbSuru;
+        return PartOfSpeech.verbSuruIncluded;
       case "&vs-s;":
-        return PartOfSpeech.verbSuru;
+        return PartOfSpeech.verbSuruSpecial;
       case "&vt;":
         return PartOfSpeech.verbTransitive;
       case "&vz;":
@@ -1539,6 +1541,7 @@ class DictionaryUtils {
       MyDictionaryListSchema,
       FlashcardSetSchema,
       KanjiRadicalSchema,
+      SearchHistoryItemSchema,
     ]);
 
     await isar.copyToFile('$path/db_export.isar');

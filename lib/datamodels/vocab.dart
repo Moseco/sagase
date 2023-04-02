@@ -101,37 +101,98 @@ enum ReadingInfo {
 }
 
 enum PartOfSpeech {
-  adjective,
-  adverb,
-  auxiliary,
-  conjunction,
-  copula,
-  counter,
-  expressions,
-  interjection,
-  noun,
-  nounAdverbial,
-  nounProper,
-  nounPrefix,
-  nounSuffix,
-  nounTemporal,
-  numeric,
-  pronoun,
-  prefix,
-  particle,
-  suffix,
-  unclassified,
-  verb,
-  verbIchidan,
-  verbNidan,
-  verbYodan,
-  verbGodan,
-  verbIntransitive,
-  verbKuru,
-  verbIrregular,
-  verbSuru,
-  verbTransitive,
-  verbIchidanZuru,
+  adjectiveF, // noun or verb acting prenominally
+  adjectiveI, // adjective (keiyoushi)
+  adjectiveIx, // adjective (keiyoushi) - yoi/ii class
+  adjectiveKari, // 'kari' adjective (archaic)
+  adjectiveKu, // 'ku' adjective (archaic)
+  adjectiveNa, // adjectival nouns or quasi-adjectives (keiyodoshi)
+  adjectiveNari, // archaic/formal form of na-adjective
+  adjectiveNo, // nouns which may take the genitive case particle 'no'
+  adjectivePn, // pre-noun adjectival (rentaishi)
+  adjectiveShiku, // 'shiku' adjective (archaic)
+  adjectiveT, // 'taru' adjective
+  adverb, // adverb (fukushi)
+  adverbTo, // adverb taking the 'to' particle
+  auxiliary, // auxiliary
+  auxiliaryAdj, // auxiliary adjective
+  auxiliaryV, // auxiliary verb
+  conjunction, // conjunction
+  copula, // copula
+  counter, // counter
+  expressions, // expressions (phrases, clauses, etc.)
+  interjection, // interjection (kandoushi)
+  noun, // noun (common) (futsuumeishi)
+  nounAdverbial, // adverbial noun (fukushitekimeishi)
+  nounProper, // proper noun
+  nounPrefix, // noun, used as a prefix
+  nounSuffix, // noun, used as a suffix
+  nounTemporal, // noun (temporal) (jisoumeishi)
+  numeric, // numeric
+  pronoun, // pronoun
+  prefix, // prefix
+  particle, // particle
+  suffix, // suffix
+  unclassified, // unclassified
+  verb, // verb unspecified
+  verbIchidan, // Ichidan verb
+  verbIchidanS, // Ichidan verb - kureru special class
+  verbNidanAS, // Nidan verb with 'u' ending (archaic)
+  verbNidanBK, // Nidan verb (upper class) with 'bu' ending (archaic)
+  verbNidanBS, // Nidan verb (lower class) with 'bu' ending (archaic)
+  verbNidanDK, // Nidan verb (upper class) with 'dzu' ending (archaic)
+  verbNidanDS, // Nidan verb (lower class) with 'dzu' ending (archaic)
+  verbNidanGK, // Nidan verb (upper class) with 'gu' ending (archaic)
+  verbNidanGS, // Nidan verb (lower class) with 'gu' ending (archaic)
+  verbNidanHK, // Nidan verb (upper class) with 'hu/fu' ending (archaic)
+  verbNidanHS, // Nidan verb (lower class) with 'hu/fu' ending (archaic)
+  verbNidanKK, // Nidan verb (upper class) with 'ku' ending (archaic)
+  verbNidanKS, // Nidan verb (lower class) with 'ku' ending (archaic)
+  verbNidanMK, // Nidan verb (upper class) with 'mu' ending (archaic)
+  verbNidanMS, // Nidan verb (lower class) with 'mu' ending (archaic)
+  verbNidanNS, // Nidan verb (lower class) with 'nu' ending (archaic)
+  verbNidanRK, // Nidan verb (upper class) with 'ru' ending (archaic)
+  verbNidanRS, // Nidan verb (lower class) with 'ru' ending (archaic)
+  verbNidanSS, // Nidan verb (lower class) with 'su' ending (archaic)
+  verbNidanTK, // Nidan verb (upper class) with 'tsu' ending (archaic)
+  verbNidanTS, // Nidan verb (lower class) with 'tsu' ending (archaic)
+  verbNidanWS, // Nidan verb (lower class) with 'u' ending and 'we' conjugation (archaic)
+  verbNidanYK, // Nidan verb (upper class) with 'yu' ending (archaic)
+  verbNidanYS, // Nidan verb (lower class) with 'yu' ending (archaic)
+  verbNidanZS, // Nidan verb (lower class) with 'zu' ending (archaic)
+  verbYodanB, // Yodan verb with 'bu' ending (archaic)
+  verbYodanG, // Yodan verb with 'gu' ending (archaic)
+  verbYodanH, // Yodan verb with 'hu/fu' ending (archaic)
+  verbYodanK, // Yodan verb with 'ku' ending (archaic)
+  verbYodanM, // Yodan verb with 'mu' ending (archaic)
+  verbYodanN, // Yodan verb with 'nu' ending (archaic)
+  verbYodanR, // Yodan verb with 'ru' ending (archaic)
+  verbYodanS, // Yodan verb with 'su' ending (archaic)
+  verbYodanT, // Yodan verb with 'tsu' ending (archaic)
+  verbGodanAru, // Godan verb - -aru special class
+  verbGodanB, // Godan verb with 'bu' ending
+  verbGodanG, // Godan verb with 'gu' ending
+  verbGodanK, // Godan verb with 'ku' ending
+  verbGodanKS, // Godan verb - Iku/Yuku special class
+  verbGodanM, // Godan verb with 'mu' ending
+  verbGodanN, // Godan verb with 'nu' ending
+  verbGodanR, // Godan verb with 'ru' ending
+  verbGodanRI, // Godan verb with 'ru' ending (irregular verb)
+  verbGodanS, // Godan verb with 'su' ending
+  verbGodanT, // Godan verb with 'tsu' ending
+  verbGodanU, // Godan verb with 'u' ending
+  verbGodanUS, // Godan verb with 'u' ending (special class)
+  verbGodanUru, // Godan verb - Uru old class verb (old form of Eru)
+  verbIntransitive, // intransitive verb
+  verbKuru, // Kuru verb - special class
+  verbIrregularN, // irregular nu verb
+  verbIrregularR, // irregular ru verb, plain form ends with -ri
+  verbSuru, // noun or participle which takes the aux. verb suru
+  verbSu, // su verb - precursor to the modern suru
+  verbSuruIncluded, // suru verb - included
+  verbSuruSpecial, // suru verb - special class
+  verbTransitive, // transitive verb
+  verbIchidanZuru, // Ichidan verb - zuru verb (alternative form of -jiru verbs)
   unknown,
 }
 

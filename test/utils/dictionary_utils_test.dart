@@ -38,7 +38,7 @@ void main() {
           'obvious; clear; plain; evident; apparent; explicit; overt');
       expect(vocab0.definitions[0].additionalInfo, null);
       expect(vocab0.definitions[0].pos!.length, 1);
-      expect(vocab0.definitions[0].pos![0], PartOfSpeech.adjective);
+      expect(vocab0.definitions[0].pos![0], PartOfSpeech.adjectiveNa);
       expect(vocab0.definitions[0].appliesTo, null);
       expect(vocab0.definitions[0].miscInfo, null);
       expect(vocab0.definitions[0].dialects, null);
@@ -192,50 +192,50 @@ void main() {
       expect(vocab3.definitions[0].definition,
           'to go; to move (in a direction or towards a specific location); to head (towards); to be transported (towards); to reach');
       expect(vocab3.definitions[0].pos!.length, 2);
-      expect(vocab3.definitions[0].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[0].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[0].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 2
       expect(vocab3.definitions[1].definition, 'to proceed; to take place');
       expect(vocab3.definitions[1].additionalInfo,
           'い sometimes omitted in auxiliary use');
       expect(vocab3.definitions[1].pos!.length, 2);
-      expect(vocab3.definitions[1].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[1].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[1].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 3
       expect(
           vocab3.definitions[2].definition, 'to pass through; to come and go');
       expect(vocab3.definitions[2].pos!.length, 2);
-      expect(vocab3.definitions[2].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[2].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[2].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 4
       expect(vocab3.definitions[3].definition, 'to walk');
       expect(vocab3.definitions[3].pos!.length, 2);
-      expect(vocab3.definitions[3].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[3].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[3].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 5
       expect(vocab3.definitions[4].definition, 'to die; to pass away');
       expect(vocab3.definitions[4].pos!.length, 2);
-      expect(vocab3.definitions[4].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[4].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[4].pos![1], PartOfSpeech.verbIntransitive);
       expect(vocab3.definitions[4].appliesTo!.length, 1);
       expect(vocab3.definitions[4].appliesTo![0], '逝く');
       // Definition 6
       expect(vocab3.definitions[5].definition, 'to do (in a specific way)');
       expect(vocab3.definitions[5].pos!.length, 2);
-      expect(vocab3.definitions[5].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[5].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[5].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 7
       expect(vocab3.definitions[6].definition, 'to stream; to flow');
       expect(vocab3.definitions[6].pos!.length, 2);
-      expect(vocab3.definitions[6].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[6].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[6].pos![1], PartOfSpeech.verbIntransitive);
       // Definition 8
       expect(vocab3.definitions[7].definition, 'to continue');
       expect(
           vocab3.definitions[7].additionalInfo, 'after the -te form of a verb');
       expect(vocab3.definitions[7].pos!.length, 2);
-      expect(vocab3.definitions[7].pos![0], PartOfSpeech.verbGodan);
-      expect(vocab3.definitions[7].pos![1], PartOfSpeech.auxiliary);
+      expect(vocab3.definitions[7].pos![0], PartOfSpeech.verbGodanKS);
+      expect(vocab3.definitions[7].pos![1], PartOfSpeech.auxiliaryV);
       expect(vocab3.definitions[7].miscInfo!.length, 1);
       expect(vocab3.definitions[7].miscInfo![0],
           MiscellaneousInfo.usuallyKanaAlone);
@@ -243,7 +243,7 @@ void main() {
       expect(vocab3.definitions[8].definition,
           'to have an orgasm; to come; to cum');
       expect(vocab3.definitions[8].pos!.length, 2);
-      expect(vocab3.definitions[8].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[8].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[8].pos![1], PartOfSpeech.verbIntransitive);
       expect(vocab3.definitions[8].miscInfo!.length, 1);
       expect(vocab3.definitions[8].miscInfo![0],
@@ -252,7 +252,7 @@ void main() {
       expect(vocab3.definitions[9].definition,
           'to trip; to get high; to have a drug-induced hallucination');
       expect(vocab3.definitions[9].pos!.length, 2);
-      expect(vocab3.definitions[9].pos![0], PartOfSpeech.verbGodan);
+      expect(vocab3.definitions[9].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[9].pos![1], PartOfSpeech.verbIntransitive);
       expect(vocab3.definitions[9].miscInfo!.length, 2);
       expect(vocab3.definitions[9].miscInfo![0],
@@ -451,7 +451,7 @@ void main() {
       expect(vocab7.definitions[0].definition,
           'dear; darling; adorable; precious; cute; lovely; sweet; beloved; charming');
       expect(vocab7.definitions[0].pos!.length, 1);
-      expect(vocab7.definitions[0].pos![0], PartOfSpeech.adjective);
+      expect(vocab7.definitions[0].pos![0], PartOfSpeech.adjectiveI);
       expect(vocab7.definitions[0].dialects!.length, 2);
       expect(vocab7.definitions[0].dialects![0], Dialect.touhokuBen);
       expect(vocab7.definitions[0].dialects![1], Dialect.hokkaidoBen);

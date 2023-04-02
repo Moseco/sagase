@@ -1,4 +1,4 @@
-const int dictionaryVersion = 3;
+const int dictionaryVersion = 4;
 const int nestedNavigationKey = 1;
 
 const int dictionaryListIdJouyou = 0;

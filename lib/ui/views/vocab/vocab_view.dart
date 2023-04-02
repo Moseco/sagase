@@ -55,6 +55,7 @@ class VocabView extends StatelessWidget {
               const _Definitions(),
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               if (vocab.examples != null) const _Examples(),
+              if (viewModel.conjugations != null) const _Conjugations(),
               SizedBox(height: MediaQuery.of(context).padding.bottom),
             ],
           ),
@@ -267,11 +268,37 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
 
   String _partOfSpeechToString(PartOfSpeech pos) {
     switch (pos) {
-      case PartOfSpeech.adjective:
+      case PartOfSpeech.adjectiveF:
+        return 'adjective';
+      case PartOfSpeech.adjectiveI:
+        return 'adjective';
+      case PartOfSpeech.adjectiveIx:
+        return 'adjective';
+      case PartOfSpeech.adjectiveKari:
+        return 'adjective';
+      case PartOfSpeech.adjectiveKu:
+        return 'adjective';
+      case PartOfSpeech.adjectiveNa:
+        return 'adjective';
+      case PartOfSpeech.adjectiveNari:
+        return 'adjective';
+      case PartOfSpeech.adjectiveNo:
+        return 'adjective';
+      case PartOfSpeech.adjectivePn:
+        return 'adjective';
+      case PartOfSpeech.adjectiveShiku:
+        return 'adjective';
+      case PartOfSpeech.adjectiveT:
         return 'adjective';
       case PartOfSpeech.adverb:
         return 'adverb';
+      case PartOfSpeech.adverbTo:
+        return 'adverb';
       case PartOfSpeech.auxiliary:
+        return 'auxiliary';
+      case PartOfSpeech.auxiliaryAdj:
+        return 'auxiliary';
+      case PartOfSpeech.auxiliaryV:
         return 'auxiliary';
       case PartOfSpeech.conjunction:
         return 'conjunction';
@@ -311,19 +338,115 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         return 'verb';
       case PartOfSpeech.verbIchidan:
         return 'ichidan verb';
-      case PartOfSpeech.verbNidan:
+      case PartOfSpeech.verbIchidanS:
+        return 'ichidan verb';
+      case PartOfSpeech.verbNidanAS:
         return 'nidan verb';
-      case PartOfSpeech.verbYodan:
+      case PartOfSpeech.verbNidanBK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanBS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanDK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanDS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanGK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanGS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanHK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanHS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanKK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanKS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanMK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanMS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanNS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanRK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanRS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanSS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanTK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanTS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanWS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanYK:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanYS:
+        return 'nidan verb';
+      case PartOfSpeech.verbNidanZS:
+        return 'nidan verb';
+      case PartOfSpeech.verbYodanB:
         return 'yodan verb';
-      case PartOfSpeech.verbGodan:
+      case PartOfSpeech.verbYodanG:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanH:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanK:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanM:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanN:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanR:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanS:
+        return 'yodan verb';
+      case PartOfSpeech.verbYodanT:
+        return 'yodan verb';
+      case PartOfSpeech.verbGodanAru:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanB:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanG:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanK:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanKS:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanM:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanN:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanR:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanRI:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanS:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanT:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanU:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanUS:
+        return 'godan verb';
+      case PartOfSpeech.verbGodanUru:
         return 'godan verb';
       case PartOfSpeech.verbIntransitive:
         return 'intransitive verb';
       case PartOfSpeech.verbKuru:
         return 'kuru verb';
-      case PartOfSpeech.verbIrregular:
+      case PartOfSpeech.verbIrregularN:
+        return 'irregular verb';
+      case PartOfSpeech.verbIrregularR:
         return 'irregular verb';
       case PartOfSpeech.verbSuru:
+        return 'suru verb';
+      case PartOfSpeech.verbSu:
+        return 'su verb (precursor to modern suru verb';
+      case PartOfSpeech.verbSuruIncluded:
+        return 'suru verb';
+      case PartOfSpeech.verbSuruSpecial:
         return 'suru verb';
       case PartOfSpeech.verbTransitive:
         return 'transitive verb';
@@ -736,4 +859,61 @@ class _DefinitionExamples {
   final List<VocabExample> list;
 
   const _DefinitionExamples(this.index, this.list);
+}
+
+class _Conjugations extends ViewModelWidget<VocabViewModel> {
+  const _Conjugations({Key? key}) : super(key: key, reactive: false);
+  @override
+  Widget build(BuildContext context, VocabViewModel viewModel) {
+    List<TableRow> rows = [
+      TableRow(
+        children: [
+          Container(),
+          const Padding(
+            padding: EdgeInsets.all(4),
+            child: Center(child: Text('Positive')),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(4),
+            child: Center(child: Text('Negative')),
+          ),
+        ],
+      ),
+    ];
+
+    for (var conjugation in viewModel.conjugations!) {
+      rows.add(
+        TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(conjugation.title),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(conjugation.positive),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(conjugation.negative),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return CardWithTitleSection(
+      title: 'Conjugations',
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(8),
+        child: Table(
+          border: TableBorder.symmetric(
+            inside: const BorderSide(color: Colors.grey),
+          ),
+          children: rows,
+        ),
+      ),
+    );
+  }
 }

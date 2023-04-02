@@ -1,10 +1,12 @@
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/datamodels/conjugation_result.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/utils/conjugation_utils.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -20,6 +22,9 @@ class VocabViewModel extends BaseViewModel {
   bool _kanjiLoaded = false;
   bool get kanjiLoaded => _kanjiLoaded;
 
+  final _conjugationUtils = const ConjugationUtils();
+  List<ConjugationResult>? conjugations;
+
   VocabViewModel(this.vocab) {
     // Get list of kanji to be loaded during initialize function
     List<String> kanjiStrings = [];
@@ -34,6 +39,9 @@ class VocabViewModel extends BaseViewModel {
         }
       }
     }
+
+    // Get conjugations
+    conjugations = _conjugationUtils.getConjugations(vocab);
   }
 
   Future<void> initialize() async {
