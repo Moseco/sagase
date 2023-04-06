@@ -191,6 +191,17 @@ class FlashcardSetSettingsView extends StatelessWidget {
                             ),
                           ),
                           ListTile(
+                            title: const Text(
+                              'Show alternative kanji and reading',
+                            ),
+                            subtitle: const Text('Vocab flashcards'),
+                            trailing: Switch(
+                              activeColor: Colors.deepPurple,
+                              value: flashcardSet.vocabShowAlternatives,
+                              onChanged: viewModel.setVocabShowAlternatives,
+                            ),
+                          ),
+                          ListTile(
                             title: const Text('Show reading'),
                             subtitle: const Text('Kanji flashcards'),
                             trailing: Switch(

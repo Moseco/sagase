@@ -742,6 +742,7 @@ class IsarService {
         ..vocabShowReading = oldDbFlashcardSet.vocabShowReading
         ..vocabShowReadingIfRareKanji =
             oldDbFlashcardSet.vocabShowReadingIfRareKanji
+        ..vocabShowAlternatives = oldDbFlashcardSet.vocabShowAlternatives
         ..kanjiShowReading = oldDbFlashcardSet.kanjiShowReading
         ..timestamp = oldDbFlashcardSet.timestamp;
 

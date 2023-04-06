@@ -470,46 +470,59 @@ class _VocabFlashcardBack extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> children = [];
 
-    // Add kanji writing and reading
+    // Add kanji writing
     if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
-      if (vocab.isUsuallyKanaAlone()) {
-        children.add(
-          Text(
-            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 32, color: Colors.grey),
-          ),
-        );
+      late String kanjiWriting;
+      if (flashcardSet.vocabShowAlternatives) {
+        List<String> kanjiWritings = [];
+        for (var pairs in vocab.kanjiReadingPairs) {
+          for (var kanjiWriting in pairs.kanjiWritings ?? []) {
+            if (!kanjiWritings.contains(kanjiWriting.kanji)) {
+              kanjiWritings.add(kanjiWriting.kanji);
+            }
+          }
+        }
+        kanjiWriting = kanjiWritings.join(', ');
       } else {
-        children.add(
-          Text(
-            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 32),
-          ),
-        );
+        kanjiWriting = vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji;
       }
+
+      children.add(
+        Text(
+          kanjiWriting,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 32,
+            color: vocab.isUsuallyKanaAlone() ? Colors.grey : null,
+          ),
+        ),
+      );
     }
 
-    if (children.isEmpty) {
-      children.addAll([
-        Text(
-          vocab.kanjiReadingPairs[0].readings[0].reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 32),
-        ),
-        const SizedBox(height: 16),
-      ]);
+    // Add reading
+    late String reading;
+    if (flashcardSet.vocabShowAlternatives) {
+      List<String> readings = [];
+      for (var pairs in vocab.kanjiReadingPairs) {
+        for (var reading in pairs.readings) {
+          if (!readings.contains(reading.reading)) {
+            readings.add(reading.reading);
+          }
+        }
+      }
+      reading = readings.join(', ');
     } else {
-      children.addAll([
-        Text(
-          vocab.kanjiReadingPairs[0].readings[0].reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24),
-        ),
-        const SizedBox(height: 16),
-      ]);
+      reading = vocab.kanjiReadingPairs[0].readings[0].reading;
     }
+
+    children.addAll([
+      Text(
+        reading,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: children.isEmpty ? 32 : 24),
+      ),
+      const SizedBox(height: 16),
+    ]);
 
     // Add definitions
     for (int i = 0; i < vocab.definitions.length; i++) {

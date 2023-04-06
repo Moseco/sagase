@@ -14,6 +14,7 @@ class FlashcardSet {
   bool usingSpacedRepetition = true;
   bool vocabShowReading = false;
   bool vocabShowReadingIfRareKanji = true;
+  bool vocabShowAlternatives = false;
   bool kanjiShowReading = false;
   late DateTime timestamp;
 

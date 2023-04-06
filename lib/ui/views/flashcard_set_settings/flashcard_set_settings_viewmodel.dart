@@ -191,6 +191,12 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     _isarService.updateFlashcardSet(flashcardSet);
   }
 
+  void setVocabShowAlternatives(bool value) {
+    flashcardSet.vocabShowAlternatives = value;
+    notifyListeners();
+    _isarService.updateFlashcardSet(flashcardSet);
+  }
+
   void setKanjiShowReading(bool value) {
     flashcardSet.kanjiShowReading = value;
     notifyListeners();
