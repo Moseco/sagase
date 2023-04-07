@@ -174,5 +174,80 @@ void main() {
       expect(viewModel.flashcardIntervalCounts[3], 1);
       expect(viewModel.flashcardIntervalCounts[4], 1);
     });
+
+    test('Flashcard challenging flashcards', () async {
+      await isar.writeTxn(() async {
+        for (int i = 0; i < 20; i++) {
+          var spacedRepetitionData = SpacedRepetitionData()
+            ..totalAnswers = i + 1
+            ..totalWrongAnswers = i
+            ..dueDate = DateTime.now().toInt() + i;
+
+          var vocab = Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()],
+            ]
+            ..spacedRepetitionData = spacedRepetitionData;
+
+          await isar.vocabs.put(vocab);
+        }
+
+        var spacedRepetitionData = SpacedRepetitionData()
+          ..totalAnswers = 20
+          ..totalWrongAnswers = 3
+          ..dueDate = DateTime.now().toInt();
+        var spacedRepetitionData2 = SpacedRepetitionData()
+          ..totalAnswers = 10
+          ..totalWrongAnswers = 3
+          ..dueDate = DateTime.now().toInt();
+
+        var vocab = Vocab()
+          ..id = 20
+          ..kanjiReadingPairs = [
+            KanjiReadingPair()..readings = [VocabReading()..reading = '20'],
+          ]
+          ..spacedRepetitionData = spacedRepetitionData;
+        var vocab2 = Vocab()
+          ..id = 21
+          ..kanjiReadingPairs = [
+            KanjiReadingPair()..readings = [VocabReading()..reading = '21'],
+          ]
+          ..spacedRepetitionData = spacedRepetitionData2;
+
+        await isar.vocabs.put(vocab);
+        await isar.vocabs.put(vocab2);
+      });
+
+      // Create dictionary lists to use
+      await isarService.createMyDictionaryList('list1');
+      for (int i = 0; i < 22; i++) {
+        var vocab = Vocab()..id = i;
+        await isarService.addVocabToMyDictionaryList(
+            isarService.myDictionaryLists![0], vocab);
+      }
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      await isarService.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [isarService.myDictionaryLists![0]],
+      );
+
+      // Initialize viewmodel
+      var viewModel = FlashcardSetInfoViewModel(flashcardSet);
+
+      // wait for loading to finished
+      while (true) {
+        if (!viewModel.loading) break;
+        await Future.delayed(const Duration(milliseconds: 1));
+      }
+
+      // Check contents
+      expect(viewModel.challengingFlashcards.length, 10);
+      expect(viewModel.challengingFlashcards.first.id, 19);
+      expect(viewModel.challengingFlashcards.last.id, 10);
+    });
   });
 }

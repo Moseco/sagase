@@ -1,4 +1,5 @@
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
@@ -26,6 +27,8 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
   // 3 : flashcards due in 1-2 months
   // 4 : flashcards due in 3+ months
   List<double> flashcardIntervalCounts = [0, 0, 0, 0, 0];
+  // Top challenging flashcards
+  List<DictionaryItem> challengingFlashcards = [];
 
   FlashcardSetInfoViewModel(this.flashcardSet) {
     _initialize();
@@ -103,12 +106,14 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     upcomingDueFlashcards = List<int>.filled(8, 0);
     for (var flashcard in flashcards) {
       if (flashcard.spacedRepetitionData != null) {
+        // Upcoming due count
         upcomingDueFlashcards[
             (DateTime.parse(flashcard.spacedRepetitionData!.dueDate!.toString())
                     .difference(today)
                     .inDays)
                 .clamp(0, 7)]++;
 
+        // Interval count
         if (flashcard.spacedRepetitionData!.interval <= 7) {
           flashcardIntervalCounts[1]++;
         } else if (flashcard.spacedRepetitionData!.interval <= 28) {
@@ -118,11 +123,47 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
         } else {
           flashcardIntervalCounts[4]++;
         }
+
+        // Challenging flashcards
+        if (flashcard.spacedRepetitionData!.totalAnswers > 4 &&
+            flashcard.spacedRepetitionData!.wrongAnswerRate >= 0.25) {
+          bool addToEnd = true;
+          for (int i = 0; i < challengingFlashcards.length; i++) {
+            if (flashcard.spacedRepetitionData!.wrongAnswerRate >
+                challengingFlashcards[i]
+                    .spacedRepetitionData!
+                    .wrongAnswerRate) {
+              challengingFlashcards.insert(i, flashcard);
+              addToEnd = false;
+              break;
+            }
+          }
+          if (addToEnd && challengingFlashcards.length < 10) {
+            challengingFlashcards.add(flashcard);
+          }
+          if (challengingFlashcards.length > 10) {
+            challengingFlashcards.removeLast();
+          }
+        }
       } else {
         flashcardIntervalCounts[0]++;
       }
     }
 
     notifyListeners();
+  }
+
+  void navigateToVocab(Vocab vocab) {
+    _navigationService.navigateTo(
+      Routes.vocabView,
+      arguments: VocabViewArguments(vocab: vocab),
+    );
+  }
+
+  void navigateToKanji(Kanji kanji) {
+    _navigationService.navigateTo(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(kanji: kanji),
+    );
   }
 }

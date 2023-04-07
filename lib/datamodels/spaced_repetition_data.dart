@@ -11,6 +11,8 @@ class SpacedRepetitionData {
 
   int totalAnswers = 0;
   int totalWrongAnswers = 0;
+  @ignore
+  double get wrongAnswerRate => totalWrongAnswers / totalAnswers;
 
   @ignore
   int initialCorrectCount = 0;

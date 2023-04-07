@@ -2,7 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
+import 'package:sagase/ui/widgets/kanji_list_item.dart';
+import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
 
 import 'flashcard_set_info_viewmodel.dart';
@@ -191,6 +195,38 @@ class FlashcardSetInfoView extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (viewModel.challengingFlashcards.isNotEmpty)
+                    CardWithTitleSection(
+                      title: 'Top challenging flashcards',
+                      child: ListView.separated(
+                        separatorBuilder: (_, __) => const Divider(
+                          height: 1,
+                          indent: 8,
+                          endIndent: 8,
+                        ),
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: viewModel.challengingFlashcards.length,
+                        itemBuilder: (context, index) {
+                          final current =
+                              viewModel.challengingFlashcards[index];
+                          if (current is Vocab) {
+                            return VocabListItem(
+                              vocab: current,
+                              onPressed: () =>
+                                  viewModel.navigateToVocab(current),
+                            );
+                          } else {
+                            return KanjiListItem(
+                              kanji: current as Kanji,
+                              onPressed: () =>
+                                  viewModel.navigateToKanji(current),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                 ],
               ),
       ),
