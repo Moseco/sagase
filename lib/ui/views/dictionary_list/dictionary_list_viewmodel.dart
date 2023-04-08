@@ -69,10 +69,11 @@ class DictionaryListViewModel extends BaseViewModel {
   }
 
   Future<void> deleteMyList() async {
-    final response = await _dialogService.showConfirmationDialog(
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmationDialog,
       title: 'Delete list?',
-      confirmationTitle: 'Delete',
-      cancelTitle: 'Cancel',
+      mainButtonTitle: 'Delete',
+      secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,
     );
 

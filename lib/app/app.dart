@@ -3,6 +3,7 @@ import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
+import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
@@ -92,6 +93,7 @@ import 'package:stacked_services/stacked_services.dart';
     StackedDialog(classType: InitialIntervalDialog),
     StackedDialog(classType: FlashcardStartDialog),
     StackedDialog(classType: NumberTextFieldDialog),
+    StackedDialog(classType: ConfirmationDialog),
   ],
 )
 class AppSetup {

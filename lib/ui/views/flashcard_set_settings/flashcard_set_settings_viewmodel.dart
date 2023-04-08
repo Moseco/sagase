@@ -64,10 +64,11 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
   }
 
   Future<void> _deleteFlashcardSet() async {
-    final response = await _dialogService.showConfirmationDialog(
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmationDialog,
       title: 'Delete flashcards?',
-      confirmationTitle: 'Delete',
-      cancelTitle: 'Cancel',
+      mainButtonTitle: 'Delete',
+      secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,
     );
 
@@ -79,12 +80,13 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
   }
 
   Future<void> _resetSpacedRepetitionData() async {
-    final response = await _dialogService.showConfirmationDialog(
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmationDialog,
       title: 'Reset spaced repetition data?',
       description:
           'This will effect all items that are part of this flashcard set and the same items that are part of other flashcard sets. This action cannot be undone.',
-      confirmationTitle: 'Reset',
-      cancelTitle: 'Cancel',
+      mainButtonTitle: 'Reset',
+      secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,
     );
 
