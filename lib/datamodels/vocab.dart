@@ -3,6 +3,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/spaced_repetition_data.dart';
+import 'package:sagase/datamodels/japanese_text_token.dart';
 
 part 'vocab.g.dart';
 
@@ -81,6 +82,8 @@ class VocabExample {
   late int index;
   late String japanese;
   late String english;
+  @ignore
+  late List<JapaneseTextToken> tokens;
 }
 
 enum KanjiInfo {

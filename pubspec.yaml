@@ -29,6 +29,7 @@ dependencies:
   flutter_svg: ^1.1.6
   flutter_sticky_header: ^0.6.5
   shimmer: ^2.0.0
+  ruby_text: ^3.0.1
 
   # Other
   isar: ^3.0.2
@@ -43,6 +44,14 @@ dependencies:
   google_mlkit_digital_ink_recognition: ^0.6.0
   intl: ^0.18.0
   shared_preferences: ^2.0.17
+  mecab_dart: # TODO change to main one after merge
+    git:
+      url: https://github.com/Moseco/mecab_dart
+  path: ^1.8.1
+
+# Dependency override to make mecab_dart compatible with flutter_test
+dependency_overrides:
+  path: 1.8.2
 
 dev_dependencies:
   flutter_test:
@@ -52,7 +61,6 @@ dev_dependencies:
   build_runner: any
   stacked_generator: ^0.7.15
   isar_generator: any
-  path: ^1.8.1
   mockito: ^5.3.2
 
 flutter:
@@ -70,4 +78,6 @@ flutter:
     - assets/dictionary_source/db_export.zip
     # Kanji radical positions images
     - assets/images/kanji_radical_positions/
+    # Files for mecab
+    - assets/mecab/ipadic.zip
     

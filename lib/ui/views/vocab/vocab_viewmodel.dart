@@ -6,6 +6,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/utils/conjugation_utils.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
@@ -15,6 +16,7 @@ class VocabViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
+  final _mecabService = locator<MecabService>();
 
   final Vocab vocab;
 
@@ -42,6 +44,13 @@ class VocabViewModel extends BaseViewModel {
 
     // Get conjugations
     conjugations = _conjugationUtils.getConjugations(vocab);
+
+    // Tokenize example sentences
+    if (vocab.examples != null) {
+      for (var example in vocab.examples!) {
+        example.tokens = _mecabService.parseText(example.japanese);
+      }
+    }
   }
 
   Future<void> initialize() async {

@@ -4,6 +4,7 @@ import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:stacked/stacked.dart';
+import 'package:ruby_text/ruby_text.dart';
 
 import 'vocab_viewmodel.dart';
 
@@ -833,19 +834,37 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
               'For definition ${examples[index].index + 1}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            ListView.separated(
-              separatorBuilder: (_, __) => const Divider(),
+            ListView.builder(
               shrinkWrap: true,
               primary: false,
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.only(left: 16),
               itemCount: examples[index].list.length,
-              itemBuilder: (context, i) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(examples[index].list[i].japanese),
-                  Text(examples[index].list[i].english),
-                ],
-              ),
+              itemBuilder: (context, i) {
+                List<RubyTextData> data = [];
+                for (var token in examples[index].list[i].tokens) {
+                  for (var rubyPair in token.rubyTextPairs) {
+                    data.add(
+                      RubyTextData(
+                        rubyPair.writing,
+                        ruby: rubyPair.reading,
+                      ),
+                    );
+                  }
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RubyText(
+                        data,
+                        style: const TextStyle(letterSpacing: 0),
+                      ),
+                      Text(examples[index].list[i].english),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),

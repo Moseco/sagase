@@ -2,6 +2,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/mecab_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 class SplashScreenViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _digitalInkService = locator<DigitalInkService>();
+  final _mecabService = locator<MecabService>();
 
   _Status _status = _Status.waiting;
 
@@ -60,6 +62,9 @@ class SplashScreenViewModel extends BaseViewModel {
       ]);
     }
 
+    // Initialize mecab service;
+    await _mecabService.initialize();
+
     // Register instance with locator
     StackedLocator.instance.registerSingleton(isarService!);
 
@@ -77,6 +82,8 @@ class SplashScreenViewModel extends BaseViewModel {
         return 'Upgrading dictionary\nThis can take about 30 seconds';
       case _Status.downloadingModel:
         return 'Preparing handwriting recognition';
+      case _Status.preparingMecab:
+        return 'Preparing Japanese text analyzer';
       case _Status.databaseError:
         return 'Something is wrong with the dictionary';
     }
@@ -88,5 +95,6 @@ enum _Status {
   importingDatabase,
   upgradingDatabase,
   downloadingModel,
+  preparingMecab,
   databaseError,
 }

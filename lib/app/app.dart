@@ -1,4 +1,5 @@
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
@@ -78,6 +79,7 @@ import 'package:stacked_services/stacked_services.dart';
       classType: SharedPreferencesService,
       presolveUsing: SharedPreferencesService.initialize,
     ),
+    LazySingleton(classType: MecabService),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
     LazySingleton(classType: ListsViewModel),
