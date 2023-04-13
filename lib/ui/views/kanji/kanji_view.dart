@@ -165,11 +165,6 @@ class KanjiView extends StatelessWidget {
                         title: 'Meaning',
                         content: kanji.meanings ?? 'NO MEANING',
                       ),
-                      if (kanji.onReadings != null)
-                        _TitleInfoText(
-                          title: 'On readings',
-                          content: kanji.onReadings!.join(', '),
-                        ),
                       if (kanji.kunReadings != null)
                         KanjiKunReadings(
                           kanji.kunReadings!,
@@ -178,6 +173,11 @@ class KanjiView extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           maxLines: 99,
+                        ),
+                      if (kanji.onReadings != null)
+                        _TitleInfoText(
+                          title: 'On readings',
+                          content: kanji.onReadings!.join(', '),
                         ),
                       if (kanji.nanori != null)
                         _TitleInfoText(
