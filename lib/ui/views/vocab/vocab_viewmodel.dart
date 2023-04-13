@@ -2,6 +2,7 @@ import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/conjugation_result.dart';
+import 'package:sagase/datamodels/japanese_text_token.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
@@ -131,5 +132,13 @@ class VocabViewModel extends BaseViewModel {
           .addAll(updatedVocab!.myDictionaryListLinks.toList());
       notifyListeners();
     }
+  }
+
+  List<RubyTextPair> getRubyTextPairs(String writing, String reading) {
+    return _mecabService.createRubyTextPairs(
+      writing,
+      reading,
+      convertKana: false,
+    );
   }
 }

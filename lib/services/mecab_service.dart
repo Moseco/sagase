@@ -80,86 +80,10 @@ class MecabService {
           tokens[i].features[0] == featurePunctuation) {
         rubyTextPairs.add(RubyTextPair(writing: tokens[i].surface));
       } else {
-        // Check for mixed kana and non-kana
-        String writing = tokens[i].surface;
-        String reading = _kanaKit.toHiragana(tokens[i].features[7]);
-        int? kanaStartingPosition;
-        for (int j = 0; j < writing.length; j++) {
-          if (_kanaKit.isKana(writing[j])) {
-            // Found kana, set starting position if not already set
-            kanaStartingPosition ??= j;
-          } else if (kanaStartingPosition != null) {
-            // Found non-kana character after previously found kana
-            // Get kana substring
-            String kanaSubstring = writing.substring(kanaStartingPosition, j);
-            // If have non-kana before current kana, create that substring first
-            if (kanaStartingPosition > 0) {
-              // Find position of kana substring in the reading
-              int position =
-                  reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
-              if (position != -1) {
-                // Get non-kana writing and reading then cut from writing and reading strings
-                rubyTextPairs.add(RubyTextPair(
-                  writing: writing.substring(0, kanaStartingPosition),
-                  reading: reading.substring(0, position),
-                ));
-                writing = writing.substring(kanaStartingPosition);
-                reading = reading.substring(position);
-              } else {
-                // Could not find non-kana reading, add only with writing and cut from string
-                rubyTextPairs.add(RubyTextPair(
-                  writing: writing.substring(0, kanaStartingPosition),
-                ));
-                writing = writing.substring(kanaStartingPosition);
-              }
-            }
-
-            // Add kana and cut writing and reading strings
-            rubyTextPairs.add(RubyTextPair(writing: kanaSubstring));
-            writing = writing.substring(kanaSubstring.length);
-            reading = reading.substring(kanaSubstring.length);
-
-            // Will have cut string up to character j, so set to 0
-            j = 0;
-            kanaStartingPosition = null;
-          }
-        }
-
-        // If have remaining writing/reading create final pairs
-        if (writing.isNotEmpty) {
-          // If no kana found, simply add remaining writing and reading
-          if (kanaStartingPosition == null) {
-            rubyTextPairs.add(RubyTextPair(
-              writing: writing,
-              reading: reading,
-            ));
-          } else {
-            // There is mixed kana and non-kana
-            // Get kana substring
-            String kanaSubstring = writing.substring(kanaStartingPosition);
-            // If have non-kana before current kana, create that substring first
-            if (kanaStartingPosition != 0) {
-              // Find position of kana substring in the reading
-              int position =
-                  reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
-              if (position != -1) {
-                // Get non-kana writing and reading
-                rubyTextPairs.add(RubyTextPair(
-                  writing: writing.substring(0, kanaStartingPosition),
-                  reading: reading.substring(0, position),
-                ));
-              } else {
-                // Could not find non-kana reading, add only with writing
-                rubyTextPairs.add(RubyTextPair(
-                  writing: writing.substring(0, kanaStartingPosition),
-                ));
-              }
-            }
-
-            // Add kana
-            rubyTextPairs.add(RubyTextPair(writing: kanaSubstring));
-          }
-        }
+        rubyTextPairs.addAll(createRubyTextPairs(
+          tokens[i].surface,
+          tokens[i].features[7],
+        ));
       }
 
       list.add(JapaneseTextToken(
@@ -170,5 +94,97 @@ class MecabService {
     }
 
     return list;
+  }
+
+  List<RubyTextPair> createRubyTextPairs(
+    String writing,
+    String reading, {
+    bool convertKana = true,
+  }) {
+    List<RubyTextPair> rubyTextPairs = [];
+
+    if (convertKana) reading = _kanaKit.toHiragana(reading);
+    int? kanaStartingPosition;
+    for (int j = 0; j < writing.length; j++) {
+      if (_kanaKit.isKana(writing[j])) {
+        // Found kana, set starting position if not already set
+        kanaStartingPosition ??= j;
+      } else if (kanaStartingPosition != null) {
+        // Found non-kana character after previously found kana
+        // Get kana substring
+        String kanaSubstring = writing.substring(kanaStartingPosition, j);
+        // If have non-kana before current kana, create that substring first
+        if (kanaStartingPosition > 0) {
+          // Find position of kana substring in the reading
+          int position = reading.indexOf(
+              convertKana ? _kanaKit.toHiragana(kanaSubstring) : kanaSubstring);
+          if (position != -1) {
+            // Get non-kana writing and reading then cut from writing and reading strings
+            rubyTextPairs.add(RubyTextPair(
+              writing: writing.substring(0, kanaStartingPosition),
+              reading: reading.substring(0, position),
+            ));
+            writing = writing.substring(kanaStartingPosition);
+            reading = reading.substring(position);
+          } else {
+            // Could not find non-kana reading, add remaining and return
+            rubyTextPairs.add(RubyTextPair(
+              writing: writing,
+              reading: reading,
+            ));
+            return rubyTextPairs;
+          }
+        }
+
+        // Add kana and cut writing and reading strings
+        rubyTextPairs.add(RubyTextPair(writing: kanaSubstring));
+        writing = writing.substring(kanaSubstring.length);
+        reading = reading.substring(kanaSubstring.length);
+
+        // Will have cut string up to character j, so set to 0
+        j = 0;
+        kanaStartingPosition = null;
+      }
+    }
+
+    // If have remaining writing/reading create final pairs
+    if (writing.isNotEmpty) {
+      // If no kana found, simply add remaining writing and reading
+      if (kanaStartingPosition == null) {
+        rubyTextPairs.add(RubyTextPair(
+          writing: writing,
+          reading: reading,
+        ));
+      } else {
+        // There is mixed kana and non-kana
+        // Get kana substring
+        String kanaSubstring = writing.substring(kanaStartingPosition);
+        // If have non-kana before current kana, create that substring first
+        if (kanaStartingPosition != 0) {
+          // Find position of kana substring in the reading
+          int position = reading.indexOf(
+              convertKana ? _kanaKit.toHiragana(kanaSubstring) : kanaSubstring);
+          if (position != -1) {
+            // Get non-kana writing and reading
+            rubyTextPairs.add(RubyTextPair(
+              writing: writing.substring(0, kanaStartingPosition),
+              reading: reading.substring(0, position),
+            ));
+          } else {
+            // Could not find non-kana reading, add remaining and return
+            rubyTextPairs.add(RubyTextPair(
+              writing: writing,
+              reading: reading,
+            ));
+            return rubyTextPairs;
+          }
+        }
+
+        // Add kana
+        rubyTextPairs.add(RubyTextPair(writing: kanaSubstring));
+      }
+    }
+
+    return rubyTextPairs;
   }
 }

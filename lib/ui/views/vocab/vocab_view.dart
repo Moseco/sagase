@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/datamodels/japanese_text_token.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
@@ -21,11 +22,8 @@ class VocabView extends StatelessWidget {
       onModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
-          title: Text(
-            vocab.kanjiReadingPairs[0].kanjiWritings?[0].kanji ??
-                vocab.kanjiReadingPairs[0].readings[0].reading,
-          ),
           actions: [
+            if (vocab.commonWord) const Center(child: CommonVocab()),
             IconButton(
               onPressed: viewModel.openMyDictionaryListsSheet,
               icon: Icon(
@@ -43,15 +41,6 @@ class VocabView extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(8),
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _PrimaryKanjiReadingPair(vocab.kanjiReadingPairs[0]),
-                  ),
-                  if (vocab.commonWord) const CommonVocab(),
-                ],
-              ),
               _KanjiReadingPairs(vocab.kanjiReadingPairs),
               const _Definitions(),
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
@@ -66,30 +55,6 @@ class VocabView extends StatelessWidget {
   }
 }
 
-class _PrimaryKanjiReadingPair extends ViewModelWidget<VocabViewModel> {
-  final KanjiReadingPair pair;
-
-  const _PrimaryKanjiReadingPair(
-    this.pair, {
-    Key? key,
-  }) : super(key: key, reactive: false);
-
-  @override
-  Widget build(BuildContext context, VocabViewModel viewModel) {
-    if (pair.kanjiWritings != null) {
-      return Text(
-        '${pair.kanjiWritings![0].kanji}【${pair.readings[0].reading}】',
-        style: const TextStyle(fontSize: 24),
-      );
-    } else {
-      return Text(
-        pair.readings[0].reading,
-        style: const TextStyle(fontSize: 24),
-      );
-    }
-  }
-}
-
 class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
   final List<KanjiReadingPair> pairs;
 
@@ -100,24 +65,120 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    if (pairs.length == 1 &&
-        (pairs[0].kanjiWritings == null ||
-            pairs[0].kanjiWritings!.length == 1) &&
-        pairs[0].readings.length == 1) {
-      // Only 1 kanji and 1 reading, which is already shown, show nothing
-      return Container();
-    } else {
-      // Show additional kanji-reading pairs
-      // Only show first pair if contains more than 1 kanji or reading
-      int startIndex = 0;
-      if ((pairs[0].kanjiWritings == null ||
-              pairs[0].kanjiWritings!.length == 1) &&
-          pairs[0].readings.length == 1) {
-        startIndex = 1;
-      }
+    bool forceOnlyReading =
+        pairs[0].kanjiWritings != null && viewModel.vocab.isUsuallyKanaAlone();
 
-      List<Text> textList = [];
-      for (int i = startIndex; i < pairs.length; i++) {
+    // Primary writing/reading pair
+    late Widget primary;
+    if (pairs[0].kanjiWritings == null || forceOnlyReading) {
+      primary = Text(
+        pairs[0].readings[0].reading,
+        style: const TextStyle(fontSize: 32),
+      );
+    } else {
+      primary = _RubyTextWrapper(
+        pairs: viewModel.getRubyTextPairs(
+          pairs[0].kanjiWritings![0].kanji,
+          pairs[0].readings[0].reading,
+        ),
+        fontSize: 32,
+      );
+    }
+
+    List<Widget> alternatives = [];
+
+    // If forcing only reading, skip this first pair alternatives section
+    if (!forceOnlyReading) {
+      // Show unique info from first pair
+      if (pairs[0].kanjiWritings == null && pairs[0].readings.length > 1) {
+        // Only more readings available without kanji writing
+        final buffer = StringBuffer(pairs[0].readings[1].reading);
+        for (int i = 2; i < pairs[0].readings.length; i++) {
+          buffer.write(', ');
+          buffer.write(pairs[0].readings[i].reading);
+        }
+        alternatives.add(Text(buffer.toString()));
+      } else if (pairs[0].kanjiWritings?.length == 1 &&
+          pairs[0].readings.length == 2) {
+        // 1 additional reading available with only 1 kanji writing
+        alternatives.add(
+          _RubyTextWrapper(
+            pairs: viewModel.getRubyTextPairs(
+              pairs[0].kanjiWritings![0].kanji,
+              pairs[0].readings[1].reading,
+            ),
+          ),
+        );
+      } else if (pairs[0].kanjiWritings?.length == 1 &&
+          pairs[0].readings.length > 2) {
+        // More then 2 readings available with only 1 kanji writing
+        final buffer = StringBuffer(pairs[0].kanjiWritings![0].kanji);
+        buffer.write('【');
+        buffer.write(pairs[0].readings[1].reading);
+        for (int i = 2; i < pairs[0].readings.length; i++) {
+          buffer.write(', ');
+          buffer.write(pairs[0].readings[i].reading);
+        }
+        buffer.write('】');
+        alternatives.add(Text(buffer.toString()));
+      } else if (pairs[0].kanjiWritings != null &&
+          pairs[0].kanjiWritings!.length > 1 &&
+          pairs[0].readings.length == 1) {
+        // Additional kanji writing with only 1 reading
+        final rubyTextPairs = viewModel.getRubyTextPairs(
+          pairs[0].kanjiWritings![1].kanji,
+          pairs[0].readings[0].reading,
+        );
+        for (int i = 2; i < pairs[0].kanjiWritings!.length; i++) {
+          rubyTextPairs.add(const RubyTextPair(writing: ', '));
+          rubyTextPairs.addAll(
+            viewModel.getRubyTextPairs(
+              pairs[0].kanjiWritings![i].kanji,
+              pairs[0].readings[0].reading,
+            ),
+          );
+        }
+        alternatives.add(_RubyTextWrapper(pairs: rubyTextPairs));
+      } else if (pairs[0].kanjiWritings != null &&
+          pairs[0].kanjiWritings!.length > 1 &&
+          pairs[0].readings.length > 1) {
+        // Multiple kanji writings and readings
+        final buffer = StringBuffer(pairs[0].kanjiWritings![0].kanji);
+        for (int i = 1; i < pairs[0].kanjiWritings!.length; i++) {
+          buffer.write(', ');
+          buffer.write(pairs[0].kanjiWritings![i].kanji);
+        }
+        buffer.write('【');
+        buffer.write(pairs[0].readings[0].reading);
+        for (int i = 1; i < pairs[0].readings.length; i++) {
+          buffer.write(', ');
+          buffer.write(pairs[0].readings[i].reading);
+        }
+        buffer.write('】');
+        alternatives.add(Text(buffer.toString()));
+      }
+    }
+
+    // Handle remaining pairs
+    // From 0 if forcing only reading, otherwise from 1
+    for (int i = forceOnlyReading ? 0 : 1; i < pairs.length; i++) {
+      if (pairs[i].kanjiWritings != null && pairs[i].readings.length == 1) {
+        // 1 or more kanji writings with only 1 reading
+        final rubyTextPairs = viewModel.getRubyTextPairs(
+          pairs[i].kanjiWritings![0].kanji,
+          pairs[i].readings[0].reading,
+        );
+        for (int j = 1; j < pairs[i].kanjiWritings!.length; j++) {
+          rubyTextPairs.add(const RubyTextPair(writing: ', '));
+          rubyTextPairs.addAll(
+            viewModel.getRubyTextPairs(
+              pairs[i].kanjiWritings![j].kanji,
+              pairs[i].readings[0].reading,
+            ),
+          );
+        }
+        alternatives.add(_RubyTextWrapper(pairs: rubyTextPairs));
+      } else {
         final buffer = StringBuffer();
         if (pairs[i].kanjiWritings != null) {
           buffer.write(pairs[i].kanjiWritings![0].kanji);
@@ -125,22 +186,63 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
             buffer.write(', ');
             buffer.write(pairs[i].kanjiWritings![j].kanji);
           }
+          buffer.write('【');
         }
-        if (pairs[i].kanjiWritings != null) buffer.write('【');
         buffer.write(pairs[i].readings[0].reading);
         for (int j = 1; j < pairs[i].readings.length; j++) {
           buffer.write(', ');
           buffer.write(pairs[i].readings[j].reading);
         }
         if (pairs[i].kanjiWritings != null) buffer.write('】');
-        textList.add(Text(buffer.toString()));
+        alternatives.add(Text(buffer.toString()));
       }
+    }
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: textList,
+    return Column(
+      children: [
+        Center(child: primary),
+        if (alternatives.isNotEmpty)
+          CardWithTitleSection(
+            title: 'Alternatives',
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: alternatives,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _RubyTextWrapper extends StatelessWidget {
+  final List<RubyTextPair> pairs;
+  final double? fontSize;
+
+  const _RubyTextWrapper({
+    required this.pairs,
+    this.fontSize,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<RubyTextData> rubyTextData = [];
+    for (var rubyTextPair in pairs) {
+      rubyTextData.add(
+        RubyTextData(
+          rubyTextPair.writing,
+          ruby: rubyTextPair.reading,
+        ),
       );
     }
+    return RubyText(
+      rubyTextData,
+      style: TextStyle(letterSpacing: 0, fontSize: fontSize),
+    );
   }
 }
 
