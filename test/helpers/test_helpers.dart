@@ -12,6 +12,7 @@ import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
+import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
@@ -163,6 +164,7 @@ Future<Isar> setUpIsar() async {
       MyDictionaryListSchema,
       FlashcardSetSchema,
       KanjiRadicalSchema,
+      SearchHistoryItemSchema,
     ],
     directory: testTempPath,
     name: Random().nextInt(pow(2, 32) as int).toString(),

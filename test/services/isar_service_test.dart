@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_dictionary_list.dart';
+import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -63,6 +64,12 @@ void main() {
         await oldIsar.flashcardSets.put(flashcardSet);
         flashcardSet.myDictionaryListLinks.add(myList);
         await flashcardSet.myDictionaryListLinks.save();
+
+        await oldIsar.searchHistoryItems.put(
+          SearchHistoryItem()
+            ..searchQuery = 'sagase'
+            ..timestamp = DateTime.parse('20230414'),
+        );
       });
 
       // Create new db to upgrade to
@@ -118,6 +125,11 @@ void main() {
       expect(flashcardSet!.name, 'set');
       expect(flashcardSet.kanjiShowReading, true);
       expect(flashcardSet.myDictionaryListLinks.length, 1);
+
+      final searchHistory = await newIsar.searchHistoryItems.where().findAll();
+      expect(searchHistory.length, 1);
+      expect(searchHistory[0].searchQuery, 'sagase');
+      expect(searchHistory[0].timestamp.year, 2023);
 
       // Cleanup
       await oldIsar.close(deleteFromDisk: true);
