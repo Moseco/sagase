@@ -671,6 +671,7 @@ class IsarService {
             MyDictionaryListSchema,
             FlashcardSetSchema,
             KanjiRadicalSchema,
+            SearchHistoryItemSchema,
           ],
         );
 
@@ -684,6 +685,7 @@ class IsarService {
             MyDictionaryListSchema,
             FlashcardSetSchema,
             KanjiRadicalSchema,
+            SearchHistoryItemSchema,
           ],
           name: 'db_export',
         );
@@ -790,6 +792,14 @@ class IsarService {
           newDbKanji.spacedRepetitionData = oldDbKanji.spacedRepetitionData;
           await newIsar.kanjis.put(newDbKanji);
         }
+      }
+    });
+
+    // Transfer search history
+    final historyResult = await oldIsar.searchHistoryItems.where().findAll();
+    await newIsar.writeTxn(() async {
+      for (var history in historyResult) {
+        await newIsar.searchHistoryItems.put(history);
       }
     });
 
