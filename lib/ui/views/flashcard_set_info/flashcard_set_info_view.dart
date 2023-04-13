@@ -227,6 +227,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                         },
                       ),
                     ),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
       ),
