@@ -227,15 +227,21 @@ class ConjugationUtils {
     } else {
       base = vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji;
     }
-    if (base.length < 2) return '';
+
+    // na-adjectives and suru verbs can have a base length of 1, so ignore length rule for them
+    // and isKana doesn't matter so it can remain true
+    bool isKana = true;
+    if (pos != PartOfSpeech.adjectiveNa && pos != PartOfSpeech.verbSuru) {
+      if (base.length < 2) return '';
+
+      isKana = base.codeUnitAt(base.length - 2) > 'あ'.codeUnitAt(0) &&
+          base.codeUnitAt(base.length - 2) <= 'ん'.codeUnitAt(0);
+    }
 
     // Try to get conjugation for the current vocab and desired conjugation
     Conjugation? conjugation = conjugationMap[
         '${pos.index.toString().padLeft(2, '0')}${form.index.toString().padLeft(2, '0')}$negative$formal$onum'];
     if (conjugation == null) return '';
-
-    bool isKana = base.codeUnitAt(base.length - 2) > 'あ'.codeUnitAt(0) &&
-        base.codeUnitAt(base.length - 2) <= 'ん'.codeUnitAt(0);
 
     final buffer = StringBuffer();
 
