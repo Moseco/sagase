@@ -75,9 +75,10 @@ class MecabService {
 
       List<RubyTextPair> rubyTextPairs = [];
 
-      // If only kana or punctuation, add to pairs without ruby text
-      if (_kanaKit.isKana(tokens[i].surface) ||
-          tokens[i].features[0] == featurePunctuation) {
+      // If punctuation or arabic number, add with only writing
+      if (tokens[i].features[0] == featurePunctuation ||
+          (tokens[i].surface.codeUnitAt(0) >= '０'.codeUnitAt(0) &&
+              tokens[i].surface.codeUnitAt(0) <= '９'.codeUnitAt(0))) {
         rubyTextPairs.add(RubyTextPair(writing: tokens[i].surface));
       } else {
         rubyTextPairs.addAll(createRubyTextPairs(
@@ -99,11 +100,36 @@ class MecabService {
   List<RubyTextPair> createRubyTextPairs(
     String writing,
     String reading, {
-    bool convertKana = true,
+    bool convertReading = true,
   }) {
-    List<RubyTextPair> rubyTextPairs = [];
+    // First check if only kana
+    if (_kanaKit.isKana(writing)) return [RubyTextPair(writing: writing)];
 
-    if (convertKana) reading = _kanaKit.toHiragana(reading);
+    List<RubyTextPair> rubyTextPairs = [];
+    RubyTextPair? trailingRubyTextPair;
+
+    if (convertReading) reading = _kanaKit.toHiragana(reading);
+
+    String originalWriting = writing;
+    String originalReading = reading;
+
+    // Check for trailing kana
+    for (int i = writing.length - 1; i >= 0; i--) {
+      // If found non-kana character preceding a kana character, add writing and break
+      if (!_kanaKit.isKana(writing[i])) {
+        if (i != writing.length - 1) {
+          trailingRubyTextPair = RubyTextPair(
+            writing: writing.substring(i + 1),
+          );
+          writing = writing.substring(
+              0, writing.length - trailingRubyTextPair.writing.length);
+          reading = reading.substring(
+              0, reading.length - trailingRubyTextPair.writing.length);
+        }
+        break;
+      }
+    }
+
     int? kanaStartingPosition;
     for (int j = 0; j < writing.length; j++) {
       if (_kanaKit.isKana(writing[j])) {
@@ -116,8 +142,9 @@ class MecabService {
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition > 0) {
           // Find position of kana substring in the reading
-          int position = reading.indexOf(
-              convertKana ? _kanaKit.toHiragana(kanaSubstring) : kanaSubstring);
+          int position = reading.indexOf(convertReading
+              ? _kanaKit.toHiragana(kanaSubstring)
+              : kanaSubstring);
           if (position != -1) {
             // Get non-kana writing and reading then cut from writing and reading strings
             rubyTextPairs.add(RubyTextPair(
@@ -162,8 +189,9 @@ class MecabService {
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition != 0) {
           // Find position of kana substring in the reading
-          int position = reading.indexOf(
-              convertKana ? _kanaKit.toHiragana(kanaSubstring) : kanaSubstring);
+          int position = reading.indexOf(convertReading
+              ? _kanaKit.toHiragana(kanaSubstring)
+              : kanaSubstring);
           if (position != -1) {
             // Get non-kana writing and reading
             rubyTextPairs.add(RubyTextPair(
@@ -183,6 +211,24 @@ class MecabService {
         // Add kana
         rubyTextPairs.add(RubyTextPair(writing: kanaSubstring));
       }
+    }
+
+    if (trailingRubyTextPair != null) rubyTextPairs.add(trailingRubyTextPair);
+
+    // Make sure all reading from input exists in the ruby text pairs
+    // If it does not, add reading/writing as single ruby text pair
+    final buffer = StringBuffer();
+    for (var pair in rubyTextPairs) {
+      if (pair.reading != null) {
+        buffer.write(pair.reading);
+      } else {
+        buffer.write(pair.writing);
+      }
+    }
+    String finalReading = buffer.toString();
+    if (convertReading) finalReading = _kanaKit.toHiragana(finalReading);
+    if (originalReading != finalReading) {
+      return [RubyTextPair(writing: originalWriting, reading: originalReading)];
     }
 
     return rubyTextPairs;

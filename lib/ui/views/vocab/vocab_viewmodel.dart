@@ -138,7 +138,7 @@ class VocabViewModel extends BaseViewModel {
     return _mecabService.createRubyTextPairs(
       writing,
       reading,
-      convertKana: false,
+      convertReading: false,
     );
   }
 }
