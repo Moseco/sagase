@@ -16,6 +16,14 @@ class VocabListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Merge definitions
+    final definitionBuffer = StringBuffer();
+    definitionBuffer.write(vocab.definitions[0].definition);
+    for (int i = 1; i < vocab.definitions.length; i++) {
+      definitionBuffer.write('; ');
+      definitionBuffer.write(vocab.definitions[i].definition);
+    }
+
     return InkWell(
       onTap: onPressed,
       child: Padding(
@@ -34,7 +42,7 @@ class VocabListItem extends StatelessWidget {
                     maxLines: 1,
                   ),
                   Text(
-                    vocab.definitions[0].definition,
+                    definitionBuffer.toString(),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
