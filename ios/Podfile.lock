@@ -41,6 +41,8 @@ PODS:
   - GTMSessionFetcher/Core (1.7.0)
   - isar_flutter_libs (1.0.0):
     - Flutter
+  - mecab_dart (0.0.1):
+    - Flutter
   - MLImage (1.0.0-beta3)
   - MLKitCommon (8.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -85,6 +87,7 @@ DEPENDENCIES:
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - google_mlkit_digital_ink_recognition (from `.symlinks/plugins/google_mlkit_digital_ink_recognition/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
+  - mecab_dart (from `.symlinks/plugins/mecab_dart/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
 
@@ -117,6 +120,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mlkit_digital_ink_recognition/ios"
   isar_flutter_libs:
     :path: ".symlinks/plugins/isar_flutter_libs/ios"
+  mecab_dart:
+    :path: ".symlinks/plugins/mecab_dart/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/ios"
   shared_preferences_foundation:
@@ -134,6 +139,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
+  mecab_dart: 7491d01a31ed6c39b99c7c1c086d5c84a839e593
   MLImage: 489dfec109f21da8621b28d476401aaf7a0d4ff4
   MLKitCommon: f6da6c5659618c070b50a80db01248ebe2964175
   MLKitDigitalInkRecognition: fb059c390f42d88d99117dcf8260cd961b1700ad
@@ -148,4 +154,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8c193a77d8cb1a592e5dd08e49695f15c11265d8
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.12.0
