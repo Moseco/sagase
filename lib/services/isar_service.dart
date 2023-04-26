@@ -408,8 +408,11 @@ class IsarService {
     return flashcardSet;
   }
 
-  Future<void> updateFlashcardSet(FlashcardSet flashcardSet) async {
-    flashcardSet.timestamp = DateTime.now();
+  Future<void> updateFlashcardSet(
+    FlashcardSet flashcardSet, {
+    bool updateTimestamp = true,
+  }) async {
+    if (updateTimestamp) flashcardSet.timestamp = DateTime.now();
     return _isar.writeTxn(() async {
       await _isar.flashcardSets.put(flashcardSet);
       await flashcardSet.predefinedDictionaryListLinks.save();

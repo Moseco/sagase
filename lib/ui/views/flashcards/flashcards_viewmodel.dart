@@ -252,7 +252,10 @@ class FlashcardsViewModel extends BaseViewModel {
           // If completing a new card, increase count
           if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
             flashcardSet.newFlashcardsCompletedToday++;
-            _isarService.updateFlashcardSet(flashcardSet);
+            _isarService.updateFlashcardSet(
+              flashcardSet,
+              updateTimestamp: false,
+            );
           }
           // Get new spaced repetition date and use enum index as argument
           currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
@@ -280,7 +283,7 @@ class FlashcardsViewModel extends BaseViewModel {
         // If completing a new card, increase count
         if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
           flashcardSet.newFlashcardsCompletedToday++;
-          _isarService.updateFlashcardSet(flashcardSet);
+          _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
         }
         // Get new spaced repetition date and use enum index as argument
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
@@ -428,7 +431,7 @@ class FlashcardsViewModel extends BaseViewModel {
     if (current.previousData?.dueDate == null &&
         current.flashcard.spacedRepetitionData?.dueDate != null) {
       flashcardSet.newFlashcardsCompletedToday--;
-      _isarService.updateFlashcardSet(flashcardSet);
+      _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
     }
 
     // Put flashcard at the front of active list with the previous data
