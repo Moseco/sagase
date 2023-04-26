@@ -51,4 +51,13 @@ class HomeViewModel extends IndexTrackingViewModel {
     _showNavigationBar = value;
     notifyListeners();
   }
+
+  bool handleBackButton() {
+    if (currentIndex != 0) {
+      handleNavigation(0);
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
