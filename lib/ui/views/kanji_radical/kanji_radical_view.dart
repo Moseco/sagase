@@ -263,7 +263,9 @@ class KanjiRadicalView extends StatelessWidget {
                         if (kanjiRadical.kanjiWithRadical.length > 10)
                           TextButton(
                             onPressed: viewModel.showAllKanji,
-                            child: const Text('Show all'),
+                            child: Text(
+                              'Show all ${kanjiRadical.kanjiWithRadical.length}',
+                            ),
                           ),
                       ],
                     ),
