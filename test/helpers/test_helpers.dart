@@ -6,14 +6,6 @@ import 'package:isar/isar.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.locator.dart';
-import 'package:sagase/datamodels/dictionary_info.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/kanji_radical.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
-import 'package:sagase/datamodels/predefined_dictionary_list.dart';
-import 'package:sagase/datamodels/search_history_item.dart';
-import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -156,16 +148,7 @@ Future<Isar> setUpIsar() async {
 
   // Open Isar instance with random name
   return Isar.open(
-    [
-      DictionaryInfoSchema,
-      VocabSchema,
-      KanjiSchema,
-      PredefinedDictionaryListSchema,
-      MyDictionaryListSchema,
-      FlashcardSetSchema,
-      KanjiRadicalSchema,
-      SearchHistoryItemSchema,
-    ],
+    IsarService.schemas,
     directory: testTempPath,
     name: Random().nextInt(pow(2, 32) as int).toString(),
     inspector: false,

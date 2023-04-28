@@ -4,14 +4,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart' show visibleForTesting;
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/kanji_radical.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
-import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase/services/isar_service.dart';
 import 'package:xml/xml.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:sagase/utils/string_utils.dart';
@@ -24,17 +22,7 @@ class DictionaryUtils {
     DictionarySource source, {
     Isar? testingIsar,
   }) async {
-    Isar isar = testingIsar ??
-        await Isar.open([
-          DictionaryInfoSchema,
-          VocabSchema,
-          KanjiSchema,
-          PredefinedDictionaryListSchema,
-          MyDictionaryListSchema,
-          FlashcardSetSchema,
-          KanjiRadicalSchema,
-          SearchHistoryItemSchema,
-        ]);
+    Isar isar = testingIsar ?? await Isar.open(IsarService.schemas);
 
     await isar.writeTxn(() async {
       await isar.clear();
@@ -1533,16 +1521,7 @@ class DictionaryUtils {
 
   // Exports the Isar database to given path
   static Future<void> exportDatabaseIsolate(String path) async {
-    final isar = await Isar.open([
-      DictionaryInfoSchema,
-      VocabSchema,
-      KanjiSchema,
-      PredefinedDictionaryListSchema,
-      MyDictionaryListSchema,
-      FlashcardSetSchema,
-      KanjiRadicalSchema,
-      SearchHistoryItemSchema,
-    ]);
+    final isar = await Isar.open(IsarService.schemas);
 
     await isar.copyToFile('$path/db_export.isar');
 

@@ -20,6 +20,17 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:sagase/utils/string_utils.dart';
 
 class IsarService {
+  static const List<CollectionSchema<dynamic>> schemas = [
+    DictionaryInfoSchema,
+    VocabSchema,
+    KanjiSchema,
+    PredefinedDictionaryListSchema,
+    MyDictionaryListSchema,
+    FlashcardSetSchema,
+    KanjiRadicalSchema,
+    SearchHistoryItemSchema,
+  ];
+
   final Isar _isar;
 
   final _kanaKit = const KanaKit().copyWithConfig(passRomaji: true);
@@ -35,18 +46,7 @@ class IsarService {
   static Future<IsarService> initialize({Isar? testingIsar}) async {
     if (testingIsar != null) return IsarService(testingIsar);
 
-    final isar = await Isar.open(
-      [
-        DictionaryInfoSchema,
-        VocabSchema,
-        KanjiSchema,
-        PredefinedDictionaryListSchema,
-        MyDictionaryListSchema,
-        FlashcardSetSchema,
-        KanjiRadicalSchema,
-        SearchHistoryItemSchema,
-      ],
-    );
+    final isar = await Isar.open(schemas);
 
     return IsarService(isar);
   }
@@ -664,32 +664,11 @@ class IsarService {
     Isar? testingOldIsar,
     Isar? testingNewIsar,
   }) async {
-    final oldIsar = testingOldIsar ??
-        await Isar.open(
-          [
-            DictionaryInfoSchema,
-            VocabSchema,
-            KanjiSchema,
-            PredefinedDictionaryListSchema,
-            MyDictionaryListSchema,
-            FlashcardSetSchema,
-            KanjiRadicalSchema,
-            SearchHistoryItemSchema,
-          ],
-        );
+    final oldIsar = testingOldIsar ?? await Isar.open(schemas);
 
     final newIsar = testingNewIsar ??
         await Isar.open(
-          [
-            DictionaryInfoSchema,
-            VocabSchema,
-            KanjiSchema,
-            PredefinedDictionaryListSchema,
-            MyDictionaryListSchema,
-            FlashcardSetSchema,
-            KanjiRadicalSchema,
-            SearchHistoryItemSchema,
-          ],
+          schemas,
           name: 'db_export',
         );
 
