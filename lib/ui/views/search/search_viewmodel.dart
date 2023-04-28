@@ -128,4 +128,10 @@ class SearchViewModel extends BaseViewModel {
     _isarService.deleteSearchHistoryItem(item);
     notifyListeners();
   }
+
+  void clearSearchHistory() {
+    searchHistory.clear();
+    _currentSearchHistoryItem = null;
+    notifyListeners();
+  }
 }

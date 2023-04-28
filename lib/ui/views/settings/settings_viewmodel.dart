@@ -1,7 +1,9 @@
 import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -10,6 +12,7 @@ class SettingsViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
+  final _isarService = locator<IsarService>();
 
   bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
   bool get flashcardLearningModeEnabled =>
@@ -125,5 +128,20 @@ class SettingsViewModel extends BaseViewModel {
       _sharedPreferencesService.setFlashcardCorrectAnswersRequired(amount);
       notifyListeners();
     } catch (_) {}
+  }
+
+  Future<void> deleteSearchHistory() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmationDialog,
+      title: 'Delete search history?',
+      mainButtonTitle: 'Delete',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      _isarService.deleteSearchHistory();
+      locator<SearchViewModel>().clearSearchHistory();
+    }
   }
 }

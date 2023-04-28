@@ -91,6 +91,15 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
               SettingsSection(
+                title: const Text('App data'),
+                tiles: [
+                  SettingsTile.navigation(
+                    title: const Text('Delete search history'),
+                    onPressed: (_) => viewModel.deleteSearchHistory(),
+                  ),
+                ],
+              ),
+              SettingsSection(
                 title: const Text('About Sagase'),
                 tiles: [
                   SettingsTile(

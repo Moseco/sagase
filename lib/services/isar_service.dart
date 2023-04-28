@@ -598,7 +598,7 @@ class IsarService {
     List<int> idsToDelete = (await _isar.searchHistoryItems
             .where()
             .sortByTimestampDesc()
-            .offset(20)
+            .offset(100)
             .findAll())
         .map((e) => e.id)
         .toList();
@@ -622,6 +622,12 @@ class IsarService {
   Future<void> deleteSearchHistoryItem(SearchHistoryItem item) async {
     await _isar.writeTxn(() async {
       await _isar.searchHistoryItems.delete(item.id);
+    });
+  }
+
+  Future<void> deleteSearchHistory() async {
+    await _isar.writeTxn(() async {
+      await _isar.searchHistoryItems.clear();
     });
   }
 
