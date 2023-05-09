@@ -56,11 +56,11 @@ class KanjiRadicalsView extends StatelessWidget {
     );
   }
 
-  List<SliverStickyHeader> _getRadicalListByStrokeCount(
+  List<Widget> _getRadicalListByStrokeCount(
     BuildContext context,
     List<KanjiRadical> radicals,
   ) {
-    final List<SliverStickyHeader> radicalGroups = [];
+    final List<Widget> radicalGroups = [];
 
     int currentStrokeCount = -1;
     late List<Widget> currentRadicals;
@@ -96,14 +96,20 @@ class KanjiRadicalsView extends StatelessWidget {
       currentRadicals.add(_KanjiRadicalItem(radical));
     }
 
+    // Add padding to bottom of the last sliver
+    radicalGroups.last = SliverPadding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      sliver: radicalGroups.last,
+    );
+
     return radicalGroups;
   }
 
-  List<SliverStickyHeader> _getRadicalListByImportance(
+  List<Widget> _getRadicalListByImportance(
     BuildContext context,
     List<KanjiRadical> radicals,
   ) {
-    final List<SliverStickyHeader> radicalGroups = [];
+    final List<Widget> radicalGroups = [];
 
     KanjiRadicalImportance currentImportance = KanjiRadicalImportance.none;
     late List<Widget> currentRadicals;
@@ -150,6 +156,12 @@ class KanjiRadicalsView extends StatelessWidget {
 
       currentRadicals.add(_KanjiRadicalItem(radical));
     }
+
+    // Add padding to bottom of the last sliver
+    radicalGroups.last = SliverPadding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      sliver: radicalGroups.last,
+    );
 
     return radicalGroups;
   }
