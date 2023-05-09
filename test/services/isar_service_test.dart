@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
@@ -7,12 +10,15 @@ import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase/utils/date_time_utils.dart';
 
 import '../helpers/test_helpers.dart';
 
 void main() {
   group('IsarServiceTest', () {
-    test('transferUserDataIsolate test', () async {
+    test('transferUserDataIsolate', () async {
+      await setUpFakePathProvider();
       // Create old db to upgrade from
       Isar oldIsar = await setUpIsar();
 
@@ -102,8 +108,7 @@ void main() {
       });
 
       // Call actual function
-      await IsarService.transferUserDataIsolate(
-        null,
+      await IsarService.transferUserData(
         testingOldIsar: oldIsar,
         testingNewIsar: newIsar,
       );
@@ -134,6 +139,230 @@ void main() {
       // Cleanup
       await oldIsar.close(deleteFromDisk: true);
       await newIsar.close(deleteFromDisk: true);
+    });
+
+    test('exportUserData/importUserData empty', () async {
+      // Setup
+      await setUpFakePathProvider();
+      Isar isar = await setUpIsar();
+
+      final service = IsarService(isar);
+      String path = await service.exportUserData();
+      final file = File(path);
+
+      // Check file content
+      String backupContent = await file.readAsString();
+      Map<String, dynamic> map = jsonDecode(backupContent);
+
+      expect(
+        map[constants.backupDictionaryVersion],
+        constants.dictionaryVersion,
+      );
+      expect(
+        DateTime.fromMillisecondsSinceEpoch(map[constants.backupTimestamp])
+            .isDifferentDay(DateTime.now()),
+        false,
+      );
+      expect(map[constants.backupMyDictionaryLists], []);
+      expect(map[constants.backupFlashcardSets], []);
+      expect(map[constants.backupVocabSpacedRepetitionData], []);
+      expect(map[constants.backupKanjiSpacedRepetitionData], []);
+
+      // Do import and check database content
+      await service.importUserData(path);
+
+      expect(service.myDictionaryLists!.length, 0);
+      expect((await service.getFlashcardSets()).length, 0);
+
+      // Cleanup
+      await isar.close(deleteFromDisk: true);
+      await file.delete();
+    });
+
+    test('exportUserData/importUserData', () async {
+      // Set up
+      await setUpFakePathProvider();
+      Isar isar = await setUpIsar();
+
+      final vocab1 = Vocab()..id = 1;
+      final vocab2 = Vocab()
+        ..id = 2
+        ..spacedRepetitionData = SpacedRepetitionData();
+      vocab2.spacedRepetitionData!.interval = 0;
+      vocab2.spacedRepetitionData!.repetitions = 0;
+      vocab2.spacedRepetitionData!.easeFactor = 2.4;
+      vocab2.spacedRepetitionData!.dueDate = 0;
+      vocab2.spacedRepetitionData!.totalAnswers = 2;
+      vocab2.spacedRepetitionData!.totalWrongAnswers = 2;
+      final vocab3 = Vocab()
+        ..id = 3
+        ..spacedRepetitionData = SpacedRepetitionData();
+      vocab3.spacedRepetitionData!.interval = 1;
+      vocab3.spacedRepetitionData!.repetitions = 1;
+      vocab3.spacedRepetitionData!.easeFactor = 2.6;
+      vocab3.spacedRepetitionData!.dueDate = 0;
+      vocab3.spacedRepetitionData!.totalAnswers = 1;
+      vocab3.spacedRepetitionData!.totalWrongAnswers = 0;
+      final kanji1 = Kanji()
+        ..id = 1
+        ..kanji = 'a'
+        ..strokeCount = 0;
+      final kanji2 = Kanji()
+        ..id = 2
+        ..kanji = 'b'
+        ..strokeCount = 0;
+      final kanji3 = Kanji()
+        ..id = 3
+        ..kanji = 'c'
+        ..strokeCount = 0
+        ..spacedRepetitionData = SpacedRepetitionData();
+      kanji3.spacedRepetitionData!.interval = 5;
+      kanji3.spacedRepetitionData!.repetitions = 2;
+      kanji3.spacedRepetitionData!.easeFactor = 2.7776;
+      kanji3.spacedRepetitionData!.dueDate = 2;
+      kanji3.spacedRepetitionData!.totalAnswers = 2;
+      kanji3.spacedRepetitionData!.totalWrongAnswers = 1;
+
+      await isar.writeTxn(() async {
+        await isar.vocabs.put(vocab1);
+        await isar.vocabs.put(vocab2);
+        await isar.vocabs.put(vocab3);
+        await isar.kanjis.put(kanji1);
+        await isar.kanjis.put(kanji2);
+        await isar.kanjis.put(kanji3);
+      });
+
+      final service = IsarService(isar);
+
+      // Create my dictionary list
+      await service.getMyDictionaryLists();
+      await service.createMyDictionaryList('list1');
+      await service.addVocabToMyDictionaryList(
+          service.myDictionaryLists![0], vocab2);
+      await service.addVocabToMyDictionaryList(
+          service.myDictionaryLists![0], vocab3);
+      await service.addKanjiToMyDictionaryList(
+          service.myDictionaryLists![0], kanji2);
+      await service.addKanjiToMyDictionaryList(
+          service.myDictionaryLists![0], kanji3);
+
+      // Create flashcard set
+      final flashcardSet = await service.createFlashcardSet('set1');
+      flashcardSet.vocabShowReading = true;
+      await service.addDictionaryListsToFlashcardSet(
+        flashcardSet,
+        myDictionaryLists: [service.myDictionaryLists![0]],
+      );
+
+      // Export data
+      String path = await service.exportUserData();
+      final file = File(path);
+
+      // Check file content
+      String backupContent = await file.readAsString();
+      Map<dynamic, dynamic> map = jsonDecode(backupContent);
+
+      expect(
+        map[constants.backupDictionaryVersion],
+        constants.dictionaryVersion,
+      );
+      expect(
+        DateTime.fromMillisecondsSinceEpoch(map[constants.backupTimestamp])
+            .isDifferentDay(DateTime.now()),
+        false,
+      );
+      expect(map[constants.backupMyDictionaryLists].length, 1);
+      final myList = MyDictionaryList.fromBackupJson(
+          map[constants.backupMyDictionaryLists][0]);
+      expect(myList.name, 'list1');
+      expect(myList.timestamp.isDifferentDay(DateTime.now()), false);
+      expect(
+        map[constants.backupMyDictionaryLists][0]
+                [constants.backupMyDictionaryListVocab]
+            .length,
+        2,
+      );
+      expect(
+        map[constants.backupMyDictionaryLists][0]
+                [constants.backupMyDictionaryListKanji]
+            .length,
+        2,
+      );
+      final set =
+          FlashcardSet.fromBackupJson(map[constants.backupFlashcardSets][0]);
+      expect(map[constants.backupFlashcardSets].length, 1);
+      expect(
+        map[constants.backupFlashcardSets][0]
+                [constants.backupFlashcardSetMyDictionaryLists]
+            .length,
+        1,
+      );
+      expect(set.name, 'set1');
+      expect(set.usingSpacedRepetition, true);
+      expect(set.vocabShowReading, true);
+      expect(map[constants.backupVocabSpacedRepetitionData].length, 2);
+      final spaced1 = SpacedRepetitionData.fromBackupJson(
+          map[constants.backupVocabSpacedRepetitionData][0]);
+      expect(
+        map[constants.backupVocabSpacedRepetitionData][0]
+            [constants.backupSpacedRepetitionDataVocabId],
+        2,
+      );
+      expect(spaced1.interval, 0);
+      expect(spaced1.repetitions, 0);
+      expect(spaced1.easeFactor, 2.4);
+      expect(spaced1.dueDate, 0);
+      expect(spaced1.totalAnswers, 2);
+      expect(spaced1.totalWrongAnswers, 2);
+      final spaced2 = SpacedRepetitionData.fromBackupJson(
+          map[constants.backupVocabSpacedRepetitionData][1]);
+      expect(
+        map[constants.backupVocabSpacedRepetitionData][1]
+            [constants.backupSpacedRepetitionDataVocabId],
+        3,
+      );
+      expect(spaced2.interval, 1);
+      expect(map[constants.backupKanjiSpacedRepetitionData].length, 1);
+      final spaced3 = SpacedRepetitionData.fromBackupJson(
+          map[constants.backupKanjiSpacedRepetitionData][0]);
+      expect(
+        map[constants.backupKanjiSpacedRepetitionData][0]
+            [constants.backupSpacedRepetitionDataKanji],
+        'c',
+      );
+      expect(spaced3.interval, 5);
+      expect(spaced3.repetitions, 2);
+      expect(spaced3.easeFactor, 2.7776);
+      expect(spaced3.dueDate, 2);
+      expect(spaced3.totalAnswers, 2);
+      expect(spaced3.totalWrongAnswers, 1);
+
+      // Do import and check database content
+      await service.importUserData(path);
+
+      expect(service.myDictionaryLists!.length, 1);
+      expect(service.myDictionaryLists![0].name, 'list1');
+      expect(service.myDictionaryLists![0].vocabLinks.length, 2);
+      expect(service.myDictionaryLists![0].kanjiLinks.length, 2);
+
+      final flashcardSets = await service.getFlashcardSets();
+      expect(flashcardSets.length, 1);
+      expect(flashcardSets[0].name, 'set1');
+      expect(flashcardSets[0].usingSpacedRepetition, true);
+      expect(flashcardSets[0].vocabShowReading, true);
+      expect(flashcardSets[0].predefinedDictionaryListLinks.length, 0);
+      expect(flashcardSets[0].myDictionaryListLinks.length, 1);
+
+      final newVocab1 = await isar.vocabs.get(1);
+      expect(newVocab1!.spacedRepetitionData, null);
+      final newVocab2 = await isar.vocabs.get(2);
+      expect(newVocab2!.spacedRepetitionData!.interval, 0);
+      final newVocab3 = await isar.vocabs.get(3);
+      expect(newVocab3!.spacedRepetitionData!.interval, 1);
+
+      // Cleanup
+      await isar.close(deleteFromDisk: true);
+      await file.delete();
     });
   });
 }

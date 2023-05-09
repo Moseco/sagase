@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -14,9 +15,10 @@ import 'package:sagase/datamodels/dictionary_list.dart';
 import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
+import 'package:sagase/datamodels/spaced_repetition_data.dart';
+import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
-import 'package:flutter/foundation.dart' show compute;
 import 'package:sagase/utils/string_utils.dart';
 
 class IsarService {
@@ -631,6 +633,162 @@ class IsarService {
     });
   }
 
+  Future<String> exportUserData() async {
+    // My dictionary lists
+    List<String> myDictionaryListBackups = [];
+    await getMyDictionaryLists();
+    for (var myList in _myDictionaryLists!) {
+      await myList.vocabLinks.load();
+      await myList.kanjiLinks.load();
+      myDictionaryListBackups.add(myList.toBackupJson());
+    }
+
+    // Flashcard sets
+    List<String> flashcardSetBackups = [];
+    final flashcardSets = await getFlashcardSets();
+    for (var flashcardSet in flashcardSets) {
+      await flashcardSet.predefinedDictionaryListLinks.load();
+      await flashcardSet.myDictionaryListLinks.load();
+      flashcardSetBackups.add(flashcardSet.toBackupJson());
+    }
+
+    // Vocab spaced repetition data
+    List<String> vocabSpacedRepetitionDataBackups = [];
+    final vocabSpacedRepetitionData =
+        await _isar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
+    for (var vocab in vocabSpacedRepetitionData) {
+      vocabSpacedRepetitionDataBackups
+          .add(vocab.spacedRepetitionData!.toBackupJson(vocabId: vocab.id));
+    }
+
+    // Kanji spaced repetition data
+    List<String> kanjiSpacedRepetitionDataBackups = [];
+    final kanjiSpacedRepetitionData =
+        await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
+    for (var kanji in kanjiSpacedRepetitionData) {
+      kanjiSpacedRepetitionDataBackups
+          .add(kanji.spacedRepetitionData!.toBackupJson(kanji: kanji.kanji));
+    }
+
+    // Create instance
+    DateTime now = DateTime.now();
+    final backup = UserBackup(
+      dictionaryVersion: constants.dictionaryVersion,
+      timestamp: now,
+      myDictionaryLists: myDictionaryListBackups,
+      flashcardSets: flashcardSetBackups,
+      vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
+      kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
+    );
+
+    // Create file and write to it
+    final tempDir = await path_provider.getTemporaryDirectory();
+    final File file = File(
+        '${tempDir.path}${Platform.pathSeparator}backup_${now.year}-${now.month}-${now.day}_${now.millisecondsSinceEpoch}.sagase');
+
+    await file.writeAsString(backup.toJson());
+
+    return file.path;
+  }
+
+  Future<bool> importUserData(String path) async {
+    // Check if file exists in provided path
+    final file = File(path);
+    if (!await file.exists()) return false;
+
+    // Try to decode the backup file
+    try {
+      Map<String, dynamic> backupMap = jsonDecode(await file.readAsString());
+
+      await _isar.writeTxn(() async {
+        // My dictionary lists
+        for (var myListMap in backupMap[constants.backupMyDictionaryLists]) {
+          final newMyList = MyDictionaryList.fromBackupJson(myListMap);
+
+          // Add vocab
+          for (var vocabId
+              in myListMap[constants.backupMyDictionaryListVocab]) {
+            final vocab = await _isar.vocabs.get(vocabId);
+            if (vocab != null) newMyList.vocabLinks.add(vocab);
+          }
+
+          // Add kanji
+          for (var kanjiId
+              in myListMap[constants.backupMyDictionaryListKanji]) {
+            final kanji = await _isar.kanjis.getByKanji(kanjiId);
+            if (kanji != null) newMyList.kanjiLinks.add(kanji);
+          }
+
+          await _isar.myDictionaryLists.put(newMyList);
+          await newMyList.vocabLinks.save();
+          await newMyList.kanjiLinks.save();
+        }
+
+        // Flashcard sets
+        for (var flashcardSetMap in backupMap[constants.backupFlashcardSets]) {
+          final newFlashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
+
+          // Predefined dictionary lists
+          for (var predefinedId in flashcardSetMap[
+              constants.backupFlashcardSetPredefinedDictionaryLists]) {
+            final predefinedDictionaryList =
+                await _isar.predefinedDictionaryLists.get(predefinedId);
+            if (predefinedDictionaryList != null) {
+              newFlashcardSet.predefinedDictionaryListLinks
+                  .add(predefinedDictionaryList);
+            }
+          }
+
+          // My dictionary lists
+          for (var myId in flashcardSetMap[
+              constants.backupFlashcardSetMyDictionaryLists]) {
+            final myDictionaryList = await _isar.myDictionaryLists.get(myId);
+            if (myDictionaryList != null) {
+              newFlashcardSet.myDictionaryListLinks.add(myDictionaryList);
+            }
+          }
+
+          await _isar.flashcardSets.put(newFlashcardSet);
+          await newFlashcardSet.predefinedDictionaryListLinks.save();
+          await newFlashcardSet.myDictionaryListLinks.save();
+        }
+
+        // Vocab spaced repetition data
+        for (var spacedRepetitionMap
+            in backupMap[constants.backupVocabSpacedRepetitionData]) {
+          final newSpacedRepetition =
+              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
+          final vocab = await _isar.vocabs.get(
+              spacedRepetitionMap[constants.backupSpacedRepetitionDataVocabId]);
+          if (vocab != null) {
+            vocab.spacedRepetitionData = newSpacedRepetition;
+            await _isar.vocabs.put(vocab);
+          }
+        }
+
+        // Kanji spaced repetition data
+        for (var spacedRepetitionMap
+            in backupMap[constants.backupKanjiSpacedRepetitionData]) {
+          final newSpacedRepetition =
+              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
+          final kanji = await _isar.kanjis.getByKanji(
+              spacedRepetitionMap[constants.backupSpacedRepetitionDataKanji]);
+          if (kanji != null) {
+            kanji.spacedRepetitionData = newSpacedRepetition;
+            await _isar.kanjis.put(kanji);
+          }
+        }
+      });
+    } catch (_) {
+      return false;
+    }
+
+    await getMyDictionaryLists();
+    _myDictionaryListsChanged = true;
+
+    return true;
+  }
+
   static Future<void> importDatabase(DictionaryStatus status) async {
     // Copy db_export.zip asset to temporary directory file
     final ByteData byteData =
@@ -647,10 +805,7 @@ class IsarService {
 
     // If upgrading from older database, transfer user data
     if (status == DictionaryStatus.outOfDate) {
-      await compute(
-        IsarService.transferUserDataIsolate,
-        null,
-      );
+      await IsarService.transferUserData();
     }
 
     // Remove old database file, rename new one, delete temp file
@@ -665,133 +820,29 @@ class IsarService {
   }
 
   // Optional arguments included for testing
-  static Future<void> transferUserDataIsolate(
-    _, {
+  static Future<void> transferUserData({
     Isar? testingOldIsar,
     Isar? testingNewIsar,
   }) async {
+    // Open old database and get data
     final oldIsar = testingOldIsar ?? await Isar.open(schemas);
+    final path = await IsarService(oldIsar).exportUserData();
+    final historyResult = await oldIsar.searchHistoryItems.where().findAll();
+    if (testingOldIsar == null) await oldIsar.close();
 
+    // Open new database and set data
     final newIsar = testingNewIsar ??
         await Isar.open(
           schemas,
           name: 'db_export',
         );
-
-    // Transfer my lists
-    final myListResult = await oldIsar.myDictionaryLists.where().findAll();
-    List<MyDictionaryList> newMyLists = [];
-    for (var oldDbMyList in myListResult) {
-      MyDictionaryList newDbMyList = MyDictionaryList()
-        ..id = oldDbMyList.id!
-        ..name = oldDbMyList.name
-        ..timestamp = oldDbMyList.timestamp;
-
-      newMyLists.add(newDbMyList);
-
-      await oldDbMyList.vocabLinks.load();
-      for (var oldDbVocab in oldDbMyList.vocabLinks) {
-        Vocab? newDbVocab = await newIsar.vocabs.get(oldDbVocab.id);
-        if (newDbVocab != null) newDbMyList.vocabLinks.add(newDbVocab);
-      }
-
-      await oldDbMyList.kanjiLinks.load();
-      for (var oldDbKanji in oldDbMyList.kanjiLinks) {
-        Kanji? newDbKanji = await newIsar.kanjis.getByKanji(oldDbKanji.kanji);
-        if (newDbKanji != null) newDbMyList.kanjiLinks.add(newDbKanji);
-      }
-    }
-
-    await newIsar.writeTxn(() async {
-      for (var myList in newMyLists) {
-        await newIsar.myDictionaryLists.put(myList);
-        await myList.vocabLinks.save();
-        await myList.kanjiLinks.save();
-      }
-    });
-
-    // Transfer flashcard sets
-    final flashcardSetResult = await oldIsar.flashcardSets.where().findAll();
-    List<FlashcardSet> newFlashcardSets = [];
-    for (var oldDbFlashcardSet in flashcardSetResult) {
-      FlashcardSet newDbFlashcardSet = FlashcardSet()
-        ..id = oldDbFlashcardSet.id
-        ..name = oldDbFlashcardSet.name
-        ..usingSpacedRepetition = oldDbFlashcardSet.usingSpacedRepetition
-        ..vocabShowReading = oldDbFlashcardSet.vocabShowReading
-        ..vocabShowReadingIfRareKanji =
-            oldDbFlashcardSet.vocabShowReadingIfRareKanji
-        ..vocabShowAlternatives = oldDbFlashcardSet.vocabShowAlternatives
-        ..kanjiShowReading = oldDbFlashcardSet.kanjiShowReading
-        ..timestamp = oldDbFlashcardSet.timestamp;
-
-      newFlashcardSets.add(newDbFlashcardSet);
-
-      await oldDbFlashcardSet.predefinedDictionaryListLinks.load();
-      for (var oldDbPredefinedList
-          in oldDbFlashcardSet.predefinedDictionaryListLinks) {
-        PredefinedDictionaryList? newDbPredefinedList = await newIsar
-            .predefinedDictionaryLists
-            .get(oldDbPredefinedList.id!);
-        if (newDbPredefinedList != null) {
-          newDbFlashcardSet.predefinedDictionaryListLinks
-              .add(newDbPredefinedList);
-        }
-      }
-
-      await oldDbFlashcardSet.myDictionaryListLinks.load();
-      for (var oldDbMyList in oldDbFlashcardSet.myDictionaryListLinks) {
-        MyDictionaryList? newDbMyList =
-            await newIsar.myDictionaryLists.get(oldDbMyList.id!);
-        if (newDbMyList != null) {
-          newDbFlashcardSet.myDictionaryListLinks.add(newDbMyList);
-        }
-      }
-    }
-
-    await newIsar.writeTxn(() async {
-      for (var flashcardSet in newFlashcardSets) {
-        await newIsar.flashcardSets.put(flashcardSet);
-        await flashcardSet.predefinedDictionaryListLinks.save();
-        await flashcardSet.myDictionaryListLinks.save();
-      }
-    });
-
-    // Transfer vocab spaced repetition data
-    final vocabResult =
-        await oldIsar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
-    await newIsar.writeTxn(() async {
-      for (var oldDbVocab in vocabResult) {
-        Vocab? newDbVocab = await newIsar.vocabs.get(oldDbVocab.id);
-        if (newDbVocab != null) {
-          newDbVocab.spacedRepetitionData = oldDbVocab.spacedRepetitionData;
-          await newIsar.vocabs.put(newDbVocab);
-        }
-      }
-    });
-
-    // Transfer kanji spaced repetition data
-    final kanjiResult =
-        await oldIsar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
-    await newIsar.writeTxn(() async {
-      for (var oldDbKanji in kanjiResult) {
-        Kanji? newDbKanji = await newIsar.kanjis.getByKanji(oldDbKanji.kanji);
-        if (newDbKanji != null) {
-          newDbKanji.spacedRepetitionData = oldDbKanji.spacedRepetitionData;
-          await newIsar.kanjis.put(newDbKanji);
-        }
-      }
-    });
-
-    // Transfer search history
-    final historyResult = await oldIsar.searchHistoryItems.where().findAll();
+    await IsarService(newIsar).importUserData(path);
+    File(path).delete();
     await newIsar.writeTxn(() async {
       for (var history in historyResult) {
         await newIsar.searchHistoryItems.put(history);
       }
     });
-
-    if (testingOldIsar == null) await oldIsar.close();
     if (testingNewIsar == null) await newIsar.close();
   }
 }

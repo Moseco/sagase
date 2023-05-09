@@ -11,7 +11,9 @@ import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:path/path.dart' as path;
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
+import 'fake_path_provider_platform.dart';
 import 'test_helpers.mocks.dart';
 
 // Run the following to generate files
@@ -153,4 +155,11 @@ Future<Isar> setUpIsar() async {
     name: Random().nextInt(pow(2, 32) as int).toString(),
     inspector: false,
   );
+}
+
+Future<void> setUpFakePathProvider() async {
+  final dartToolDir = path.join(Directory.current.path, '.dart_tool');
+  String pathProviderPath = path.join(dartToolDir, 'path_provider_test');
+  await Directory(pathProviderPath).create(recursive: true);
+  PathProviderPlatform.instance = FakePathProviderPlatform(pathProviderPath);
 }

@@ -97,6 +97,18 @@ class SettingsView extends StatelessWidget {
                     title: const Text('Delete search history'),
                     onPressed: (_) => viewModel.deleteSearchHistory(),
                   ),
+                  SettingsTile.navigation(
+                    title: const Text('Export data'),
+                    description: const Text(
+                        'Exports user created lists, flashcard sets, and spaced repetition data. The created file can then be saved in a safe place.'),
+                    onPressed: (_) => viewModel.backupData(),
+                  ),
+                  SettingsTile.navigation(
+                    title: const Text('Import data'),
+                    description: const Text(
+                        'Import previously exported data. This will overwrite any conflicting data.'),
+                    onPressed: (_) => viewModel.importData(),
+                  ),
                 ],
               ),
               SettingsSection(

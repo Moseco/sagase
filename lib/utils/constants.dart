@@ -37,3 +37,37 @@ const defaultFlashcardLearningModeEnabled = false;
 const defaultNewFlashcardsPerDay = 10;
 const defaultFlashcardDistance = 15;
 const defaultFlashcardCorrectAnswersRequired = 3;
+
+const backupDictionaryVersion = 'dictionary_version';
+const backupTimestamp = 'timestamp';
+const backupMyDictionaryLists = 'my_dictionary_lists';
+const backupFlashcardSets = 'flashcard_sets';
+const backupVocabSpacedRepetitionData = 'vocab_spaced_repetition_data';
+const backupKanjiSpacedRepetitionData = 'kanji_spaced_repetition_data';
+const backupFlashcardSetId = 'id';
+const backupFlashcardSetName = 'name';
+const backupFlashcardSetUsingSpacedRepetition = 'using_spaced_repetition';
+const backupFlashcardSetVocabShowReading = 'vocab_show_reading';
+const backupFlashcardSetVocabShowReadingIfRareKanji =
+    'vocab_show_reading_if_rare_kanji';
+const backupFlashcardSetVocabShowAlternatives = 'vocab_show_alternatives';
+const backupFlashcardSetKanjiShowReading = 'kanji_show_reading';
+const backupFlashcardSetTimestamp = 'timestamp';
+const backupFlashcardSetNewFlashcardsCompletedToday =
+    'new_flashcards_completed_today';
+const backupFlashcardSetPredefinedDictionaryLists =
+    'predefined_dictionary_lists';
+const backupFlashcardSetMyDictionaryLists = 'my_dictionary_lists';
+const backupMyDictionaryListId = 'id';
+const backupMyDictionaryListName = 'name';
+const backupMyDictionaryListTimestamp = 'timestamp';
+const backupMyDictionaryListVocab = 'vocab';
+const backupMyDictionaryListKanji = 'kanji';
+const backupSpacedRepetitionDataVocabId = 'vocab_id';
+const backupSpacedRepetitionDataKanji = 'kanji';
+const backupSpacedRepetitionDataInterval = 'interval';
+const backupSpacedRepetitionDataRepetitions = 'repetitions';
+const backupSpacedRepetitionDataEaseFactor = 'ease_factor';
+const backupSpacedRepetitionDataDueDate = 'due_date';
+const backupSpacedRepetitionDataTotalAnswers = 'total_answers';
+const backupSpacedRepetitionDataTotalWrongAnswers = 'total_wrong_answers';

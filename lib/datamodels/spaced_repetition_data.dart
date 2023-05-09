@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 
 part 'spaced_repetition_data.g.dart';
 
@@ -27,5 +28,30 @@ class SpacedRepetitionData {
       ..totalAnswers = totalAnswers
       ..totalWrongAnswers = totalWrongAnswers
       ..initialCorrectCount = (initialCorrectCount + change).clamp(0, 3);
+  }
+
+  String toBackupJson({int? vocabId, String? kanji}) {
+    assert(vocabId != null || kanji != null);
+
+    return '''{
+      ${vocabId != null ? '"${constants.backupSpacedRepetitionDataVocabId}": $vocabId' : '"${constants.backupSpacedRepetitionDataKanji}": "$kanji"'},
+      "${constants.backupSpacedRepetitionDataInterval}": $interval,
+      "${constants.backupSpacedRepetitionDataRepetitions}": $repetitions,
+      "${constants.backupSpacedRepetitionDataEaseFactor}": $easeFactor,
+      "${constants.backupSpacedRepetitionDataDueDate}": $dueDate,
+      "${constants.backupSpacedRepetitionDataTotalAnswers}": $totalAnswers,
+      "${constants.backupSpacedRepetitionDataTotalWrongAnswers}": $totalWrongAnswers
+}''';
+  }
+
+  static SpacedRepetitionData fromBackupJson(Map<String, dynamic> map) {
+    return SpacedRepetitionData()
+      ..interval = map[constants.backupSpacedRepetitionDataInterval]
+      ..repetitions = map[constants.backupSpacedRepetitionDataRepetitions]
+      ..easeFactor = map[constants.backupSpacedRepetitionDataEaseFactor]
+      ..dueDate = map[constants.backupSpacedRepetitionDataDueDate]
+      ..totalAnswers = map[constants.backupSpacedRepetitionDataTotalAnswers]
+      ..totalWrongAnswers =
+          map[constants.backupSpacedRepetitionDataTotalWrongAnswers];
   }
 }

@@ -8,6 +8,7 @@ import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
+import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
@@ -96,6 +97,7 @@ import 'package:stacked_services/stacked_services.dart';
     StackedDialog(classType: FlashcardStartDialog),
     StackedDialog(classType: NumberTextFieldDialog),
     StackedDialog(classType: ConfirmationDialog),
+    StackedDialog(classType: ProgressIndicatorDialog),
   ],
 )
 class AppSetup {

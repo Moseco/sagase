@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -142,6 +145,69 @@ class SettingsViewModel extends BaseViewModel {
     if (response != null && response.confirmed) {
       _isarService.deleteSearchHistory();
       locator<SearchViewModel>().clearSearchHistory();
+    }
+  }
+
+  Future<void> backupData() async {
+    // Show progress indicator dialog
+    _dialogService.showCustomDialog(
+      variant: DialogType.progressIndicatorDialog,
+      title: 'Exporting data',
+      barrierDismissible: false,
+    );
+
+    String path = await _isarService.exportUserData();
+
+    _dialogService.completeDialog(DialogResponse());
+
+    // Ask user to save file to a location
+    String? newPath;
+    try {
+      newPath = await FlutterFileDialog.saveFile(
+        params: SaveFileDialogParams(sourceFilePath: path),
+      );
+    } catch (_) {
+      newPath = null;
+    }
+
+    if (newPath == null) {
+      _snackbarService.showSnackbar(message: 'Failed to save file');
+    }
+
+    // Delete the original file
+    await File(path).delete();
+  }
+
+  Future<void> importData() async {
+    // Ask user for the file they want to import
+    String? filePath;
+    try {
+      filePath = await FlutterFileDialog.pickFile(
+        params: const OpenFileDialogParams(fileExtensionsFilter: ['sagase']),
+      );
+    } catch (_) {
+      filePath = null;
+    }
+
+    if (filePath != null) {
+      // Show progress indicator dialog
+      _dialogService.showCustomDialog(
+        variant: DialogType.progressIndicatorDialog,
+        title: 'Importing data',
+        barrierDismissible: false,
+      );
+
+      bool result = await _isarService.importUserData(filePath);
+
+      _dialogService.completeDialog(DialogResponse());
+
+      if (result) {
+        _snackbarService.showSnackbar(message: 'Import successful');
+      } else {
+        _snackbarService.showSnackbar(message: 'Import failed');
+      }
+    } else {
+      _snackbarService.showSnackbar(message: 'Import cancelled');
     }
   }
 }
