@@ -53,6 +53,7 @@ const backupFlashcardSetVocabShowReadingIfRareKanji =
 const backupFlashcardSetVocabShowAlternatives = 'vocab_show_alternatives';
 const backupFlashcardSetKanjiShowReading = 'kanji_show_reading';
 const backupFlashcardSetTimestamp = 'timestamp';
+const backupFlashcardSetFlashcardsCompletedToday = 'flashcards_completed_today';
 const backupFlashcardSetNewFlashcardsCompletedToday =
     'new_flashcards_completed_today';
 const backupFlashcardSetPredefinedDictionaryLists =

@@ -19,6 +19,7 @@ class FlashcardSet {
   bool kanjiShowReading = false;
   late DateTime timestamp;
 
+  int flashcardsCompletedToday = 0;
   int newFlashcardsCompletedToday = 0;
 
   final predefinedDictionaryListLinks = IsarLinks<PredefinedDictionaryList>();
@@ -34,6 +35,7 @@ class FlashcardSet {
       "${constants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
       "${constants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
       "${constants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
+      "${constants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
       "${constants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
       "${constants.backupFlashcardSetPredefinedDictionaryLists}": ${predefinedDictionaryListLinks.map((e) => e.id).toList()},
       "${constants.backupFlashcardSetMyDictionaryLists}": ${myDictionaryListLinks.map((e) => e.id).toList()}
@@ -55,6 +57,8 @@ class FlashcardSet {
       ..kanjiShowReading = map[constants.backupFlashcardSetKanjiShowReading]
       ..timestamp = DateTime.fromMillisecondsSinceEpoch(
           map[constants.backupFlashcardSetTimestamp])
+      ..flashcardsCompletedToday =
+          map[constants.backupFlashcardSetFlashcardsCompletedToday]
       ..newFlashcardsCompletedToday =
           map[constants.backupFlashcardSetNewFlashcardsCompletedToday];
   }

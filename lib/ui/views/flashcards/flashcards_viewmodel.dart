@@ -53,8 +53,9 @@ class FlashcardsViewModel extends BaseViewModel {
   }) : _random = Random(randomSeed);
 
   Future<void> initialize() async {
-    // If flashcard set timestamp is previous day, reset new flashcard completed count
+    // If flashcard set timestamp is previous day, reset flashcards completed counts
     if (flashcardSet.timestamp.isDifferentDay(DateTime.now())) {
+      flashcardSet.flashcardsCompletedToday = 0;
       flashcardSet.newFlashcardsCompletedToday = 0;
     }
     // Update flashcard set to also update timestamp
@@ -172,7 +173,9 @@ class FlashcardsViewModel extends BaseViewModel {
           }
         }
       }
-      _initialDueFlashcardCount = dueFlashcards.length;
+      // Set initial due flashcard count and add flashcards completed today
+      _initialDueFlashcardCount =
+          dueFlashcards.length + flashcardSet.flashcardsCompletedToday;
       _answeringDueFlashcards = true;
     }
 
@@ -249,14 +252,13 @@ class FlashcardsViewModel extends BaseViewModel {
             currentFlashcard.spacedRepetitionData!.initialCorrectCount >=
                 _sharedPreferencesService
                     .getFlashcardCorrectAnswersRequired()) {
-          // If completing a new card, increase count
+          // If completing a new card, increase new flashcard count
           if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
             flashcardSet.newFlashcardsCompletedToday++;
-            _isarService.updateFlashcardSet(
-              flashcardSet,
-              updateTimestamp: false,
-            );
           }
+          // Increase flashcards completed today and update in database
+          flashcardSet.flashcardsCompletedToday++;
+          _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
           // Get new spaced repetition date and use enum index as argument
           currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
             answer.index,
@@ -280,11 +282,13 @@ class FlashcardsViewModel extends BaseViewModel {
         }
       } else {
         // Very correct answer
-        // If completing a new card, increase count
+        // If completing a new card, increase new flashcard count
         if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
           flashcardSet.newFlashcardsCompletedToday++;
-          _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
         }
+        // Increase flashcards completed today and update in database
+        flashcardSet.flashcardsCompletedToday++;
+        _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
         // Get new spaced repetition date and use enum index as argument
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
           answer.index,
@@ -427,10 +431,16 @@ class FlashcardsViewModel extends BaseViewModel {
       }
     }
 
-    // If undoing a newly completed card, decrease new flashcard completed count
+    // If undoing a newly completed card, decrease flashcards completed counts
     if (current.previousData?.dueDate == null &&
         current.flashcard.spacedRepetitionData?.dueDate != null) {
+      flashcardSet.flashcardsCompletedToday--;
       flashcardSet.newFlashcardsCompletedToday--;
+      _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
+    }
+    // If undoing a not new card, decrease count
+    if (current.previousData?.dueDate != null) {
+      flashcardSet.flashcardsCompletedToday--;
       _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
     }
 
