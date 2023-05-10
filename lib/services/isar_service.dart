@@ -48,7 +48,10 @@ class IsarService {
   static Future<IsarService> initialize({Isar? testingIsar}) async {
     if (testingIsar != null) return IsarService(testingIsar);
 
-    final isar = await Isar.open(schemas);
+    final isar = await Isar.open(
+      schemas,
+      directory: (await path_provider.getApplicationSupportDirectory()).path,
+    );
 
     return IsarService(isar);
   }
@@ -825,7 +828,12 @@ class IsarService {
     Isar? testingNewIsar,
   }) async {
     // Open old database and get data
-    final oldIsar = testingOldIsar ?? await Isar.open(schemas);
+    final oldIsar = testingOldIsar ??
+        await Isar.open(
+          schemas,
+          directory:
+              (await path_provider.getApplicationSupportDirectory()).path,
+        );
     final path = await IsarService(oldIsar).exportUserData();
     final historyResult = await oldIsar.searchHistoryItems.where().findAll();
     if (testingOldIsar == null) await oldIsar.close();
@@ -834,6 +842,8 @@ class IsarService {
     final newIsar = testingNewIsar ??
         await Isar.open(
           schemas,
+          directory:
+              (await path_provider.getApplicationSupportDirectory()).path,
           name: 'db_export',
         );
     await IsarService(newIsar).importUserData(path);

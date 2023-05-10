@@ -32,7 +32,7 @@ dependencies:
   ruby_text: ^3.0.1
 
   # Other
-  isar: ^3.0.2
+  isar: ^3.1.0+1
   isar_flutter_libs: any
   xml: ^6.1.0
   path_provider: ^2.0.11

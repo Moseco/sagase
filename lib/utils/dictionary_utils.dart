@@ -22,7 +22,12 @@ class DictionaryUtils {
     DictionarySource source, {
     Isar? testingIsar,
   }) async {
-    Isar isar = testingIsar ?? await Isar.open(IsarService.schemas);
+    // Empty directory string is okay because another instance is already open
+    Isar isar = testingIsar ??
+        await Isar.open(
+          IsarService.schemas,
+          directory: '',
+        );
 
     await isar.writeTxn(() async {
       await isar.clear();
@@ -1521,7 +1526,8 @@ class DictionaryUtils {
 
   // Exports the Isar database to given path
   static Future<void> exportDatabaseIsolate(String path) async {
-    final isar = await Isar.open(IsarService.schemas);
+    // Empty directory string is okay because another instance is already open
+    final isar = await Isar.open(IsarService.schemas, directory: '');
 
     await isar.copyToFile('$path/db_export.isar');
 
