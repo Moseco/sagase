@@ -137,30 +137,16 @@ class _Body extends StackedHookView<SearchViewModel> {
                         const VerticalDivider(width: 1, thickness: 1),
                         IconButton(
                           onPressed: () {
-                            int cursorPosition =
-                                searchController.selection.base.offset;
-                            if (cursorPosition != 0) {
-                              searchController.text = searchController.text
-                                      .substring(0, cursorPosition - 1) +
-                                  searchController.text
-                                      .substring(cursorPosition);
-
-                              searchController.selection =
-                                  TextSelection.fromPosition(
-                                      TextPosition(offset: cursorPosition - 1));
-                              viewModel.searchOnChange(searchController.text);
-                            }
+                            viewModel.toggleHandWriting();
+                            keyboardFocusNode.requestFocus();
                           },
-                          icon: const Icon(Icons.backspace),
+                          icon: const Icon(Icons.text_fields),
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                         ),
                         IconButton(
-                          onPressed: () {
-                            viewModel.toggleHandWriting();
-                            keyboardFocusNode.requestFocus();
-                          },
-                          icon: const Icon(Icons.keyboard),
+                          onPressed: viewModel.toggleHandWriting,
+                          icon: const Icon(Icons.keyboard_hide),
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                         ),
@@ -195,8 +181,22 @@ class _Body extends StackedHookView<SearchViewModel> {
                           highlightColor: Colors.transparent,
                         ),
                         IconButton(
-                          onPressed: viewModel.toggleHandWriting,
-                          icon: const Icon(Icons.keyboard_hide),
+                          onPressed: () {
+                            int cursorPosition =
+                                searchController.selection.base.offset;
+                            if (cursorPosition != 0) {
+                              searchController.text = searchController.text
+                                      .substring(0, cursorPosition - 1) +
+                                  searchController.text
+                                      .substring(cursorPosition);
+
+                              searchController.selection =
+                                  TextSelection.fromPosition(
+                                      TextPosition(offset: cursorPosition - 1));
+                              viewModel.searchOnChange(searchController.text);
+                            }
+                          },
+                          icon: const Icon(Icons.backspace),
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                         ),
@@ -242,7 +242,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                     viewModel.toggleHandWriting();
                     handWritingFocusNode.requestFocus();
                   },
-                  icon: const Icon(Icons.gesture),
+                  icon: const Icon(Icons.draw),
                 );
               },
               // Dismiss keyboard
