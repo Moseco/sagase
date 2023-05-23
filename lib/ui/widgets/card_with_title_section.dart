@@ -33,7 +33,11 @@ class CardWithTitleSection extends StatelessWidget {
                 ),
               ),
             ),
-            if (titleTrailing != null) titleTrailing!,
+            if (titleTrailing != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 8),
+                child: titleTrailing!,
+              ),
           ],
         ),
         Card(
