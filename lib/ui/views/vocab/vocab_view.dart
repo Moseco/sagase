@@ -4,6 +4,7 @@ import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
+import 'package:sagase/ui/widgets/pitch_accent_text.dart';
 import 'package:stacked/stacked.dart';
 import 'package:ruby_text/ruby_text.dart';
 
@@ -25,6 +26,17 @@ class VocabView extends StatelessWidget {
           actions: [
             if (vocab.commonWord) const Center(child: CommonVocab()),
             IconButton(
+              onPressed:
+                  vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null
+                      ? viewModel.toggleShowPitchAccent
+                      : null,
+              icon: Icon(
+                viewModel.showPitchAccent
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+              ),
+            ),
+            IconButton(
               onPressed: viewModel.openMyDictionaryListsSheet,
               icon: Icon(
                 vocab.myDictionaryListLinks.isEmpty
@@ -44,7 +56,7 @@ class VocabView extends StatelessWidget {
               _KanjiReadingPairs(vocab.kanjiReadingPairs),
               const _Definitions(),
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
-              if (vocab.examples != null) const _Examples(),
+              const _Examples(),
               if (viewModel.conjugations != null) const _Conjugations(),
               SizedBox(height: MediaQuery.of(context).padding.bottom),
             ],
@@ -58,10 +70,7 @@ class VocabView extends StatelessWidget {
 class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
   final List<KanjiReadingPair> pairs;
 
-  const _KanjiReadingPairs(
-    this.pairs, {
-    Key? key,
-  }) : super(key: key, reactive: false);
+  const _KanjiReadingPairs(this.pairs, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
@@ -70,19 +79,39 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
 
     // Primary writing/reading pair
     late Widget primary;
-    if (pairs[0].kanjiWritings == null || forceOnlyReading) {
-      primary = Text(
-        pairs[0].readings[0].reading,
-        style: const TextStyle(fontSize: 32),
+    if (viewModel.showPitchAccent &&
+        pairs[0].readings[0].pitchAccents != null) {
+      primary = Column(
+        children: [
+          PitchAccentText(
+            text: pairs[0].readings[0].reading,
+            pitchAccent: pairs[0].readings[0].pitchAccents!,
+            fontSize: (pairs[0].kanjiWritings == null || forceOnlyReading)
+                ? 32
+                : 32 / 1.5,
+          ),
+          if (pairs[0].kanjiWritings != null && !forceOnlyReading)
+            Text(
+              pairs[0].kanjiWritings![0].kanji,
+              style: const TextStyle(fontSize: 32),
+            ),
+        ],
       );
     } else {
-      primary = _RubyTextWrapper(
-        pairs: viewModel.getRubyTextPairs(
-          pairs[0].kanjiWritings![0].kanji,
+      if (pairs[0].kanjiWritings == null || forceOnlyReading) {
+        primary = Text(
           pairs[0].readings[0].reading,
-        ),
-        fontSize: 32,
-      );
+          style: const TextStyle(fontSize: 32),
+        );
+      } else {
+        primary = _RubyTextWrapper(
+          pairs: viewModel.getRubyTextPairs(
+            pairs[0].kanjiWritings![0].kanji,
+            pairs[0].readings[0].reading,
+          ),
+          fontSize: 32,
+        );
+      }
     }
 
     List<Widget> alternatives = [];
@@ -913,73 +942,62 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
   const _Examples({Key? key}) : super(key: key, reactive: false);
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    // Collect examples by which definition they are associated with
-    List<_DefinitionExamples> examples = [];
-    for (var example in viewModel.vocab.examples!) {
-      if (examples.isEmpty || examples.last.index != example.index) {
-        examples.add(_DefinitionExamples(example.index, []));
+    List<Widget> children = [];
+    for (int i = 0; i < viewModel.vocab.definitions.length; i++) {
+      if (viewModel.vocab.definitions[i].examples != null) {
+        children.add(
+          Text(
+            'For definition ${i + 1}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
+
+        for (var example in viewModel.vocab.definitions[i].examples!) {
+          List<RubyTextData> data = [];
+          for (var token in example.tokens) {
+            for (var rubyPair in token.rubyTextPairs) {
+              data.add(
+                RubyTextData(
+                  rubyPair.writing,
+                  ruby: rubyPair.reading,
+                ),
+              );
+            }
+          }
+
+          children.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RubyText(
+                    data,
+                    style: const TextStyle(letterSpacing: 0),
+                  ),
+                  Text(example.english),
+                ],
+              ),
+            ),
+          );
+        }
       }
-      examples.last.list.add(example);
     }
+
+    if (children.isEmpty) return Container();
 
     return CardWithTitleSection(
       title: 'Examples',
-      child: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
+      child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(8),
-        itemCount: examples.length,
-        itemBuilder: (context, index) => Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'For definition ${examples[index].index + 1}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              primary: false,
-              padding: const EdgeInsets.only(left: 16),
-              itemCount: examples[index].list.length,
-              itemBuilder: (context, i) {
-                List<RubyTextData> data = [];
-                for (var token in examples[index].list[i].tokens) {
-                  for (var rubyPair in token.rubyTextPairs) {
-                    data.add(
-                      RubyTextData(
-                        rubyPair.writing,
-                        ruby: rubyPair.reading,
-                      ),
-                    );
-                  }
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RubyText(
-                        data,
-                        style: const TextStyle(letterSpacing: 0),
-                      ),
-                      Text(examples[index].list[i].english),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
+          children: children,
         ),
       ),
     );
   }
-}
-
-class _DefinitionExamples {
-  final int index;
-  final List<VocabExample> list;
-
-  const _DefinitionExamples(this.index, this.list);
 }
 
 class _Conjugations extends ViewModelWidget<VocabViewModel> {

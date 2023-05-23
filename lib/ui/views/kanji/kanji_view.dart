@@ -190,72 +190,39 @@ class KanjiView extends StatelessWidget {
               ),
               SelectionContainer.disabled(
                 child: CardWithTitleSection(
-                  title: 'Components',
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8, left: 8),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'Radical',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: kanji.radical.isLoaded
-                              ? _KanjiRadicalItem(
-                                  radical: kanji.radical.value!,
-                                  onPressed: viewModel.navigateToKanjiRadical,
-                                )
-                              : const ListItemLoading(showLeading: true),
-                        ),
-                        if (kanji.componentLinks.isNotEmpty)
-                          Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 8),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Other components',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                padding: const EdgeInsets.only(
-                                  bottom: 8,
-                                  left: 16,
-                                ),
-                                itemCount: kanji.componentLinks.length,
-                                itemBuilder: (context, index) => kanji
-                                        .componentLinks.isLoaded
-                                    ? KanjiListItem(
-                                        kanji: kanji.componentLinks
-                                            .elementAt(index),
-                                        onPressed: () =>
-                                            viewModel.navigateToKanji(
-                                          kanji.componentLinks.elementAt(index),
-                                        ),
-                                      )
-                                    : const ListItemLoading(showLeading: true),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
+                  title: 'Radical',
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: kanji.radical.isLoaded
+                        ? _KanjiRadicalItem(
+                            radical: kanji.radical.value!,
+                            onPressed: viewModel.navigateToKanjiRadical,
+                          )
+                        : const ListItemLoading(showLeading: true),
                   ),
                 ),
               ),
+              if (kanji.componentLinks.isNotEmpty)
+                SelectionContainer.disabled(
+                  child: CardWithTitleSection(
+                    title: 'Other components',
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      padding: const EdgeInsets.all(8),
+                      itemCount: kanji.componentLinks.length,
+                      itemBuilder: (context, index) =>
+                          kanji.componentLinks.isLoaded
+                              ? KanjiListItem(
+                                  kanji: kanji.componentLinks.elementAt(index),
+                                  onPressed: () => viewModel.navigateToKanji(
+                                    kanji.componentLinks.elementAt(index),
+                                  ),
+                                )
+                              : const ListItemLoading(showLeading: true),
+                    ),
+                  ),
+                ),
               if (kanji.compounds.isNotEmpty)
                 SelectionContainer.disabled(
                   child: CardWithTitleSection(

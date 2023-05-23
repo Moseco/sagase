@@ -1,12 +1,14 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
 
-import 'package:flutter/material.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show visibleForTesting, compute;
+import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
 import 'package:sagase/datamodels/kanji_radical.dart';
 import 'package:sagase/datamodels/dictionary_info.dart';
 import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase/datamodels/my_dictionary_list.dart';
 import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -16,12 +18,82 @@ import 'package:sagase/utils/string_utils.dart';
 
 // This class contains functions only to be used during development
 class DictionaryUtils {
-  // Creates the dictionary database from the raw dictionary file
-  // Optional argument testingIsar exists for testing
-  static Future<void> createDictionaryIsolate(
-    DictionarySource source, {
-    Isar? testingIsar,
+  // Entry point for creating the dictionary
+  static Future<void> createDictionary({
+    String? testingVocab,
+    String? testingKanji,
+    String? testingKanjiRadicals,
+    String? testingStrokeData,
+    String? testingComponentData,
+    String? testingVocabLists,
+    String? testingKanjiLists,
+    String? testingPitchAccents,
   }) async {
+    // Set up
+    await compute(
+      DictionaryUtils.setupDictionaryIsolate,
+      null,
+    );
+
+    // Vocab
+    await compute(
+      DictionaryUtils.createVocabDictionaryIsolate,
+      [
+        testingVocab ??
+            await rootBundle
+                .loadString('assets/dictionary_source/JMdict_e_examp'),
+        testingPitchAccents ??
+            await rootBundle
+                .loadString('assets/dictionary_source/pitch_accents.txt'),
+      ],
+    );
+
+    // Kanji radicals
+    await compute(
+      DictionaryUtils.createRadicalDictionaryIsolate,
+      [
+        testingKanjiRadicals ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanji_radicals.json'),
+        testingStrokeData ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanji_strokes.json'),
+      ],
+    );
+
+    // Kanji
+    await compute(
+      DictionaryUtils.createKanjiDictionaryIsolate,
+      [
+        testingKanji ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanjidic2.xml'),
+        testingComponentData ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanji_components.json'),
+        testingStrokeData ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanji_strokes.json'),
+      ],
+    );
+
+    // Dictionary lists
+    await compute(
+      DictionaryUtils.createDictionaryListsIsolate,
+      [
+        testingVocabLists ??
+            await rootBundle
+                .loadString('assets/dictionary_source/vocab_lists.json'),
+        testingKanjiLists ??
+            await rootBundle
+                .loadString('assets/dictionary_source/kanji_lists.json'),
+      ],
+    );
+  }
+
+  // Clears any existing data and adds initial data
+  // Optional argument testingIsar exists for testing
+  static Future<void> setupDictionaryIsolate(_, {Isar? testingIsar}) async {
     // Empty directory string is okay because another instance is already open
     Isar isar = testingIsar ??
         await Isar.open(
@@ -36,39 +108,30 @@ class DictionaryUtils {
       );
     });
 
-    await createVocabDictionaryIsolate(source.vocabDict, isar);
-    await createRadicalDictionaryIsolate(
-      source.kanjiRadicals,
-      source.kanjiStrokeData,
-      isar,
-    );
-    await createKanjiDictionaryIsolate(
-      source.kanjiDict,
-      source.kanjiComponents,
-      source.kanjiStrokeData,
-      isar,
-    );
-    await _createDictionaryListsIsolate(
-      source.vocabLists,
-      source.kanjiLists,
-      isar,
-    );
-
-    // If did not receive the isar instance, close it
-    if (testingIsar == null) {
-      isar.close();
-    }
+    // If managing isar instance, close it
+    if (testingIsar == null) await isar.close();
   }
 
   // Creates the vocab database from the raw dictionary file
+  // input
+  //    0 - vocab
+  //    1 - pitch accents
+  // Optional argument testingIsar exists for testing
   @visibleForTesting
   static Future<void> createVocabDictionaryIsolate(
-    String jmdictString,
-    Isar isar,
-  ) async {
+    List<String> input, {
+    Isar? testingIsar,
+  }) async {
+    // Empty directory string is okay because another instance is already open
+    Isar isar = testingIsar ??
+        await Isar.open(
+          IsarService.schemas,
+          directory: '',
+        );
+
     final List<Vocab> vocabList = [];
 
-    final jmdictDoc = XmlDocument.parse(jmdictString);
+    final jmdictDoc = XmlDocument.parse(input[0]);
 
     final rawVocabList = jmdictDoc.childElements.first.childElements;
     // Top level of vocab items
@@ -217,6 +280,66 @@ class DictionaryUtils {
         await isar.vocabs.put(vocab);
       }
     });
+
+    // Add pitch accents to vocab
+    await isar.writeTxn(() async {
+      List<String> lines = input[1].split('\n');
+
+      for (var line in lines) {
+        List<String> parts = line.split('\t');
+        // Get info for pitch accent
+        String? kanjiWriting;
+        late String reading;
+        if (parts[1].trim().isEmpty) {
+          reading = parts[0].trim();
+        } else {
+          kanjiWriting = parts[0].trim();
+          reading = parts[1].trim();
+        }
+        parts[2] = parts[2].trim();
+
+        // Skip if contains anything but digit or comma
+        // There are some accents dependant on POS which are not handled
+        if (parts[2].contains(RegExp(r'[^0-9,]'))) continue;
+
+        // Search for the kanji portion with reading as filter if available
+        late List<Vocab> results;
+        if (kanjiWriting == null) {
+          results = await isar.vocabs
+              .where()
+              .japaneseTextIndexElementEqualTo(reading)
+              .findAll();
+        } else {
+          results = await isar.vocabs
+              .where()
+              .japaneseTextIndexElementEqualTo(kanjiWriting)
+              .filter()
+              .japaneseTextIndexElementEqualTo(reading)
+              .findAll();
+        }
+
+        // If the first kanji/reading pair matches kanji/reading, add pitch accent info
+        for (var result in results) {
+          if ((kanjiWriting == null &&
+                  result.kanjiReadingPairs[0].kanjiWritings == null &&
+                  result.kanjiReadingPairs[0].readings[0].reading == reading) ||
+              (kanjiWriting != null &&
+                  result.kanjiReadingPairs[0].kanjiWritings?[0].kanji ==
+                      kanjiWriting &&
+                  result.kanjiReadingPairs[0].readings[0].reading == reading)) {
+            result.kanjiReadingPairs[0].readings[0].pitchAccents = [];
+            for (var pitchAccent in parts[2].split(',')) {
+              result.kanjiReadingPairs[0].readings[0].pitchAccents!
+                  .add(int.parse(pitchAccent.trim()));
+            }
+            await isar.vocabs.put(result);
+          }
+        }
+      }
+    });
+
+    // If managing isar instance, close it
+    if (testingIsar == null) await isar.close();
   }
 
   static VocabKanji _handleKanjiElements(
@@ -350,6 +473,7 @@ class DictionaryUtils {
     List<Field>? fields;
     List<MiscellaneousInfo>? miscInfo;
     List<Dialect>? dialects;
+    List<VocabExample>? examples;
 
     for (var senseElement in xmlElement.childElements) {
       switch (senseElement.name.local) {
@@ -396,11 +520,8 @@ class DictionaryUtils {
           definitions.add(senseElement.text);
           break;
         case 'example':
-          _handleExampleElement(
-            senseElement,
-            vocab,
-            vocab.definitions.length,
-          );
+          examples ??= [];
+          examples.add(_handleExampleElement(senseElement));
           break;
       }
     }
@@ -420,19 +541,14 @@ class DictionaryUtils {
         ..appliesTo = appliesTo
         ..fields = fields
         ..miscInfo = miscInfo
-        ..dialects = dialects,
+        ..dialects = dialects
+        ..examples = examples,
     );
 
     return definitions;
   }
 
-  static void _handleExampleElement(
-    XmlElement xmlElement,
-    Vocab vocab,
-    int index,
-  ) {
-    vocab.examples ??= [];
-
+  static VocabExample _handleExampleElement(XmlElement xmlElement) {
     late String japaneseText;
     late String englishText;
 
@@ -446,12 +562,9 @@ class DictionaryUtils {
       }
     }
 
-    vocab.examples!.add(
-      VocabExample()
-        ..index = index
-        ..japanese = japaneseText
-        ..english = englishText,
-    );
+    return VocabExample()
+      ..japanese = japaneseText
+      ..english = englishText;
   }
 
   static PartOfSpeech _handlePartOfSpeechElement(String partOfSpeech) {
@@ -972,14 +1085,24 @@ class DictionaryUtils {
   }
 
   // Creates the radical database from the radical json
+  // input
+  //    0 - kanji radicals
+  //    1 - stroke data
+  // Optional argument testingIsar exists for testing
   @visibleForTesting
   static Future<void> createRadicalDictionaryIsolate(
-    String kanjiRadicalsString,
-    String kanjiStrokeDataString,
-    Isar isar,
-  ) async {
-    Map<String, dynamic> kanjiRadicalMap = jsonDecode(kanjiRadicalsString);
-    Map<String, dynamic> strokeMap = jsonDecode(kanjiStrokeDataString);
+    List<String> input, {
+    Isar? testingIsar,
+  }) async {
+    // Empty directory string is okay because another instance is already open
+    Isar isar = testingIsar ??
+        await Isar.open(
+          IsarService.schemas,
+          directory: '',
+        );
+
+    Map<String, dynamic> kanjiRadicalMap = jsonDecode(input[0]);
+    Map<String, dynamic> strokeMap = jsonDecode(input[1]);
 
     // Loop through and add the basic data
     await isar.writeTxn(() async {
@@ -1005,19 +1128,32 @@ class DictionaryUtils {
         await isar.kanjiRadicals.put(kanjiRadical);
       }
     });
+
+    // If managing isar instance, close it
+    if (testingIsar == null) await isar.close();
   }
 
   // Creates the kanji database from the raw dictionary file
+  // input
+  //    0 - kanji
+  //    1 - component data
+  //    2 - stroke data
+  // Optional argument testingIsar exists for testing
   @visibleForTesting
   static Future<void> createKanjiDictionaryIsolate(
-    String kanjidic2String,
-    String kanjiComponentsString,
-    String kanjiStrokeDataString,
-    Isar isar,
-  ) async {
+    List<String> input, {
+    Isar? testingIsar,
+  }) async {
+    // Empty directory string is okay because another instance is already open
+    Isar isar = testingIsar ??
+        await Isar.open(
+          IsarService.schemas,
+          directory: '',
+        );
+
     final List<Kanji> kanjiList = [];
 
-    final kanjidic2Doc = XmlDocument.parse(kanjidic2String);
+    final kanjidic2Doc = XmlDocument.parse(input[0]);
 
     final rawKanjiList = kanjidic2Doc.childElements.first.childElements;
 
@@ -1094,23 +1230,44 @@ class DictionaryUtils {
 
     // Add components to kanji
     await isar.writeTxn(() async {
-      final lines = kanjiComponentsString.split('\n');
-      for (var line in lines) {
-        if (line.isEmpty || line.startsWith('#')) continue;
+      Map<String, dynamic> kanjiComponentMap = jsonDecode(input[1]);
 
-        final splits = line.split(':');
-        final kanji = await isar.kanjis.getByKanji(splits[0].trim());
+      for (var entry in kanjiComponentMap.entries) {
+        final kanji = await isar.kanjis.getByKanji(entry.key);
         if (kanji == null) continue;
 
         await kanji.radical.load();
-        final componentStrings = splits[1].split(' ');
-        for (var componentString in componentStrings) {
-          final componentKanji = await isar.kanjis.getByKanji(componentString);
-          if (componentString.isEmpty ||
-              componentString == kanji.radical.value?.radical ||
-              componentKanji == null) continue;
+        // If kanji is itself the radical (or a variant), skip component check
+        if (kanji.kanji == kanji.radical.value?.radical) continue;
+        if (kanji.radical.value?.variants != null) {
+          bool sameAsVariant = false;
+          for (var variant in kanji.radical.value!.variants!) {
+            if (kanji.kanji == variant) {
+              sameAsVariant = true;
+              break;
+            }
+          }
+          if (sameAsVariant) continue;
+        }
 
-          kanji.componentLinks.add(componentKanji);
+        // Go through component strings
+        for (var componentString in entry.value) {
+          // If component is the same as kanji's radical (or a variant) skip it
+          if (componentString == kanji.radical.value?.radical) continue;
+          if (kanji.radical.value?.variants != null) {
+            bool sameAsVariant = false;
+            for (var variant in kanji.radical.value!.variants!) {
+              if (componentString == variant) {
+                sameAsVariant = true;
+                break;
+              }
+            }
+            if (sameAsVariant) continue;
+          }
+
+          // Try to load component and add it
+          final componentKanji = await isar.kanjis.getByKanji(componentString);
+          if (componentKanji != null) kanji.componentLinks.add(componentKanji);
         }
 
         await kanji.componentLinks.save();
@@ -1119,7 +1276,7 @@ class DictionaryUtils {
 
     // Add stroke data
     await isar.writeTxn(() async {
-      Map<String, dynamic> strokeMap = jsonDecode(kanjiStrokeDataString);
+      Map<String, dynamic> strokeMap = jsonDecode(input[2]);
 
       for (var entry in strokeMap.entries) {
         final kanji = await isar.kanjis.getByKanji(entry.key);
@@ -1129,6 +1286,9 @@ class DictionaryUtils {
         }
       }
     });
+
+    // If managing isar instance, close it
+    if (testingIsar == null) await isar.close();
   }
 
   static void _handleKanjiCodepointElements(
@@ -1257,16 +1417,32 @@ class DictionaryUtils {
   }
 
   // Creates the built-in dictionary lists
-  static Future<void> _createDictionaryListsIsolate(
-    String vocabLists,
-    String kanjiLists,
-    Isar isar,
-  ) async {
+  // input
+  //    0 - vocab lists
+  //    1 - kanji lists
+  //    2 - stroke data
+  // Optional argument testingIsar exists for testing
+  @visibleForTesting
+  static Future<void> createDictionaryListsIsolate(
+    List<String> input, {
+    Isar? testingIsar,
+  }) async {
+    // Empty directory string is okay because another instance is already open
+    Isar isar = testingIsar ??
+        await Isar.open(
+          IsarService.schemas,
+          directory: '',
+        );
+
     // Make sure list sources are not empty (empty for some tests)
-    if (vocabLists.isEmpty || kanjiLists.isEmpty) return;
+    if (input[0].isEmpty || input[1].isEmpty) {
+      // If managing isar instance, close it
+      if (testingIsar == null) await isar.close();
+      return;
+    }
 
     // Parse vocab lists
-    final vocabMap = jsonDecode(vocabLists);
+    final vocabMap = jsonDecode(input[0]);
 
     // JLPT vocab N5
     final jlptVocabN5List = PredefinedDictionaryList()
@@ -1339,7 +1515,7 @@ class DictionaryUtils {
     });
 
     // Parse kanji lists
-    final kanjiListsMap = jsonDecode(kanjiLists);
+    final kanjiListsMap = jsonDecode(input[1]);
 
     // Jouyou
     final jouyouList = PredefinedDictionaryList()
@@ -1522,6 +1698,18 @@ class DictionaryUtils {
       await isar.predefinedDictionaryLists.put(jinmeiyouList);
       await jinmeiyouList.kanjiLinks.save();
     });
+
+    // Add favorites my list
+    await isar.writeTxn(() async {
+      await isar.myDictionaryLists.put(
+        MyDictionaryList()
+          ..name = 'Favorites'
+          ..timestamp = DateTime.now(),
+      );
+    });
+
+    // If managing isar instance, close it
+    if (testingIsar == null) await isar.close();
   }
 
   // Exports the Isar database to given path

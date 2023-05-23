@@ -1155,11 +1155,11 @@ const compoundTestKanjidic2 = '''
 ''';
 
 const shortKanjiComponents = '''
-# Starting comment
-亜 : ｜ 一 口
-悪 : ｜ 一 口 心
-亞 : 一 二
-
+{
+"亜": ["｜", "一", "口"],
+"悪": ["｜", "一", "口", "心"],
+"亞": ["一", "二"]
+}
 ''';
 
 const shortKanjiStrokeData = '''
@@ -1234,3 +1234,8 @@ const shortKanjiRadicalData = '''
 }
 }
 ''';
+
+const pitchAccentsTest = '''明白	めいはく	0
+屹度	きっと	0,1
+御田	おでん	2
+かさかさ		(副)1,(形動)0''';

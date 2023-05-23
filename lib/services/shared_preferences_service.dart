@@ -92,4 +92,13 @@ class SharedPreferencesService {
       value,
     );
   }
+
+  bool getShowPitchAccent() {
+    return _sharedPreferences.getBool(constants.keyShowPitchAccent) ??
+        constants.defaultShowPitchAccent;
+  }
+
+  Future<void> setShowPitchAccent(bool value) async {
+    await _sharedPreferences.setBool(constants.keyShowPitchAccent, value);
+  }
 }

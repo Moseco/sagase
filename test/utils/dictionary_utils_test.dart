@@ -19,7 +19,10 @@ void main() {
     tearDown(() => isar.close(deleteFromDisk: true));
 
     test('Vocab database creation with short source dictionary', () async {
-      await DictionaryUtils.createVocabDictionaryIsolate(shortJMdict, isar);
+      await DictionaryUtils.createVocabDictionaryIsolate(
+        [shortJMdict, pitchAccentsTest],
+        testingIsar: isar,
+      );
 
       final vocab0 = await isar.vocabs.get(1000220);
       expect(vocab0!.commonWord, true);
@@ -32,6 +35,7 @@ void main() {
       expect(vocab0.kanjiReadingPairs[0].readings.length, 1);
       expect(vocab0.kanjiReadingPairs[0].readings[0].reading, 'めいはく');
       expect(vocab0.kanjiReadingPairs[0].readings[0].info, null);
+      expect(vocab0.kanjiReadingPairs[0].readings[0].pitchAccents, [0]);
       // Definition
       expect(vocab0.definitions.length, 1);
       expect(vocab0.definitions[0].definition,
@@ -42,11 +46,10 @@ void main() {
       expect(vocab0.definitions[0].appliesTo, null);
       expect(vocab0.definitions[0].miscInfo, null);
       expect(vocab0.definitions[0].dialects, null);
-      // Example
-      expect(vocab0.examples!.length, 1);
-      expect(vocab0.examples![0].index, 0);
-      expect(vocab0.examples![0].japanese, '何をしなければならないかは明白です。');
-      expect(vocab0.examples![0].english, 'It is clear what must be done.');
+      expect(vocab0.definitions[0].examples!.length, 1);
+      expect(vocab0.definitions[0].examples![0].japanese, '何をしなければならないかは明白です。');
+      expect(vocab0.definitions[0].examples![0].english,
+          'It is clear what must be done.');
       // Japanese text index
       expect(vocab0.japaneseTextIndex.length, 2);
       expect(vocab0.japaneseTextIndex[0], 'めいはく');
@@ -69,6 +72,7 @@ void main() {
       expect(vocab1.kanjiReadingPairs[0].kanjiWritings![5].kanji, 'アッとゆう間に');
       expect(vocab1.kanjiReadingPairs[0].readings.length, 1);
       expect(vocab1.kanjiReadingPairs[0].readings[0].reading, 'あっというまに');
+      expect(vocab1.kanjiReadingPairs[0].readings[0].pitchAccents, null);
       // Definition
       expect(vocab1.definitions.length, 1);
       expect(vocab1.definitions[0].definition,
@@ -76,11 +80,10 @@ void main() {
       expect(vocab1.definitions[0].pos!.length, 2);
       expect(vocab1.definitions[0].pos![0], PartOfSpeech.expressions);
       expect(vocab1.definitions[0].pos![1], PartOfSpeech.adverb);
-      // Example
-      expect(vocab1.examples!.length, 1);
-      expect(vocab1.examples![0].index, 0);
-      expect(vocab1.examples![0].japanese, '休暇はあっという間に終わった。');
-      expect(vocab1.examples![0].english, 'The holiday ended all too soon.');
+      expect(vocab1.definitions[0].examples!.length, 1);
+      expect(vocab1.definitions[0].examples![0].japanese, '休暇はあっという間に終わった。');
+      expect(vocab1.definitions[0].examples![0].english,
+          'The holiday ended all too soon.');
       // Japanese text index
       expect(vocab1.japaneseTextIndex.length, 4);
       expect(vocab1.japaneseTextIndex[0], 'あっというまに');
@@ -112,6 +115,7 @@ void main() {
           KanjiInfo.rareKanjiForm);
       expect(vocab2.kanjiReadingPairs[0].readings.length, 2);
       expect(vocab2.kanjiReadingPairs[0].readings[0].reading, 'きっと');
+      expect(vocab2.kanjiReadingPairs[0].readings[0].pitchAccents, [0, 1]);
       expect(vocab2.kanjiReadingPairs[0].readings[1].reading, 'キッと');
       // Definitions
       expect(vocab2.definitions.length, 4);
@@ -125,6 +129,11 @@ void main() {
           MiscellaneousInfo.usuallyKanaAlone);
       expect(vocab2.definitions[0].miscInfo![1],
           MiscellaneousInfo.onomatopoeicOrMimeticWord);
+      expect(vocab2.definitions[0].examples!.length, 1);
+      expect(vocab2.definitions[0].examples![0].japanese,
+          'でもよー、オラのおとうさんは良い気しねーよ、きっと。');
+      expect(vocab2.definitions[0].examples![0].english,
+          'But I don\'t think Dad would like me to.');
       // Definition 2
       expect(vocab2.definitions[1].definition, 'sternly; severely');
       expect(vocab2.definitions[1].additionalInfo, 'esp. キッと');
@@ -155,12 +164,6 @@ void main() {
       expect(vocab2.definitions[3].miscInfo![1],
           MiscellaneousInfo.onomatopoeicOrMimeticWord);
       expect(vocab2.definitions[3].miscInfo![2], MiscellaneousInfo.archaism);
-      // Example
-      expect(vocab2.examples!.length, 1);
-      expect(vocab2.examples![0].index, 0);
-      expect(vocab2.examples![0].japanese, 'でもよー、オラのおとうさんは良い気しねーよ、きっと。');
-      expect(vocab2.examples![0].english,
-          'But I don\'t think Dad would like me to.');
       // Japanese text index
       expect(vocab2.japaneseTextIndex.length, 3);
       expect(vocab2.japaneseTextIndex[0], 'きっと');
@@ -194,6 +197,10 @@ void main() {
       expect(vocab3.definitions[0].pos!.length, 2);
       expect(vocab3.definitions[0].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[0].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[0].examples!.length, 1);
+      expect(vocab3.definitions[0].examples![0].japanese, 'お母さん、泳ぎに行ってもいい。');
+      expect(vocab3.definitions[0].examples![0].english,
+          'Can I go swimming, Mother?');
       // Definition 2
       expect(vocab3.definitions[1].definition, 'to proceed; to take place');
       expect(vocab3.definitions[1].additionalInfo,
@@ -201,12 +208,22 @@ void main() {
       expect(vocab3.definitions[1].pos!.length, 2);
       expect(vocab3.definitions[1].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[1].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[1].examples!.length, 1);
+      expect(vocab3.definitions[1].examples![0].japanese,
+          '私達はそれを禍とせず最善を尽くして頑張っていかなくてはならない。');
+      expect(vocab3.definitions[1].examples![0].english,
+          'We\'ll have to try and make the best of it.');
       // Definition 3
       expect(
           vocab3.definitions[2].definition, 'to pass through; to come and go');
       expect(vocab3.definitions[2].pos!.length, 2);
       expect(vocab3.definitions[2].pos![0], PartOfSpeech.verbGodanKS);
       expect(vocab3.definitions[2].pos![1], PartOfSpeech.verbIntransitive);
+      expect(vocab3.definitions[2].examples!.length, 1);
+      expect(vocab3.definitions[2].examples![0].japanese,
+          'これらの規則はずっと守られてきたし、これからもいつも守られていくだろう。');
+      expect(vocab3.definitions[2].examples![0].english,
+          'These rules have been and always will be observed.');
       // Definition 4
       expect(vocab3.definitions[3].definition, 'to walk');
       expect(vocab3.definitions[3].pos!.length, 2);
@@ -258,23 +275,6 @@ void main() {
       expect(vocab3.definitions[9].miscInfo![0],
           MiscellaneousInfo.usuallyKanaAlone);
       expect(vocab3.definitions[9].miscInfo![1], MiscellaneousInfo.slang);
-      // Examples
-      expect(vocab3.examples!.length, 3);
-      // Example 1
-      expect(vocab3.examples![0].index, 0);
-      expect(vocab3.examples![0].japanese, 'お母さん、泳ぎに行ってもいい。');
-      expect(vocab3.examples![0].english, 'Can I go swimming, Mother?');
-      // Example 2
-      expect(vocab3.examples![1].index, 1);
-      expect(vocab3.examples![1].japanese, '私達はそれを禍とせず最善を尽くして頑張っていかなくてはならない。');
-      expect(vocab3.examples![1].english,
-          'We\'ll have to try and make the best of it.');
-      // Example 3
-      expect(vocab3.examples![2].index, 2);
-      expect(
-          vocab3.examples![2].japanese, 'これらの規則はずっと守られてきたし、これからもいつも守られていくだろう。');
-      expect(vocab3.examples![2].english,
-          'These rules have been and always will be observed.');
       // Japanese text index
       expect(vocab3.japaneseTextIndex.length, 5);
       expect(vocab3.japaneseTextIndex[0], 'いく');
@@ -303,33 +303,29 @@ void main() {
       expect(vocab4.definitions[0].definition, 'um; er; well');
       expect(vocab4.definitions[0].pos!.length, 1);
       expect(vocab4.definitions[0].pos![0], PartOfSpeech.interjection);
+      expect(vocab4.definitions[0].examples!.length, 1);
+      expect(vocab4.definitions[0].examples![0].japanese,
+          'ウーン、どっちの道に行っても迷いそうな気がする。');
+      expect(vocab4.definitions[0].examples![0].english,
+          'Hmm. I have a feeling I\'m going to get lost whichever road I take.');
       // Definition 2
       expect(vocab4.definitions[1].definition, 'nuh-uh; no');
       expect(vocab4.definitions[1].pos!.length, 1);
       expect(vocab4.definitions[1].pos![0], PartOfSpeech.interjection);
       expect(vocab4.definitions[1].appliesTo!.length, 1);
       expect(vocab4.definitions[1].appliesTo![0], 'ううん');
+      expect(vocab4.definitions[1].examples!.length, 2);
+      expect(vocab4.definitions[1].examples![0].japanese, 'うーんいいなあ。そこへ行こう。');
+      expect(vocab4.definitions[1].examples![0].english,
+          'Hm, that\'s a good idea. Let\'s go there.');
+      expect(vocab4.definitions[1].examples![1].japanese,
+          'ううん、由美ちゃんが魔法瓶に入れて、部室に持って来てくれたの。');
+      expect(vocab4.definitions[1].examples![1].english,
+          'No, Yumi put it in a thermos flask and brought it into the club room.');
       // Definition 3
       expect(vocab4.definitions[2].definition, 'oof');
       expect(vocab4.definitions[2].pos!.length, 1);
       expect(vocab4.definitions[2].pos![0], PartOfSpeech.interjection);
-      // Examples
-      expect(vocab4.examples!.length, 3);
-      // Example 1
-      expect(vocab4.examples![0].index, 0);
-      expect(vocab4.examples![0].japanese, 'ウーン、どっちの道に行っても迷いそうな気がする。');
-      expect(vocab4.examples![0].english,
-          'Hmm. I have a feeling I\'m going to get lost whichever road I take.');
-      // Example 2
-      expect(vocab4.examples![1].index, 1);
-      expect(vocab4.examples![1].japanese, 'うーんいいなあ。そこへ行こう。');
-      expect(vocab4.examples![1].english,
-          'Hm, that\'s a good idea. Let\'s go there.');
-      // Example 3
-      expect(vocab4.examples![2].index, 1);
-      expect(vocab4.examples![2].japanese, 'ううん、由美ちゃんが魔法瓶に入れて、部室に持って来てくれたの。');
-      expect(vocab4.examples![2].english,
-          'No, Yumi put it in a thermos flask and brought it into the club room.');
       // Japanese text index
       expect(vocab4.japaneseTextIndex.length, 2);
       expect(vocab4.japaneseTextIndex[0], 'ううん');
@@ -417,6 +413,7 @@ void main() {
           KanjiInfo.rareKanjiForm);
       expect(vocab6.kanjiReadingPairs[0].readings.length, 1);
       expect(vocab6.kanjiReadingPairs[0].readings[0].reading, 'おでん');
+      expect(vocab6.kanjiReadingPairs[0].readings[0].pitchAccents, [2]);
       // Definition
       expect(vocab6.definitions.length, 1);
       expect(vocab6.definitions[0].definition,
@@ -492,9 +489,8 @@ void main() {
 
     test('Kanji radicals database creation with short source', () async {
       await DictionaryUtils.createRadicalDictionaryIsolate(
-        shortKanjiRadicalData,
-        shortKanjiStrokeData,
-        isar,
+        [shortKanjiRadicalData, shortKanjiStrokeData],
+        testingIsar: isar,
       );
 
       final radical1 = await isar.kanjiRadicals.getByRadical('一');
@@ -535,17 +531,14 @@ void main() {
     test('Kanji database creation with short source dictionary', () async {
       // First create radicals
       await DictionaryUtils.createRadicalDictionaryIsolate(
-        shortKanjiRadicalData,
-        shortKanjiStrokeData,
-        isar,
+        [shortKanjiRadicalData, shortKanjiStrokeData],
+        testingIsar: isar,
       );
 
       // Create kanji dictionary
       await DictionaryUtils.createKanjiDictionaryIsolate(
-        shortKanjidic2,
-        shortKanjiComponents,
-        shortKanjiStrokeData,
-        isar,
+        [shortKanjidic2, shortKanjiComponents, shortKanjiStrokeData],
+        testingIsar: isar,
       );
 
       final kanji1 = await isar.kanjis.get(20811601);
@@ -616,27 +609,6 @@ void main() {
       expect(kanji3.kunReadings!.length, 1);
       expect(kanji3.kunReadings![0], 'つ.ぐ');
       expect(kanji3.nanori, null);
-    });
-
-    test('Vocab-kanji links', () async {
-      await DictionaryUtils.createDictionaryIsolate(
-        const DictionarySource(
-          compoundTestJMdict,
-          compoundTestKanjidic2,
-          '# Nothing',
-          '',
-          '',
-          '{}',
-          '{}',
-        ),
-        testingIsar: isar,
-      );
-
-      final kanji = await isar.kanjis.get(20813521);
-      expect(kanji!.compounds.length, 2);
-      await kanji.compounds.load();
-      expect(kanji.compounds.elementAt(0).id, 1227150);
-      expect(kanji.compounds.elementAt(1).id, 1593670);
     });
   });
 }

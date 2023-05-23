@@ -1,4 +1,4 @@
-const int dictionaryVersion = 4;
+const int dictionaryVersion = 5;
 const int nestedNavigationKey = 1;
 
 const int dictionaryListIdJouyou = 0;
@@ -29,6 +29,7 @@ const keyFlashcardLearningModeEnabled = 'flashcard_learning_mode_enabled';
 const keyNewFlashcardsPerDay = 'new_flashcards_per_day';
 const keyFlashcardDistance = 'flashcard_distance';
 const keyFlashcardCorrectAnswersRequired = 'flashcard_correct_answers_required';
+const keyShowPitchAccent = 'show_pitch_accent';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -37,6 +38,7 @@ const defaultFlashcardLearningModeEnabled = false;
 const defaultNewFlashcardsPerDay = 10;
 const defaultFlashcardDistance = 15;
 const defaultFlashcardCorrectAnswersRequired = 3;
+const defaultShowPitchAccent = false;
 
 const backupDictionaryVersion = 'dictionary_version';
 const backupTimestamp = 'timestamp';

@@ -8,6 +8,7 @@ import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/utils/conjugation_utils.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
@@ -18,6 +19,7 @@ class VocabViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _mecabService = locator<MecabService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final Vocab vocab;
 
@@ -27,6 +29,8 @@ class VocabViewModel extends BaseViewModel {
 
   final _conjugationUtils = const ConjugationUtils();
   List<ConjugationResult>? conjugations;
+
+  bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
 
   VocabViewModel(this.vocab) {
     // Get list of kanji to be loaded during initialize function
@@ -47,9 +51,11 @@ class VocabViewModel extends BaseViewModel {
     conjugations = _conjugationUtils.getConjugations(vocab);
 
     // Tokenize example sentences
-    if (vocab.examples != null) {
-      for (var example in vocab.examples!) {
-        example.tokens = _mecabService.parseText(example.japanese);
+    for (var definition in vocab.definitions) {
+      if (definition.examples != null) {
+        for (var example in definition.examples!) {
+          example.tokens = _mecabService.parseText(example.japanese);
+        }
       }
     }
   }
@@ -140,5 +146,10 @@ class VocabViewModel extends BaseViewModel {
       reading,
       convertReading: false,
     );
+  }
+
+  void toggleShowPitchAccent() {
+    _sharedPreferencesService.setShowPitchAccent(!showPitchAccent);
+    notifyListeners();
   }
 }

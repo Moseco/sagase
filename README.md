@@ -34,6 +34,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Field of application
     - [x] Miscellaneous information
     - [x] Dialect
+    - [x] Pitch accent
     - [x] Index
         - [x] Kanji writing
         - [x] Hiragana/katakana reading
@@ -72,7 +73,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Japanese front
     - [ ] English front 
     - [x] Customize front appearance
-    - [ ] View spaced repetition performance 
+    - [x] View spaced repetition performance 
 
 ## Special thanks
 
@@ -86,6 +87,6 @@ Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji strok
 
 - [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is `kanjidic2` (contains all 13,108 kanji).
 
-- [Kanji component file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/krad/kradinf.html) Version used for this project is `kradfile` and `kradfile2` merged together and converted to utf-8 encoding (renamed to `kradfilex_utf-8`).
+- Stroke order and component data for kanji were extracted from the svg files created by the [KanjiVG project](http://kanjivg.tagaini.net/). The output is stored in ```kanji_strokes.json``` and ```kanji_components.json```.
 
-- Stroke order data for kanji were extracted from the svg files created by the [KanjiVG project](http://kanjivg.tagaini.net/). The output is stored in ```kanji_strokes.json```.
+- Pitch accent information provided by [mifunetoshiro on Github](https://github.com/mifunetoshiro/kanjium). Stored in ```pitch_accents.txt```

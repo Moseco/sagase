@@ -3,7 +3,6 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show compute;
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -19,22 +18,7 @@ class DevViewModel extends BaseViewModel {
   Future<void> createDatabase() async {
     _loading = true;
     notifyListeners();
-    await compute(
-      DictionaryUtils.createDictionaryIsolate,
-      DictionarySource(
-        await rootBundle.loadString('assets/dictionary_source/JMdict_e_examp'),
-        await rootBundle.loadString('assets/dictionary_source/kanjidic2.xml'),
-        await rootBundle.loadString('assets/dictionary_source/kradfilex_utf-8'),
-        await rootBundle
-            .loadString('assets/dictionary_source/vocab_lists.json'),
-        await rootBundle
-            .loadString('assets/dictionary_source/kanji_lists.json'),
-        await rootBundle
-            .loadString('assets/dictionary_source/kanji_strokes.json'),
-        await rootBundle
-            .loadString('assets/dictionary_source/kanji_radicals.json'),
-      ),
-    );
+    await DictionaryUtils.createDictionary();
     _loading = false;
     notifyListeners();
   }

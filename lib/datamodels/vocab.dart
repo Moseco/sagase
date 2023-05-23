@@ -26,8 +26,6 @@ class Vocab extends DictionaryItem {
 
   bool commonWord = false;
 
-  List<VocabExample>? examples;
-
   @Backlink(to: 'vocabLinks')
   final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
 
@@ -60,6 +58,7 @@ class VocabReading {
   late String reading;
   @enumerated
   List<ReadingInfo>? info;
+  List<int>? pitchAccents;
 }
 
 @embedded
@@ -75,11 +74,11 @@ class VocabDefinition {
   List<MiscellaneousInfo>? miscInfo;
   @enumerated
   List<Dialect>? dialects;
+  List<VocabExample>? examples;
 }
 
 @embedded
 class VocabExample {
-  late int index;
   late String japanese;
   late String english;
   @ignore
