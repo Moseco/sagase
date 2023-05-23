@@ -329,6 +329,8 @@ void main() {
       expect(tempFlashcard, viewModel.activeFlashcards.last);
       expect(tempFlashcard.spacedRepetitionData!.dueDate, null);
       expect(tempFlashcard.spacedRepetitionData!.initialCorrectCount, 1);
+      expect(tempFlashcard.spacedRepetitionData!.totalAnswers, 0);
+      expect(tempFlashcard.spacedRepetitionData!.totalWrongAnswers, 0);
 
       // Very correct
       tempFlashcard = viewModel.activeFlashcards[0];
@@ -339,6 +341,8 @@ void main() {
       expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.6);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 4)).toInt());
+      expect(tempFlashcard.spacedRepetitionData!.totalAnswers, 1);
+      expect(tempFlashcard.spacedRepetitionData!.totalWrongAnswers, 0);
 
       // Correct
       tempFlashcard = viewModel.activeFlashcards[0];
@@ -360,6 +364,8 @@ void main() {
       expect(tempFlashcard, viewModel.activeFlashcards.last);
       expect(tempFlashcard.spacedRepetitionData!.dueDate, null);
       expect(tempFlashcard.spacedRepetitionData!.initialCorrectCount, 1);
+      expect(tempFlashcard.spacedRepetitionData!.totalAnswers, 0);
+      expect(tempFlashcard.spacedRepetitionData!.totalWrongAnswers, 0);
 
       // Wrong
       tempFlashcard = viewModel.activeFlashcards[0];
@@ -398,6 +404,8 @@ void main() {
       expect(tempFlashcard.spacedRepetitionData!.easeFactor, 2.5);
       expect(tempFlashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 1)).toInt());
+      expect(tempFlashcard.spacedRepetitionData!.totalAnswers, 1);
+      expect(tempFlashcard.spacedRepetitionData!.totalWrongAnswers, 0);
 
       // Verify that back was called because exit dialog was accepted
       verify(navigationService.back());
