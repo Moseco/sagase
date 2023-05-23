@@ -24,7 +24,6 @@ class VocabView extends StatelessWidget {
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           actions: [
-            if (vocab.commonWord) const Center(child: CommonVocab()),
             IconButton(
               onPressed:
                   vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null
@@ -355,6 +354,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
 
     return CardWithTitleSection(
       title: 'Definition',
+      titleTrailing: viewModel.vocab.commonWord ? const CommonVocab() : null,
       child: ListView.builder(
         shrinkWrap: true,
         primary: false,
