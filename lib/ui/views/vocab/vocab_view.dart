@@ -92,7 +92,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           if (pairs[0].kanjiWritings != null && !forceOnlyReading)
             Text(
               pairs[0].kanjiWritings![0].kanji,
-              style: const TextStyle(fontSize: 32),
+              style: const TextStyle(fontSize: 32, height: 1.2),
             ),
         ],
       );
@@ -269,7 +269,7 @@ class _RubyTextWrapper extends StatelessWidget {
     }
     return RubyText(
       rubyTextData,
-      style: TextStyle(letterSpacing: 0, fontSize: fontSize),
+      style: TextStyle(letterSpacing: 0, height: 1.1, fontSize: fontSize),
     );
   }
 }
@@ -973,7 +973,7 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
                 children: [
                   RubyText(
                     data,
-                    style: const TextStyle(letterSpacing: 0),
+                    style: const TextStyle(letterSpacing: 0, height: 1.1),
                   ),
                   Text(example.english),
                 ],
