@@ -8,7 +8,7 @@ class ConjugationUtils {
   const ConjugationUtils();
 
   List<ConjugationResult>? getConjugations(Vocab vocab) {
-    PartOfSpeech? foundPos = _getPartOfSpeech(vocab);
+    PartOfSpeech? foundPos = getPartOfSpeech(vocab);
 
     if (foundPos == null) return null;
 
@@ -201,7 +201,7 @@ class ConjugationUtils {
     return list;
   }
 
-  PartOfSpeech? _getPartOfSpeech(Vocab vocab) {
+  PartOfSpeech? getPartOfSpeech(Vocab vocab) {
     for (var pos in vocab.definitions[0].pos ?? []) {
       if (allowedPos.contains(pos)) {
         return pos;

@@ -152,4 +152,8 @@ class VocabViewModel extends BaseViewModel {
     _sharedPreferencesService.setShowPitchAccent(!showPitchAccent);
     notifyListeners();
   }
+
+  PartOfSpeech getConjugationPos() {
+    return _conjugationUtils.getPartOfSpeech(vocab)!;
+  }
 }
