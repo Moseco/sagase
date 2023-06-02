@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/kanji_radical.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class KanjiRadicalPositionImage extends StatelessWidget {
   final KanjiRadicalPosition position;

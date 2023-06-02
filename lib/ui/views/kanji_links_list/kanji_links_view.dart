@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:stacked/stacked.dart';
 

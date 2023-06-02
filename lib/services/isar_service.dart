@@ -7,19 +7,11 @@ import 'package:kana_kit/kana_kit.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/datamodels/kanji_radical.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
-import 'package:sagase/datamodels/dictionary_info.dart';
-import 'package:sagase/datamodels/dictionary_item.dart';
-import 'package:sagase/datamodels/dictionary_list.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/predefined_dictionary_list.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
-import 'package:sagase/datamodels/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/user_backup.dart';
-import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:sagase/utils/string_utils.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class IsarService {
   static const List<CollectionSchema<dynamic>> schemas = [
@@ -68,7 +60,7 @@ class IsarService {
     }
 
     // If database version does not match current, app update includes a new database
-    if (dictionaryInfo.version != constants.dictionaryVersion) {
+    if (dictionaryInfo.version != SagaseDictionaryConstants.dictionaryVersion) {
       return DictionaryStatus.outOfDate;
     }
 
@@ -676,7 +668,7 @@ class IsarService {
     // Create instance
     DateTime now = DateTime.now();
     final backup = UserBackup(
-      dictionaryVersion: constants.dictionaryVersion,
+      dictionaryVersion: SagaseDictionaryConstants.dictionaryVersion,
       timestamp: now,
       myDictionaryLists: myDictionaryListBackups,
       flashcardSets: flashcardSetBackups,
@@ -705,19 +697,20 @@ class IsarService {
 
       await _isar.writeTxn(() async {
         // My dictionary lists
-        for (var myListMap in backupMap[constants.backupMyDictionaryLists]) {
+        for (var myListMap
+            in backupMap[SagaseDictionaryConstants.backupMyDictionaryLists]) {
           final newMyList = MyDictionaryList.fromBackupJson(myListMap);
 
           // Add vocab
-          for (var vocabId
-              in myListMap[constants.backupMyDictionaryListVocab]) {
+          for (var vocabId in myListMap[
+              SagaseDictionaryConstants.backupMyDictionaryListVocab]) {
             final vocab = await _isar.vocabs.get(vocabId);
             if (vocab != null) newMyList.vocabLinks.add(vocab);
           }
 
           // Add kanji
-          for (var kanjiId
-              in myListMap[constants.backupMyDictionaryListKanji]) {
+          for (var kanjiId in myListMap[
+              SagaseDictionaryConstants.backupMyDictionaryListKanji]) {
             final kanji = await _isar.kanjis.getByKanji(kanjiId);
             if (kanji != null) newMyList.kanjiLinks.add(kanji);
           }
@@ -728,12 +721,13 @@ class IsarService {
         }
 
         // Flashcard sets
-        for (var flashcardSetMap in backupMap[constants.backupFlashcardSets]) {
+        for (var flashcardSetMap
+            in backupMap[SagaseDictionaryConstants.backupFlashcardSets]) {
           final newFlashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
 
           // Predefined dictionary lists
-          for (var predefinedId in flashcardSetMap[
-              constants.backupFlashcardSetPredefinedDictionaryLists]) {
+          for (var predefinedId in flashcardSetMap[SagaseDictionaryConstants
+              .backupFlashcardSetPredefinedDictionaryLists]) {
             final predefinedDictionaryList =
                 await _isar.predefinedDictionaryLists.get(predefinedId);
             if (predefinedDictionaryList != null) {
@@ -744,7 +738,7 @@ class IsarService {
 
           // My dictionary lists
           for (var myId in flashcardSetMap[
-              constants.backupFlashcardSetMyDictionaryLists]) {
+              SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists]) {
             final myDictionaryList = await _isar.myDictionaryLists.get(myId);
             if (myDictionaryList != null) {
               newFlashcardSet.myDictionaryListLinks.add(myDictionaryList);
@@ -757,12 +751,12 @@ class IsarService {
         }
 
         // Vocab spaced repetition data
-        for (var spacedRepetitionMap
-            in backupMap[constants.backupVocabSpacedRepetitionData]) {
+        for (var spacedRepetitionMap in backupMap[
+            SagaseDictionaryConstants.backupVocabSpacedRepetitionData]) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final vocab = await _isar.vocabs.get(
-              spacedRepetitionMap[constants.backupSpacedRepetitionDataVocabId]);
+          final vocab = await _isar.vocabs.get(spacedRepetitionMap[
+              SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId]);
           if (vocab != null) {
             vocab.spacedRepetitionData = newSpacedRepetition;
             await _isar.vocabs.put(vocab);
@@ -770,12 +764,12 @@ class IsarService {
         }
 
         // Kanji spaced repetition data
-        for (var spacedRepetitionMap
-            in backupMap[constants.backupKanjiSpacedRepetitionData]) {
+        for (var spacedRepetitionMap in backupMap[
+            SagaseDictionaryConstants.backupKanjiSpacedRepetitionData]) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final kanji = await _isar.kanjis.getByKanji(
-              spacedRepetitionMap[constants.backupSpacedRepetitionDataKanji]);
+          final kanji = await _isar.kanjis.getByKanji(spacedRepetitionMap[
+              SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]);
           if (kanji != null) {
             kanji.spacedRepetitionData = newSpacedRepetition;
             await _isar.kanjis.put(kanji);

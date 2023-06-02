@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/japanese_text_token.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';

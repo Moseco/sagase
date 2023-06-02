@@ -1,4 +1,4 @@
-import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class UserBackup {
   final int dictionaryVersion;
@@ -19,12 +19,12 @@ class UserBackup {
 
   String toJson() {
     return '''{
-      "${constants.backupDictionaryVersion}": $dictionaryVersion,
-      "${constants.backupTimestamp}": ${timestamp.millisecondsSinceEpoch},
-      "${constants.backupMyDictionaryLists}": $myDictionaryLists,
-      "${constants.backupFlashcardSets}": $flashcardSets,
-      "${constants.backupVocabSpacedRepetitionData}": $vocabSpacedRepetitionData,
-      "${constants.backupKanjiSpacedRepetitionData}": $kanjiSpacedRepetitionData
+      "${SagaseDictionaryConstants.backupDictionaryVersion}": $dictionaryVersion,
+      "${SagaseDictionaryConstants.backupTimestamp}": ${timestamp.millisecondsSinceEpoch},
+      "${SagaseDictionaryConstants.backupMyDictionaryLists}": $myDictionaryLists,
+      "${SagaseDictionaryConstants.backupFlashcardSets}": $flashcardSets,
+      "${SagaseDictionaryConstants.backupVocabSpacedRepetitionData}": $vocabSpacedRepetitionData,
+      "${SagaseDictionaryConstants.backupKanjiSpacedRepetitionData}": $kanjiSpacedRepetitionData
 }''';
   }
 }

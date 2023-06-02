@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:mockito/mockito.dart';
-import 'package:sagase/datamodels/spaced_repetition_data.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_viewmodel.dart';
 import 'package:sagase/utils/date_time_utils.dart';

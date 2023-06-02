@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/ui/widgets/home_header.dart';
 import 'package:stacked/stacked.dart';
-import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 import 'lists_viewmodel.dart';
 
@@ -152,27 +152,27 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
         _DictionaryListItem(
           text: 'JLPT N5',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptVocabN5),
+              SagaseDictionaryConstants.dictionaryListIdJlptVocabN5),
         ),
         _DictionaryListItem(
           text: 'JLPT N4',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptVocabN4),
+              SagaseDictionaryConstants.dictionaryListIdJlptVocabN4),
         ),
         _DictionaryListItem(
           text: 'JLPT N3',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptVocabN3),
+              SagaseDictionaryConstants.dictionaryListIdJlptVocabN3),
         ),
         _DictionaryListItem(
           text: 'JLPT N2',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptVocabN2),
+              SagaseDictionaryConstants.dictionaryListIdJlptVocabN2),
         ),
         _DictionaryListItem(
           text: 'JLPT N1',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptVocabN1),
+              SagaseDictionaryConstants.dictionaryListIdJlptVocabN1),
         ),
         const Text(
           'These are not official lists. They are a best guess of the required vocabulary.',
@@ -192,12 +192,12 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
         _DictionaryListItem(
           text: 'Jouyou',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJouyou),
+              SagaseDictionaryConstants.dictionaryListIdJouyou),
         ),
         _DictionaryListItem(
           text: 'Jinmeiyou',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJinmeiyou),
+              SagaseDictionaryConstants.dictionaryListIdJinmeiyou),
         ),
         _DictionaryListItem(
           text: 'JLPT Kanji',
@@ -223,27 +223,27 @@ class _JlptKanjiList extends ViewModelWidget<ListsViewModel> {
         _DictionaryListItem(
           text: 'JLPT N5',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptKanjiN5),
+              SagaseDictionaryConstants.dictionaryListIdJlptKanjiN5),
         ),
         _DictionaryListItem(
           text: 'JLPT N4',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptKanjiN4),
+              SagaseDictionaryConstants.dictionaryListIdJlptKanjiN4),
         ),
         _DictionaryListItem(
           text: 'JLPT N3',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptKanjiN3),
+              SagaseDictionaryConstants.dictionaryListIdJlptKanjiN3),
         ),
         _DictionaryListItem(
           text: 'JLPT N2',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptKanjiN2),
+              SagaseDictionaryConstants.dictionaryListIdJlptKanjiN2),
         ),
         _DictionaryListItem(
           text: 'JLPT N1',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdJlptKanjiN1),
+              SagaseDictionaryConstants.dictionaryListIdJlptKanjiN1),
         ),
         const Text(
           'These are not official lists. They are a best guess of the required kanji.',
@@ -263,32 +263,32 @@ class _SchoolKanjiList extends ViewModelWidget<ListsViewModel> {
         _DictionaryListItem(
           text: '1st Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel1),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel1),
         ),
         _DictionaryListItem(
           text: '2nd Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel2),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel2),
         ),
         _DictionaryListItem(
           text: '3rd Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel3),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel3),
         ),
         _DictionaryListItem(
           text: '4th Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel4),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel4),
         ),
         _DictionaryListItem(
           text: '5th Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel5),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel5),
         ),
         _DictionaryListItem(
           text: '6th Grade',
           onTap: () => viewModel.navigateToPredefinedDictionaryList(
-              constants.dictionaryListIdGradeLevel6),
+              SagaseDictionaryConstants.dictionaryListIdGradeLevel6),
         ),
         const Text(
           'These lists represent the 1,026 kanji that are to be learned at each grade level as defined by the Japanese Ministry of Education. The remainder of the jouyou set is expected to be learned during middle school and high school, but there is no official order and it can vary by textbook and school.',

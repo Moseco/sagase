@@ -1,4 +1,4 @@
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 extension PartOfSpeechExtension on PartOfSpeech {
   String get displayTitle {

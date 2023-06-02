@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/utils/conjugation_utils.dart';
 
 void main() {

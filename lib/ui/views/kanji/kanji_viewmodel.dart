@@ -2,12 +2,11 @@ import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/kanji.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
-import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class KanjiViewModel extends BaseViewModel {
   final _isarService = locator<IsarService>();

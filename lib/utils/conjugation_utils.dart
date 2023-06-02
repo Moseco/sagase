@@ -2,7 +2,7 @@
 
 import 'package:sagase/datamodels/conjugation.dart';
 import 'package:sagase/datamodels/conjugation_result.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class ConjugationUtils {
   const ConjugationUtils();

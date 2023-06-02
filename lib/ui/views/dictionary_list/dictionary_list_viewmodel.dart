@@ -1,10 +1,7 @@
 import 'package:sagase/app/app.dialog.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/dictionary_list.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';

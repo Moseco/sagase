@@ -1,4 +1,4 @@
-import 'package:sagase/datamodels/my_dictionary_list.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class MyListsBottomSheetItem {
   final MyDictionaryList list;

@@ -1,7 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
-import 'package:sagase/datamodels/predefined_dictionary_list.dart';
-import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 part 'flashcard_set.g.dart';
 
@@ -27,39 +25,41 @@ class FlashcardSet {
 
   String toBackupJson() {
     return '''{
-      "${constants.backupFlashcardSetId}": $id,
-      "${constants.backupFlashcardSetName}": "$name",
-      "${constants.backupFlashcardSetUsingSpacedRepetition}": $usingSpacedRepetition,
-      "${constants.backupFlashcardSetVocabShowReading}": $vocabShowReading,
-      "${constants.backupFlashcardSetVocabShowReadingIfRareKanji}": $vocabShowReadingIfRareKanji,
-      "${constants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
-      "${constants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
-      "${constants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
-      "${constants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
-      "${constants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
-      "${constants.backupFlashcardSetPredefinedDictionaryLists}": ${predefinedDictionaryListLinks.map((e) => e.id).toList()},
-      "${constants.backupFlashcardSetMyDictionaryLists}": ${myDictionaryListLinks.map((e) => e.id).toList()}
+      "${SagaseDictionaryConstants.backupFlashcardSetId}": $id,
+      "${SagaseDictionaryConstants.backupFlashcardSetName}": "$name",
+      "${SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition}": $usingSpacedRepetition,
+      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReading}": $vocabShowReading,
+      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReadingIfRareKanji}": $vocabShowReadingIfRareKanji,
+      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
+      "${SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
+      "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
+      "${SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
+      "${SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
+      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": ${predefinedDictionaryListLinks.map((e) => e.id).toList()},
+      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": ${myDictionaryListLinks.map((e) => e.id).toList()}
 }''';
   }
 
   // IsarLinks must be added manually afterwards
   static FlashcardSet fromBackupJson(Map<String, dynamic> map) {
     return FlashcardSet()
-      ..id = map[constants.backupFlashcardSetId]
-      ..name = map[constants.backupFlashcardSetName]
+      ..id = map[SagaseDictionaryConstants.backupFlashcardSetId]
+      ..name = map[SagaseDictionaryConstants.backupFlashcardSetName]
       ..usingSpacedRepetition =
-          map[constants.backupFlashcardSetUsingSpacedRepetition]
-      ..vocabShowReading = map[constants.backupFlashcardSetVocabShowReading]
-      ..vocabShowReadingIfRareKanji =
-          map[constants.backupFlashcardSetVocabShowReadingIfRareKanji]
+          map[SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition]
+      ..vocabShowReading =
+          map[SagaseDictionaryConstants.backupFlashcardSetVocabShowReading]
+      ..vocabShowReadingIfRareKanji = map[SagaseDictionaryConstants
+          .backupFlashcardSetVocabShowReadingIfRareKanji]
       ..vocabShowAlternatives =
-          map[constants.backupFlashcardSetVocabShowAlternatives]
-      ..kanjiShowReading = map[constants.backupFlashcardSetKanjiShowReading]
+          map[SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives]
+      ..kanjiShowReading =
+          map[SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading]
       ..timestamp = DateTime.fromMillisecondsSinceEpoch(
-          map[constants.backupFlashcardSetTimestamp])
-      ..flashcardsCompletedToday =
-          map[constants.backupFlashcardSetFlashcardsCompletedToday]
-      ..newFlashcardsCompletedToday =
-          map[constants.backupFlashcardSetNewFlashcardsCompletedToday];
+          map[SagaseDictionaryConstants.backupFlashcardSetTimestamp])
+      ..flashcardsCompletedToday = map[
+          SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday]
+      ..newFlashcardsCompletedToday = map[SagaseDictionaryConstants
+          .backupFlashcardSetNewFlashcardsCompletedToday];
   }
 }

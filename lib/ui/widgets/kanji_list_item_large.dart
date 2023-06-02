@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 
 class KanjiListItemLarge extends StatelessWidget {

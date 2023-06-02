@@ -1,9 +1,7 @@
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/dictionary_item.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/vocab.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';

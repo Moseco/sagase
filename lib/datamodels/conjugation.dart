@@ -1,7 +1,7 @@
 // The content of this file is based on https://github.com/yamagoya/jconj
 
-import 'package:sagase/datamodels/vocab.dart';
 import 'package:sagase/utils/conjugation_utils.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class Conjugation {
   final PartOfSpeech pos;

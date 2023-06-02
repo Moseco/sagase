@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/kanji_radical.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';

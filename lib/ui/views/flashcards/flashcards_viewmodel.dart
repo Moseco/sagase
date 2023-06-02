@@ -3,11 +3,8 @@ import 'dart:math';
 
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/dictionary_item.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/datamodels/kanji.dart';
-import 'package:sagase/datamodels/spaced_repetition_data.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';

@@ -4,7 +4,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
-import 'package:sagase/datamodels/my_dictionary_list.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';

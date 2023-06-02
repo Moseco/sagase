@@ -77,16 +77,8 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 ## Special thanks
 
-Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the source dictionary file.
+Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the source vocab and kanji dictionary files.
 
-Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji stroke order data.
+Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji stroke order and kanji component data.
 
-### Files used
-
-- [Vocab dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) Version used for this project is `JMdict_e_examp` (English only, with examples).
-
-- [Kanji dictionary file from Electronic Dictionary Research and Development Group.](http://www.edrdg.org/wiki/index.php/KANJIDIC_Project) Version used for this project is `kanjidic2` (contains all 13,108 kanji).
-
-- Stroke order and component data for kanji were extracted from the svg files created by the [KanjiVG project](http://kanjivg.tagaini.net/). The output is stored in ```kanji_strokes.json``` and ```kanji_components.json```.
-
-- Pitch accent information provided by [mifunetoshiro on Github](https://github.com/mifunetoshiro/kanjium). Stored in ```pitch_accents.txt```
+Thanks to [mifunetoshiro on Github](https://github.com/mifunetoshiro/kanjium) for providing the pitch accent data.

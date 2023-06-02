@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/vocab.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 
 class VocabListItem extends StatelessWidget {

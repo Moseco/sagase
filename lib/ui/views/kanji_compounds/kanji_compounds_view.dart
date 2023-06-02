@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/kanji.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
 

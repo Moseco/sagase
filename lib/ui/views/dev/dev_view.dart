@@ -19,14 +19,6 @@ class DevView extends StatelessWidget {
                   child: Column(
                     children: [
                       ElevatedButton(
-                        onPressed: viewModel.createDatabase,
-                        child: const Text('Create database'),
-                      ),
-                      ElevatedButton(
-                        onPressed: viewModel.exportDatabase,
-                        child: const Text('Export database'),
-                      ),
-                      ElevatedButton(
                         onPressed: viewModel.importDatabase,
                         child: const Text('Import database'),
                       ),
