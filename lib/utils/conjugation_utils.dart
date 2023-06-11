@@ -2910,7 +2910,7 @@ const Map<String, Conjugation> conjugationMap = {
       null,
       null),
   '8609falsefalse1': Conjugation(PartOfSpeech.verbSuru,
-      ConjugationForm.imperative, false, false, 1, 0, 'すろ', null, null),
+      ConjugationForm.imperative, false, false, 1, 0, 'しろ', null, null),
   '8609truefalse1': Conjugation(PartOfSpeech.verbSuru,
       ConjugationForm.imperative, true, false, 1, 0, 'するな', null, null),
   '8609falsetrue1': Conjugation(PartOfSpeech.verbSuru,

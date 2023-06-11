@@ -845,7 +845,7 @@ void main() {
       expect(list[12].negative, '電話させません');
       expect(list[13].positive, '電話させられる');
       expect(list[13].negative, '電話させられない');
-      expect(list[14].positive, '電話すろ');
+      expect(list[14].positive, '電話しろ');
       expect(list[14].negative, '電話するな');
       expect(list[15].positive, '電話しなさい');
       expect(list[15].negative, '電話しなさるな');
@@ -890,7 +890,7 @@ void main() {
       expect(list[12].negative, '噂させません');
       expect(list[13].positive, '噂させられる');
       expect(list[13].negative, '噂させられない');
-      expect(list[14].positive, '噂すろ');
+      expect(list[14].positive, '噂しろ');
       expect(list[14].negative, '噂するな');
       expect(list[15].positive, '噂しなさい');
       expect(list[15].negative, '噂しなさるな');
