@@ -54,5 +54,6 @@ lib/app/app.bottomsheets.dart
 test/helpers/test_helpers.mocks.dart
 *.g.dart
 
-# Local dictionary file
+# Local dictionary and mecab files
 assets/dictionary_source/
+assets/mecab/
