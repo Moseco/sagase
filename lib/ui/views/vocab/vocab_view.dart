@@ -279,20 +279,30 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    List<String> partsOfSpeechStrings = [];
-    List<String> otherInfo = [];
-    for (var definition in viewModel.vocab.definitions) {
+    List<TableRow> rows = [];
+    for (int defIndex = 0;
+        defIndex < viewModel.vocab.definitions.length;
+        defIndex++) {
+      var definition = viewModel.vocab.definitions[defIndex];
       // Parse parts of speech
-      if (definition.pos == null) {
-        partsOfSpeechStrings.add('');
-      } else {
+      if (definition.pos != null) {
         final posBuffer = StringBuffer(definition.pos![0].displayTitle);
         for (int i = 1; i < definition.pos!.length; i++) {
           posBuffer.write(', ');
           posBuffer.write(definition.pos![i].displayTitle);
         }
-        posBuffer.write('\n');
-        partsOfSpeechStrings.add(posBuffer.toString());
+
+        rows.add(
+          TableRow(
+            children: [
+              Container(),
+              Text(
+                posBuffer.toString(),
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        );
       }
 
       // Parse other info
@@ -347,50 +357,40 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         }
       }
       if (otherInfoBuffer.isNotEmpty) otherInfoBuffer.write(')');
-      otherInfo.add(otherInfoBuffer.toString());
+
+      // Add definition itself followed by other info
+      rows.add(
+        TableRow(
+          children: [
+            Text(
+              '${defIndex + 1}: ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: definition.definition),
+                  TextSpan(
+                    text: otherInfoBuffer.toString(),
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return CardWithTitleSection(
       title: 'Definition',
       titleTrailing: viewModel.vocab.commonWord ? const CommonVocab() : null,
-      child: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
+      child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(8),
-        itemCount: viewModel.vocab.definitions.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Text.rich(
-            TextSpan(
-              children: [
-                if (partsOfSpeechStrings[index].isNotEmpty)
-                  WidgetSpan(
-                    child: SelectionContainer.disabled(
-                      child: Text(
-                        '${index + 1}: ',
-                        style: const TextStyle(color: Colors.transparent),
-                      ),
-                    ),
-                  ),
-                TextSpan(
-                  text: partsOfSpeechStrings[index],
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                TextSpan(
-                  text: '${index + 1}: ',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextSpan(text: viewModel.vocab.definitions[index].definition),
-                if (otherInfo[index].isNotEmpty)
-                  TextSpan(
-                    text: otherInfo[index],
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-              ],
-            ),
-          ),
+        child: Table(
+          columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
+          children: rows,
         ),
       ),
     );
