@@ -254,12 +254,12 @@ class _GridItem extends StatelessWidget {
           kana,
           style: TextStyle(
             fontSize: 32,
-            color: obsolete ? Colors.black26 : null,
+            color: obsolete ? Colors.grey : null,
           ),
         ),
         Text(
           romaji,
-          style: TextStyle(color: obsolete ? Colors.black26 : null),
+          style: TextStyle(color: obsolete ? Colors.grey : null),
         ),
       ],
     );
