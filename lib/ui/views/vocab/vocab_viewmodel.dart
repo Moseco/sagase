@@ -139,11 +139,7 @@ class VocabViewModel extends BaseViewModel {
   }
 
   List<RubyTextPair> getRubyTextPairs(String writing, String reading) {
-    return _mecabService.createRubyTextPairs(
-      writing,
-      reading,
-      convertReading: false,
-    );
+    return _mecabService.createRubyTextPairs(writing, reading);
   }
 
   void toggleShowPitchAccent() {

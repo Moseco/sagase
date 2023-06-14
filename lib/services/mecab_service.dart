@@ -97,18 +97,14 @@ class MecabService {
     return list;
   }
 
-  List<RubyTextPair> createRubyTextPairs(
-    String writing,
-    String reading, {
-    bool convertReading = true,
-  }) {
+  List<RubyTextPair> createRubyTextPairs(String writing, String reading) {
     // First check if only kana
     if (_kanaKit.isKana(writing)) return [RubyTextPair(writing: writing)];
 
     List<RubyTextPair> rubyTextPairs = [];
     RubyTextPair? trailingRubyTextPair;
 
-    if (convertReading) reading = _kanaKit.toHiragana(reading);
+    reading = _kanaKit.toHiragana(reading);
 
     String originalWriting = writing;
     String originalReading = reading;
@@ -131,20 +127,18 @@ class MecabService {
     }
 
     int? kanaStartingPosition;
-    for (int j = 0; j < writing.length; j++) {
-      if (_kanaKit.isKana(writing[j])) {
+    for (int i = 0; i < writing.length; i++) {
+      if (_kanaKit.isKana(writing[i])) {
         // Found kana, set starting position if not already set
-        kanaStartingPosition ??= j;
+        kanaStartingPosition ??= i;
       } else if (kanaStartingPosition != null) {
         // Found non-kana character after previously found kana
         // Get kana substring
-        String kanaSubstring = writing.substring(kanaStartingPosition, j);
+        String kanaSubstring = writing.substring(kanaStartingPosition, i);
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition > 0) {
           // Find position of kana substring in the reading
-          int position = reading.indexOf(convertReading
-              ? _kanaKit.toHiragana(kanaSubstring)
-              : kanaSubstring);
+          int position = reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
           if (position != -1) {
             // Get non-kana writing and reading then cut from writing and reading strings
             rubyTextPairs.add(RubyTextPair(
@@ -168,8 +162,8 @@ class MecabService {
         writing = writing.substring(kanaSubstring.length);
         reading = reading.substring(kanaSubstring.length);
 
-        // Will have cut string up to character j, so set to 0
-        j = 0;
+        // Will have cut string up to character i, so set to 0
+        i = 0;
         kanaStartingPosition = null;
       }
     }
@@ -189,9 +183,7 @@ class MecabService {
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition != 0) {
           // Find position of kana substring in the reading
-          int position = reading.indexOf(convertReading
-              ? _kanaKit.toHiragana(kanaSubstring)
-              : kanaSubstring);
+          int position = reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
           if (position != -1) {
             // Get non-kana writing and reading
             rubyTextPairs.add(RubyTextPair(
@@ -225,8 +217,7 @@ class MecabService {
         buffer.write(pair.writing);
       }
     }
-    String finalReading = buffer.toString();
-    if (convertReading) finalReading = _kanaKit.toHiragana(finalReading);
+    String finalReading = _kanaKit.toHiragana(buffer.toString());
     if (originalReading != finalReading) {
       return [RubyTextPair(writing: originalWriting, reading: originalReading)];
     }
