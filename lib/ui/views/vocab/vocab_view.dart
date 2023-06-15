@@ -84,7 +84,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
         children: [
           PitchAccentText(
             text: pairs[0].readings[0].reading,
-            pitchAccent: pairs[0].readings[0].pitchAccents!,
+            pitchAccents: pairs[0].readings[0].pitchAccents!,
             fontSize: (pairs[0].kanjiWritings == null || forceOnlyReading)
                 ? 32
                 : 32 / 1.5,
