@@ -18,6 +18,7 @@ class HandWritingCanvas extends StatefulWidget {
 
 class HandWritingCanvasState extends State<HandWritingCanvas> {
   final Ink _ink = Ink();
+  final List<List<Stroke>> _previousStrokesList = [];
   List<StrokePoint> _points = [];
 
   @override
@@ -76,12 +77,18 @@ class HandWritingCanvasState extends State<HandWritingCanvas> {
       setState(() {
         _ink.strokes.removeLast();
       });
-      widget.onHandWritingChanged(_ink);
+    } else if (_previousStrokesList.isNotEmpty) {
+      setState(() {
+        _ink.strokes.addAll(_previousStrokesList.last);
+        _previousStrokesList.removeLast();
+      });
     }
+    widget.onHandWritingChanged(_ink);
   }
 
   void clear() {
     setState(() {
+      _previousStrokesList.add(List<Stroke>.from(_ink.strokes));
       _ink.strokes.clear();
     });
     widget.onHandWritingChanged(_ink);
