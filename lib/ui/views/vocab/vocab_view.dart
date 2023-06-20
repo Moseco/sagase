@@ -356,6 +356,28 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
           otherInfoBuffer.write(definition.dialects![i].displayTitle);
         }
       }
+      if (definition.loanWordInfo != null) {
+        if (otherInfoBuffer.isEmpty) {
+          otherInfoBuffer.write(' (');
+        } else {
+          otherInfoBuffer.write('; ');
+        }
+        if (definition.loanWordInfo!.waseieigo) {
+          otherInfoBuffer
+              .write('original Japanese word (waseieigo) derived from ');
+        } else {
+          otherInfoBuffer.write('loan word from ');
+        }
+        otherInfoBuffer
+            .write(definition.loanWordInfo!.languageSource[0].displayTitle);
+        for (int i = 1;
+            i < definition.loanWordInfo!.languageSource.length;
+            i++) {
+          otherInfoBuffer.write(', ');
+          otherInfoBuffer
+              .write(definition.loanWordInfo!.languageSource[i].displayTitle);
+        }
+      }
       if (otherInfoBuffer.isNotEmpty) otherInfoBuffer.write(')');
 
       // Add definition itself followed by other info
