@@ -288,6 +288,138 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                                 .dictionaryListIdGradeLevel6,
                             value),
                       ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 10'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel10] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel10,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 9'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel9] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel9,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 8'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel8] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel8,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 7'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel7] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel7,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 6'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel6] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel6,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 5'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel5] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel5,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 4'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel4] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel4,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 3'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel3] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel3,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level Pre-2'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevelPre2] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevelPre2,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 2'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel2] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel2,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level Pre-1'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevelPre1] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevelPre1,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Kanji Kentei level 1'),
+                        value: widget.request.data.predefinedLists[
+                                SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel1] ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants
+                                .dictionaryListIdKenteiLevel1,
+                            value),
+                      ),
                     ],
                   ),
                   ListView.builder(

@@ -81,6 +81,8 @@ class ListsView extends StatelessWidget {
         return 'JLPT Kanji';
       case ListSelection.schoolKanji:
         return 'School Kanji';
+      case ListSelection.kanjiKentei:
+        return 'Kanji Kentei';
       default:
         return 'Lists';
     }
@@ -101,6 +103,8 @@ class _Body extends ViewModelWidget<ListsViewModel> {
         return _JlptKanjiList();
       case ListSelection.schoolKanji:
         return _SchoolKanjiList();
+      case ListSelection.kanjiKentei:
+        return _KanjiKenteiList();
       default:
         return _MainList();
     }
@@ -209,6 +213,11 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
           onTap: () => viewModel.setListSelection(ListSelection.schoolKanji),
           isFolder: true,
         ),
+        _DictionaryListItem(
+          text: 'Kanji Kentei',
+          onTap: () => viewModel.setListSelection(ListSelection.kanjiKentei),
+          isFolder: true,
+        ),
       ],
     );
   }
@@ -292,6 +301,81 @@ class _SchoolKanjiList extends ViewModelWidget<ListsViewModel> {
         ),
         const Text(
           'These lists represent the 1,026 kanji that are to be learned at each grade level as defined by the Japanese Ministry of Education. The remainder of the jouyou set is expected to be learned during middle school and high school, but there is no official order and it can vary by textbook and school.',
+          textAlign: TextAlign.justify,
+        ),
+      ],
+    );
+  }
+}
+
+class _KanjiKenteiList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _DictionaryListItem(
+          text: 'Level 10',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel10),
+        ),
+        _DictionaryListItem(
+          text: 'Level 9',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel9),
+        ),
+        _DictionaryListItem(
+          text: 'Level 8',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel8),
+        ),
+        _DictionaryListItem(
+          text: 'Level 7',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel7),
+        ),
+        _DictionaryListItem(
+          text: 'Level 6',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel6),
+        ),
+        _DictionaryListItem(
+          text: 'Level 5',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel5),
+        ),
+        _DictionaryListItem(
+          text: 'Level 4',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel4),
+        ),
+        _DictionaryListItem(
+          text: 'Level 3',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel3),
+        ),
+        _DictionaryListItem(
+          text: 'Level Pre-2',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevelPre2),
+        ),
+        _DictionaryListItem(
+          text: 'Level 2',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel2),
+        ),
+        _DictionaryListItem(
+          text: 'Level Pre-1',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevelPre1),
+        ),
+        _DictionaryListItem(
+          text: 'Level 1',
+          onTap: () => viewModel.navigateToPredefinedDictionaryList(
+              SagaseDictionaryConstants.dictionaryListIdKenteiLevel1),
+        ),
+        const Text(
+          'Kanji Kentei (formally The Japan Kanji Aptitude Test, 日本漢字能力検定, also known as Kanken) is a kanji exam which tests various aspects of kanji knowledge. The easiest test is level 10 (consisting of 80 kanji) and the hardest is level 1 (consisting of about 6300 kanji). Levels 10 through 5 correspond to the grade school kanji lists.',
           textAlign: TextAlign.justify,
         ),
       ],

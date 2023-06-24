@@ -85,4 +85,5 @@ enum ListSelection {
   myLists,
   jlptKanji,
   schoolKanji,
+  kanjiKentei,
 }
