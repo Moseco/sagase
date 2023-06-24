@@ -52,7 +52,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: a3db421
+      ref: 3b49c73
 
 # Dependency override to make mecab_dart compatible with flutter_test
 dependency_overrides:

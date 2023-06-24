@@ -19,3 +19,5 @@ const defaultNewFlashcardsPerDay = 10;
 const defaultFlashcardDistance = 15;
 const defaultFlashcardCorrectAnswersRequired = 3;
 const defaultShowPitchAccent = false;
+
+const searchQueryLimit = 1000;
