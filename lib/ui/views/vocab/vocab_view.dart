@@ -205,6 +205,10 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
             ),
           );
         }
+        // Add padding above if not the first alternative
+        if (alternatives.isNotEmpty) {
+          alternatives.add(const SizedBox(height: 4));
+        }
         alternatives.add(_RubyTextWrapper(pairs: rubyTextPairs));
       } else {
         final buffer = StringBuffer();
