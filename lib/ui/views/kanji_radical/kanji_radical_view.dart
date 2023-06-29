@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
@@ -136,7 +137,16 @@ class KanjiRadicalView extends StatelessWidget {
                   ],
                 ),
               ),
-              StrokeOrderDiagram(kanjiRadical.strokes),
+              if (kanjiRadical.strokes != null &&
+                  kanjiRadical.strokes!.isNotEmpty)
+                CardWithTitleExpandable(
+                  title: 'Radical stroke order',
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: StrokeOrderDiagram(kanjiRadical.strokes!),
+                  ),
+                ),
               CardWithTitleSection(
                 title: 'Radical info',
                 child: Container(

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
@@ -151,7 +152,15 @@ class KanjiView extends StatelessWidget {
                   ],
                 ),
               ),
-              StrokeOrderDiagram(kanji.strokes),
+              if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
+                CardWithTitleExpandable(
+                  title: 'Kanji stroke order',
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: StrokeOrderDiagram(kanji.strokes!),
+                  ),
+                ),
               CardWithTitleSection(
                 title: 'Kanji info',
                 child: Container(
