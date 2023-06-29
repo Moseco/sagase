@@ -459,13 +459,6 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
     List<Widget> children = [];
     for (int i = 0; i < viewModel.vocab.definitions.length; i++) {
       if (viewModel.vocab.definitions[i].examples != null) {
-        children.add(
-          Text(
-            'For definition ${i + 1}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        );
-
         for (var example in viewModel.vocab.definitions[i].examples!) {
           List<RubyTextData> data = [];
           for (var token in example.tokens) {
@@ -479,26 +472,30 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
             }
           }
 
-          children.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RubyText(
-                    data,
-                    style: const TextStyle(letterSpacing: 0, height: 1.1),
-                  ),
-                  Text(example.english),
-                ],
+          children.addAll(
+            [
+              RubyText(
+                data,
+                style: const TextStyle(letterSpacing: 0, height: 1.1),
               ),
-            ),
+              Text(example.english),
+              Text(
+                'Applies to definition ${i + 1}',
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              ),
+              const Divider(),
+            ],
           );
         }
       }
     }
 
-    if (children.isEmpty) return Container();
+    if (children.isEmpty) {
+      return Container();
+    } else {
+      // Removes the final divider
+      children.removeLast();
+    }
 
     return CardWithTitleSection(
       title: 'Examples',
