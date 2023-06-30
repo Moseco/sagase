@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/ui/themes.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 
@@ -21,42 +23,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool useJapaneseSerifFont =
+        locator<SharedPreferencesService>().getUseJapaneseSerifFont();
     return ThemeBuilder(
-      lightTheme: ThemeData(
-        brightness: Brightness.light,
-        colorSchemeSeed: Colors.deepPurple,
-        scaffoldBackgroundColor: const Color(0xFFF0F0F0),
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: Colors.black,
-        ),
-        checkboxTheme: CheckboxThemeData(
-          checkColor: MaterialStateProperty.all(Colors.white),
-          fillColor: MaterialStateProperty.resolveWith(
-            (states) => states.contains(MaterialState.selected)
-                ? Colors.deepPurple
-                : Colors.black,
-          ),
-        ),
-        appBarTheme: const AppBarTheme(color: Colors.deepPurple),
-        fontFamily: 'NotoSansJP',
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorSchemeSeed: Colors.deepPurple,
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: Colors.white,
-        ),
-        checkboxTheme: CheckboxThemeData(
-          checkColor: MaterialStateProperty.all(Colors.white),
-          fillColor: MaterialStateProperty.resolveWith(
-            (states) => states.contains(MaterialState.selected)
-                ? Colors.deepPurple
-                : Colors.white,
-          ),
-        ),
-        appBarTheme: const AppBarTheme(color: Colors.deepPurple),
-        fontFamily: 'NotoSansJP',
-      ),
+      lightTheme: getLightTheme(useJapaneseSerifFont),
+      darkTheme: getDarkTheme(useJapaneseSerifFont),
       builder: (context, regularTheme, darkTheme, themeMode) => MaterialApp(
         title: 'Sagase',
         theme: regularTheme,

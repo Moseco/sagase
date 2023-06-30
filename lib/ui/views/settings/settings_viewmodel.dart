@@ -6,9 +6,11 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/ui/themes.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:stacked_themes/stacked_themes.dart';
 
 class SettingsViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
@@ -16,6 +18,7 @@ class SettingsViewModel extends BaseViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
   final _isarService = locator<IsarService>();
+  final _themeService = locator<ThemeService>();
 
   bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
   bool get flashcardLearningModeEnabled =>
@@ -208,6 +211,23 @@ class SettingsViewModel extends BaseViewModel {
       }
     } else {
       _snackbarService.showSnackbar(message: 'Import cancelled');
+    }
+  }
+
+  Future<void> setJapaneseFont() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.fontSelectionDialog,
+      data: _sharedPreferencesService.getUseJapaneseSerifFont(),
+      barrierDismissible: true,
+    );
+
+    if (response?.data != null) {
+      _sharedPreferencesService.setUseJapaneseSerifFont(response!.data);
+
+      _themeService.setThemes(
+        lightTheme: getLightTheme(response.data),
+        darkTheme: getDarkTheme(response.data),
+      );
     }
   }
 }

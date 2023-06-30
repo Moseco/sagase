@@ -6,6 +6,7 @@ import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
+import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
@@ -36,6 +37,7 @@ import 'package:sagase/ui/views/vocab/vocab_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:stacked_themes/stacked_themes.dart';
 
 // Run the following to generate files
 //    flutter pub run build_runner build --delete-conflicting-outputs
@@ -81,6 +83,10 @@ import 'package:stacked_services/stacked_services.dart';
       presolveUsing: SharedPreferencesService.initialize,
     ),
     LazySingleton(classType: MecabService),
+    LazySingleton(
+      classType: ThemeService,
+      resolveUsing: ThemeService.getInstance,
+    ),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
     LazySingleton(classType: ListsViewModel),
@@ -98,6 +104,7 @@ import 'package:stacked_services/stacked_services.dart';
     StackedDialog(classType: NumberTextFieldDialog),
     StackedDialog(classType: ConfirmationDialog),
     StackedDialog(classType: ProgressIndicatorDialog),
+    StackedDialog(classType: FontSelectionDialog),
   ],
 )
 class AppSetup {

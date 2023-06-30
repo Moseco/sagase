@@ -101,4 +101,13 @@ class SharedPreferencesService {
   Future<void> setShowPitchAccent(bool value) async {
     await _sharedPreferences.setBool(constants.keyShowPitchAccent, value);
   }
+
+  bool getUseJapaneseSerifFont() {
+    return _sharedPreferences.getBool(constants.keyUseJapaneseSerifFont) ??
+        constants.defaultUseJapaneseSerifFont;
+  }
+
+  Future<void> setUseJapaneseSerifFont(bool value) async {
+    await _sharedPreferences.setBool(constants.keyUseJapaneseSerifFont, value);
+  }
 }

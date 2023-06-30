@@ -42,6 +42,16 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
               SettingsSection(
+                title: const Text('General'),
+                tiles: [
+                  SettingsTile.navigation(
+                    leading: const Icon(Icons.font_download),
+                    title: const Text('Set Japanese font'),
+                    onPressed: (_) => viewModel.setJapaneseFont(),
+                  ),
+                ],
+              ),
+              SettingsSection(
                 title: const Text('Flashcards'),
                 tiles: [
                   SettingsTile.navigation(
