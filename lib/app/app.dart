@@ -78,10 +78,7 @@ import 'package:stacked_themes/stacked_themes.dart';
       classType: DigitalInkService,
       presolveUsing: DigitalInkService.initialize,
     ),
-    Presolve(
-      classType: SharedPreferencesService,
-      presolveUsing: SharedPreferencesService.initialize,
-    ),
+    InitializableSingleton(classType: SharedPreferencesService),
     LazySingleton(classType: MecabService),
     LazySingleton(
       classType: ThemeService,

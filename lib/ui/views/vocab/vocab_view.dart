@@ -19,8 +19,8 @@ class VocabView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<VocabViewModel>.reactive(
       viewModelBuilder: () => VocabViewModel(vocab),
-      fireOnModelReadyOnce: true,
-      onModelReady: (viewModel) => viewModel.initialize(),
+      fireOnViewModelReadyOnce: true,
+      onViewModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           actions: [

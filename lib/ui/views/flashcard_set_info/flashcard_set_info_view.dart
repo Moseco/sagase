@@ -163,11 +163,11 @@ class FlashcardSetInfoView extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Wrap(
+                          const Wrap(
                             spacing: 8,
                             runSpacing: 4,
                             alignment: WrapAlignment.center,
-                            children: const [
+                            children: [
                               _Indicator(
                                 color: Colors.red,
                                 text: 'Not started',

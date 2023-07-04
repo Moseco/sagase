@@ -1,5 +1,5 @@
 import 'package:sagase/app/app.bottomsheets.dart';
-import 'package:sagase/app/app.dialog.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
@@ -47,7 +47,7 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
 
   Future<void> _renameFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.textFieldDialog,
+      variant: DialogType.textField,
       title: 'Rename flashcards',
       description: 'Name',
       mainButtonTitle: 'Update',
@@ -65,7 +65,7 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
 
   Future<void> _deleteFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.confirmationDialog,
+      variant: DialogType.confirmation,
       title: 'Delete flashcards?',
       mainButtonTitle: 'Delete',
       secondaryButtonTitle: 'Cancel',
@@ -81,7 +81,7 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
 
   Future<void> _resetSpacedRepetitionData() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.confirmationDialog,
+      variant: DialogType.confirmation,
       title: 'Reset spaced repetition data?',
       description:
           'This will effect all items that are part of this flashcard set and the same items that are part of other flashcard sets. This action cannot be undone.',
@@ -134,7 +134,7 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     }
 
     final response = await _bottomSheetService.showCustomSheet(
-      variant: BottomsheetType.assignListsBottomSheet,
+      variant: BottomSheetType.assignListsBottom,
       data: ListsBottomSheetArgument(predefinedLists, myDictionaryLists),
       barrierDismissible: false,
     );

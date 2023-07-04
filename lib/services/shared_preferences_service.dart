@@ -1,13 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:stacked/stacked_annotations.dart';
 
-class SharedPreferencesService {
-  final SharedPreferences _sharedPreferences;
+class SharedPreferencesService implements InitializableDependency {
+  late final SharedPreferences _sharedPreferences;
 
-  SharedPreferencesService(this._sharedPreferences);
-
-  static Future<SharedPreferencesService> initialize() async {
-    return SharedPreferencesService(await SharedPreferences.getInstance());
+  @override
+  Future<void> init() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
   }
 
   int getInitialCorrectInterval() {

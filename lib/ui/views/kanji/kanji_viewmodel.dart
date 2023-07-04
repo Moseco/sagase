@@ -93,7 +93,7 @@ class KanjiViewModel extends BaseViewModel {
     }
 
     final response = await _bottomSheetService.showCustomSheet(
-      variant: BottomsheetType.assignMyListsBottomSheet,
+      variant: BottomSheetType.assignMyListsBottom,
       data: list,
       barrierDismissible: false,
     );

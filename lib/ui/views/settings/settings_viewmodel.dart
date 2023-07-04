@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:sagase/app/app.dialog.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -40,7 +40,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> setInitialSpacedRepetitionInterval() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.initialIntervalDialog,
+      variant: DialogType.initialInterval,
       barrierDismissible: true,
       data: [
         _sharedPreferencesService.getInitialCorrectInterval().toString(),
@@ -66,7 +66,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> setNewFlashcardsPerDay() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.numberTextFieldDialog,
+      variant: DialogType.numberTextField,
       title: 'New Flashcards Per Day',
       description: 'Amount',
       mainButtonTitle: 'Set',
@@ -90,7 +90,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> setFlashcardDistance() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.numberTextFieldDialog,
+      variant: DialogType.numberTextField,
       title: 'Flashcard Distance',
       description: 'Amount',
       mainButtonTitle: 'Set',
@@ -114,7 +114,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> setFlashcardCorrectAnswersRequired() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.numberTextFieldDialog,
+      variant: DialogType.numberTextField,
       title: 'Correct Answers Required',
       description: 'Amount',
       mainButtonTitle: 'Set',
@@ -138,7 +138,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> deleteSearchHistory() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.confirmationDialog,
+      variant: DialogType.confirmation,
       title: 'Delete search history?',
       mainButtonTitle: 'Delete',
       secondaryButtonTitle: 'Cancel',
@@ -154,7 +154,7 @@ class SettingsViewModel extends BaseViewModel {
   Future<void> backupData() async {
     // Show progress indicator dialog
     _dialogService.showCustomDialog(
-      variant: DialogType.progressIndicatorDialog,
+      variant: DialogType.progressIndicator,
       title: 'Exporting data',
       barrierDismissible: false,
     );
@@ -195,7 +195,7 @@ class SettingsViewModel extends BaseViewModel {
     if (filePath != null) {
       // Show progress indicator dialog
       _dialogService.showCustomDialog(
-        variant: DialogType.progressIndicatorDialog,
+        variant: DialogType.progressIndicator,
         title: 'Importing data',
         barrierDismissible: false,
       );
@@ -216,7 +216,7 @@ class SettingsViewModel extends BaseViewModel {
 
   Future<void> setJapaneseFont() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.fontSelectionDialog,
+      variant: DialogType.fontSelection,
       data: _sharedPreferencesService.getUseJapaneseSerifFont(),
       barrierDismissible: true,
     );

@@ -27,8 +27,8 @@ class FlashcardsView extends HookWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
       viewModelBuilder: () => FlashcardsViewModel(flashcardSet, startMode),
-      fireOnModelReadyOnce: true,
-      onModelReady: (viewModel) => viewModel.initialize(),
+      fireOnViewModelReadyOnce: true,
+      onViewModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -302,8 +302,8 @@ class _Flashcard extends StatelessWidget {
   const _Flashcard({
     required this.constraints,
     required this.child,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -545,8 +545,8 @@ class _VocabFlashcardBack extends StatelessWidget {
     if (vocab.similarFlashcards != null) {
       children.addAll([
         const SizedBox(height: 8),
-        Row(
-          children: const [
+        const Row(
+          children: [
             Expanded(child: Divider(endIndent: 8)),
             Text(
               'Similar flashcards',
@@ -635,8 +635,8 @@ class _KanjiFlashcardBack extends StatelessWidget {
     if (kanji.similarFlashcards != null) {
       children.addAll([
         const SizedBox(height: 8),
-        Row(
-          children: const [
+        const Row(
+          children: [
             Expanded(child: Divider(endIndent: 8)),
             Text(
               'Similar flashcards',

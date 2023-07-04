@@ -1,4 +1,4 @@
-import 'package:sagase/app/app.dialog.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -49,7 +49,7 @@ class DictionaryListViewModel extends BaseViewModel {
 
   Future<void> renameMyList() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.textFieldDialog,
+      variant: DialogType.textField,
       title: 'Rename list',
       description: 'Name',
       mainButtonTitle: 'Update',
@@ -67,7 +67,7 @@ class DictionaryListViewModel extends BaseViewModel {
 
   Future<void> deleteMyList() async {
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.confirmationDialog,
+      variant: DialogType.confirmation,
       title: 'Delete list?',
       mainButtonTitle: 'Delete',
       secondaryButtonTitle: 'Cancel',

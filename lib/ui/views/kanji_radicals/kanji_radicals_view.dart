@@ -169,11 +169,9 @@ class KanjiRadicalsView extends StatelessWidget {
 
 class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
   final KanjiRadical radical;
-  final bool showKangxiId;
 
   const _KanjiRadicalItem(
     this.radical, {
-    this.showKangxiId = true,
     Key? key,
   }) : super(key: key);
 
@@ -197,7 +195,7 @@ class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  radical.kangxiId != null && showKangxiId
+                  radical.kangxiId != null
                       ? Text(
                           '#${radical.kangxiId} - ${radical.meaning}',
                           maxLines: 1,

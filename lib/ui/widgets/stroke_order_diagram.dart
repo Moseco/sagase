@@ -84,7 +84,7 @@ class StrokeOrderDiagram extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => locator<BottomSheetService>().showCustomSheet(
-        variant: BottomsheetType.strokeOrderBottomSheet,
+        variant: BottomSheetType.strokeOrderBottom,
         data: strokes,
       ),
       child: Wrap(

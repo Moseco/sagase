@@ -56,8 +56,8 @@ class FontSelectionDialog extends StatelessWidget {
                           Radius.circular(16),
                         ),
                       ),
-                      child: Column(
-                        children: const [
+                      child: const Column(
+                        children: [
                           Text(
                             '字',
                             style: TextStyle(
@@ -92,8 +92,8 @@ class FontSelectionDialog extends StatelessWidget {
                           Radius.circular(16),
                         ),
                       ),
-                      child: Column(
-                        children: const [
+                      child: const Column(
+                        children: [
                           Text(
                             '字',
                             style: TextStyle(

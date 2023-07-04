@@ -1,4 +1,4 @@
-import 'package:sagase/app/app.dialog.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
@@ -44,7 +44,7 @@ class LearningViewModel extends BaseViewModel {
         !recentFlashcardSet!.usingSpacedRepetition) return;
 
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.flashcardStartDialog,
+      variant: DialogType.flashcardStart,
       barrierDismissible: true,
     );
 

@@ -5,7 +5,7 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 
 import 'app/app.bottomsheets.dart';
-import 'app/app.dialog.dart';
+import 'app/app.dialogs.dart';
 import 'app/app.locator.dart';
 import 'app/app.router.dart';
 
@@ -14,7 +14,7 @@ void main() async {
   await setupLocator();
   await ThemeManager.initialise();
   setupDialogUi();
-  setupBottomsheetUi();
+  setupBottomSheetUi();
   runApp(const MyApp());
 }
 

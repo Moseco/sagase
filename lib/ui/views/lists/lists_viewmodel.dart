@@ -1,4 +1,4 @@
-import 'package:sagase/app/app.dialog.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -64,7 +64,7 @@ class ListsViewModel extends BaseViewModel {
     if (listSelection != ListSelection.myLists) return;
 
     final response = await _dialogService.showCustomDialog(
-      variant: DialogType.textFieldDialog,
+      variant: DialogType.textField,
       title: 'Create new list',
       description: 'Name',
       mainButtonTitle: 'Create',

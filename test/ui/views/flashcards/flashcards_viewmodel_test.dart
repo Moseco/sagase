@@ -431,8 +431,7 @@ void main() {
           myDictionaryLists: [isarService.myDictionaryLists![0]]);
 
       final navigationService = getAndRegisterNavigationService();
-      final dialogService =
-          getAndRegisterDialogService(dialogResponseConfirmed: true);
+      getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
@@ -712,8 +711,7 @@ void main() {
           myDictionaryLists: [isarService.myDictionaryLists![0]]);
 
       final navigationService = getAndRegisterNavigationService();
-      final dialogService =
-          getAndRegisterDialogService(dialogResponseConfirmed: true);
+      getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
@@ -776,8 +774,7 @@ void main() {
       );
 
       final navigationService = getAndRegisterNavigationService();
-      final dialogService =
-          getAndRegisterDialogService(dialogResponseConfirmed: true);
+      getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
