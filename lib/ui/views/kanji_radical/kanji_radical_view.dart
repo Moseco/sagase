@@ -19,9 +19,7 @@ class KanjiRadicalView extends StatelessWidget {
     return ViewModelBuilder<KanjiRadicalViewModel>.reactive(
       viewModelBuilder: () => KanjiRadicalViewModel(kanjiRadical),
       builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          title: Text(kanjiRadical.radical),
-        ),
+        appBar: AppBar(),
         body: SelectionArea(
           child: ListView(
             padding: const EdgeInsets.all(8),

@@ -24,7 +24,6 @@ class KanjiView extends StatelessWidget {
       viewModelBuilder: () => KanjiViewModel(kanji),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
-          title: Text(kanji.kanji),
           actions: [
             IconButton(
               onPressed: viewModel.openMyDictionaryListsSheet,
