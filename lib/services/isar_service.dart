@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/material.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -151,7 +152,7 @@ class IsarService {
 
         // Sort definition result
         final nestedDefinitionSortingList =
-            _sortByDefinition(unsortedDefinitionList, searchString);
+            sortByDefinition(unsortedDefinitionList, searchString);
 
         // Merge reading and definition lists and then sort
         List<List<Vocab>> nestedSortingList = [[], [], [], [], []];
@@ -217,7 +218,7 @@ class IsarService {
               await query.limit(constants.searchQueryLimit).findAll();
         }
 
-        final nestedSortingList = _sortByDefinition(unsortedList, searchString);
+        final nestedSortingList = sortByDefinition(unsortedList, searchString);
         // Sort lists
         nestedSortingList[0].sort(_compareVocab);
         nestedSortingList[1].sort(_compareVocab);
@@ -318,24 +319,30 @@ class IsarService {
         (a.commonWord ? 1 : 0);
   }
 
-  List<List<Vocab>> _sortByDefinition(List<Vocab> unsortedList, String query) {
+  @visibleForTesting
+  List<List<Vocab>> sortByDefinition(List<Vocab> unsortedList, String query) {
     // Each nested list is for quality of match
-    //    Nested list 0: definition 1 starts with query with word boundary
-    //    Nested list 1: definition 1 starts with query
+    //    Nested list 0: definition 1 sub-definition contains only query
+    //    Nested list 1: definition 1 sub-definition starts with query
     //    Nested list 2: exact match in definition 1 other than start
-    //    Nested list 3: exact match in other definition
-    //    Nested list 4: no exact match found
+    //    Nested list 3: exact match in definition 2+
+    //    Nested list 4: no match found
     List<List<Vocab>> nestedSortingList = [[], [], [], [], []];
 
-    // Create regex to match the query and ignore leading parenthesis
+    // Match word starting with query
     String escapedQuery = RegExp.escape(query);
     final queryRegExp = RegExp(
-      r'\([^)]*\)|' + escapedQuery,
+      r'\b' + escapedQuery,
       caseSensitive: false,
     );
-    // Same as previous but with word boundary at the end
-    final boundaryRegExp = RegExp(
-      r'\([^)]*\)|' + escapedQuery + r'\b',
+    // Match query at the start of string or after ';' and ignore leading parenthesis
+    final startingRegExp = RegExp(
+      r'(^|(; ))(\([^)]*\) )?\b' + escapedQuery,
+      caseSensitive: false,
+    );
+    // Same as above but with end of string or sub-definition
+    final startingEndRegExp = RegExp(
+      r'(^|(; ))(\([^)]*\) )?\b' + escapedQuery + r'($|;)',
       caseSensitive: false,
     );
 
@@ -346,8 +353,9 @@ class IsarService {
         if (definition.contains(queryRegExp)) {
           noMatch = false;
           if (i == 0) {
-            if (definition.startsWith(queryRegExp)) {
-              if (definition.startsWith(boundaryRegExp)) {
+            int foundIndex = definition.indexOf(startingRegExp);
+            if (foundIndex != -1) {
+              if (definition.contains(startingEndRegExp, foundIndex)) {
                 nestedSortingList[0].add(vocab);
               } else {
                 nestedSortingList[1].add(vocab);

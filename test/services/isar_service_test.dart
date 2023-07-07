@@ -368,5 +368,82 @@ void main() {
       await isar.close(deleteFromDisk: true);
       await file.delete();
     });
+
+    test('sortByDefinition', () async {
+      // Set up
+      await setUpFakePathProvider();
+      Isar isar = await setUpIsar();
+      final service = IsarService(isar);
+
+      final result = service.sortByDefinition([
+        Vocab()
+          ..id = 0
+          ..definitions = [VocabDefinition()..definition = 'query'],
+        Vocab()
+          ..id = 1
+          ..definitions = [VocabDefinition()..definition = 'query text'],
+        Vocab()
+          ..id = 2
+          ..definitions = [
+            VocabDefinition()..definition = 'other thing; query; more stuff'
+          ],
+        Vocab()
+          ..id = 3
+          ..definitions = [
+            VocabDefinition()..definition = 'other thing; (qualifier) query'
+          ],
+        Vocab()
+          ..id = 4
+          ..definitions = [
+            VocabDefinition()..definition = 'other thing; (querys) query'
+          ],
+        Vocab()
+          ..id = 5
+          ..definitions = [VocabDefinition()..definition = 'querys'],
+        Vocab()
+          ..id = 6
+          ..definitions = [VocabDefinition()..definition = 'this query after'],
+        Vocab()
+          ..id = 7
+          ..definitions = [
+            VocabDefinition()..definition = 'other things',
+            VocabDefinition()..definition = 'this says query and other things',
+          ],
+        Vocab()
+          ..id = 8
+          ..definitions = [
+            VocabDefinition()..definition = 'BEFOREquery',
+            VocabDefinition()..definition = 'BEFOREqueryAFTER',
+          ],
+        Vocab()
+          ..id = 9
+          ..definitions = [VocabDefinition()..definition = '(query) bla'],
+        Vocab()
+          ..id = 10
+          ..definitions = [VocabDefinition()..definition = '(querys) bla'],
+        Vocab()
+          ..id = 11
+          ..definitions = [VocabDefinition()..definition = '(query) query'],
+        Vocab()
+          ..id = 12
+          ..definitions = [VocabDefinition()..definition = 'other; query text'],
+      ], 'query');
+
+      expect(result[0][0].id, 0);
+      expect(result[0][1].id, 2);
+      expect(result[0][2].id, 3);
+      expect(result[0][3].id, 4);
+      expect(result[0][4].id, 11);
+      expect(result[1][0].id, 1);
+      expect(result[1][1].id, 5);
+      expect(result[1][2].id, 12);
+      expect(result[2][0].id, 6);
+      expect(result[2][1].id, 9);
+      expect(result[2][2].id, 10);
+      expect(result[3][0].id, 7);
+      expect(result[4][0].id, 8);
+
+      await isar.close(deleteFromDisk: true);
+    });
   });
 }
