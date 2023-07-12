@@ -27,11 +27,11 @@ class DevViewModel extends BaseViewModel {
     int iterations = 20;
 
     // Run once for index warmup
-    await _isarService.searchDictionary(searchTerm);
+    await _isarService.searchDictionary(searchTerm, SearchFilter.vocab);
 
     final start = DateTime.now();
     for (int i = 0; i < iterations; i++) {
-      await _isarService.searchDictionary(searchTerm);
+      await _isarService.searchDictionary(searchTerm, SearchFilter.vocab);
     }
 
     final end = DateTime.now();

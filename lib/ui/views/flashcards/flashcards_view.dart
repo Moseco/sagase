@@ -605,7 +605,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
       ),
       const SizedBox(height: 16),
       Text(
-        kanji.meanings ?? 'NO MEANING',
+        kanji.meanings?.join(', ') ?? 'NO MEANING',
         textAlign: TextAlign.center,
       ),
       const SizedBox(height: 16),

@@ -75,26 +75,33 @@ class IsarService {
     return DictionaryStatus.valid;
   }
 
-  Future<List<DictionaryItem>> searchDictionary(String value) async {
+  Future<List<DictionaryItem>> searchDictionary(
+    String value,
+    SearchFilter filter,
+  ) async {
     // First convert characters to match what would be in the index
     String searchString =
         _kanaKit.toHiragana(value.toLowerCase().romajiToHalfWidth());
 
-    // First check if searching single kanji
-    Kanji? kanji;
-    if (searchString.length == 1 &&
-        searchString.contains(constants.kanjiRegExp)) {
-      kanji = await _isar.kanjis.getByKanji(searchString);
-    }
+    if (filter == SearchFilter.vocab) {
+      // First check if searching single kanji
+      Kanji? kanji;
+      if (searchString.length == 1 &&
+          searchString.contains(constants.kanjiRegExp)) {
+        kanji = await _isar.kanjis.getByKanji(searchString);
+      }
 
-    // Search vocab
-    final vocabList = await searchVocab(searchString);
+      // Search vocab
+      final vocabList = await searchVocab(searchString);
 
-    // Add kanji to the start of results if found
-    if (kanji != null) {
-      return <DictionaryItem>[kanji] + vocabList;
+      // Add kanji to the start of results if found
+      if (kanji != null) {
+        return <DictionaryItem>[kanji] + vocabList;
+      } else {
+        return vocabList;
+      }
     } else {
-      return vocabList;
+      return _searchKanji(searchString);
     }
   }
 
@@ -373,6 +380,92 @@ class IsarService {
     }
 
     return nestedSortingList;
+  }
+
+  Future<List<Kanji>> _searchKanji(String searchString) async {
+    // If searching single kanji, just return it
+    if (searchString.length == 1 &&
+        searchString.contains(constants.kanjiRegExp)) {
+      final kanji = await _isar.kanjis.getByKanji(searchString);
+      if (kanji != null) return [kanji];
+    }
+
+    // Each nested list is for difference in length compared to search string
+    List<List<Kanji>> nestedSortingList = [[], [], [], [], []];
+
+    // Search reading
+    final unsortedReadingList = await _isar.kanjis
+        .where()
+        .readingIndexElementStartsWith(searchString)
+        .limit(constants.searchQueryLimit)
+        .findAll();
+
+    for (var kanji in unsortedReadingList) {
+      int minDifference = 999;
+      for (var reading in kanji.readingIndex!) {
+        if (reading.length >= minDifference) continue;
+        if (reading.startsWith(searchString)) {
+          minDifference = reading.length - searchString.length;
+        }
+      }
+
+      nestedSortingList[min(4, minDifference)].add(kanji);
+    }
+
+    // If found kanji at limit, do exact match search to find possibly missed kanji
+    if (unsortedReadingList.length == constants.searchQueryLimit) {
+      final exactMatchList = await _isar.kanjis
+          .where()
+          .readingIndexElementEqualTo(searchString)
+          .limit(constants.searchQueryLimit)
+          .findAll();
+
+      // Clear existing list of exact matches
+      nestedSortingList[0].clear();
+
+      for (var kanji in exactMatchList) {
+        nestedSortingList[0].add(kanji);
+      }
+    }
+
+    // Search meaning
+    final unsortedMeaningList = await _isar.kanjis
+        .where()
+        .meaningsElementStartsWith(searchString)
+        .limit(constants.searchQueryLimit)
+        .findAll();
+
+    for (var kanji in unsortedMeaningList) {
+      int minDifference = 999;
+      for (var meaning in kanji.meanings!) {
+        if (meaning.length >= minDifference) continue;
+        if (meaning.startsWith(searchString)) {
+          minDifference = meaning.length - searchString.length;
+        }
+      }
+
+      nestedSortingList[min(4, minDifference)].add(kanji);
+    }
+
+    // Sort lists
+    nestedSortingList[0].sort(_compareKanji);
+    nestedSortingList[1].sort(_compareKanji);
+    nestedSortingList[2].sort(_compareKanji);
+    nestedSortingList[3].sort(_compareKanji);
+    nestedSortingList[4].sort(_compareKanji);
+
+    return nestedSortingList[0] +
+        nestedSortingList[1] +
+        nestedSortingList[2] +
+        nestedSortingList[3] +
+        nestedSortingList[4];
+  }
+
+  // Function to be used with list.sort
+  // Compare by frequency of kanji
+  // a - b so that the list will be sorted from lowest to highest
+  int _compareKanji(Kanji a, Kanji b) {
+    return (a.frequency ?? 9999) - (b.frequency ?? 9999);
   }
 
   Future<Vocab?> getVocab(int id) async {
@@ -930,4 +1023,9 @@ enum DictionaryStatus {
   valid,
   invalid,
   outOfDate,
+}
+
+enum SearchFilter {
+  vocab,
+  kanji,
 }

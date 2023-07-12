@@ -170,7 +170,7 @@ class KanjiView extends StatelessWidget {
                     children: [
                       _TitleInfoText(
                         title: 'Meaning',
-                        content: kanji.meanings ?? 'NO MEANING',
+                        content: kanji.meanings?.join(', ') ?? 'NO MEANING',
                       ),
                       if (kanji.kunReadings != null)
                         KanjiKunReadings(

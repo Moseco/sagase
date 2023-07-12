@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/hand_writing_canvas.dart';
 import 'package:sagase/ui/widgets/home_header.dart';
-import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
@@ -65,7 +65,7 @@ class _Body extends StackedHookView<SearchViewModel> {
                           onPressed: () => viewModel.navigateToVocab(current),
                         );
                       } else {
-                        return KanjiListItem(
+                        return KanjiListItemLarge(
                           kanji: current as Kanji,
                           onPressed: () => viewModel.navigateToKanji(current),
                         );
@@ -256,92 +256,118 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(left: 16, right: 4),
         child: Center(
-          child: viewModel.showHandWriting
-              ? TextField(
-                  autofocus: true,
-                  readOnly: true,
-                  showCursor: true,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  enableIMEPersonalizedLearning: false,
-                  maxLines: 1,
-                  focusNode: handWritingFocusNode,
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        viewModel.searchOnChange('');
-                        searchController.clear();
-                        handWritingFocusNode.requestFocus();
-                      },
-                      icon: Icon(
-                        Icons.clear,
-                        color: Theme.of(context).iconTheme.color,
+          child: Row(
+            children: [
+              Expanded(
+                child: viewModel.showHandWriting
+                    ? TextField(
+                        autofocus: true,
+                        readOnly: true,
+                        showCursor: true,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        enableIMEPersonalizedLearning: false,
+                        maxLines: 1,
+                        focusNode: handWritingFocusNode,
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).scaffoldBackgroundColor,
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              viewModel.searchOnChange('');
+                              searchController.clear();
+                              handWritingFocusNode.requestFocus();
+                            },
+                            icon: Icon(
+                              Icons.clear,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                          ),
+                        ),
+                      )
+                    : TextField(
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        enableIMEPersonalizedLearning: false,
+                        maxLines: 1,
+                        textInputAction: TextInputAction.done,
+                        focusNode: keyboardFocusNode,
+                        controller: searchController,
+                        onChanged: viewModel.searchOnChange,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).scaffoldBackgroundColor,
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              viewModel.searchOnChange('');
+                              searchController.clear();
+                              keyboardFocusNode.requestFocus();
+                            },
+                            icon: Icon(
+                              Icons.clear,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                          ),
+                        ),
                       ),
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                    ),
-                  ),
-                )
-              : TextField(
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  enableIMEPersonalizedLearning: false,
-                  maxLines: 1,
-                  textInputAction: TextInputAction.done,
-                  focusNode: keyboardFocusNode,
-                  controller: searchController,
-                  onChanged: viewModel.searchOnChange,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: Colors.transparent),
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        viewModel.searchOnChange('');
-                        searchController.clear();
-                        keyboardFocusNode.requestFocus();
-                      },
-                      icon: Icon(
-                        Icons.clear,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                    ),
-                  ),
-                ),
+              ),
+              IconButton(
+                onPressed: viewModel.setSearchFilter,
+                icon: const Icon(Icons.tune, color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );

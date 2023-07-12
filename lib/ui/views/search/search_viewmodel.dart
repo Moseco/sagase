@@ -1,5 +1,6 @@
 import 'package:async/async.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -15,6 +16,7 @@ class SearchViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _digitalInkService = locator<DigitalInkService>();
   final _snackbarService = locator<SnackbarService>();
+  final _dialogService = locator<DialogService>();
 
   String _searchString = '';
   String get searchString => _searchString;
@@ -30,6 +32,8 @@ class SearchViewModel extends BaseViewModel {
 
   List<SearchHistoryItem> searchHistory = [];
   SearchHistoryItem? _currentSearchHistoryItem;
+
+  SearchFilter _searchFilter = SearchFilter.vocab;
 
   SearchViewModel() {
     _loadSearchHistory();
@@ -54,17 +58,17 @@ class SearchViewModel extends BaseViewModel {
     );
   }
 
-  void searchOnChange(String value) {
+  void searchOnChange(String value, {bool allowSkip = true}) {
     String stringToSearch = value.trim();
     // Prevent duplicate searches
-    if (stringToSearch == _searchString) return;
+    if (stringToSearch == _searchString && allowSkip) return;
     _searchString = stringToSearch;
 
     if (_searchOperation != null) _searchOperation!.cancel();
 
     if (_searchString.isNotEmpty) {
       _searchOperation = CancelableOperation.fromFuture(
-        _isarService.searchDictionary(_searchString),
+        _isarService.searchDictionary(_searchString, _searchFilter),
       );
 
       _searchOperation!.value.then((value) {
@@ -131,5 +135,20 @@ class SearchViewModel extends BaseViewModel {
     searchHistory.clear();
     _currentSearchHistoryItem = null;
     notifyListeners();
+  }
+
+  Future<void> setSearchFilter() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.searchFilter,
+      data: _searchFilter,
+      barrierDismissible: true,
+    );
+
+    if (response?.data != null) {
+      // Redo search if filter was changed
+      bool redoSearch = _searchFilter != response!.data;
+      _searchFilter = response.data;
+      if (redoSearch) searchOnChange(_searchString, allowSkip: false);
+    }
   }
 }
