@@ -443,7 +443,25 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
                 onPressed: () => viewModel.navigateToKanji(current),
               );
             } else {
-              return ListTile(title: Text(current.kanji));
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, right: 12),
+                      child: Text(
+                        current.kanji,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [Text(''), Text(''), Text('')],
+                    ),
+                  ],
+                ),
+              );
             }
           },
         ),
