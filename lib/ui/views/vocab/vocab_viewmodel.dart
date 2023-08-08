@@ -150,4 +150,11 @@ class VocabViewModel extends BaseViewModel {
   PartOfSpeech getConjugationPos() {
     return _conjugationUtils.getPartOfSpeech(vocab)!;
   }
+
+  void openExampleInAnalysis(VocabExample example) {
+    _navigationService.navigateTo(
+      Routes.textAnalysisView,
+      arguments: TextAnalysisViewArguments(initialText: example.japanese),
+    );
+  }
 }

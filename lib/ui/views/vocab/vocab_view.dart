@@ -462,6 +462,7 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
         for (var example in viewModel.vocab.definitions[i].examples!) {
           List<RubyTextData> data = [];
           for (var token in example.tokens) {
+            // Add main pairs
             for (var rubyPair in token.rubyTextPairs) {
               data.add(
                 RubyTextData(
@@ -470,20 +471,48 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
                 ),
               );
             }
+            // Add any trailing pairs
+            if (token.trailing != null) {
+              for (var trailing in token.trailing!) {
+                for (var rubyPair in trailing.rubyTextPairs) {
+                  data.add(
+                    RubyTextData(
+                      rubyPair.writing,
+                      ruby: rubyPair.reading,
+                    ),
+                  );
+                }
+              }
+            }
           }
 
           children.addAll(
             [
-              RubyText(
-                data,
-                style: const TextStyle(letterSpacing: 0, height: 1.1),
+              InkWell(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RubyText(
+                        data,
+                        style: const TextStyle(letterSpacing: 0, height: 1.1),
+                      ),
+                      Text(example.english),
+                      Text(
+                        'Applies to definition ${i + 1}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () => viewModel.openExampleInAnalysis(example),
               ),
-              Text(example.english),
-              Text(
-                'Applies to definition ${i + 1}',
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
-              ),
-              const Divider(),
+              const Divider(indent: 8, endIndent: 8),
             ],
           );
         }
@@ -497,14 +526,16 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
       children.removeLast();
     }
 
-    return CardWithTitleSection(
-      title: 'Examples',
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
+    return SelectionContainer.disabled(
+      child: CardWithTitleSection(
+        title: 'Examples',
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
         ),
       ),
     );

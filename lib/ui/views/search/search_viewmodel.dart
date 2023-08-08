@@ -151,4 +151,8 @@ class SearchViewModel extends BaseViewModel {
       if (redoSearch) searchOnChange(_searchString, allowSkip: false);
     }
   }
+
+  void navigateToTextAnalysis() {
+    _navigationService.navigateTo(Routes.textAnalysisView);
+  }
 }

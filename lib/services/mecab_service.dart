@@ -87,11 +87,55 @@ class MecabService {
         ));
       }
 
-      list.add(JapaneseTextToken(
+      // Get part of speech that helps certain searches
+      PartOfSpeech? pos;
+      if (tokens[i].features[0] == '助詞') {
+        pos = PartOfSpeech.particle;
+      } else if (tokens[i].features[4] == 'サ変・スル') {
+        pos = PartOfSpeech.verbSuruIncluded;
+      }
+
+      // Handle corner cases where the base form (index 6) is different than the real base form
+      String base = tokens[i].features[6];
+      if (tokens[i].surface == 'なら' && tokens[i].features[6] == 'だ') {
+        base = 'なら';
+      }
+
+      // Created token to add to list or trailing of previous token
+      final current = JapaneseTextToken(
         original: tokens[i].surface,
-        base: tokens[i].features[4],
+        base: base,
+        baseReading: tokens[i].features[7],
         rubyTextPairs: rubyTextPairs,
-      ));
+        pos: pos,
+      );
+
+      // Check if the current token should be trailing of previous token
+      if (i > 0) {
+        if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
+          list.last.trailing ??= [];
+          list.last.trailing!.add(current);
+          continue;
+        } else if (tokens[i].features[0] == '助動詞') {
+          if (tokens[i].features[6] == 'う' ||
+              tokens[i].features[6] == 'た' ||
+              tokens[i].features[6] == 'ます' ||
+              tokens[i].features[6] == 'ん' ||
+              tokens[i].features[6] == 'ない' ||
+              tokens[i].features[7] == 'ナ') {
+            list.last.trailing ??= [];
+            list.last.trailing!.add(current);
+            continue;
+          }
+        } else if (tokens[i].features[1] == '非自立' &&
+            tokens[i].features[6] == 'ん') {
+          list.last.trailing ??= [];
+          list.last.trailing!.add(current);
+          continue;
+        }
+      }
+
+      list.add(current);
     }
 
     return list;

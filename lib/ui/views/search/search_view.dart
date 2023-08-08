@@ -389,18 +389,28 @@ class _SearchHistory extends ViewModelWidget<SearchViewModel> {
               'Recent searches',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            trailing: TextButton.icon(
-              icon: const Icon(Icons.paste),
-              label: const Text('Paste'),
-              onPressed: () async {
-                final cdata = await Clipboard.getData(Clipboard.kTextPlain);
-                if (cdata?.text != null) {
-                  searchController.text = cdata!.text!;
-                  searchController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: cdata.text!.length));
-                  viewModel.searchOnChange(cdata.text!);
-                }
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.text_snippet),
+                  label: const Text('Analyze'),
+                  onPressed: viewModel.navigateToTextAnalysis,
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.paste),
+                  label: const Text('Paste'),
+                  onPressed: () async {
+                    final cdata = await Clipboard.getData(Clipboard.kTextPlain);
+                    if (cdata?.text != null) {
+                      searchController.text = cdata!.text!;
+                      searchController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: cdata.text!.length));
+                      viewModel.searchOnChange(cdata.text!);
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           Expanded(

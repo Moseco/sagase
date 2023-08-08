@@ -53,7 +53,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '8770958'
+      ref: '93f7360'
 
 dev_dependencies:
   flutter_test:

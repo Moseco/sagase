@@ -472,6 +472,81 @@ class IsarService {
     return _isar.vocabs.get(id);
   }
 
+  Future<List<Vocab>> getVocabByJapaneseTextToken(
+    JapaneseTextToken token,
+  ) async {
+    final baseQuery = _isar.vocabs
+        .where()
+        .japaneseTextIndexElementEqualTo(_kanaKit.toHiragana(token.base));
+
+    late List<Vocab> results;
+    // If text contains kanji, add filter for reading
+    if (token.base.contains(constants.kanjiRegExp)) {
+      results = await baseQuery
+          .filter()
+          .japaneseTextIndexElementEqualTo(
+              _kanaKit.toHiragana(token.baseReading))
+          .findAll();
+
+      // If nothing was found, try again with only base query
+      if (results.isEmpty) results = await baseQuery.findAll();
+    } else {
+      results = await baseQuery.findAll();
+    }
+
+    if (results.length <= 1) return results;
+
+    // Check part of speech
+    if (token.pos != null) {
+      for (int i = 0; i < results.length; i++) {
+        bool removeCurrent = true;
+        for (var definition in results[i].definitions) {
+          if (definition.pos != null && definition.pos!.contains(token.pos)) {
+            removeCurrent = false;
+            break;
+          }
+        }
+        if (removeCurrent) results.removeAt(i--);
+      }
+
+      if (results.length <= 1) return results;
+    }
+
+    // If only kana, try to limit returned vocab
+    if (_kanaKit.isKana(token.base)) {
+      List<Vocab> list = List.from(results);
+      // Remove vocab not usually written only with kana
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].kanjiReadingPairs[0].kanjiWritings != null &&
+            !list[i].isUsuallyKanaAlone()) {
+          list.removeAt(i--);
+        }
+      }
+
+      if (list.length == 1) {
+        return list;
+      } else if (list.isEmpty) {
+        list = List.from(results);
+      }
+
+      // Remove vocab with reading not in the first kanji reading pair
+      for (int i = 0; i < list.length; i++) {
+        bool removeCurrent = true;
+        for (var reading in list[i].kanjiReadingPairs[0].readings) {
+          if (token.base == reading.reading) {
+            removeCurrent = false;
+            break;
+          }
+        }
+        if (removeCurrent) list.removeAt(i--);
+      }
+
+      if (list.isNotEmpty) return list..sort(_compareVocab);
+    }
+
+    return results..sort(_compareVocab);
+  }
+
   Future<Kanji?> getKanji(String kanji) async {
     return _isar.kanjis.getByKanji(kanji);
   }

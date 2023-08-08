@@ -3,6 +3,7 @@ import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
+import 'package:sagase/ui/bottom_sheets/select_vocab_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
@@ -34,6 +35,7 @@ import 'package:sagase/ui/views/search/search_view.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:sagase/ui/views/settings/settings_view.dart';
 import 'package:sagase/ui/views/splash_screen/splash_screen_view.dart';
+import 'package:sagase/ui/views/text_analysis/text_analysis_view.dart';
 import 'package:sagase/ui/views/vocab/vocab_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
@@ -67,6 +69,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
+    MaterialRoute(page: TextAnalysisView),
     MaterialRoute(page: DevView),
   ],
   dependencies: [
@@ -94,6 +97,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedBottomsheet(classType: AssignMyListsBottomSheet),
     StackedBottomsheet(classType: AssignListsBottomSheet),
     StackedBottomsheet(classType: StrokeOrderBottomSheet),
+    StackedBottomsheet(classType: SelectVocabBottomSheet),
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),
