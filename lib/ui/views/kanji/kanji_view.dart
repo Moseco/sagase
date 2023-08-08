@@ -199,7 +199,7 @@ class KanjiView extends StatelessWidget {
                 child: CardWithTitleSection(
                   title: 'Radical',
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: kanji.radical.isLoaded
                         ? _KanjiRadicalItem(
                             radical: kanji.radical.value!,
@@ -216,7 +216,7 @@ class KanjiView extends StatelessWidget {
                     child: ListView.builder(
                       shrinkWrap: true,
                       primary: false,
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       itemCount: kanji.componentLinks.length,
                       itemBuilder: (context, index) =>
                           kanji.componentLinks.isLoaded
