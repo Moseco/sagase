@@ -224,7 +224,10 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           color: Colors.deepPurple,
-          child: const Text('Vocab found in text'),
+          child: const Text(
+            'Vocab found in text',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         Expanded(
           child: ListView.separated(
