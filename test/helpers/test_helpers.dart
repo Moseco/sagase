@@ -66,7 +66,7 @@ MockIsarService getAndRegisterIsarService() {
 
 Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
   _removeRegistrationIfExists<IsarService>();
-  final service = await IsarService.initialize(testingIsar: isar);
+  final service = IsarService(isar: isar);
   locator.registerSingleton<IsarService>(service);
   return service;
 }

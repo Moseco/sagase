@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:flutter/material.dart' show visibleForTesting;
@@ -27,7 +28,7 @@ class IsarService {
     SearchHistoryItemSchema,
   ];
 
-  final Isar _isar;
+  late final Isar _isar;
 
   final _kanaKit = const KanaKit().copyWithConfig(passRomaji: true);
 
@@ -36,25 +37,32 @@ class IsarService {
   List<MyDictionaryList>? _myDictionaryLists;
   List<MyDictionaryList>? get myDictionaryLists => _myDictionaryLists;
 
-  IsarService(this._isar);
+  IsarService({Isar? isar}) {
+    if (isar != null) _isar = isar;
+  }
 
-  // Optional argument for testing
-  static Future<IsarService> initialize({Isar? testingIsar}) async {
-    if (testingIsar != null) return IsarService(testingIsar);
+  Future<DictionaryStatus> initialize({bool validate = true}) async {
+    try {
+      _isar = await Isar.open(
+        schemas,
+        directory: (await path_provider.getApplicationSupportDirectory()).path,
+      );
 
-    final isar = await Isar.open(
-      schemas,
-      directory: (await path_provider.getApplicationSupportDirectory()).path,
-    );
-
-    return IsarService(isar);
+      if (validate) {
+        return _validateDictionary();
+      } else {
+        return DictionaryStatus.valid;
+      }
+    } catch (_) {
+      return DictionaryStatus.invalid;
+    }
   }
 
   Future<void> close() async {
     await _isar.close();
   }
 
-  Future<DictionaryStatus> validateDictionary() async {
+  Future<DictionaryStatus> _validateDictionary() async {
     // If dictionary info does not exist, this is a fresh install
     final dictionaryInfo = await _isar.dictionaryInfos.get(0);
     if (dictionaryInfo == null) {
@@ -1033,30 +1041,38 @@ class IsarService {
     // Copy db_export.zip asset to temporary directory file
     final ByteData byteData =
         await rootBundle.load('assets/dictionary_source/db_export.zip');
-    final newDbZipBytes = byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-    final tempDir = await path_provider.getTemporaryDirectory();
-    final File newDbZipFile = File('${tempDir.path}/db_export.zip');
-    await newDbZipFile.writeAsBytes(newDbZipBytes);
 
-    // Extract zip to application support directory
-    final appSupportDir = await path_provider.getApplicationSupportDirectory();
-    await archive.extractFileToDisk(newDbZipFile.path, appSupportDir.path);
+    // Start isolate to handle import
+    final rootIsolateToken = RootIsolateToken.instance!;
+    await Isolate.run(() async {
+      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
 
-    // If upgrading from older database, transfer user data
-    if (status == DictionaryStatus.outOfDate) {
-      await IsarService.transferUserData();
-    }
+      final newDbZipBytes = byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+      final tempDir = await path_provider.getTemporaryDirectory();
+      final File newDbZipFile = File('${tempDir.path}/db_export.zip');
+      await newDbZipFile.writeAsBytes(newDbZipBytes);
 
-    // Remove old database file, rename new one, delete temp file
-    final File oldDbFile = File('${appSupportDir.path}/default.isar');
-    if (await oldDbFile.exists()) {
-      await oldDbFile.delete();
-      await File('${appSupportDir.path}/default.isar.lock').delete();
-    }
-    await File('${appSupportDir.path}/db_export.isar')
-        .rename('${appSupportDir.path}/default.isar');
-    await newDbZipFile.delete();
+      // Extract zip to application support directory
+      final appSupportDir =
+          await path_provider.getApplicationSupportDirectory();
+      await archive.extractFileToDisk(newDbZipFile.path, appSupportDir.path);
+
+      // If upgrading from older database, transfer user data
+      if (status == DictionaryStatus.outOfDate) {
+        await IsarService.transferUserData();
+      }
+
+      // Remove old database file, rename new one, delete temp file
+      final File oldDbFile = File('${appSupportDir.path}/default.isar');
+      if (await oldDbFile.exists()) {
+        await oldDbFile.delete();
+        await File('${appSupportDir.path}/default.isar.lock').delete();
+      }
+      await File('${appSupportDir.path}/db_export.isar')
+          .rename('${appSupportDir.path}/default.isar');
+      await newDbZipFile.delete();
+    });
   }
 
   // Optional arguments included for testing
@@ -1071,7 +1087,7 @@ class IsarService {
           directory:
               (await path_provider.getApplicationSupportDirectory()).path,
         );
-    final path = await IsarService(oldIsar).exportUserData();
+    final path = await IsarService(isar: oldIsar).exportUserData();
     final historyResult = await oldIsar.searchHistoryItems.where().findAll();
     if (testingOldIsar == null) await oldIsar.close();
 
@@ -1083,7 +1099,7 @@ class IsarService {
               (await path_provider.getApplicationSupportDirectory()).path,
           name: 'db_export',
         );
-    await IsarService(newIsar).importUserData(path);
+    await IsarService(isar: newIsar).importUserData(path);
     File(path).delete();
     await newIsar.writeTxn(() async {
       for (var history in historyResult) {

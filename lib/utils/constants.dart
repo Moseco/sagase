@@ -2,6 +2,7 @@ const int nestedNavigationKey = 1;
 
 final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
 
+const keyOnboardingFinished = 'onboarding_finished';
 const keyInitialCorrectInterval = 'initial_correct_interval';
 const keyInitialVeryCorrectInterval = 'initial_very_correct_interval';
 const keyShowNewInterval = 'show_new_interval';

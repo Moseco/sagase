@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -26,28 +27,46 @@ class MecabService {
   final _mecab = Mecab();
   final _kanaKit = const KanaKit();
 
-  Future<void> initialize() async {
-    // Set up directory
+  Future<bool> initialize() async {
+    // Check if directory exists
     String mecabDir = path.join(
       (await path_provider.getApplicationSupportDirectory()).path,
       'mecab',
     );
-    await Directory(mecabDir).create(recursive: true);
+    if (!(await Directory(mecabDir).exists())) return false;
 
     // Check if files exist
-    bool extractFiles = false;
     for (var file in mecabFiles) {
       if (!(await File('$mecabDir/$file').exists())) {
-        extractFiles = true;
-        break;
+        return false;
       }
     }
 
-    // Extract files from assets of required
-    if (extractFiles) {
+    // Initialize mecab
+    _mecab.initWithIpadicDir(mecabDir, true);
+
+    return true;
+  }
+
+  Future<void> extractFiles() async {
+    // Get zip data
+    final ByteData byteData = await rootBundle.load('assets/mecab/ipadic.zip');
+
+    // Start isolate to handle exacting files
+    final rootIsolateToken = RootIsolateToken.instance!;
+    await Isolate.run(() async {
+      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+      // Set up directory
+      String mecabDir = path.join(
+        (await path_provider.getApplicationSupportDirectory()).path,
+        'mecab',
+      );
+      final dir = Directory(mecabDir);
+      // If directory already exists, delete it first to avoid conflicting files
+      if (await dir.exists()) await dir.delete(recursive: true);
+      await dir.create(recursive: true);
+
       // Copy zip to temporary directory file
-      final ByteData byteData =
-          await rootBundle.load('assets/mecab/ipadic.zip');
       final ipadicZipBytes = byteData.buffer
           .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
       final tempDir = await path_provider.getTemporaryDirectory();
@@ -59,10 +78,7 @@ class MecabService {
 
       // Remove the temp file
       await ipadicZipFile.delete();
-    }
-
-    // Initialize mecab
-    _mecab.initWithIpadicDir(mecabDir, true);
+    });
   }
 
   List<JapaneseTextToken> parseText(String text) {

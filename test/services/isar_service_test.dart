@@ -142,7 +142,7 @@ void main() {
       await setUpFakePathProvider();
       Isar isar = await setUpIsar();
 
-      final service = IsarService(isar);
+      final service = IsarService(isar: isar);
       String path = await service.exportUserData();
       final file = File(path);
 
@@ -231,7 +231,7 @@ void main() {
         await isar.kanjis.put(kanji3);
       });
 
-      final service = IsarService(isar);
+      final service = IsarService(isar: isar);
 
       // Create my dictionary list
       await service.getMyDictionaryLists();
@@ -373,7 +373,7 @@ void main() {
       // Set up
       await setUpFakePathProvider();
       Isar isar = await setUpIsar();
-      final service = IsarService(isar);
+      final service = IsarService(isar: isar);
 
       final result = service.sortByDefinition([
         Vocab()

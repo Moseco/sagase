@@ -32,6 +32,7 @@ dependencies:
   flutter_sticky_header: ^0.6.5
   shimmer: ^3.0.0
   ruby_text: ^3.0.3
+  introduction_screen: ^3.1.11
 
   # Other
   isar: ^3.1.0+1

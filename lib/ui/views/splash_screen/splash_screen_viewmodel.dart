@@ -3,57 +3,63 @@ import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
-class SplashScreenViewModel extends BaseViewModel {
+class SplashScreenViewModel extends FutureViewModel {
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _navigationService = locator<NavigationService>();
+  final _isarService = locator<IsarService>();
   final _digitalInkService = locator<DigitalInkService>();
   final _mecabService = locator<MecabService>();
 
-  _Status _status = _Status.waiting;
+  SplashScreenStatus _status = SplashScreenStatus.waiting;
+  SplashScreenStatus get status => _status;
+
+  @override
+  Future<void> futureToRun() async {
+    await initialize();
+  }
 
   Future<void> initialize() async {
-    IsarService? isarService;
-    late DictionaryStatus status;
-    if (kDebugMode) {
-      // Debug mode, just open IsarService
-      isarService = await IsarService.initialize();
-    } else {
-      // Not debug mode, validate and import database
-      try {
-        isarService = await IsarService.initialize();
-        status = await isarService.validateDictionary();
-      } catch (_) {
-        // Something went wrong opening the database
-        status = DictionaryStatus.invalid;
-      }
+    // Navigate to onboarding if needed and keep track of the future
+    Future<dynamic>? onboardingNavigation;
+    if (!_sharedPreferencesService.getOnboardingFinished()) {
+      await Future.delayed(Duration.zero);
+      onboardingNavigation = _navigationService.navigateToOnboardingView();
+    }
 
-      // If database is not valid, import new version
-      if (status != DictionaryStatus.valid) {
-        _status = status == DictionaryStatus.invalid
-            ? _Status.importingDatabase
-            : _Status.upgradingDatabase;
-        notifyListeners();
-        await isarService?.close();
-        try {
-          await IsarService.importDatabase(status);
-          isarService = await IsarService.initialize();
-        } catch (_) {
-          // Something went wrong importing database
-          _status = _Status.databaseError;
-          notifyListeners();
-          return;
-        }
+    // Initialize isar service and skip validation if in debug mode
+    DictionaryStatus status =
+        await _isarService.initialize(validate: !kDebugMode);
+    if (status != DictionaryStatus.valid) {
+      _status = status == DictionaryStatus.invalid
+          ? SplashScreenStatus.importingDictionary
+          : SplashScreenStatus.upgradingDictionary;
+      rebuildUi();
+
+      await _isarService.close();
+      try {
+        await IsarService.importDatabase(status);
+        final isarService = IsarService();
+        await isarService.initialize();
+
+        locator.removeRegistrationIfExists<IsarService>();
+        locator.registerSingleton<IsarService>(isarService);
+      } catch (_) {
+        // Something went wrong importing database
+        _status = SplashScreenStatus.databaseError;
+        rebuildUi();
+        return;
       }
     }
 
     // Initialize digital ink service
-    if (!_digitalInkService.ready) {
-      _status = _Status.downloadingModel;
-      notifyListeners();
+    if (!(await _digitalInkService.initialize())) {
+      _status = SplashScreenStatus.downloadingDigitalInk;
+      rebuildUi();
       // Don't keep user waiting a long time for model to download
       // The model will download in the background after 5 seconds if not finished
       await Future.any([
@@ -63,38 +69,25 @@ class SplashScreenViewModel extends BaseViewModel {
     }
 
     // Initialize mecab service;
-    await _mecabService.initialize();
+    if (!(await _mecabService.initialize())) {
+      _status = SplashScreenStatus.importingMecab;
+      rebuildUi();
+      await _mecabService.extractFiles();
+      await _mecabService.initialize();
+    }
 
-    // Register instance with locator
-    StackedLocator.instance.registerSingleton(isarService!);
+    if (onboardingNavigation != null) await onboardingNavigation;
 
     // Finally, navigate to home
     _navigationService.replaceWith(Routes.homeView);
   }
-
-  String getStatusText() {
-    switch (_status) {
-      case _Status.waiting:
-        return '';
-      case _Status.importingDatabase:
-        return 'Preparing dictionary\nShould take less than 30 seconds';
-      case _Status.upgradingDatabase:
-        return 'Upgrading dictionary\nThis can take about 30 seconds';
-      case _Status.downloadingModel:
-        return 'Preparing handwriting recognition';
-      case _Status.preparingMecab:
-        return 'Preparing Japanese text analyzer';
-      case _Status.databaseError:
-        return 'Something is wrong with the dictionary';
-    }
-  }
 }
 
-enum _Status {
+enum SplashScreenStatus {
   waiting,
-  importingDatabase,
-  upgradingDatabase,
-  downloadingModel,
-  preparingMecab,
+  importingDictionary,
+  downloadingDigitalInk,
+  importingMecab,
+  upgradingDictionary,
   databaseError,
 }

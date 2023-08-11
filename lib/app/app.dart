@@ -1,4 +1,5 @@
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
@@ -31,6 +32,7 @@ import 'package:sagase/ui/views/kanji_compounds/kanji_compounds_view.dart';
 import 'package:sagase/ui/views/kanji_radicals/kanji_radicals_view.dart';
 import 'package:sagase/ui/views/learning/learning_view.dart';
 import 'package:sagase/ui/views/learning/learning_viewmodel.dart';
+import 'package:sagase/ui/views/onboarding/onboarding_view.dart';
 import 'package:sagase/ui/views/search/search_view.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:sagase/ui/views/settings/settings_view.dart';
@@ -70,19 +72,17 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
     MaterialRoute(page: TextAnalysisView),
+    MaterialRoute(page: OnboardingView),
     MaterialRoute(page: DevView),
   ],
   dependencies: [
-    // IsarService is registered in SplashScreen to catch errors
     LazySingleton(classType: NavigationService),
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: SnackbarService),
-    Presolve(
-      classType: DigitalInkService,
-      presolveUsing: DigitalInkService.initialize,
-    ),
     InitializableSingleton(classType: SharedPreferencesService),
+    LazySingleton(classType: IsarService),
+    LazySingleton(classType: DigitalInkService),
     LazySingleton(classType: MecabService),
     LazySingleton(
       classType: ThemeService,

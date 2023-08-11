@@ -10,6 +10,14 @@ class SharedPreferencesService implements InitializableDependency {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
 
+  bool getOnboardingFinished() {
+    return _sharedPreferences.getBool(constants.keyOnboardingFinished) ?? false;
+  }
+
+  Future<void> setOnboardingFinished() async {
+    await _sharedPreferences.setBool(constants.keyOnboardingFinished, true);
+  }
+
   int getInitialCorrectInterval() {
     return _sharedPreferences.getInt(constants.keyInitialCorrectInterval) ??
         constants.defaultInitialCorrectInterval;
