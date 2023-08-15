@@ -14,7 +14,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 ### Generate files with the following command:
 
-```flutter pub run build_runner build --delete-conflicting-outputs```
+```dart run build_runner build --delete-conflicting-outputs```
 
 ## Feature list
 
@@ -58,6 +58,7 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
     - [x] Vocab
     - [x] Kanji
     - [x] Hand writing character recognition
+- [x] Text analysis
 - [x] Kanji radicals
     - [x] 214 classic kanji radicals
     - [x] Meaning

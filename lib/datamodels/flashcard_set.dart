@@ -3,8 +3,6 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 part 'flashcard_set.g.dart';
 
-// Run the following to generate files
-//    flutter pub run build_runner build --delete-conflicting-outputs
 @Collection()
 class FlashcardSet {
   Id id = Isar.autoIncrement;

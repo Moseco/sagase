@@ -16,8 +16,6 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'fake_path_provider_platform.dart';
 import 'test_helpers.mocks.dart';
 
-// Run the following to generate files
-//    flutter pub run build_runner build --delete-conflicting-outputs
 @GenerateMocks([], customMocks: [
   MockSpec<NavigationService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.throwException),
