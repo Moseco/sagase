@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/ui/widgets/home_header.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -7,14 +6,14 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'lists_viewmodel.dart';
 
 class ListsView extends StatelessWidget {
-  const ListsView({super.key});
+  final ListSelection? selection;
+
+  const ListsView({this.selection, super.key});
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ListsViewModel>.reactive(
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
-      viewModelBuilder: () => locator<ListsViewModel>(),
+      viewModelBuilder: () => ListsViewModel(selection),
       builder: (context, viewModel, child) => Scaffold(
         body: HomeHeader(
           title: Row(
@@ -23,12 +22,11 @@ class ListsView extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: IconButton(
+                child: BackButton(
                   onPressed: () => viewModel.back(),
                   color: viewModel.listSelection == null
                       ? Colors.transparent
                       : Colors.white,
-                  icon: const Icon(Icons.arrow_back),
                 ),
               ),
               Expanded(
@@ -54,16 +52,7 @@ class ListsView extends StatelessWidget {
               ),
             ],
           ),
-          child: WillPopScope(
-            onWillPop: () async {
-              if (viewModel.listSelection != null) {
-                viewModel.back();
-                return false;
-              }
-              return true;
-            },
-            child: _Body(),
-          ),
+          child: _Body(),
         ),
       ),
     );

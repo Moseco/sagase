@@ -1,6 +1,8 @@
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/ui/views/lists/lists_view.dart';
+import 'package:sagase/utils/constants.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
@@ -16,6 +18,17 @@ class ListsViewModel extends BaseViewModel {
 
   List<DictionaryList>? get myDictionaryLists => _isarService.myDictionaryLists;
 
+  ListsViewModel(ListSelection? listSelection) {
+    _listSelection = listSelection;
+    // If opening my lists, load them
+    if (listSelection == ListSelection.myLists) _loadMyLists();
+  }
+
+  Future<void> _loadMyLists() async {
+    await _isarService.getMyDictionaryLists();
+    notifyListeners();
+  }
+
   void navigateToKana() {
     _navigationService.navigateTo(Routes.kanaView);
   }
@@ -25,23 +38,16 @@ class ListsViewModel extends BaseViewModel {
   }
 
   Future<void> setListSelection(ListSelection? selection) async {
-    _listSelection = selection;
-    notifyListeners();
-    // If opening my lists and they are not loaded, load them
-    if (selection == ListSelection.myLists) {
-      await _isarService.getMyDictionaryLists();
-      notifyListeners();
-    }
+    _navigationService.navigateToView(
+      ListsView(selection: selection),
+      id: nestedNavigationKey,
+      popGesture: true,
+      preventDuplicates: false,
+    );
   }
 
   void back() {
-    if (_listSelection == null) return;
-    if (_listSelection!.index >= ListSelection.jlptKanji.index) {
-      _listSelection = ListSelection.kanji;
-    } else {
-      _listSelection = null;
-    }
-    notifyListeners();
+    _navigationService.back(id: nestedNavigationKey);
   }
 
   Future<void> navigateToPredefinedDictionaryList(int id) async {

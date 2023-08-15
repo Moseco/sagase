@@ -24,7 +24,6 @@ import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_links_list/kanji_links_view.dart';
 import 'package:sagase/ui/views/kanji_radical/kanji_radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
-import 'package:sagase/ui/views/lists/lists_viewmodel.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kana/kana_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
@@ -90,7 +89,6 @@ import 'package:stacked_themes/stacked_themes.dart';
     ),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
-    LazySingleton(classType: ListsViewModel),
     LazySingleton(classType: LearningViewModel),
   ],
   bottomsheets: [
