@@ -230,4 +230,16 @@ class SettingsViewModel extends BaseViewModel {
       );
     }
   }
+
+  Future<void> setAppTheme() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.themeSelection,
+      data: _themeService.selectedThemeMode,
+      barrierDismissible: true,
+    );
+
+    if (response?.data != null) {
+      _themeService.setThemeMode(response!.data);
+    }
+  }
 }

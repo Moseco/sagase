@@ -14,6 +14,7 @@ import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
 import 'package:sagase/ui/dialogs/search_filter_dialog.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
+import 'package:sagase/ui/dialogs/theme_selection_dialog.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
@@ -100,6 +101,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: ProgressIndicatorDialog),
     StackedDialog(classType: FontSelectionDialog),
     StackedDialog(classType: SearchFilterDialog),
+    StackedDialog(classType: ThemeSelectionDialog),
   ],
 )
 class AppSetup {
