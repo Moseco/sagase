@@ -84,9 +84,12 @@ flutter:
   uses-material-design: true
 
   assets:
+    # Dictionary file
     - assets/dictionary_source/db_export.zip
     # Kanji radical positions images
     - assets/images/kanji_radical_positions/
     # Files for mecab
     - assets/mecab/ipadic.zip
+    # App Icon
+    - assets/images/icon.png
     

@@ -256,4 +256,8 @@ class SettingsViewModel extends BaseViewModel {
       _snackbarService.showSnackbar(message: 'Failed to open form');
     }
   }
+
+  void navigateToAbout() {
+    _navigationService.navigateTo(Routes.aboutView);
+  }
 }
