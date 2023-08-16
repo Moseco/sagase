@@ -127,6 +127,10 @@ class SettingsView extends StatelessWidget {
               SettingsSection(
                 title: const Text('About Sagase'),
                 tiles: [
+                  SettingsTile.navigation(
+                    title: const Text('Submit feedback'),
+                    onPressed: (_) => viewModel.openFeedback(),
+                  ),
                   SettingsTile(
                     leading: const Icon(Icons.info),
                     title: const Text('App version 0.8.0'),

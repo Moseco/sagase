@@ -11,6 +11,7 @@ import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
@@ -240,6 +241,19 @@ class SettingsViewModel extends BaseViewModel {
 
     if (response?.data != null) {
       _themeService.setThemeMode(response!.data);
+    }
+  }
+
+  Future<void> openFeedback() async {
+    try {
+      if (!await launchUrl(
+        Uri.parse(
+            r'https://docs.google.com/forms/d/e/1FAIpQLSeXqXf_b4Xvi_t5JuhpwTYsYmVLnQ9AwV7aIHwvvFFT25j42Q/viewform?usp=sf_link'),
+      )) {
+        _snackbarService.showSnackbar(message: 'Failed to open form');
+      }
+    } catch (_) {
+      _snackbarService.showSnackbar(message: 'Failed to open form');
     }
   }
 }
