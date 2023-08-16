@@ -7,41 +7,56 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class LearningViewModel extends BaseViewModel {
-  final _navigationService = locator<NavigationService>();
   final _isarService = locator<IsarService>();
+  final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
 
-  FlashcardSet? _recentFlashcardSet;
-  FlashcardSet? get recentFlashcardSet => _recentFlashcardSet;
+  List<FlashcardSet>? _flashcardSets;
+  List<FlashcardSet>? get flashcardSets => _flashcardSets;
 
   LearningViewModel() {
-    _loadRecentFlashcardSet();
+    _loadFlashcardSets();
   }
 
-  Future<void> _loadRecentFlashcardSet() async {
-    _recentFlashcardSet = await _isarService.getRecentFlashcardSet();
-    notifyListeners();
+  Future<void> _loadFlashcardSets() async {
+    _flashcardSets = await _isarService.getFlashcardSets();
+    rebuildUi();
   }
 
-  Future<void> navigateToFlashcardSets() async {
-    await _navigationService.navigateTo(Routes.flashcardSetsView);
-    // Reload recent flashcard set
-    _recentFlashcardSet = null;
-    _loadRecentFlashcardSet();
+  Future<void> createFlashcardSet() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.textField,
+      title: 'Create flashcards',
+      description: 'Name',
+      mainButtonTitle: 'Create',
+      barrierDismissible: true,
+    );
+
+    String? name = response?.data?.trim();
+    if (name == null || name.isEmpty) return;
+
+    final flashcardSet = await _isarService.createFlashcardSet(name);
+    if (_flashcardSets != null) {
+      _flashcardSets!.insert(0, flashcardSet);
+      rebuildUi();
+    }
+
+    editFlashcardSet(flashcardSet);
   }
 
-  void openRecentFlashcardSet() {
-    if (recentFlashcardSet == null) return;
-
+  void openFlashcardSet(FlashcardSet flashcardSet) {
     _navigationService.navigateTo(
       Routes.flashcardsView,
-      arguments: FlashcardsViewArguments(flashcardSet: recentFlashcardSet!),
+      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
     );
+    // Move flashcard set to top of the list
+    _flashcardSets!.remove(flashcardSet);
+    _flashcardSets!.insert(0, flashcardSet);
+    rebuildUi();
   }
 
-  Future<void> selectFlashcardStartMode() async {
-    if (recentFlashcardSet == null ||
-        !recentFlashcardSet!.usingSpacedRepetition) return;
+  Future<void> selectFlashcardStartMode(FlashcardSet flashcardSet) async {
+    if (!flashcardSet.usingSpacedRepetition) return;
 
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.flashcardStart,
@@ -53,34 +68,33 @@ class LearningViewModel extends BaseViewModel {
     _navigationService.navigateTo(
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(
-        flashcardSet: recentFlashcardSet!,
+        flashcardSet: flashcardSet,
         startMode: response!.data,
       ),
     );
   }
 
-  Future<void> editRecentFlashcardSet() async {
-    if (recentFlashcardSet == null) return;
-
+  Future<void> editFlashcardSet(FlashcardSet flashcardSet) async {
+    DateTime initialDateTime = flashcardSet.timestamp;
     final result = await _navigationService.navigateTo(
       Routes.flashcardSetSettingsView,
-      arguments:
-          FlashcardSetSettingsViewArguments(flashcardSet: recentFlashcardSet!),
+      arguments: FlashcardSetSettingsViewArguments(flashcardSet: flashcardSet),
     );
     // If receive true as result, the flashcard set was deleted
     if (result ?? false) {
-      _recentFlashcardSet = null;
-      notifyListeners();
+      _flashcardSets!.remove(flashcardSet);
+    } else if (initialDateTime != flashcardSet.timestamp) {
+      // If timestamp was changed, move flashcard set to top of the list
+      _flashcardSets!.remove(flashcardSet);
+      _flashcardSets!.insert(0, flashcardSet);
     }
+    rebuildUi();
   }
 
-  void openRecentFlashcardSetInfo() async {
-    if (recentFlashcardSet == null) return;
-
+  void openFlashcardSetInfo(FlashcardSet flashcardSet) async {
     _navigationService.navigateTo(
       Routes.flashcardSetInfoView,
-      arguments:
-          FlashcardSetInfoViewArguments(flashcardSet: recentFlashcardSet!),
+      arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
   }
 }

@@ -18,7 +18,6 @@ import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
 import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_view.dart';
-import 'package:sagase/ui/views/flashcard_sets/flashcard_sets_view.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_links_list/kanji_links_view.dart';
@@ -30,7 +29,6 @@ import 'package:sagase/ui/views/kanji/kanji_view.dart';
 import 'package:sagase/ui/views/kanji_compounds/kanji_compounds_view.dart';
 import 'package:sagase/ui/views/kanji_radicals/kanji_radicals_view.dart';
 import 'package:sagase/ui/views/learning/learning_view.dart';
-import 'package:sagase/ui/views/learning/learning_viewmodel.dart';
 import 'package:sagase/ui/views/onboarding/onboarding_view.dart';
 import 'package:sagase/ui/views/search/search_view.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
@@ -64,7 +62,6 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: KanjiRadicalView),
     MaterialRoute(page: KanjiLinksView),
     MaterialRoute(page: KanaView),
-    MaterialRoute(page: FlashcardSetsView),
     MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
@@ -87,7 +84,6 @@ import 'package:stacked_themes/stacked_themes.dart';
     ),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
-    LazySingleton(classType: LearningViewModel),
   ],
   bottomsheets: [
     StackedBottomsheet(classType: AssignMyListsBottomSheet),
