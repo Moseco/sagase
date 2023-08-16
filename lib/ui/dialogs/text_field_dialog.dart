@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -37,12 +38,14 @@ class TextFieldDialog extends HookWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 10),
               child: TextField(
                 controller: controller,
                 autofocus: true,
                 decoration: InputDecoration(hintText: request.description!),
                 textCapitalization: TextCapitalization.sentences,
+                maxLength: 50,
+                inputFormatters: [LengthLimitingTextInputFormatter(50)],
               ),
             ),
             GestureDetector(
