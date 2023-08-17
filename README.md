@@ -16,6 +16,12 @@ A Japanese-English dictionary and learning tool built with [Flutter](https://doc
 
 ```dart run build_runner build --delete-conflicting-outputs```
 
+### Firebase
+
+This project uses Firebase for analytics and crash reporting.
+
+See [this set up guide](https://firebase.google.com/docs/flutter/setup) for how to configure your own Firebase project.
+
 ## Feature list
 
 - [ ] Vocab dictionary

@@ -12,6 +12,7 @@ const keyFlashcardDistance = 'flashcard_distance';
 const keyFlashcardCorrectAnswersRequired = 'flashcard_correct_answers_required';
 const keyShowPitchAccent = 'show_pitch_accent';
 const keyUseJapaneseSerifFont = 'use_japanese_serif_font';
+const keyAnalyticsEnabled = 'analytics_enabled';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -22,5 +23,6 @@ const defaultFlashcardDistance = 15;
 const defaultFlashcardCorrectAnswersRequired = 3;
 const defaultShowPitchAccent = false;
 const defaultUseJapaneseSerifFont = false;
+const defaultAnalyticsEnabled = true;
 
 const searchQueryLimit = 1000;

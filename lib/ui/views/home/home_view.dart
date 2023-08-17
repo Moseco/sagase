@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -25,6 +26,9 @@ class HomeView extends StatelessWidget {
                 StackedService.nestedNavigationKey(nestedNavigationKey),
             initialRoute: HomeViewRoutes.searchView,
             router: HomeViewRouter(),
+            observers: [
+              FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+            ],
           ),
           bottomNavigationBar: viewModel.showNavigationBar
               ? SafeArea(

@@ -106,6 +106,24 @@ class SettingsView extends StatelessWidget {
               SettingsSection(
                 title: const Text('App data'),
                 tiles: [
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.analyticsEnabled,
+                    onToggle: viewModel.setAnalyticsEnabled,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Analytics collection'),
+                    description: const Text(
+                      'If enabled, the app collects basic usage analytics. No personally identifying information is collected.',
+                    ),
+                  ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.crashlyticsEnabled,
+                    onToggle: viewModel.setCrashlyticsEnabled,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Crash report collection'),
+                    description: const Text(
+                      'If enabled, the app collects crash report information to help with development. No personally identifying information is collected.',
+                    ),
+                  ),
                   SettingsTile.navigation(
                     title: const Text('Delete search history'),
                     onPressed: (_) => viewModel.deleteSearchHistory(),

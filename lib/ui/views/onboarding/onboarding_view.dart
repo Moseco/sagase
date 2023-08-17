@@ -18,10 +18,13 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
         body: IntroductionScreen(
           next: const Text('Next'),
           done: const Text('Done'),
+          showSkipButton: true,
+          skip: const Text('Skip'),
           onDone: viewModel.finishOnboarding,
-          dotsDecorator: const DotsDecorator(
+          onSkip: viewModel.finishOnboarding,
+          dotsDecorator: DotsDecorator(
             color: Colors.grey,
-            activeColor: Colors.deepPurple,
+            activeColor: Theme.of(context).colorScheme.primary,
           ),
           pages: [
             PageViewModel(
@@ -41,6 +44,41 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               title: 'Practice',
               body:
                   'Master the language with learning optimized flashcards using the built in lists, such as JLPT and Jouyou, or create your own.',
+            ),
+            PageViewModel(
+              image: const Text('設定', style: TextStyle(fontSize: 80)),
+              title: 'Settings',
+              bodyWidget: Column(
+                children: [
+                  const Text(
+                    'This app can collect basic usage analytics and crash reports. No personally identifying information is collected. You can always update your choice in the settings.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    title: const Text(
+                      'Analytics',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    value: viewModel.analyticsEnabled,
+                    onChanged: viewModel.setAnalyticsEnabled,
+                  ),
+                  SwitchListTile(
+                    title: const Text(
+                      'Crash reports',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    value: viewModel.crashlyticsEnabled,
+                    onChanged: viewModel.setCrashlyticsEnabled,
+                  ),
+                ],
+              ),
             ),
             PageViewModel(
               image: const Text('頑張って', style: TextStyle(fontSize: 80)),

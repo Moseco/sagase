@@ -1,4 +1,5 @@
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
@@ -77,6 +78,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: SnackbarService),
+    InitializableSingleton(classType: FirebaseService),
     InitializableSingleton(classType: SharedPreferencesService),
     LazySingleton(classType: IsarService),
     LazySingleton(classType: DigitalInkService),

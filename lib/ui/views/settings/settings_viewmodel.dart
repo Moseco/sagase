@@ -4,6 +4,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/themes.dart';
@@ -20,6 +21,7 @@ class SettingsViewModel extends BaseViewModel {
   final _snackbarService = locator<SnackbarService>();
   final _isarService = locator<IsarService>();
   final _themeService = locator<ThemeService>();
+  final _firebaseService = locator<FirebaseService>();
 
   bool get showNewInterval => _sharedPreferencesService.getShowNewInterval();
   bool get flashcardLearningModeEnabled =>
@@ -29,6 +31,8 @@ class SettingsViewModel extends BaseViewModel {
   int get flashcardDistance => _sharedPreferencesService.getFlashcardDistance();
   int get flashcardCorrectAnswersRequired =>
       _sharedPreferencesService.getFlashcardCorrectAnswersRequired();
+  bool get analyticsEnabled => _sharedPreferencesService.getAnalyticsEnabled();
+  bool get crashlyticsEnabled => _firebaseService.crashlyticsEnabled;
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -259,5 +263,16 @@ class SettingsViewModel extends BaseViewModel {
 
   void navigateToAbout() {
     _navigationService.navigateTo(Routes.aboutView);
+  }
+
+  void setAnalyticsEnabled(bool value) {
+    _firebaseService.setAnalyticsEnabled(value);
+    _sharedPreferencesService.setAnalyticsEnabled(value);
+    notifyListeners();
+  }
+
+  void setCrashlyticsEnabled(bool value) {
+    _firebaseService.setCrashlyticsEnabled(value);
+    notifyListeners();
   }
 }

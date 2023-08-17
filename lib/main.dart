@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/themes.dart';
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
         themeMode: themeMode,
         navigatorKey: StackedService.navigatorKey,
         onGenerateRoute: StackedRouter().onGenerateRoute,
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+        ],
       ),
     );
   }

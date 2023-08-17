@@ -118,4 +118,13 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setUseJapaneseSerifFont(bool value) async {
     await _sharedPreferences.setBool(constants.keyUseJapaneseSerifFont, value);
   }
+
+  bool getAnalyticsEnabled() {
+    return _sharedPreferences.getBool(constants.keyAnalyticsEnabled) ??
+        constants.defaultAnalyticsEnabled;
+  }
+
+  Future<void> setAnalyticsEnabled(bool value) async {
+    await _sharedPreferences.setBool(constants.keyAnalyticsEnabled, value);
+  }
 }
