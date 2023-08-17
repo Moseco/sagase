@@ -17,25 +17,48 @@ class TextAnalysisView extends StackedView<TextAnalysisViewModel> {
       TextAnalysisViewModel(initialText);
 
   @override
-  Widget builder(context, viewModel, child) {
+  Widget builder(context, viewModel, child) => const _Body();
+}
+
+class _Body extends StackedHookView<TextAnalysisViewModel> {
+  const _Body({Key? key}) : super(key: key);
+
+  @override
+  Widget builder(BuildContext context, TextAnalysisViewModel viewModel) {
+    final controller = useTextEditingController(text: viewModel.text);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Text Analysis'),
-        actions: viewModel.state == TextAnalysisState.viewing
-            ? [
-                IconButton(
-                  onPressed: viewModel.editText,
-                  icon: const Icon(Icons.edit),
-                ),
-                IconButton(
-                  onPressed: viewModel.copyText,
-                  icon: const Icon(Icons.copy),
-                ),
-              ]
-            : null,
+        actions: switch (viewModel.state) {
+          TextAnalysisState.editing => [
+              IconButton(
+                onPressed: () async {
+                  final cdata = await Clipboard.getData(Clipboard.kTextPlain);
+                  if (cdata?.text != null) {
+                    controller.text = cdata!.text!;
+                    controller.selection = TextSelection.fromPosition(
+                        TextPosition(offset: cdata.text!.length));
+                  }
+                },
+                icon: const Icon(Icons.paste),
+              ),
+            ],
+          TextAnalysisState.loading => null,
+          TextAnalysisState.viewing => [
+              IconButton(
+                onPressed: viewModel.editText,
+                icon: const Icon(Icons.edit),
+              ),
+              IconButton(
+                onPressed: viewModel.copyText,
+                icon: const Icon(Icons.copy),
+              ),
+            ],
+        },
       ),
       body: switch (viewModel.state) {
-        TextAnalysisState.editing => const _Editing(),
+        TextAnalysisState.editing => _Editing(controller),
         TextAnalysisState.loading =>
           const Center(child: CircularProgressIndicator()),
         TextAnalysisState.viewing => const _Analysis(),
@@ -44,12 +67,13 @@ class TextAnalysisView extends StackedView<TextAnalysisViewModel> {
   }
 }
 
-class _Editing extends StackedHookView<TextAnalysisViewModel> {
-  const _Editing({Key? key}) : super(key: key);
+class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
+  final TextEditingController controller;
+
+  const _Editing(this.controller, {Key? key}) : super(key: key);
 
   @override
-  Widget builder(BuildContext context, TextAnalysisViewModel viewModel) {
-    final controller = useTextEditingController(text: viewModel.text);
+  Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
     return Column(
       children: [
         Expanded(
@@ -68,6 +92,9 @@ class _Editing extends StackedHookView<TextAnalysisViewModel> {
           ),
         ),
         Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
           width: double.infinity,
           color: Colors.deepPurple,
           child: TextButton.icon(
