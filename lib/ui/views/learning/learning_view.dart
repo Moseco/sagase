@@ -76,7 +76,7 @@ class _Loading extends StatelessWidget {
           highlightColor:
               isDark ? const Color(0xFF4a4a4a) : Colors.grey.shade100,
           child: Container(
-            height: 48,
+            height: 60,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -130,9 +130,13 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
         onLongPress: () => viewModel.selectFlashcardStartMode(flashcardSet),
         child: Row(
           children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 12),
+              child: Icon(Icons.web_stories),
+            ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(left: 12),
+                padding: const EdgeInsets.only(left: 8),
                 child: Text(
                   flashcardSet.name,
                   style: const TextStyle(fontSize: 24),
@@ -146,7 +150,12 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => viewModel.openFlashcardSetInfo(flashcardSet),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.only(
+                    left: 9,
+                    right: 9,
+                    top: 18,
+                    bottom: 18,
+                  ),
                   child: const Icon(Icons.query_stats),
                 ),
               ),
@@ -154,7 +163,12 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
               behavior: HitTestBehavior.opaque,
               onTap: () => viewModel.editFlashcardSet(flashcardSet),
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.only(
+                  left: 9,
+                  right: 18,
+                  top: 18,
+                  bottom: 18,
+                ),
                 child: const Icon(Icons.edit),
               ),
             ),
