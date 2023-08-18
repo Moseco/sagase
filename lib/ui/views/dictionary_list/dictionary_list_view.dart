@@ -39,17 +39,18 @@ class DictionaryListView extends StatelessWidget {
           ),
           body: viewModel.loading
               ? const Center(child: CircularProgressIndicator())
-              : dictionaryList.vocabLinks.isNotEmpty &&
-                      dictionaryList.kanjiLinks.isNotEmpty
-                  ? TabBarView(
-                      children: [
-                        _VocabList(),
-                        _KanjiList(),
-                      ],
-                    )
-                  : dictionaryList.vocabLinks.isNotEmpty
-                      ? _VocabList()
-                      : _KanjiList(),
+              : dictionaryList.vocabLinks.isNotEmpty
+                  ? dictionaryList.kanjiLinks.isNotEmpty
+                      ? const TabBarView(
+                          children: [
+                            _VocabList(),
+                            _KanjiList(),
+                          ],
+                        )
+                      : const _VocabList()
+                  : dictionaryList.kanjiLinks.isNotEmpty
+                      ? const _KanjiList()
+                      : const _Empty(),
         ),
       ),
     );
@@ -57,6 +58,8 @@ class DictionaryListView extends StatelessWidget {
 }
 
 class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
+  const _VocabList({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, DictionaryListViewModel viewModel) {
     return ListView.separated(
@@ -79,6 +82,8 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
 }
 
 class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
+  const _KanjiList({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, DictionaryListViewModel viewModel) {
     return ListView.separated(
@@ -96,6 +101,34 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
           onPressed: () => viewModel.navigateToKanji(current),
         );
       },
+    );
+  }
+}
+
+class _Empty extends StatelessWidget {
+  const _Empty({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text:
+                    'This list is currently empty. You can add to it by pressing',
+              ),
+              WidgetSpan(child: Icon(Icons.star_border)),
+              TextSpan(
+                text: 'from any vocab or kanji page.',
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
