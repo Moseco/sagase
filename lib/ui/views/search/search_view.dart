@@ -272,6 +272,9 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                         maxLines: 1,
                         focusNode: handWritingFocusNode,
                         controller: searchController,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1000),
+                        ],
                         decoration: InputDecoration(
                           hintText: 'Search',
                           contentPadding: const EdgeInsets.symmetric(
@@ -321,6 +324,9 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                         focusNode: keyboardFocusNode,
                         controller: searchController,
                         onChanged: viewModel.searchOnChange,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1000),
+                        ],
                         decoration: InputDecoration(
                           hintText: 'Search',
                           contentPadding: const EdgeInsets.symmetric(
@@ -413,38 +419,56 @@ class _SearchHistory extends ViewModelWidget<SearchViewModel> {
               ],
             ),
           ),
-          Expanded(
-            child: ListView.separated(
-              separatorBuilder: (_, __) => const Divider(
-                height: 1,
-                indent: 8,
-                endIndent: 8,
-              ),
-              padding: EdgeInsets.zero,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              itemCount: viewModel.searchHistory.length,
-              itemBuilder: (context, index) {
-                final current = viewModel.searchHistory[index];
-                return Dismissible(
-                  key: ObjectKey(current),
-                  background: Container(color: Colors.red),
-                  onDismissed: (DismissDirection direction) {
-                    viewModel.searchHistoryItemDeleted(current);
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.search),
-                    title: Text(current.searchQuery),
-                    onTap: () {
-                      searchController.text = current.searchQuery;
-                      searchController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: current.searchQuery.length));
-                      viewModel.searchHistoryItemSelected(current);
+          viewModel.searchHistory.isEmpty
+              ? const Expanded(
+                  child: Column(
+                    children: [
+                      Spacer(),
+                      Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          'Try searching for vocab and kanji using romaji, kana, kanji, and hand writing recognition. You can also analyze whole Japanese sentences.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                )
+              : Expanded(
+                  child: ListView.separated(
+                    separatorBuilder: (_, __) => const Divider(
+                      height: 1,
+                      indent: 8,
+                      endIndent: 8,
+                    ),
+                    padding: EdgeInsets.zero,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    itemCount: viewModel.searchHistory.length,
+                    itemBuilder: (context, index) {
+                      final current = viewModel.searchHistory[index];
+                      return Dismissible(
+                        key: ObjectKey(current),
+                        background: Container(color: Colors.red),
+                        onDismissed: (DismissDirection direction) {
+                          viewModel.searchHistoryItemDeleted(current);
+                        },
+                        child: ListTile(
+                          leading: const Icon(Icons.search),
+                          title: Text(current.searchQuery),
+                          onTap: () {
+                            searchController.text = current.searchQuery;
+                            searchController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: current.searchQuery.length));
+                            viewModel.searchHistoryItemSelected(current);
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
-          )
+                )
         ],
       ),
     );
