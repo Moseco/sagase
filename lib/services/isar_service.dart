@@ -350,14 +350,14 @@ class IsarService {
       r'\b' + escapedQuery,
       caseSensitive: false,
     );
-    // Match query at the start of string or after ';' and ignore leading parenthesis
+    // Match query at the start of string or after ';' and ignore leading/trailing parenthesis
     final startingRegExp = RegExp(
-      r'(^|(; ))(\([^)]*\) )?\b' + escapedQuery,
+      r'(^|(; ))(\([^)]*\) )?\b' + escapedQuery + r'( \([^)]*\))?',
       caseSensitive: false,
     );
-    // Same as above but with end of string or sub-definition
+    // Same as above but with end of string or followed by another sub-definition
     final startingEndRegExp = RegExp(
-      r'(^|(; ))(\([^)]*\) )?\b' + escapedQuery + r'($|;)',
+      startingRegExp.pattern + r'($|;)',
       caseSensitive: false,
     );
 

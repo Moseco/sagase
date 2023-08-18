@@ -427,6 +427,21 @@ void main() {
         Vocab()
           ..id = 12
           ..definitions = [VocabDefinition()..definition = 'other; query text'],
+        Vocab()
+          ..id = 13
+          ..definitions = [VocabDefinition()..definition = 'Bad find'],
+        Vocab()
+          ..id = 14
+          ..definitions = [
+            VocabDefinition()..definition = 'query (with trailing)'
+          ],
+        Vocab()
+          ..id = 14
+          ..definitions = [
+            VocabDefinition()
+              ..definition =
+                  'other stuff; (leading) query (with trailing); more stuff'
+          ],
       ], 'query');
 
       expect(result[0][0].id, 0);
@@ -434,6 +449,7 @@ void main() {
       expect(result[0][2].id, 3);
       expect(result[0][3].id, 4);
       expect(result[0][4].id, 11);
+      expect(result[0][5].id, 14);
       expect(result[1][0].id, 1);
       expect(result[1][1].id, 5);
       expect(result[1][2].id, 12);
@@ -442,6 +458,7 @@ void main() {
       expect(result[2][2].id, 10);
       expect(result[3][0].id, 7);
       expect(result[4][0].id, 8);
+      expect(result[4][1].id, 13);
 
       await isar.close(deleteFromDisk: true);
     });
