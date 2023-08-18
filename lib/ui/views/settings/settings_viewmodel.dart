@@ -33,6 +33,8 @@ class SettingsViewModel extends BaseViewModel {
       _sharedPreferencesService.getFlashcardCorrectAnswersRequired();
   bool get analyticsEnabled => _sharedPreferencesService.getAnalyticsEnabled();
   bool get crashlyticsEnabled => _firebaseService.crashlyticsEnabled;
+  bool get startOnLearningView =>
+      _sharedPreferencesService.getStartOnLearningView();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -273,6 +275,11 @@ class SettingsViewModel extends BaseViewModel {
 
   void setCrashlyticsEnabled(bool value) {
     _firebaseService.setCrashlyticsEnabled(value);
+    notifyListeners();
+  }
+
+  void setStartOnLearningView(bool value) {
+    _sharedPreferencesService.setStartOnLearningView(value);
     notifyListeners();
   }
 }

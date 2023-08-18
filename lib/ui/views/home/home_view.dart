@@ -24,7 +24,9 @@ class HomeView extends StatelessWidget {
           body: ExtendedNavigator(
             navigatorKey:
                 StackedService.nestedNavigationKey(nestedNavigationKey),
-            initialRoute: HomeViewRoutes.searchView,
+            initialRoute: viewModel.startOnLearningView
+                ? HomeViewRoutes.learningView
+                : HomeViewRoutes.searchView,
             router: HomeViewRouter(),
             observers: [
               FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),

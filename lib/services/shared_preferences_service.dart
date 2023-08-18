@@ -127,4 +127,13 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setAnalyticsEnabled(bool value) async {
     await _sharedPreferences.setBool(constants.keyAnalyticsEnabled, value);
   }
+
+  bool getStartOnLearningView() {
+    return _sharedPreferences.getBool(constants.keyStartOnLearningView) ??
+        constants.defaultStartOnLearningView;
+  }
+
+  Future<void> setStartOnLearningView(bool value) async {
+    await _sharedPreferences.setBool(constants.keyStartOnLearningView, value);
+  }
 }

@@ -52,6 +52,12 @@ class SettingsView extends StatelessWidget {
                     title: const Text('Set app theme'),
                     onPressed: (_) => viewModel.setAppTheme(),
                   ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.startOnLearningView,
+                    onToggle: viewModel.setStartOnLearningView,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Start on learning screen'),
+                  ),
                 ],
               ),
               SettingsSection(
