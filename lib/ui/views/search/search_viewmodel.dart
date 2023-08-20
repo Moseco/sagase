@@ -1,8 +1,10 @@
 import 'package:async/async.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
+import 'package:kana_kit/kana_kit.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/services/digital_ink_service.dart';
@@ -17,6 +19,9 @@ class SearchViewModel extends BaseViewModel {
   final _digitalInkService = locator<DigitalInkService>();
   final _snackbarService = locator<SnackbarService>();
   final _dialogService = locator<DialogService>();
+  final _mecabService = locator<MecabService>();
+
+  final _kanaKit = const KanaKit();
 
   String _searchString = '';
   String get searchString => _searchString;
@@ -34,6 +39,9 @@ class SearchViewModel extends BaseViewModel {
   SearchHistoryItem? _currentSearchHistoryItem;
 
   SearchFilter _searchFilter = SearchFilter.vocab;
+
+  bool _promptAnalysis = false;
+  bool get promptAnalysis => _promptAnalysis;
 
   SearchViewModel() {
     _loadSearchHistory();
@@ -71,9 +79,27 @@ class SearchViewModel extends BaseViewModel {
         _isarService.searchDictionary(_searchString, _searchFilter),
       );
 
-      _searchOperation!.value.then((value) {
+      _searchOperation!.value.then((value) async {
         searchResult = value;
         _searchOperation = null;
+        _promptAnalysis = false;
+
+        // If no results found for vocab search, try to analyze
+        if (_searchFilter == SearchFilter.vocab &&
+            searchResult!.isEmpty &&
+            (_kanaKit.isJapanese(stringToSearch) ||
+                _kanaKit.isMixed(stringToSearch))) {
+          final analysisResult = _mecabService.parseText(stringToSearch);
+          if (analysisResult.length == 1) {
+            // Try to search using the identified token (could be conjugated word)
+            searchResult = await _isarService.searchDictionary(
+                analysisResult[0].base, _searchFilter);
+          } else if (analysisResult.isNotEmpty) {
+            // Search could be for sentence/phrase, offer to analyze
+            _promptAnalysis = true;
+          }
+        }
+
         notifyListeners();
       });
 
@@ -152,7 +178,10 @@ class SearchViewModel extends BaseViewModel {
     }
   }
 
-  void navigateToTextAnalysis() {
-    _navigationService.navigateTo(Routes.textAnalysisView);
+  void navigateToTextAnalysis({String? text}) {
+    _navigationService.navigateTo(
+      Routes.textAnalysisView,
+      arguments: TextAnalysisViewArguments(initialText: text),
+    );
   }
 }

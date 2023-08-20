@@ -46,33 +46,7 @@ class _Body extends StackedHookView<SearchViewModel> {
         children: [
           viewModel.searchResult == null
               ? _SearchHistory(searchController)
-              : Expanded(
-                  child: ListView.separated(
-                    separatorBuilder: (_, __) => const Divider(
-                      height: 1,
-                      indent: 8,
-                      endIndent: 8,
-                    ),
-                    padding: EdgeInsets.zero,
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: viewModel.searchResult!.length,
-                    itemBuilder: (context, index) {
-                      final current = viewModel.searchResult![index];
-                      if (current is Vocab) {
-                        return VocabListItem(
-                          vocab: current,
-                          onPressed: () => viewModel.navigateToVocab(current),
-                        );
-                      } else {
-                        return KanjiListItemLarge(
-                          kanji: current as Kanji,
-                          onPressed: () => viewModel.navigateToKanji(current),
-                        );
-                      }
-                    },
-                  ),
-                ),
+              : const _SearchResults(),
           if (viewModel.showHandWriting)
             Expanded(
               child: Column(
@@ -375,6 +349,81 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SearchResults extends ViewModelWidget<SearchViewModel> {
+  const _SearchResults({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, SearchViewModel viewModel) {
+    // If no results, show message
+    if (viewModel.searchResult!.isEmpty) {
+      if (viewModel.promptAnalysis) {
+        return Expanded(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'No results found.\nLooks like your query may be a sentence or phrase.',
+                    textAlign: TextAlign.center,
+                  ),
+                  TextButton(
+                    onPressed: () => viewModel.navigateToTextAnalysis(
+                      text: viewModel.searchString,
+                    ),
+                    child: const Text('Analyze text instead'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      } else {
+        return const Expanded(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'No results found',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    // Show results
+    return Expanded(
+      child: ListView.separated(
+        separatorBuilder: (_, __) => const Divider(
+          height: 1,
+          indent: 8,
+          endIndent: 8,
+        ),
+        padding: EdgeInsets.zero,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        itemCount: viewModel.searchResult!.length,
+        itemBuilder: (context, index) {
+          final current = viewModel.searchResult![index];
+          if (current is Vocab) {
+            return VocabListItem(
+              vocab: current,
+              onPressed: () => viewModel.navigateToVocab(current),
+            );
+          } else {
+            return KanjiListItemLarge(
+              kanji: current as Kanji,
+              onPressed: () => viewModel.navigateToKanji(current),
+            );
+          }
+        },
       ),
     );
   }
