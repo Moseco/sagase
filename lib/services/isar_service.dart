@@ -483,17 +483,16 @@ class IsarService {
   Future<List<Vocab>> getVocabByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
-    final baseQuery = _isar.vocabs
-        .where()
-        .japaneseTextIndexElementEqualTo(_kanaKit.toHiragana(token.base));
+    final baseQuery = _isar.vocabs.where().japaneseTextIndexElementEqualTo(
+        _kanaKit.toHiragana(token.base.toLowerCase().romajiToHalfWidth()));
 
     late List<Vocab> results;
     // If text contains kanji, add filter for reading
     if (token.base.contains(constants.kanjiRegExp)) {
       results = await baseQuery
           .filter()
-          .japaneseTextIndexElementEqualTo(
-              _kanaKit.toHiragana(token.baseReading))
+          .japaneseTextIndexElementEqualTo(_kanaKit
+              .toHiragana(token.baseReading.toLowerCase().romajiToHalfWidth()))
           .findAll();
 
       // If nothing was found, try again with only base query
