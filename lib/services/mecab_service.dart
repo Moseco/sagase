@@ -128,7 +128,7 @@ class MecabService {
       );
 
       // Check if the current token should be trailing of previous token
-      if (i > 0) {
+      if (i > 0 && list.last.pos != PartOfSpeech.particle) {
         if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
           list.last.trailing ??= [];
           list.last.trailing!.add(current);
