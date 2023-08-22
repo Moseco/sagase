@@ -88,20 +88,21 @@ class MecabService {
     final tokens = _mecab.parse(text.romajiToFullWidth().toUpperCase());
 
     for (int i = 0; i < tokens.length; i++) {
-      if (tokens[i].features.length != 9) continue;
+      // If contains no features skip to next iteration (only EOS?)
+      if (tokens[i].features.isEmpty) continue;
 
-      List<RubyTextPair> rubyTextPairs = [];
-
-      // If punctuation or arabic number, add with only writing
-      if (tokens[i].features[0] == featurePunctuation ||
+      // If non-standard feature length, punctuation, or arabic number, add with only writing
+      if (tokens[i].features.length != 9 ||
+          tokens[i].features[0] == featurePunctuation ||
           (tokens[i].surface.codeUnitAt(0) >= '０'.codeUnitAt(0) &&
               tokens[i].surface.codeUnitAt(0) <= '９'.codeUnitAt(0))) {
-        rubyTextPairs.add(RubyTextPair(writing: tokens[i].surface));
-      } else {
-        rubyTextPairs.addAll(createRubyTextPairs(
-          tokens[i].surface,
-          tokens[i].features[7],
+        list.add(JapaneseTextToken(
+          original: tokens[i].surface,
+          base: tokens[i].surface,
+          baseReading: tokens[i].surface,
+          rubyTextPairs: [RubyTextPair(writing: tokens[i].surface)],
         ));
+        continue;
       }
 
       // Get part of speech that helps certain searches
@@ -123,12 +124,15 @@ class MecabService {
         original: tokens[i].surface,
         base: base,
         baseReading: tokens[i].features[7],
-        rubyTextPairs: rubyTextPairs,
+        rubyTextPairs: createRubyTextPairs(
+          tokens[i].surface,
+          tokens[i].features[7],
+        ),
         pos: pos,
       );
 
       // Check if the current token should be trailing of previous token
-      if (i > 0 && list.last.pos != PartOfSpeech.particle) {
+      if (list.isNotEmpty && list.last.pos != PartOfSpeech.particle) {
         if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
           list.last.trailing ??= [];
           list.last.trailing!.add(current);
