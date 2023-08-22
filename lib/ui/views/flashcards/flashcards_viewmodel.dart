@@ -469,10 +469,19 @@ class FlashcardsViewModel extends BaseViewModel {
     } else if (answer == FlashcardAnswer.repeat) {
       return '~';
     } else {
-      return _calculateSpacedRepetition(
+      int interval = _calculateSpacedRepetition(
         answer.index,
         activeFlashcards[0].spacedRepetitionData ?? SpacedRepetitionData(),
-      ).interval.toString();
+      ).interval;
+
+      // Format interval
+      if (interval < 28) {
+        return '${interval}d';
+      } else if (interval < 365) {
+        return '${(interval / 28).toStringAsFixed(1)}m';
+      } else {
+        return '${(interval / 365).toStringAsFixed(1)}y';
+      }
     }
   }
 
