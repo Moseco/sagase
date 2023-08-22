@@ -505,18 +505,23 @@ class IsarService {
 
     // Check part of speech
     if (token.pos != null) {
-      for (int i = 0; i < results.length; i++) {
+      List<Vocab> list = List.from(results);
+      for (int i = 0; i < list.length; i++) {
         bool removeCurrent = true;
-        for (var definition in results[i].definitions) {
+        for (var definition in list[i].definitions) {
           if (definition.pos != null && definition.pos!.contains(token.pos)) {
             removeCurrent = false;
             break;
           }
         }
-        if (removeCurrent) results.removeAt(i--);
+        if (removeCurrent) list.removeAt(i--);
       }
 
-      if (results.length <= 1) return results;
+      if (list.length == 1) {
+        return list;
+      } else if (list.length > 1) {
+        results = list;
+      }
     }
 
     // If only kana, try to limit returned vocab
