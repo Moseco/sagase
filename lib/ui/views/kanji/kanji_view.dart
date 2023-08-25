@@ -13,288 +13,294 @@ import 'package:stacked/stacked.dart';
 
 import 'kanji_viewmodel.dart';
 
-class KanjiView extends StatelessWidget {
+class KanjiView extends StackedView<KanjiViewModel> {
   final Kanji kanji;
 
   const KanjiView(this.kanji, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<KanjiViewModel>.reactive(
-      viewModelBuilder: () => KanjiViewModel(kanji),
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              onPressed: viewModel.openMyDictionaryListsSheet,
-              icon: Icon(
-                kanji.myDictionaryListLinks.isEmpty
-                    ? Icons.star_border
-                    : Icons.star,
-              ),
+  KanjiViewModel viewModelBuilder(context) => KanjiViewModel(kanji);
+
+  @override
+  Widget builder(context, viewModel, child) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: viewModel.openMyDictionaryListsSheet,
+            icon: Icon(
+              kanji.myDictionaryListLinks.isEmpty
+                  ? Icons.star_border
+                  : Icons.star,
             ),
-          ],
-        ),
-        // Can throw exception "'!_selectionStartsInScrollable': is not true."
-        // when long press then try to scroll on disabled areas.
-        // But seems to work okay in release builds.
-        body: SelectionArea(
-          child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: [
-              IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: SelectionContainer.disabled(
-                          child: GestureDetector(
-                            onLongPress: viewModel.copyKanji,
-                            child: Text(
-                              kanji.kanji,
-                              style: const TextStyle(fontSize: 80),
-                            ),
+          ),
+        ],
+      ),
+      // Can throw exception "'!_selectionStartsInScrollable': is not true."
+      // when long press then try to scroll on disabled areas.
+      // But seems to work okay in release builds.
+      body: SelectionArea(
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SelectionContainer.disabled(
+                        child: GestureDetector(
+                          onLongPress: viewModel.copyKanji,
+                          child: Text(
+                            kanji.kanji,
+                            style: const TextStyle(fontSize: 80),
                           ),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanji.grade != 255
-                                        ? kanji.grade.toString()
-                                        : '—',
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: kanji.grade != 255
+                                      ? kanji.grade.toString()
+                                      : '—',
+                                ),
+                                const TextSpan(
+                                  text: '\nGrade',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
-                                  const TextSpan(
-                                    text: '\nGrade',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(text: kanji.strokeCount.toString()),
-                                  const TextSpan(
-                                    text: '\nStrokes',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: kanji.strokeCount.toString()),
+                                const TextSpan(
+                                  text: '\nStrokes',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanji.frequency != null
-                                        ? kanji.frequency.toString()
-                                        : '—',
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: kanji.frequency != null
+                                      ? kanji.frequency.toString()
+                                      : '—',
+                                ),
+                                const TextSpan(
+                                  text: '\nRank',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
-                                  const TextSpan(
-                                    text: '\nRank',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanji.jlpt != 255
-                                        ? 'N${kanji.jlpt}'
-                                        : '—',
+                            textAlign: TextAlign.center,
+                          ),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: kanji.jlpt != 255
+                                      ? 'N${kanji.jlpt}'
+                                      : '—',
+                                ),
+                                const TextSpan(
+                                  text: '\nJLPT',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
-                                  const TextSpan(
-                                    text: '\nJLPT',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
+              CardWithTitleExpandable(
+                title: 'Kanji stroke order',
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  child: StrokeOrderDiagram(kanji.strokes!),
+                ),
+              ),
+            CardWithTitleSection(
+              title: 'Kanji info',
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                child: Table(
+                  columnWidths: const {
+                    0: IntrinsicColumnWidth(),
+                    1: FlexColumnWidth(),
+                  },
+                  children: [
+                    TableRow(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Meaning: ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Text(kanji.meanings?.join(', ') ?? '(no meaning)'),
+                      ],
+                    ),
+                    if (kanji.kunReadings != null)
+                      TableRow(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Kun reading: ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          KanjiKunReadings(
+                            kanji.kunReadings!,
+                            maxLines: 99,
+                          ),
+                        ],
+                      ),
+                    if (kanji.onReadings != null)
+                      TableRow(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'On reading: ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(kanji.onReadings!.join(', ')),
+                        ],
+                      ),
+                    if (kanji.nanori != null)
+                      TableRow(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Nanori: ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(kanji.nanori!.join(', ')),
+                        ],
+                      ),
                   ],
                 ),
               ),
-              if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
-                CardWithTitleExpandable(
-                  title: 'Kanji stroke order',
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    child: StrokeOrderDiagram(kanji.strokes!),
+            ),
+            SelectionContainer.disabled(
+              child: CardWithTitleSection(
+                title: 'Radical',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: kanji.radical.isLoaded
+                      ? _KanjiRadicalItem(
+                          radical: kanji.radical.value!,
+                          onPressed: viewModel.navigateToKanjiRadical,
+                        )
+                      : const ListItemLoading(showLeading: true),
+                ),
+              ),
+            ),
+            if (kanji.componentLinks.isNotEmpty)
+              SelectionContainer.disabled(
+                child: CardWithTitleSection(
+                  title: 'Other components',
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: kanji.componentLinks.length,
+                    itemBuilder: (context, index) =>
+                        kanji.componentLinks.isLoaded
+                            ? KanjiListItem(
+                                kanji: kanji.componentLinks.elementAt(index),
+                                onPressed: () => viewModel.navigateToKanji(
+                                  kanji.componentLinks.elementAt(index),
+                                ),
+                              )
+                            : const ListItemLoading(showLeading: true),
                   ),
                 ),
-              CardWithTitleSection(
-                title: 'Kanji info',
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
+              ),
+            if (kanji.compounds.isNotEmpty)
+              SelectionContainer.disabled(
+                child: CardWithTitleSection(
+                  title: 'Compounds',
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _TitleInfoText(
-                        title: 'Meaning',
-                        content: kanji.meanings?.join(', ') ?? '(no meaning)',
+                      ListView.separated(
+                        separatorBuilder: (_, __) => const Divider(
+                          height: 1,
+                          indent: 8,
+                          endIndent: 8,
+                        ),
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: min(kanji.compounds.length, 10),
+                        itemBuilder: (context, index) => viewModel.isBusy
+                            ? const ListItemLoading(showLeading: true)
+                            : VocabListItem(
+                                vocab: kanji.compounds.elementAt(index),
+                                onPressed: () => viewModel.navigateToVocab(
+                                    kanji.compounds.elementAt(index)),
+                              ),
                       ),
-                      if (kanji.kunReadings != null)
-                        KanjiKunReadings(
-                          kanji.kunReadings!,
-                          leading: const TextSpan(
-                            text: 'Kun readings: ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          maxLines: 99,
-                        ),
-                      if (kanji.onReadings != null)
-                        _TitleInfoText(
-                          title: 'On readings',
-                          content: kanji.onReadings!.join(', '),
-                        ),
-                      if (kanji.nanori != null)
-                        _TitleInfoText(
-                          title: 'Nanori',
-                          content: kanji.nanori!.join(', '),
+                      if (kanji.compounds.length > 10)
+                        TextButton(
+                          onPressed: viewModel.showAllCompounds,
+                          child: Text('Show all ${kanji.compounds.length}'),
                         ),
                     ],
                   ),
                 ),
               ),
-              SelectionContainer.disabled(
-                child: CardWithTitleSection(
-                  title: 'Radical',
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: kanji.radical.isLoaded
-                        ? _KanjiRadicalItem(
-                            radical: kanji.radical.value!,
-                            onPressed: viewModel.navigateToKanjiRadical,
-                          )
-                        : const ListItemLoading(showLeading: true),
-                  ),
-                ),
-              ),
-              if (kanji.componentLinks.isNotEmpty)
-                SelectionContainer.disabled(
-                  child: CardWithTitleSection(
-                    title: 'Other components',
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: kanji.componentLinks.length,
-                      itemBuilder: (context, index) =>
-                          kanji.componentLinks.isLoaded
-                              ? KanjiListItem(
-                                  kanji: kanji.componentLinks.elementAt(index),
-                                  onPressed: () => viewModel.navigateToKanji(
-                                    kanji.componentLinks.elementAt(index),
-                                  ),
-                                )
-                              : const ListItemLoading(showLeading: true),
-                    ),
-                  ),
-                ),
-              if (kanji.compounds.isNotEmpty)
-                SelectionContainer.disabled(
-                  child: CardWithTitleSection(
-                    title: 'Compounds',
-                    child: Column(
-                      children: [
-                        ListView.separated(
-                          separatorBuilder: (_, __) => const Divider(
-                            height: 1,
-                            indent: 8,
-                            endIndent: 8,
-                          ),
-                          shrinkWrap: true,
-                          primary: false,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: min(kanji.compounds.length, 10),
-                          itemBuilder: (context, index) => VocabListItem(
-                            vocab: kanji.compounds.elementAt(index),
-                            onPressed: () => viewModel.navigateToVocab(
-                                kanji.compounds.elementAt(index)),
-                          ),
-                        ),
-                        if (kanji.compounds.length > 10)
-                          TextButton(
-                            onPressed: viewModel.showAllCompounds,
-                            child: Text('Show all ${kanji.compounds.length}'),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
-            ],
-          ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
         ),
-      ),
-    );
-  }
-}
-
-class _TitleInfoText extends StatelessWidget {
-  final String title;
-  final String content;
-
-  const _TitleInfoText({
-    required this.title,
-    required this.content,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const TextSpan(
-            text: ': ',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          TextSpan(text: content),
-        ],
       ),
     );
   }

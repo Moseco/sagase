@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -8,7 +10,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-class KanjiViewModel extends BaseViewModel {
+class KanjiViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
@@ -16,15 +18,20 @@ class KanjiViewModel extends BaseViewModel {
 
   final Kanji kanji;
 
-  KanjiViewModel(this.kanji) {
-    _initialize();
-  }
+  KanjiViewModel(this.kanji);
 
-  Future<void> _initialize() async {
+  @override
+  Future<void> futureToRun() async {
     await _refreshMyDictionaryListLinks();
     await kanji.radical.load();
+    rebuildUi();
     await kanji.componentLinks.load();
-    notifyListeners();
+    rebuildUi();
+
+    // Load the first 10 compounds
+    for (int i = 0; i < min(10, kanji.compounds.length); i++) {
+      kanji.compounds.elementAt(i);
+    }
   }
 
   Future<void> _refreshMyDictionaryListLinks() async {
@@ -34,7 +41,7 @@ class KanjiViewModel extends BaseViewModel {
       kanji.myDictionaryListLinks.clear();
       kanji.myDictionaryListLinks
           .addAll(newKanji!.myDictionaryListLinks.toList());
-      notifyListeners();
+      rebuildUi();
     }
   }
 
