@@ -10,9 +10,8 @@ ThemeData getDarkTheme(bool useJapaneseSerifFont) {
     checkboxTheme: CheckboxThemeData(
       checkColor: MaterialStateProperty.all(Colors.white),
       fillColor: MaterialStateProperty.resolveWith(
-        (states) => states.contains(MaterialState.selected)
-            ? Colors.deepPurple
-            : Colors.white,
+        (states) =>
+            states.contains(MaterialState.selected) ? Colors.deepPurple : null,
       ),
     ),
     appBarTheme: const AppBarTheme(color: Colors.deepPurple),
@@ -32,9 +31,8 @@ ThemeData getLightTheme(bool useJapaneseSerifFont) {
     checkboxTheme: CheckboxThemeData(
       checkColor: MaterialStateProperty.all(Colors.white),
       fillColor: MaterialStateProperty.resolveWith(
-        (states) => states.contains(MaterialState.selected)
-            ? Colors.deepPurple
-            : Colors.black,
+        (states) =>
+            states.contains(MaterialState.selected) ? Colors.deepPurple : null,
       ),
     ),
     appBarTheme: const AppBarTheme(color: Colors.deepPurple),
