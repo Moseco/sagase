@@ -381,7 +381,7 @@ class _VocabFlashcardFront extends StatelessWidget {
     }
 
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -444,7 +444,7 @@ class _KanjiFlashcardFront extends StatelessWidget {
     }
 
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
