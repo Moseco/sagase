@@ -140,9 +140,9 @@ class IsarService {
         for (var currentVocab in unsortedRomajiList) {
           int minDifference = 999;
           for (var current in currentVocab.romajiTextIndex) {
-            if (current.length >= minDifference) continue;
             if (current.startsWith(searchString)) {
               minDifference = current.length - searchString.length;
+              break;
             }
           }
 
@@ -261,9 +261,9 @@ class IsarService {
       for (var currentVocab in unsortedList) {
         int minDifference = 999;
         for (var currentText in currentVocab.japaneseTextIndex) {
-          if (currentText.length >= minDifference) continue;
           if (currentText.startsWith(searchString)) {
             minDifference = currentText.length - searchString.length;
+            break;
           }
         }
 
