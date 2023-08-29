@@ -35,6 +35,7 @@ class SettingsViewModel extends BaseViewModel {
   bool get crashlyticsEnabled => _firebaseService.crashlyticsEnabled;
   bool get startOnLearningView =>
       _sharedPreferencesService.getStartOnLearningView();
+  bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -280,6 +281,11 @@ class SettingsViewModel extends BaseViewModel {
 
   void setStartOnLearningView(bool value) {
     _sharedPreferencesService.setStartOnLearningView(value);
+    notifyListeners();
+  }
+
+  void setShowPitchAccent(bool value) {
+    _sharedPreferencesService.setShowPitchAccent(value);
     notifyListeners();
   }
 }

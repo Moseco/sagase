@@ -53,6 +53,12 @@ class SettingsView extends StatelessWidget {
                     onPressed: (_) => viewModel.setAppTheme(),
                   ),
                   SettingsTile.switchTile(
+                    initialValue: viewModel.showPitchAccent,
+                    onToggle: viewModel.setShowPitchAccent,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Show pitch accent'),
+                  ),
+                  SettingsTile.switchTile(
                     initialValue: viewModel.startOnLearningView,
                     onToggle: viewModel.setStartOnLearningView,
                     activeSwitchColor: Theme.of(context).colorScheme.primary,
