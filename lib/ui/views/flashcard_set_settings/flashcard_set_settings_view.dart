@@ -128,40 +128,25 @@ class FlashcardSetSettingsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Align(
-                      alignment: Alignment.topLeft,
+                    CardWithTitleSection(
+                      title: 'Order Type',
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                        child: Text(
-                          'Order Type',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.grey.shade300
-                            : Colors.grey.shade800,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: IntrinsicHeight(
-                        child: Row(
-                          children: [
-                            _ToggleOption(
-                              text: 'Spaced repetition',
-                              enabled: flashcardSet.usingSpacedRepetition,
-                              onTap: () => viewModel.setOrderType(true),
-                            ),
-                            _ToggleOption(
-                              text: 'Random',
-                              enabled: !flashcardSet.usingSpacedRepetition,
-                              onTap: () => viewModel.setOrderType(false),
-                            ),
-                          ],
+                        padding: const EdgeInsets.all(8),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              _ToggleOption(
+                                text: 'Spaced repetition',
+                                enabled: flashcardSet.usingSpacedRepetition,
+                                onTap: () => viewModel.setOrderType(true),
+                              ),
+                              _ToggleOption(
+                                text: 'Random',
+                                enabled: !flashcardSet.usingSpacedRepetition,
+                                onTap: () => viewModel.setOrderType(false),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
