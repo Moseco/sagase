@@ -137,6 +137,10 @@ class SettingsView extends StatelessWidget {
                     ),
                   ),
                   SettingsTile.navigation(
+                    title: const Text('Request data deletion'),
+                    onPressed: (_) => viewModel.requestDataDeletion(),
+                  ),
+                  SettingsTile.navigation(
                     title: const Text('Delete search history'),
                     onPressed: (_) => viewModel.deleteSearchHistory(),
                   ),

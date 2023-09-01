@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -287,5 +288,36 @@ class SettingsViewModel extends BaseViewModel {
   void setShowPitchAccent(bool value) {
     _sharedPreferencesService.setShowPitchAccent(value);
     notifyListeners();
+  }
+
+  Future<void> requestDataDeletion() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Request data deletion',
+      description:
+          'If enabled, this app collects analytics relating to app usage and crash reports. You can request to have all your analytics related data deleted. If you choose to, your unique ID will be copied to your clipboard which you need to submit in the form that will be opened in a browser.',
+      mainButtonTitle: 'Open',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      final id = await _firebaseService.getAppInstanceId();
+      if (id == null) {
+        _snackbarService.showSnackbar(message: 'Failed to get ID');
+      } else {
+        Clipboard.setData(ClipboardData(text: id));
+        try {
+          if (!await launchUrl(
+            Uri.parse(
+                r'https://docs.google.com/forms/d/e/1FAIpQLSdZ2wEkhsVNjFcHh7XpJjdETF9JFPxfn16x_KHCiFWhrbsrmg/viewform?usp=sf_link'),
+          )) {
+            _snackbarService.showSnackbar(message: 'Failed to open form');
+          }
+        } catch (_) {
+          _snackbarService.showSnackbar(message: 'Failed to open form');
+        }
+      }
+    }
   }
 }

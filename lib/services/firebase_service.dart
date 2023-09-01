@@ -29,4 +29,8 @@ class FirebaseService implements InitializableDependency {
   void setCrashlyticsEnabled(bool enabled) {
     FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(enabled);
   }
+
+  Future<String?> getAppInstanceId() async {
+    return FirebaseAnalytics.instance.appInstanceId;
+  }
 }
