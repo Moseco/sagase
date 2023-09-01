@@ -92,6 +92,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           if (pairs[0].kanjiWritings != null && !forceOnlyReading)
             Text(
               pairs[0].kanjiWritings![0].kanji,
+              textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 32, height: 1.2),
             ),
         ],
@@ -100,6 +101,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
       if (pairs[0].kanjiWritings == null || forceOnlyReading) {
         primary = Text(
           pairs[0].readings[0].reading,
+          textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 32),
         );
       } else {
@@ -273,6 +275,7 @@ class _RubyTextWrapper extends StatelessWidget {
     }
     return RubyText(
       rubyTextData,
+      textAlign: TextAlign.center,
       style: TextStyle(letterSpacing: 0, height: 1.1, fontSize: fontSize),
     );
   }

@@ -48,6 +48,7 @@ class PitchAccentText extends StatelessWidget {
         characters.add(
           WidgetSpan(
             child: Container(
+              margin: const EdgeInsets.only(top: 2),
               decoration: BoxDecoration(
                 border: Border(
                   top: (pitchAccents[i] == 0 && j > 0) ||
@@ -83,11 +84,12 @@ class PitchAccentText extends StatelessWidget {
       children.add(
         Text.rich(
           TextSpan(children: characters),
+          textAlign: TextAlign.center,
         ),
       );
 
       // If not last pitch accent, add spacing
-      if (i + 1 < pitchAccents.length) children.add(const SizedBox(height: 4));
+      if (i + 1 < pitchAccents.length) children.add(const SizedBox(height: 2));
     }
 
     return Column(children: children);
