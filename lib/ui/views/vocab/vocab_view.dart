@@ -368,6 +368,29 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
+    List<Widget> children = [];
+    // Create vocab level pos
+    if (viewModel.vocab.pos != null) {
+      final posBuffer = StringBuffer(viewModel.vocab.pos![0].displayTitle);
+      for (int i = 1; i < viewModel.vocab.pos!.length; i++) {
+        posBuffer.write(', ');
+        posBuffer.write(viewModel.vocab.pos![i].displayTitle);
+      }
+
+      children.addAll([
+        Text(
+          posBuffer.toString(),
+          style: const TextStyle(color: Colors.grey),
+        ),
+        const Text(
+          'Applies to all',
+          style: TextStyle(fontSize: 10, color: Colors.grey),
+        ),
+        const Divider(),
+      ]);
+    }
+
+    // Create the definitions
     List<TableRow> rows = [];
     for (int defIndex = 0;
         defIndex < viewModel.vocab.definitions.length;
@@ -493,15 +516,22 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
       );
     }
 
+    children.add(
+      Table(
+        columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
+        children: rows,
+      ),
+    );
+
     return CardWithTitleSection(
       title: 'Definition',
       titleTrailing: viewModel.vocab.commonWord ? const CommonVocab() : null,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(8),
-        child: Table(
-          columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
-          children: rows,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
         ),
       ),
     );
