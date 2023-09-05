@@ -76,95 +76,95 @@ extension PartOfSpeechExtension on PartOfSpeech {
       case PartOfSpeech.verbIchidanS:
         return 'ichidan verb - くれる special class';
       case PartOfSpeech.verbNidanAS:
-        return 'nidan verb with う ending (archaic)';
+        return 'nidan verb (archaic)';
       case PartOfSpeech.verbNidanBK:
-        return 'nidan verb (upper class) with ぶ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanBS:
-        return 'nidan verb (lower class) with ぶ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanDK:
-        return 'nidan verb (upper class) with ず/づ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanDS:
-        return 'nidan verb (lower class) with ず/づ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanGK:
-        return 'nidan verb (upper class) with ぐ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanGS:
-        return 'nidan verb (lower class) with ぐ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanHK:
-        return 'nidan verb (upper class) with ふ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanHS:
-        return 'nidan verb (lower class) with ふ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanKK:
-        return 'nidan verb (upper class) with く ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanKS:
-        return 'nidan verb (lower class) with く ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanMK:
-        return 'nidan verb (upper class) with む ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanMS:
-        return 'nidan verb (lower class) with む ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanNS:
-        return 'nidan verb (lower class) with ぬ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanRK:
-        return 'nidan verb (upper class) with る ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanRS:
-        return 'nidan verb (lower class) with る ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanSS:
-        return 'nidan verb (lower class) with す ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanTK:
-        return 'nidan verb (upper class) with つ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanTS:
-        return 'nidan verb (lower class) with つ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanWS:
-        return 'nidan verb (lower class) with う ending and ゑ conjugation (archaic)';
+        return 'nidan verb (lower class, archaic, ゑ conjugation)';
       case PartOfSpeech.verbNidanYK:
-        return 'nidan verb (upper class) with ゆ ending (archaic)';
+        return 'nidan verb (upper class, archaic)';
       case PartOfSpeech.verbNidanYS:
-        return 'nidan verb (lower class) with ゆ ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbNidanZS:
-        return 'nidan verb (lower class) with ず ending (archaic)';
+        return 'nidan verb (lower class, archaic)';
       case PartOfSpeech.verbYodanB:
-        return 'yodan verb with ぶ ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanG:
-        return 'yodan verb with ぐ ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanH:
-        return 'yodan verb with ふ ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanK:
-        return 'yodan verb with く ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanM:
-        return 'yodan verb with む ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanN:
-        return 'yodan verb with ぬ ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanR:
-        return 'yodan verb with る ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanS:
-        return 'yodan verb with す ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbYodanT:
-        return 'yodan verb with つ ending (archaic)';
+        return 'yodan verb (archaic)';
       case PartOfSpeech.verbGodanAru:
         return 'godan verb - ある special class';
       case PartOfSpeech.verbGodanB:
-        return 'godan verb with ぶ ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanG:
-        return 'godan verb with ぐ ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanK:
-        return 'godan verb with く ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanKS:
         return 'godan verb - いく/ゆく special class';
       case PartOfSpeech.verbGodanM:
-        return 'godan verb with む ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanN:
-        return 'godan verb with ぬ ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanR:
-        return 'godan verb with る ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanRI:
-        return 'godan verb with る ending (irregular verb)';
+        return 'godan verb (irregular verb)';
       case PartOfSpeech.verbGodanS:
-        return 'godan verb with す ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanT:
-        return 'godan verb with つ ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanU:
-        return 'godan verb with う ending';
+        return 'godan verb';
       case PartOfSpeech.verbGodanUS:
-        return 'godan verb with う ending (special class)';
+        return 'godan verb (special class)';
       case PartOfSpeech.verbGodanUru:
         return 'godan verb - うる old class (old form of える)';
       case PartOfSpeech.verbIntransitive:
