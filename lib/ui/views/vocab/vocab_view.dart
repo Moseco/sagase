@@ -115,7 +115,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
       }
     }
 
-    List<Widget> alternatives = [];
+    List<Widget> children = [];
 
     // If forcing only reading, skip this first pair alternatives section
     if (!forceOnlyReading) {
@@ -127,11 +127,11 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           buffer.write(', ');
           buffer.write(pairs[0].readings[i].reading);
         }
-        alternatives.add(Text(buffer.toString()));
+        children.add(Text(buffer.toString()));
       } else if (pairs[0].kanjiWritings?.length == 1 &&
           pairs[0].readings.length == 2) {
         // 1 additional reading available with only 1 kanji writing
-        alternatives.add(
+        children.add(
           _RubyTextWrapper(
             pairs: viewModel.getRubyTextPairs(
               pairs[0].kanjiWritings![0].kanji,
@@ -150,7 +150,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           buffer.write(pairs[0].readings[i].reading);
         }
         buffer.write('】');
-        alternatives.add(Text(buffer.toString()));
+        children.add(Text(buffer.toString()));
       } else if (pairs[0].kanjiWritings != null &&
           pairs[0].kanjiWritings!.length > 1 &&
           pairs[0].readings.length == 1) {
@@ -168,7 +168,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
             ),
           );
         }
-        alternatives.add(_RubyTextWrapper(pairs: rubyTextPairs));
+        children.add(_RubyTextWrapper(pairs: rubyTextPairs));
       } else if (pairs[0].kanjiWritings != null &&
           pairs[0].kanjiWritings!.length > 1 &&
           pairs[0].readings.length > 1) {
@@ -185,7 +185,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           buffer.write(pairs[0].readings[i].reading);
         }
         buffer.write('】');
-        alternatives.add(Text(buffer.toString()));
+        children.add(Text(buffer.toString()));
       }
     }
 
@@ -208,10 +208,10 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           );
         }
         // Add padding above if not the first alternative
-        if (alternatives.isNotEmpty) {
-          alternatives.add(const SizedBox(height: 4));
+        if (children.isNotEmpty) {
+          children.add(const SizedBox(height: 4));
         }
-        alternatives.add(_RubyTextWrapper(pairs: rubyTextPairs));
+        children.add(_RubyTextWrapper(pairs: rubyTextPairs));
       } else {
         final buffer = StringBuffer();
         if (pairs[i].kanjiWritings != null) {
@@ -228,22 +228,104 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
           buffer.write(pairs[i].readings[j].reading);
         }
         if (pairs[i].kanjiWritings != null) buffer.write('】');
-        alternatives.add(Text(buffer.toString()));
+        children.add(Text(buffer.toString()));
+      }
+    }
+
+    // Set up initial title if alternatives available
+    late String title;
+    if (children.isNotEmpty) {
+      title = 'Alternatives';
+    }
+
+    // Get all the kanji and reading info and sort by type
+    Map<KanjiInfo, List<String>> kanjiInfoMap = {};
+    Map<ReadingInfo, List<String>> readingInfoMap = {};
+
+    for (var pair in viewModel.vocab.kanjiReadingPairs) {
+      if (pair.kanjiWritings != null) {
+        for (var kanjiWriting in pair.kanjiWritings!) {
+          if (kanjiWriting.info != null) {
+            for (var info in kanjiWriting.info!) {
+              kanjiInfoMap[info] ??= [];
+              kanjiInfoMap[info]!.add(kanjiWriting.kanji);
+            }
+          }
+        }
+      }
+
+      for (var reading in pair.readings) {
+        if (reading.info != null) {
+          for (var info in reading.info!) {
+            readingInfoMap[info] ??= [];
+            readingInfoMap[info]!.add(reading.reading);
+          }
+        }
+      }
+    }
+
+    // If both irregular kanji/kana exist, merge into kanji version
+    if (kanjiInfoMap.containsKey(KanjiInfo.irregularKana) &&
+        readingInfoMap.containsKey(ReadingInfo.irregularKana)) {
+      kanjiInfoMap[KanjiInfo.irregularKana]!
+          .addAll(readingInfoMap[ReadingInfo.irregularKana]!);
+      readingInfoMap.remove(ReadingInfo.irregularKana);
+    }
+
+    // Set title and divider if needed
+    if (kanjiInfoMap.isNotEmpty || readingInfoMap.isNotEmpty) {
+      if (children.isNotEmpty) {
+        children.add(const Divider());
+      } else {
+        title = 'Kanji/kana info';
+      }
+
+      // Merge kanji/reading and info pairs
+      List<(String, String)> infoList = [];
+
+      outer:
+      for (var entry in kanjiInfoMap.entries) {
+        String text = entry.value.join(', ');
+        for (int i = 0; i < infoList.length; i++) {
+          if (infoList[i].$1 == text) {
+            infoList[i] =
+                (text, '${infoList[i].$2}, ${entry.key.displayTitle}');
+            continue outer;
+          }
+        }
+        infoList.add((text, entry.key.displayTitle));
+      }
+
+      outer:
+      for (var entry in readingInfoMap.entries) {
+        String text = entry.value.join(', ');
+        for (int i = 0; i < infoList.length; i++) {
+          if (infoList[i].$1 == text) {
+            infoList[i] =
+                (text, '${infoList[i].$2}, ${entry.key.displayTitle}');
+            continue outer;
+          }
+        }
+        infoList.add((text, entry.key.displayTitle));
+      }
+
+      for (var item in infoList) {
+        children.add(Text('${item.$1}: ${item.$2}'));
       }
     }
 
     return Column(
       children: [
         Center(child: primary),
-        if (alternatives.isNotEmpty)
+        if (children.isNotEmpty)
           CardWithTitleSection(
-            title: 'Alternatives',
+            title: title,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: alternatives,
+                children: children,
               ),
             ),
           ),

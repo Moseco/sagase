@@ -658,3 +658,39 @@ extension LanguageSourceExtension on LanguageSource {
     }
   }
 }
+
+extension KanjiInfoExtension on KanjiInfo {
+  String get displayTitle {
+    switch (this) {
+      case KanjiInfo.ateji:
+        return 'ateji (kanji used for reading, not meaning)';
+      case KanjiInfo.irregularKana:
+        return 'irregular kana';
+      case KanjiInfo.irregularKanji:
+        return 'irregular kanji';
+      case KanjiInfo.irregularOkurigana:
+        return 'irregular okurigana (kana following kanji)';
+      case KanjiInfo.outdatedKanji:
+        return 'outdated kanji';
+      case KanjiInfo.rareKanjiForm:
+        return 'rare kanji form';
+      case KanjiInfo.searchOnlyForm:
+        return 'search only form';
+    }
+  }
+}
+
+extension ReadingInfoExtension on ReadingInfo {
+  String get displayTitle {
+    switch (this) {
+      case ReadingInfo.gikun:
+        return 'gikun (the reading is non-standard for the given kanji)';
+      case ReadingInfo.irregularKana:
+        return 'irregular kana';
+      case ReadingInfo.outdatedKana:
+        return 'outdated kana';
+      case ReadingInfo.searchOnlyForm:
+        return 'search only form';
+    }
+  }
+}
