@@ -76,7 +76,7 @@ class IsarService {
 
     // If dictionary count does not match expectation, database probably got corrupted
     if ((await _isar.kanjis.count()) != 13108 ||
-        (await _isar.vocabs.count()) != 198094) {
+        (await _isar.vocabs.count()) != 206797) {
       return DictionaryStatus.invalid;
     }
 

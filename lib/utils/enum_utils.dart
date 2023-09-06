@@ -595,6 +595,8 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Kurdish';
       case LanguageSource.lat:
         return 'Latin';
+      case LanguageSource.lit:
+        return 'Lithuanian';
       case LanguageSource.mal:
         return 'Malayalam';
       case LanguageSource.mao:
