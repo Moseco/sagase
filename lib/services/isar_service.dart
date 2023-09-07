@@ -506,15 +506,18 @@ class IsarService {
     // Check part of speech
     if (token.pos != null) {
       List<Vocab> list = List.from(results);
+      outer:
       for (int i = 0; i < list.length; i++) {
-        bool removeCurrent = true;
-        for (var definition in list[i].definitions) {
-          if (definition.pos != null && definition.pos!.contains(token.pos)) {
-            removeCurrent = false;
-            break;
+        if (list[i].pos != null && list[i].pos!.contains(token.pos)) {
+          continue outer;
+        } else {
+          for (var definition in list[i].definitions) {
+            if (definition.pos != null && definition.pos!.contains(token.pos)) {
+              continue outer;
+            }
           }
         }
-        if (removeCurrent) list.removeAt(i--);
+        list.removeAt(i--);
       }
 
       if (list.length == 1) {
@@ -542,15 +545,14 @@ class IsarService {
       }
 
       // Remove vocab with reading not in the first kanji reading pair
+      outer:
       for (int i = 0; i < list.length; i++) {
-        bool removeCurrent = true;
         for (var reading in list[i].kanjiReadingPairs[0].readings) {
           if (token.base == reading.reading) {
-            removeCurrent = false;
-            break;
+            continue outer;
           }
         }
-        if (removeCurrent) list.removeAt(i--);
+        list.removeAt(i--);
       }
 
       if (list.isNotEmpty) return list..sort(_compareVocab);
