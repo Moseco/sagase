@@ -23,6 +23,22 @@ void main() {
       expect(list[1].negative, '怖くなかった');
     });
 
+    test('conjugate adjectiveI - vocab level pos', () {
+      Vocab vocab = Vocab()
+        ..kanjiReadingPairs = [
+          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '怖い']
+        ]
+        ..definitions = [VocabDefinition()]
+        ..pos = [PartOfSpeech.adjectiveI];
+
+      final list = conjugationUtils.getConjugations(vocab);
+
+      expect(list![0].positive, '怖い');
+      expect(list[0].negative, '怖くない');
+      expect(list[1].positive, '怖かった');
+      expect(list[1].negative, '怖くなかった');
+    });
+
     test('conjugate adjectiveNa', () {
       Vocab vocab = Vocab()
         ..kanjiReadingPairs = [

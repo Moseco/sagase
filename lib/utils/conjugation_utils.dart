@@ -202,7 +202,7 @@ class ConjugationUtils {
   }
 
   PartOfSpeech? getPartOfSpeech(Vocab vocab) {
-    for (var pos in vocab.definitions[0].pos ?? []) {
+    for (var pos in (vocab.pos ?? []) + (vocab.definitions[0].pos ?? [])) {
       if (allowedPos.contains(pos)) {
         return pos;
       }
