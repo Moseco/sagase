@@ -18,7 +18,7 @@ extension PartOfSpeechExtension on PartOfSpeech {
       case PartOfSpeech.adjectiveNari:
         return 'なり adjective (archaic/formal form of な adjective)';
       case PartOfSpeech.adjectiveNo:
-        return 'noun which may take the genitive case particle の';
+        return 'の adjective';
       case PartOfSpeech.adjectivePn:
         return 'pre-noun adjectival';
       case PartOfSpeech.adjectiveShiku:
