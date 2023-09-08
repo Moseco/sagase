@@ -77,6 +77,14 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     value: viewModel.crashlyticsEnabled,
                     onChanged: viewModel.setCrashlyticsEnabled,
                   ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: viewModel.openPrivacyPolicy,
+                    child: const Text(
+                      'View privacy policy',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ),
             ),

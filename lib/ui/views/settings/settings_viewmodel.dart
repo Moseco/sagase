@@ -320,4 +320,16 @@ class SettingsViewModel extends BaseViewModel {
       }
     }
   }
+
+  Future<void> openPrivacyPolicy() async {
+    try {
+      if (!await launchUrl(
+        Uri.parse(r'https://hammarlund.dev/sagase/privacy'),
+      )) {
+        _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
+      }
+    } catch (_) {
+      _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
+    }
+  }
 }
