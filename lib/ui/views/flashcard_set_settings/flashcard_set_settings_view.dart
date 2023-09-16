@@ -151,51 +151,92 @@ class FlashcardSetSettingsView extends StatelessWidget {
                       ),
                     ),
                     CardWithTitleSection(
+                      title: 'Front type',
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              _ToggleOption(
+                                text: 'Japanese',
+                                enabled: flashcardSet.frontType ==
+                                    FrontType.japanese,
+                                onTap: () =>
+                                    viewModel.setFrontType(FrontType.japanese),
+                              ),
+                              _ToggleOption(
+                                text: 'English',
+                                enabled:
+                                    flashcardSet.frontType == FrontType.english,
+                                onTap: () =>
+                                    viewModel.setFrontType(FrontType.english),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    CardWithTitleSection(
                       title: 'Appearance',
                       child: Column(
-                        children: [
-                          ListTile(
-                            title: const Text('Show reading'),
-                            subtitle: const Text('Vocab flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.vocabShowReading,
-                              onChanged: viewModel.setVocabShowReading,
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text(
-                              'Show reading if kanji rarely used',
-                            ),
-                            subtitle: const Text('Vocab flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.vocabShowReadingIfRareKanji,
-                              onChanged:
-                                  viewModel.setVocabShowReadingIfRareKanji,
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text(
-                              'Show alternative kanji and reading',
-                            ),
-                            subtitle: const Text('Vocab flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.vocabShowAlternatives,
-                              onChanged: viewModel.setVocabShowAlternatives,
-                            ),
-                          ),
-                          ListTile(
-                            title: const Text('Show reading'),
-                            subtitle: const Text('Kanji flashcards'),
-                            trailing: Switch(
-                              activeColor: Colors.deepPurple,
-                              value: flashcardSet.kanjiShowReading,
-                              onChanged: viewModel.setKanjiShowReading,
-                            ),
-                          ),
-                        ],
+                        children: switch (flashcardSet.frontType) {
+                          FrontType.japanese => [
+                              ListTile(
+                                title: const Text('Show reading'),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.vocabShowReading,
+                                  onChanged: viewModel.setVocabShowReading,
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  'Show reading if kanji rarely used',
+                                ),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value:
+                                      flashcardSet.vocabShowReadingIfRareKanji,
+                                  onChanged:
+                                      viewModel.setVocabShowReadingIfRareKanji,
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  'Show alternative kanji and reading',
+                                ),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.vocabShowAlternatives,
+                                  onChanged: viewModel.setVocabShowAlternatives,
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text('Show reading'),
+                                subtitle: const Text('Kanji flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.kanjiShowReading,
+                                  onChanged: viewModel.setKanjiShowReading,
+                                ),
+                              ),
+                            ],
+                          FrontType.english => [
+                              ListTile(
+                                title: const Text('Show parts of speech'),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.vocabShowPartsOfSpeech,
+                                  onChanged:
+                                      viewModel.setVocabShowPartsOfSpeech,
+                                ),
+                              ),
+                            ],
+                        },
                       ),
                     ),
                     const Spacer(),

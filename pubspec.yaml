@@ -59,7 +59,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '00755f1'
+      ref: 'b38f4b7'
   url_launcher: ^6.1.12
 
 # Temporary override because of dependency from sagase_dictionary

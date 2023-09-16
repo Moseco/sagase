@@ -115,40 +115,42 @@ class FlashcardsViewModel extends BaseViewModel {
         kanjiMap.values.toList().cast<DictionaryItem>();
 
     // Go through flashcards and associate flashcards that would have the same front
-    Map<String, List<DictionaryItem>> flashcardMap = {};
-    for (var flashcard in allFlashcards!) {
-      // Create string that represents the front of a flashcard
-      final front = StringBuffer();
-      if (flashcard is Vocab) {
-        if (flashcard.kanjiReadingPairs[0].kanjiWritings != null) {
-          front.write(flashcard.kanjiReadingPairs[0].kanjiWritings![0].kanji);
-        }
-        if (flashcardSet.vocabShowReading ||
-            flashcard.kanjiReadingPairs[0].kanjiWritings == null ||
-            (flashcard.isUsuallyKanaAlone() &&
-                flashcardSet.vocabShowReadingIfRareKanji)) {
-          front.write(flashcard.kanjiReadingPairs[0].readings[0].reading);
-        }
-      } else {
-        front.write((flashcard as Kanji).kanji);
-      }
-
-      // Check if similar flashcard already found
-      final frontString = front.toString();
-      if (flashcardMap.containsKey(frontString)) {
-        flashcard.similarFlashcards = [];
-        final similarFlashcards = flashcardMap[frontString]!;
-        for (var similarFlashcard in similarFlashcards) {
-          flashcard.similarFlashcards!.add(similarFlashcard);
-          if (similarFlashcard.similarFlashcards == null) {
-            similarFlashcard.similarFlashcards = [flashcard];
-          } else {
-            similarFlashcard.similarFlashcards!.add(flashcard);
+    if (flashcardSet.frontType == FrontType.japanese) {
+      Map<String, List<DictionaryItem>> flashcardMap = {};
+      for (var flashcard in allFlashcards!) {
+        // Create string that represents the front of a flashcard
+        final front = StringBuffer();
+        if (flashcard is Vocab) {
+          if (flashcard.kanjiReadingPairs[0].kanjiWritings != null) {
+            front.write(flashcard.kanjiReadingPairs[0].kanjiWritings![0].kanji);
           }
+          if (flashcardSet.vocabShowReading ||
+              flashcard.kanjiReadingPairs[0].kanjiWritings == null ||
+              (flashcard.isUsuallyKanaAlone() &&
+                  flashcardSet.vocabShowReadingIfRareKanji)) {
+            front.write(flashcard.kanjiReadingPairs[0].readings[0].reading);
+          }
+        } else {
+          front.write((flashcard as Kanji).kanji);
         }
-        similarFlashcards.add(flashcard);
-      } else {
-        flashcardMap[frontString] = [flashcard];
+
+        // Check if similar flashcard already found
+        final frontString = front.toString();
+        if (flashcardMap.containsKey(frontString)) {
+          flashcard.similarFlashcards = [];
+          final similarFlashcards = flashcardMap[frontString]!;
+          for (var similarFlashcard in similarFlashcards) {
+            flashcard.similarFlashcards!.add(similarFlashcard);
+            if (similarFlashcard.similarFlashcards == null) {
+              similarFlashcard.similarFlashcards = [flashcard];
+            } else {
+              similarFlashcard.similarFlashcards!.add(flashcard);
+            }
+          }
+          similarFlashcards.add(flashcard);
+        } else {
+          flashcardMap[frontString] = [flashcard];
+        }
       }
     }
 
@@ -156,18 +158,10 @@ class FlashcardsViewModel extends BaseViewModel {
     if (_usingSpacedRepetition) {
       int todayAsInt = DateTime.now().toInt();
       for (var item in allFlashcards!) {
-        if (item is Vocab) {
-          if (item.spacedRepetitionData == null) {
-            newFlashcards.add(item);
-          } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
-            dueFlashcards.add(item);
-          }
-        } else {
-          if ((item as Kanji).spacedRepetitionData == null) {
-            newFlashcards.add(item);
-          } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
-            dueFlashcards.add(item);
-          }
+        if (_getSpacedRepetitionData(item) == null) {
+          newFlashcards.add(item);
+        } else if (_getSpacedRepetitionData(item)!.dueDate! <= todayAsInt) {
+          dueFlashcards.add(item);
         }
       }
       // Set initial due flashcard count and add flashcards completed today
@@ -198,7 +192,7 @@ class FlashcardsViewModel extends BaseViewModel {
     // Add to the undo list
     _undoList.add(_UndoItem(
       currentFlashcard,
-      currentFlashcard.spacedRepetitionData,
+      _getSpacedRepetitionData(currentFlashcard),
     ));
 
     if (usingSpacedRepetition) {
@@ -223,43 +217,52 @@ class FlashcardsViewModel extends BaseViewModel {
         );
         notifyListeners();
         // Only modify spaced repetition data if flashcard has previous data
-        if (currentFlashcard.spacedRepetitionData != null) {
+        if (_getSpacedRepetitionData(currentFlashcard) != null) {
           // If answering a new card decrease the initial counter
-          if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
-            currentFlashcard.spacedRepetitionData = currentFlashcard
-                .spacedRepetitionData!
-                .copyWithInitialCorrectCount(-1);
+          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate == null) {
+            _setSpacedRepetitionData(
+              currentFlashcard,
+              _getSpacedRepetitionData(currentFlashcard)!
+                  .copyWithInitialCorrectCount(-1),
+            );
           } else {
             // Not new card, get new spaced repetition data
-            currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
-              answer.index,
-              currentFlashcard.spacedRepetitionData!,
+            _setSpacedRepetitionData(
+              currentFlashcard,
+              _calculateSpacedRepetition(
+                answer.index,
+                _getSpacedRepetitionData(currentFlashcard)!,
+              ),
             );
             // Update in database
             await _isarService.updateSpacedRepetitionData(currentFlashcard);
           }
         }
       } else if (answer == FlashcardAnswer.correct) {
-        currentFlashcard.spacedRepetitionData ??= SpacedRepetitionData();
-        currentFlashcard.spacedRepetitionData = currentFlashcard
-            .spacedRepetitionData!
-            .copyWithInitialCorrectCount(1);
+        _setSpacedRepetitionData(
+          currentFlashcard,
+          (_getSpacedRepetitionData(currentFlashcard) ?? SpacedRepetitionData())
+              .copyWithInitialCorrectCount(1),
+        );
         // If answering not new card or have answered new card correctly a set number of times, get new spaced repetition data
-        if (currentFlashcard.spacedRepetitionData!.dueDate != null ||
-            currentFlashcard.spacedRepetitionData!.initialCorrectCount >=
+        if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null ||
+            _getSpacedRepetitionData(currentFlashcard)!.initialCorrectCount >=
                 _sharedPreferencesService
                     .getFlashcardCorrectAnswersRequired()) {
           // If completing a new card, increase new flashcard count
-          if (currentFlashcard.spacedRepetitionData!.dueDate == null) {
+          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate == null) {
             flashcardSet.newFlashcardsCompletedToday++;
           }
           // Increase flashcards completed today and update in database
           flashcardSet.flashcardsCompletedToday++;
           _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
           // Get new spaced repetition date and use enum index as argument
-          currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
-            answer.index,
-            currentFlashcard.spacedRepetitionData!,
+          _setSpacedRepetitionData(
+            currentFlashcard,
+            _calculateSpacedRepetition(
+              answer.index,
+              _getSpacedRepetitionData(currentFlashcard)!,
+            ),
           );
 
           notifyListeners();
@@ -280,16 +283,20 @@ class FlashcardsViewModel extends BaseViewModel {
       } else {
         // Very correct answer
         // If completing a new card, increase new flashcard count
-        if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
+        if (_getSpacedRepetitionData(currentFlashcard)?.dueDate == null) {
           flashcardSet.newFlashcardsCompletedToday++;
         }
         // Increase flashcards completed today and update in database
         flashcardSet.flashcardsCompletedToday++;
         _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
         // Get new spaced repetition date and use enum index as argument
-        currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
-          answer.index,
-          currentFlashcard.spacedRepetitionData ?? SpacedRepetitionData(),
+        _setSpacedRepetitionData(
+          currentFlashcard,
+          _calculateSpacedRepetition(
+            answer.index,
+            _getSpacedRepetitionData(currentFlashcard) ??
+                SpacedRepetitionData(),
+          ),
         );
 
         notifyListeners();
@@ -430,7 +437,7 @@ class FlashcardsViewModel extends BaseViewModel {
 
     // If undoing a newly completed card, decrease flashcards completed counts
     if (current.previousData?.dueDate == null &&
-        current.flashcard.spacedRepetitionData?.dueDate != null) {
+        _getSpacedRepetitionData(current.flashcard)?.dueDate != null) {
       flashcardSet.flashcardsCompletedToday--;
       flashcardSet.newFlashcardsCompletedToday--;
       _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
@@ -443,14 +450,15 @@ class FlashcardsViewModel extends BaseViewModel {
 
     // Put flashcard at the front of active list with the previous data
     activeFlashcards.insert(0, current.flashcard);
-    current.flashcard.spacedRepetitionData = current.previousData;
+    _setSpacedRepetitionData(current.flashcard, current.previousData);
 
     notifyListeners();
 
     // Update in database with old data
     // If old data was keeping track of initial correct count for new cards, set to null
     if (current.previousData != null && current.previousData!.dueDate == null) {
-      return _isarService.setSpacedRepetitionDataToNull(current.flashcard);
+      return _isarService.setSpacedRepetitionDataToNull(
+          current.flashcard, flashcardSet.frontType);
     } else {
       return _isarService.updateSpacedRepetitionData(current.flashcard);
     }
@@ -461,7 +469,7 @@ class FlashcardsViewModel extends BaseViewModel {
     if (activeFlashcards.isEmpty) return '';
 
     if (answer == FlashcardAnswer.wrong) {
-      if (activeFlashcards[0].spacedRepetitionData == null) {
+      if (_getSpacedRepetitionData(activeFlashcards[0]) == null) {
         return '~';
       } else {
         return '0';
@@ -471,7 +479,7 @@ class FlashcardsViewModel extends BaseViewModel {
     } else {
       int interval = _calculateSpacedRepetition(
         answer.index,
-        activeFlashcards[0].spacedRepetitionData ?? SpacedRepetitionData(),
+        _getSpacedRepetitionData(activeFlashcards[0]) ?? SpacedRepetitionData(),
       ).interval;
 
       // Format interval
@@ -588,6 +596,29 @@ class FlashcardsViewModel extends BaseViewModel {
     }
 
     notifyListeners();
+  }
+
+  // Convenience function for getting the correct spaced repetition data
+  SpacedRepetitionData? _getSpacedRepetitionData(DictionaryItem item) {
+    return switch (flashcardSet.frontType) {
+      FrontType.japanese => item.spacedRepetitionData,
+      FrontType.english => item.spacedRepetitionDataEnglish,
+    };
+  }
+
+  // Convenience function for setting the correct spaced repetition data
+  void _setSpacedRepetitionData(
+    DictionaryItem item,
+    SpacedRepetitionData? data,
+  ) {
+    switch (flashcardSet.frontType) {
+      case FrontType.japanese:
+        item.spacedRepetitionData = data;
+        break;
+      case FrontType.english:
+        item.spacedRepetitionDataEnglish = data;
+        break;
+    }
   }
 }
 

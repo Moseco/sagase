@@ -103,33 +103,32 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
     final today = DateTime.parse(DateTime.now().toInt().toString());
     upcomingDueFlashcards = List<int>.filled(8, 0);
     for (var flashcard in flashcards) {
-      if (flashcard.spacedRepetitionData != null) {
+      if (_getSpacedRepetitionData(flashcard) != null) {
         // Upcoming due count
-        upcomingDueFlashcards[
-            (DateTime.parse(flashcard.spacedRepetitionData!.dueDate!.toString())
-                    .difference(today)
-                    .inDays)
-                .clamp(0, 7)]++;
+        upcomingDueFlashcards[(DateTime.parse(
+                    _getSpacedRepetitionData(flashcard)!.dueDate!.toString())
+                .difference(today)
+                .inDays)
+            .clamp(0, 7)]++;
 
         // Interval count
-        if (flashcard.spacedRepetitionData!.interval <= 7) {
+        if (_getSpacedRepetitionData(flashcard)!.interval <= 7) {
           flashcardIntervalCounts[1]++;
-        } else if (flashcard.spacedRepetitionData!.interval <= 28) {
+        } else if (_getSpacedRepetitionData(flashcard)!.interval <= 28) {
           flashcardIntervalCounts[2]++;
-        } else if (flashcard.spacedRepetitionData!.interval <= 56) {
+        } else if (_getSpacedRepetitionData(flashcard)!.interval <= 56) {
           flashcardIntervalCounts[3]++;
         } else {
           flashcardIntervalCounts[4]++;
         }
 
         // Challenging flashcards
-        if (flashcard.spacedRepetitionData!.totalAnswers > 4 &&
-            flashcard.spacedRepetitionData!.wrongAnswerRate >= 0.25) {
+        if (_getSpacedRepetitionData(flashcard)!.totalAnswers > 4 &&
+            _getSpacedRepetitionData(flashcard)!.wrongAnswerRate >= 0.25) {
           bool addToEnd = true;
           for (int i = 0; i < challengingFlashcards.length; i++) {
-            if (flashcard.spacedRepetitionData!.wrongAnswerRate >
-                challengingFlashcards[i]
-                    .spacedRepetitionData!
+            if (_getSpacedRepetitionData(flashcard)!.wrongAnswerRate >
+                _getSpacedRepetitionData(challengingFlashcards[i])!
                     .wrongAnswerRate) {
               challengingFlashcards.insert(i, flashcard);
               addToEnd = false;
@@ -163,5 +162,13 @@ class FlashcardSetInfoViewModel extends BaseViewModel {
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
+  }
+
+  // Convenience function for getting the correct spaced repetition data
+  SpacedRepetitionData? _getSpacedRepetitionData(DictionaryItem item) {
+    return switch (flashcardSet.frontType) {
+      FrontType.japanese => item.spacedRepetitionData,
+      FrontType.english => item.spacedRepetitionDataEnglish,
+    };
   }
 }

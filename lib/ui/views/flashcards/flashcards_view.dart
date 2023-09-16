@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
@@ -77,16 +78,34 @@ class FlashcardsView extends HookWidget {
                             child: viewModel.activeFlashcards.isEmpty
                                 ? Container()
                                 : viewModel.activeFlashcards[0] is Vocab
-                                    ? _VocabFlashcardFront(
-                                        flashcardSet: flashcardSet,
-                                        vocab: viewModel.activeFlashcards[0]
-                                            as Vocab,
-                                      )
-                                    : _KanjiFlashcardFront(
-                                        flashcardSet: flashcardSet,
-                                        kanji: viewModel.activeFlashcards[0]
-                                            as Kanji,
-                                      ),
+                                    ? switch (flashcardSet.frontType) {
+                                        FrontType.japanese =>
+                                          _VocabFlashcardFront(
+                                            flashcardSet: flashcardSet,
+                                            vocab: viewModel.activeFlashcards[0]
+                                                as Vocab,
+                                          ),
+                                        FrontType.english =>
+                                          _VocabFlashcardFrontEnglish(
+                                            flashcardSet: flashcardSet,
+                                            vocab: viewModel.activeFlashcards[0]
+                                                as Vocab,
+                                          ),
+                                      }
+                                    : switch (flashcardSet.frontType) {
+                                        FrontType.japanese =>
+                                          _KanjiFlashcardFront(
+                                            flashcardSet: flashcardSet,
+                                            kanji: viewModel.activeFlashcards[0]
+                                                as Kanji,
+                                          ),
+                                        FrontType.english =>
+                                          _KanjiFlashcardFrontEnglish(
+                                            flashcardSet: flashcardSet,
+                                            kanji: viewModel.activeFlashcards[0]
+                                                as Kanji,
+                                          ),
+                                      },
                           ),
                           back: _Flashcard(
                             constraints: constraints,
@@ -111,16 +130,32 @@ class FlashcardsView extends HookWidget {
                         child: viewModel.activeFlashcards.length < 2
                             ? Container()
                             : viewModel.activeFlashcards[1] is Vocab
-                                ? _VocabFlashcardFront(
-                                    flashcardSet: flashcardSet,
-                                    vocab:
-                                        viewModel.activeFlashcards[1] as Vocab,
-                                  )
-                                : _KanjiFlashcardFront(
-                                    flashcardSet: flashcardSet,
-                                    kanji:
-                                        viewModel.activeFlashcards[1] as Kanji,
-                                  ),
+                                ? switch (flashcardSet.frontType) {
+                                    FrontType.japanese => _VocabFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[1]
+                                            as Vocab,
+                                      ),
+                                    FrontType.english =>
+                                      _VocabFlashcardFrontEnglish(
+                                        flashcardSet: flashcardSet,
+                                        vocab: viewModel.activeFlashcards[1]
+                                            as Vocab,
+                                      ),
+                                  }
+                                : switch (flashcardSet.frontType) {
+                                    FrontType.japanese => _KanjiFlashcardFront(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[1]
+                                            as Kanji,
+                                      ),
+                                    FrontType.english =>
+                                      _KanjiFlashcardFrontEnglish(
+                                        flashcardSet: flashcardSet,
+                                        kanji: viewModel.activeFlashcards[1]
+                                            as Kanji,
+                                      ),
+                                  },
                       ),
                       blankFlashcard: _Flashcard(
                         constraints: constraints,
@@ -392,6 +427,85 @@ class _VocabFlashcardFront extends StatelessWidget {
   }
 }
 
+class _VocabFlashcardFrontEnglish extends StatelessWidget {
+  final FlashcardSet flashcardSet;
+  final Vocab vocab;
+
+  const _VocabFlashcardFrontEnglish({
+    required this.flashcardSet,
+    required this.vocab,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+
+    // Add vocab level parts of speech
+    if (flashcardSet.vocabShowPartsOfSpeech && vocab.pos != null) {
+      final posBuffer = StringBuffer(vocab.pos![0].displayTitle);
+      for (int i = 1; i < vocab.pos!.length; i++) {
+        posBuffer.write(', ');
+        posBuffer.write(vocab.pos![i].displayTitle);
+      }
+
+      children.addAll([
+        Text(
+          posBuffer.toString(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.grey),
+        ),
+        const Text(
+          'Applies to all',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 10, color: Colors.grey),
+        ),
+        const Divider(),
+      ]);
+    }
+
+    // Add definitions
+    for (int i = 0; i < vocab.definitions.length; i++) {
+      // Parts of speech
+      if (flashcardSet.vocabShowPartsOfSpeech &&
+          vocab.definitions[i].pos != null) {
+        final posBuffer =
+            StringBuffer(vocab.definitions[i].pos![0].displayTitle);
+        for (int j = 1; j < vocab.definitions[i].pos!.length; j++) {
+          posBuffer.write(', ');
+          posBuffer.write(vocab.definitions[i].pos![j].displayTitle);
+        }
+
+        children.add(
+          Text(
+            posBuffer.toString(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        );
+      }
+
+      // Actual definition
+      children.add(
+        Text(
+          '${i + 1}: ${vocab.definitions[i].definition}',
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
 class _KanjiFlashcardFront extends StatelessWidget {
   final FlashcardSet flashcardSet;
   final Kanji kanji;
@@ -449,6 +563,30 @@ class _KanjiFlashcardFront extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: children,
+        ),
+      ),
+    );
+  }
+}
+
+class _KanjiFlashcardFrontEnglish extends StatelessWidget {
+  final FlashcardSet flashcardSet;
+  final Kanji kanji;
+
+  const _KanjiFlashcardFrontEnglish({
+    required this.flashcardSet,
+    required this.kanji,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          kanji.meanings?.join(', ') ?? '(no meaning)',
+          textAlign: TextAlign.center,
         ),
       ),
     );

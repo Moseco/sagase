@@ -745,7 +745,8 @@ class IsarService {
   }
 
   Future<void> resetFlashcardSetSpacedRepetitionData(
-      FlashcardSet flashcardSet) async {
+    FlashcardSet flashcardSet,
+  ) async {
     await _isar.writeTxn(() async {
       // Predefined lists
       await flashcardSet.predefinedDictionaryListLinks.load();
@@ -753,18 +754,38 @@ class IsarService {
         // Reset vocab
         await list.vocabLinks.load();
         for (var vocab in list.vocabLinks) {
-          if (vocab.spacedRepetitionData != null) {
-            vocab.spacedRepetitionData = null;
-            await _isar.vocabs.put(vocab);
+          switch (flashcardSet.frontType) {
+            case FrontType.japanese:
+              if (vocab.spacedRepetitionData != null) {
+                vocab.spacedRepetitionData = null;
+                await _isar.vocabs.put(vocab);
+              }
+              break;
+            case FrontType.english:
+              if (vocab.spacedRepetitionDataEnglish != null) {
+                vocab.spacedRepetitionDataEnglish = null;
+                await _isar.vocabs.put(vocab);
+              }
+              break;
           }
         }
 
         // Reset kanji
         await list.kanjiLinks.load();
         for (var kanji in list.kanjiLinks) {
-          if (kanji.spacedRepetitionData != null) {
-            kanji.spacedRepetitionData = null;
-            await _isar.kanjis.put(kanji);
+          switch (flashcardSet.frontType) {
+            case FrontType.japanese:
+              if (kanji.spacedRepetitionData != null) {
+                kanji.spacedRepetitionData = null;
+                await _isar.kanjis.put(kanji);
+              }
+              break;
+            case FrontType.english:
+              if (kanji.spacedRepetitionDataEnglish != null) {
+                kanji.spacedRepetitionDataEnglish = null;
+                await _isar.kanjis.put(kanji);
+              }
+              break;
           }
         }
       }
@@ -775,18 +796,38 @@ class IsarService {
         // Reset vocab
         await list.vocabLinks.load();
         for (var vocab in list.vocabLinks) {
-          if (vocab.spacedRepetitionData != null) {
-            vocab.spacedRepetitionData = null;
-            await _isar.vocabs.put(vocab);
+          switch (flashcardSet.frontType) {
+            case FrontType.japanese:
+              if (vocab.spacedRepetitionData != null) {
+                vocab.spacedRepetitionData = null;
+                await _isar.vocabs.put(vocab);
+              }
+              break;
+            case FrontType.english:
+              if (vocab.spacedRepetitionDataEnglish != null) {
+                vocab.spacedRepetitionDataEnglish = null;
+                await _isar.vocabs.put(vocab);
+              }
+              break;
           }
         }
 
         // Reset kanji
         await list.kanjiLinks.load();
         for (var kanji in list.kanjiLinks) {
-          if (kanji.spacedRepetitionData != null) {
-            kanji.spacedRepetitionData = null;
-            await _isar.kanjis.put(kanji);
+          switch (flashcardSet.frontType) {
+            case FrontType.japanese:
+              if (kanji.spacedRepetitionData != null) {
+                kanji.spacedRepetitionData = null;
+                await _isar.kanjis.put(kanji);
+              }
+              break;
+            case FrontType.english:
+              if (kanji.spacedRepetitionDataEnglish != null) {
+                kanji.spacedRepetitionDataEnglish = null;
+                await _isar.kanjis.put(kanji);
+              }
+              break;
           }
         }
       }
@@ -807,16 +848,33 @@ class IsarService {
     });
   }
 
-  Future<void> setSpacedRepetitionDataToNull(DictionaryItem item) async {
+  Future<void> setSpacedRepetitionDataToNull(
+    DictionaryItem item,
+    FrontType frontType,
+  ) async {
     // Get instance, set spaced repetition data to null, then update database
     return _isar.writeTxn(() async {
       if (item is Vocab) {
         var vocab = await _isar.vocabs.get(item.id);
-        vocab!.spacedRepetitionData = null;
+        switch (frontType) {
+          case FrontType.japanese:
+            vocab!.spacedRepetitionData = null;
+            break;
+          case FrontType.english:
+            vocab!.spacedRepetitionDataEnglish = null;
+            break;
+        }
         await _isar.vocabs.put(vocab);
       } else {
         var kanji = await _isar.kanjis.get(item.id);
-        kanji!.spacedRepetitionData = null;
+        switch (frontType) {
+          case FrontType.japanese:
+            kanji!.spacedRepetitionData = null;
+            break;
+          case FrontType.english:
+            kanji!.spacedRepetitionDataEnglish = null;
+            break;
+        }
         await _isar.kanjis.put(kanji);
       }
     });
@@ -913,6 +971,17 @@ class IsarService {
           .add(vocab.spacedRepetitionData!.toBackupJson(vocabId: vocab.id));
     }
 
+    // Vocab spaced repetition data English
+    List<String> vocabSpacedRepetitionDataEnglishBackups = [];
+    final vocabSpacedRepetitionDataEnglish = await _isar.vocabs
+        .filter()
+        .spacedRepetitionDataEnglishIsNotNull()
+        .findAll();
+    for (var vocab in vocabSpacedRepetitionDataEnglish) {
+      vocabSpacedRepetitionDataEnglishBackups.add(
+          vocab.spacedRepetitionDataEnglish!.toBackupJson(vocabId: vocab.id));
+    }
+
     // Kanji spaced repetition data
     List<String> kanjiSpacedRepetitionDataBackups = [];
     final kanjiSpacedRepetitionData =
@@ -920,6 +989,17 @@ class IsarService {
     for (var kanji in kanjiSpacedRepetitionData) {
       kanjiSpacedRepetitionDataBackups
           .add(kanji.spacedRepetitionData!.toBackupJson(kanji: kanji.kanji));
+    }
+
+    // Kanji spaced repetition data English
+    List<String> kanjiSpacedRepetitionDataEnglishBackups = [];
+    final kanjiSpacedRepetitionDataEnglish = await _isar.kanjis
+        .filter()
+        .spacedRepetitionDataEnglishIsNotNull()
+        .findAll();
+    for (var kanji in kanjiSpacedRepetitionDataEnglish) {
+      kanjiSpacedRepetitionDataEnglishBackups.add(
+          kanji.spacedRepetitionDataEnglish!.toBackupJson(kanji: kanji.kanji));
     }
 
     // Create instance
@@ -930,7 +1010,9 @@ class IsarService {
       myDictionaryLists: myDictionaryListBackups,
       flashcardSets: flashcardSetBackups,
       vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
+      vocabSpacedRepetitionDataEnglish: vocabSpacedRepetitionDataEnglishBackups,
       kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
+      kanjiSpacedRepetitionDataEnglish: kanjiSpacedRepetitionDataEnglishBackups,
     );
 
     // Create file and write to it
@@ -955,7 +1037,8 @@ class IsarService {
       await _isar.writeTxn(() async {
         // My dictionary lists
         for (var myListMap
-            in backupMap[SagaseDictionaryConstants.backupMyDictionaryLists]) {
+            in (backupMap[SagaseDictionaryConstants.backupMyDictionaryLists] ??
+                [])) {
           final newMyList = MyDictionaryList.fromBackupJson(myListMap);
 
           // Add vocab
@@ -979,7 +1062,8 @@ class IsarService {
 
         // Flashcard sets
         for (var flashcardSetMap
-            in backupMap[SagaseDictionaryConstants.backupFlashcardSets]) {
+            in (backupMap[SagaseDictionaryConstants.backupFlashcardSets] ??
+                [])) {
           final newFlashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
 
           // Predefined dictionary lists
@@ -994,8 +1078,9 @@ class IsarService {
           }
 
           // My dictionary lists
-          for (var myId in flashcardSetMap[
-              SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists]) {
+          for (var myId in (flashcardSetMap[SagaseDictionaryConstants
+                  .backupFlashcardSetMyDictionaryLists] ??
+              [])) {
             final myDictionaryList = await _isar.myDictionaryLists.get(myId);
             if (myDictionaryList != null) {
               newFlashcardSet.myDictionaryListLinks.add(myDictionaryList);
@@ -1008,8 +1093,9 @@ class IsarService {
         }
 
         // Vocab spaced repetition data
-        for (var spacedRepetitionMap in backupMap[
-            SagaseDictionaryConstants.backupVocabSpacedRepetitionData]) {
+        for (var spacedRepetitionMap in (backupMap[
+                SagaseDictionaryConstants.backupVocabSpacedRepetitionData] ??
+            [])) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
           final vocab = await _isar.vocabs.get(spacedRepetitionMap[
@@ -1020,15 +1106,44 @@ class IsarService {
           }
         }
 
+        // Vocab spaced repetition data English
+        for (var spacedRepetitionMap in (backupMap[SagaseDictionaryConstants
+                .backupVocabSpacedRepetitionDataEnglish] ??
+            [])) {
+          final newSpacedRepetition =
+              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
+          final vocab = await _isar.vocabs.get(spacedRepetitionMap[
+              SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId]);
+          if (vocab != null) {
+            vocab.spacedRepetitionDataEnglish = newSpacedRepetition;
+            await _isar.vocabs.put(vocab);
+          }
+        }
+
         // Kanji spaced repetition data
-        for (var spacedRepetitionMap in backupMap[
-            SagaseDictionaryConstants.backupKanjiSpacedRepetitionData]) {
+        for (var spacedRepetitionMap in (backupMap[
+                SagaseDictionaryConstants.backupKanjiSpacedRepetitionData] ??
+            [])) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
           final kanji = await _isar.kanjis.getByKanji(spacedRepetitionMap[
               SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]);
           if (kanji != null) {
             kanji.spacedRepetitionData = newSpacedRepetition;
+            await _isar.kanjis.put(kanji);
+          }
+        }
+
+        // Kanji spaced repetition data English
+        for (var spacedRepetitionMap in (backupMap[SagaseDictionaryConstants
+                .backupKanjiSpacedRepetitionDataEnglish] ??
+            [])) {
+          final newSpacedRepetition =
+              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
+          final kanji = await _isar.kanjis.getByKanji(spacedRepetitionMap[
+              SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]);
+          if (kanji != null) {
+            kanji.spacedRepetitionDataEnglish = newSpacedRepetition;
             await _isar.kanjis.put(kanji);
           }
         }

@@ -9,10 +9,13 @@ class FlashcardSet {
 
   late String name;
   bool usingSpacedRepetition = true;
+  @enumerated
+  FrontType frontType = FrontType.japanese;
   bool vocabShowReading = false;
   bool vocabShowReadingIfRareKanji = true;
   bool vocabShowAlternatives = false;
   bool kanjiShowReading = false;
+  bool vocabShowPartsOfSpeech = false;
   late DateTime timestamp;
 
   int flashcardsCompletedToday = 0;
@@ -26,10 +29,12 @@ class FlashcardSet {
       "${SagaseDictionaryConstants.backupFlashcardSetId}": $id,
       "${SagaseDictionaryConstants.backupFlashcardSetName}": "$name",
       "${SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition}": $usingSpacedRepetition,
+      "${SagaseDictionaryConstants.backupFlashcardSetFrontType}": ${frontType.index},
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReading}": $vocabShowReading,
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReadingIfRareKanji}": $vocabShowReadingIfRareKanji,
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
       "${SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
+      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech}": $vocabShowPartsOfSpeech,
       "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
       "${SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
       "${SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
@@ -45,6 +50,8 @@ class FlashcardSet {
       ..name = map[SagaseDictionaryConstants.backupFlashcardSetName]
       ..usingSpacedRepetition =
           map[SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition]
+      ..frontType = FrontType.values[
+          map[SagaseDictionaryConstants.backupFlashcardSetFrontType] ?? 0]
       ..vocabShowReading =
           map[SagaseDictionaryConstants.backupFlashcardSetVocabShowReading]
       ..vocabShowReadingIfRareKanji = map[SagaseDictionaryConstants
@@ -53,6 +60,9 @@ class FlashcardSet {
           map[SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives]
       ..kanjiShowReading =
           map[SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading]
+      ..vocabShowPartsOfSpeech = map[SagaseDictionaryConstants
+              .backupFlashcardSetVocabShowPartsOfSpeech] ??
+          false
       ..timestamp = DateTime.fromMillisecondsSinceEpoch(
           map[SagaseDictionaryConstants.backupFlashcardSetTimestamp])
       ..flashcardsCompletedToday = map[
@@ -60,4 +70,9 @@ class FlashcardSet {
       ..newFlashcardsCompletedToday = map[SagaseDictionaryConstants
           .backupFlashcardSetNewFlashcardsCompletedToday];
   }
+}
+
+enum FrontType {
+  japanese,
+  english,
 }

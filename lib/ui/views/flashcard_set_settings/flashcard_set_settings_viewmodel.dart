@@ -181,6 +181,15 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
     _isarService.updateFlashcardSet(flashcardSet);
   }
 
+  void setFrontType(FrontType frontType) {
+    flashcardSet.frontType = frontType;
+    // Not great solution, but just reset flashcards completed
+    flashcardSet.flashcardsCompletedToday = 0;
+    flashcardSet.newFlashcardsCompletedToday = 0;
+    notifyListeners();
+    _isarService.updateFlashcardSet(flashcardSet);
+  }
+
   void setVocabShowReading(bool value) {
     flashcardSet.vocabShowReading = value;
     notifyListeners();
@@ -201,6 +210,12 @@ class FlashcardSetSettingsViewModel extends BaseViewModel {
 
   void setKanjiShowReading(bool value) {
     flashcardSet.kanjiShowReading = value;
+    notifyListeners();
+    _isarService.updateFlashcardSet(flashcardSet);
+  }
+
+  void setVocabShowPartsOfSpeech(bool value) {
+    flashcardSet.vocabShowPartsOfSpeech = value;
     notifyListeners();
     _isarService.updateFlashcardSet(flashcardSet);
   }
