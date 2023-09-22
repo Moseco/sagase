@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
@@ -418,79 +419,117 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
       }
 
       // Parse other info
-      final otherInfoBuffer = StringBuffer();
+      final List<TextSpan> otherInfoTextSpans = [];
       if (definition.additionalInfo != null) {
-        otherInfoBuffer.write(' (');
-        otherInfoBuffer.write(definition.additionalInfo);
+        otherInfoTextSpans.add(TextSpan(text: definition.additionalInfo));
       }
       if (definition.appliesTo != null) {
-        if (otherInfoBuffer.isEmpty) {
-          otherInfoBuffer.write(' (');
-        } else {
-          otherInfoBuffer.write('; ');
-        }
-        otherInfoBuffer.write('only apples to: ');
-        otherInfoBuffer.write(definition.appliesTo!.join(', '));
+        final buffer = StringBuffer();
+        if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
+        buffer.write('only apples to: ${definition.appliesTo!.join(', ')}');
+        otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
       }
       if (definition.fields != null) {
-        if (otherInfoBuffer.isEmpty) {
-          otherInfoBuffer.write(' (');
-        } else {
-          otherInfoBuffer.write('; ');
-        }
-        otherInfoBuffer.write(definition.fields![0].displayTitle);
+        final buffer = StringBuffer();
+        if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
+        buffer.write(definition.fields![0].displayTitle);
         for (int i = 1; i < definition.fields!.length; i++) {
-          otherInfoBuffer.write(', ');
-          otherInfoBuffer.write(definition.fields![i].displayTitle);
+          buffer.write(', ');
+          buffer.write(definition.fields![i].displayTitle);
         }
+        otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
       }
       if (definition.miscInfo != null) {
-        if (otherInfoBuffer.isEmpty) {
-          otherInfoBuffer.write(' (');
-        } else {
-          otherInfoBuffer.write('; ');
-        }
-        otherInfoBuffer.write(definition.miscInfo![0].displayTitle);
+        final buffer = StringBuffer();
+        if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
+        buffer.write(definition.miscInfo![0].displayTitle);
         for (int i = 1; i < definition.miscInfo!.length; i++) {
-          otherInfoBuffer.write(', ');
-          otherInfoBuffer.write(definition.miscInfo![i].displayTitle);
+          buffer.write(', ');
+          buffer.write(definition.miscInfo![i].displayTitle);
         }
+        otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
       }
       if (definition.dialects != null) {
-        if (otherInfoBuffer.isEmpty) {
-          otherInfoBuffer.write(' (');
-        } else {
-          otherInfoBuffer.write('; ');
-        }
-        otherInfoBuffer.write(definition.dialects![0].displayTitle);
+        final buffer = StringBuffer();
+        if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
+        buffer.write(definition.dialects![0].displayTitle);
         for (int i = 1; i < definition.dialects!.length; i++) {
-          otherInfoBuffer.write(', ');
-          otherInfoBuffer.write(definition.dialects![i].displayTitle);
+          buffer.write(', ');
+          buffer.write(definition.dialects![i].displayTitle);
         }
+        otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
       }
       if (definition.loanWordInfo != null) {
-        if (otherInfoBuffer.isEmpty) {
-          otherInfoBuffer.write(' (');
-        } else {
-          otherInfoBuffer.write('; ');
-        }
+        final buffer = StringBuffer();
+        if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
         if (definition.loanWordInfo!.waseieigo) {
-          otherInfoBuffer
-              .write('original Japanese word (waseieigo) derived from ');
+          buffer.write('original Japanese word (waseieigo) derived from ');
         } else {
-          otherInfoBuffer.write('loan word from ');
+          buffer.write('loan word from ');
         }
-        otherInfoBuffer
-            .write(definition.loanWordInfo!.languageSource[0].displayTitle);
+        buffer.write(definition.loanWordInfo!.languageSource[0].displayTitle);
         for (int i = 1;
             i < definition.loanWordInfo!.languageSource.length;
             i++) {
-          otherInfoBuffer.write(', ');
-          otherInfoBuffer
-              .write(definition.loanWordInfo!.languageSource[i].displayTitle);
+          buffer.write(', ');
+          buffer.write(definition.loanWordInfo!.languageSource[i].displayTitle);
+        }
+        otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
+      }
+      if (definition.crossReferences != null) {
+        if (otherInfoTextSpans.isNotEmpty) {
+          otherInfoTextSpans.add(const TextSpan(text: '; '));
+        }
+        otherInfoTextSpans.add(const TextSpan(text: 'see also: '));
+        otherInfoTextSpans.add(
+          TextSpan(
+            text: definition.crossReferences![0].text,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  viewModel.openVocabReference(definition.crossReferences![0]),
+          ),
+        );
+        for (int i = 1; i < definition.crossReferences!.length; i++) {
+          otherInfoTextSpans.add(const TextSpan(text: ', '));
+          otherInfoTextSpans.add(
+            TextSpan(
+              text: definition.crossReferences![i].text,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => viewModel
+                    .openVocabReference(definition.crossReferences![i]),
+            ),
+          );
         }
       }
-      if (otherInfoBuffer.isNotEmpty) otherInfoBuffer.write(')');
+      if (definition.antonyms != null) {
+        if (otherInfoTextSpans.isNotEmpty) {
+          otherInfoTextSpans.add(const TextSpan(text: '; '));
+        }
+        otherInfoTextSpans.add(const TextSpan(text: 'antonym: '));
+        otherInfoTextSpans.add(
+          TextSpan(
+            text: definition.antonyms![0].text,
+            recognizer: TapGestureRecognizer()
+              ..onTap =
+                  () => viewModel.openVocabReference(definition.antonyms![0]),
+          ),
+        );
+        for (int i = 1; i < definition.antonyms!.length; i++) {
+          otherInfoTextSpans.add(const TextSpan(text: ', '));
+          otherInfoTextSpans.add(
+            TextSpan(
+              text: definition.antonyms![i].text,
+              recognizer: TapGestureRecognizer()
+                ..onTap =
+                    () => viewModel.openVocabReference(definition.antonyms![i]),
+            ),
+          );
+        }
+      }
+      if (otherInfoTextSpans.isNotEmpty) {
+        otherInfoTextSpans.insert(0, const TextSpan(text: ' ('));
+        otherInfoTextSpans.add(const TextSpan(text: ')'));
+      }
 
       // Add definition itself followed by other info
       rows.add(
@@ -504,10 +543,11 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
               TextSpan(
                 children: [
                   TextSpan(text: definition.definition),
-                  TextSpan(
-                    text: otherInfoBuffer.toString(),
-                    style: const TextStyle(color: Colors.grey),
-                  ),
+                  if (otherInfoTextSpans.isNotEmpty)
+                    TextSpan(
+                      children: otherInfoTextSpans,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                 ],
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -18,6 +19,7 @@ class VocabViewModel extends BaseViewModel {
   final _bottomSheetService = locator<BottomSheetService>();
   final _mecabService = locator<MecabService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final Vocab vocab;
 
@@ -156,5 +158,19 @@ class VocabViewModel extends BaseViewModel {
       Routes.textAnalysisView,
       arguments: TextAnalysisViewArguments(initialText: example.japanese),
     );
+  }
+
+  Future<void> openVocabReference(VocabReference reference) async {
+    if (reference.id != null) {
+      final vocab = await _isarService.getVocab(reference.id!);
+      _navigationService.navigateToVocabView(vocab: vocab!);
+    } else {
+      Clipboard.setData(ClipboardData(text: reference.text));
+      _snackbarService.showSnackbar(
+        message:
+            'Single vocab not found. ${reference.text} copied to clipboard.',
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
 }

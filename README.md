@@ -24,7 +24,7 @@ See [this set up guide](https://firebase.google.com/docs/flutter/setup) for how 
 
 ## Feature list
 
-- [ ] Vocab dictionary
+- [x] Vocab dictionary
     - [x] Kanji writing
     - [x] Hiragana/katakana reading
     - [x] Definition
@@ -34,8 +34,8 @@ See [this set up guide](https://firebase.google.com/docs/flutter/setup) for how 
     - [x] Associate kanji with specific reading
     - [x] Mark common words
     - [x] Extra information
-    - [ ] Cross-referenced vocab
-    - [ ] Antonyms
+    - [x] Cross-referenced vocab
+    - [x] Antonyms
     - [x] Definition only associated with a certain kanji/reading
     - [x] Field of application
     - [x] Miscellaneous information
@@ -74,11 +74,11 @@ See [this set up guide](https://firebase.google.com/docs/flutter/setup) for how 
 - [x] Export/import database
 - [x] Predefined vocab and kanji lists
 - [x] User defined lists
-- [ ] Flashcards
+- [x] Flashcards
     - [x] Spaced repetition
     - [x] Random order
     - [x] Japanese front
-    - [ ] English front 
+    - [x] English front 
     - [x] Customize front appearance
     - [x] View spaced repetition performance 
 
