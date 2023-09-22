@@ -35,10 +35,16 @@ class OnboardingViewModel extends BaseViewModel {
       if (!await launchUrl(
         Uri.parse(r'https://hammarlund.dev/sagase/privacy'),
       )) {
-        _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
+        _snackbarService.showSnackbar(
+          message: 'Failed to open privacy policy',
+          duration: const Duration(seconds: 2),
+        );
       }
     } catch (_) {
-      _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
+      _snackbarService.showSnackbar(
+        message: 'Failed to open privacy policy',
+        duration: const Duration(seconds: 2),
+      );
     }
   }
 }
