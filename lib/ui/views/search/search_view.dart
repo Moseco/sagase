@@ -248,6 +248,14 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                         controller: searchController,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(1000),
+                          FilteringTextInputFormatter.deny(
+                            RegExp(r'‘|’'),
+                            replacementString: '\'',
+                          ),
+                          FilteringTextInputFormatter.deny(
+                            RegExp(r'“|”'),
+                            replacementString: '"',
+                          ),
                         ],
                         decoration: InputDecoration(
                           hintText: 'Search',
@@ -300,6 +308,14 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                         onChanged: viewModel.searchOnChange,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(1000),
+                          FilteringTextInputFormatter.deny(
+                            RegExp(r'‘|’'),
+                            replacementString: '\'',
+                          ),
+                          FilteringTextInputFormatter.deny(
+                            RegExp(r'“|”'),
+                            replacementString: '"',
+                          ),
                         ],
                         decoration: InputDecoration(
                           hintText: 'Search',
