@@ -248,13 +248,12 @@ class KanjiView extends StackedView<KanjiViewModel> {
               SelectionContainer.disabled(
                 child: CardWithTitleSection(
                   title: 'Other components',
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
+                  child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: kanji.componentLinks.length,
-                    itemBuilder: (context, index) =>
-                        kanji.componentLinks.isLoaded
+                    child: Column(
+                      children: List.generate(
+                        kanji.componentLinks.length,
+                        (index) => kanji.componentLinks.isLoaded
                             ? KanjiListItem(
                                 kanji: kanji.componentLinks.elementAt(index),
                                 onPressed: () => viewModel.navigateToKanji(
@@ -262,42 +261,12 @@ class KanjiView extends StackedView<KanjiViewModel> {
                                 ),
                               )
                             : const ListItemLoading(showLeading: true),
-                  ),
-                ),
-              ),
-            if (kanji.compounds.isNotEmpty)
-              SelectionContainer.disabled(
-                child: CardWithTitleSection(
-                  title: 'Compounds',
-                  child: Column(
-                    children: [
-                      ListView.separated(
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          indent: 8,
-                          endIndent: 8,
-                        ),
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: min(kanji.compounds.length, 10),
-                        itemBuilder: (context, index) => viewModel.isBusy
-                            ? const ListItemLoading(showLeading: true)
-                            : VocabListItem(
-                                vocab: kanji.compounds.elementAt(index),
-                                onPressed: () => viewModel.navigateToVocab(
-                                    kanji.compounds.elementAt(index)),
-                              ),
                       ),
-                      if (kanji.compounds.length > 10)
-                        TextButton(
-                          onPressed: viewModel.showAllCompounds,
-                          child: Text('Show all ${kanji.compounds.length}'),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ),
+            if (kanji.compounds.isNotEmpty) const _Compounds(),
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
@@ -360,6 +329,57 @@ class _KanjiRadicalItem extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Compounds extends ViewModelWidget<KanjiViewModel> {
+  const _Compounds({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, KanjiViewModel viewModel) {
+    List<Widget> children = [
+      viewModel.isBusy
+          ? const ListItemLoading(showLeading: true)
+          : VocabListItem(
+              vocab: viewModel.kanji.compounds.elementAt(0),
+              onPressed: () => viewModel
+                  .navigateToVocab(viewModel.kanji.compounds.elementAt(0))),
+    ];
+
+    for (int i = 1; i < min(viewModel.kanji.compounds.length, 10); i++) {
+      children.addAll([
+        const Divider(
+          height: 1,
+          indent: 8,
+          endIndent: 8,
+        ),
+        viewModel.isBusy
+            ? const ListItemLoading(showLeading: true)
+            : VocabListItem(
+                vocab: viewModel.kanji.compounds.elementAt(i),
+                onPressed: () => viewModel
+                    .navigateToVocab(viewModel.kanji.compounds.elementAt(i))),
+      ]);
+    }
+
+    return SelectionContainer.disabled(
+      child: CardWithTitleSection(
+        title: 'Compounds',
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(children: children),
+            ),
+            if (viewModel.kanji.compounds.length > 10)
+              TextButton(
+                onPressed: viewModel.showAllCompounds,
+                child: Text('Show all ${viewModel.kanji.compounds.length}'),
+              ),
           ],
         ),
       ),

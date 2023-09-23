@@ -423,7 +423,6 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                     ],
                   ),
                   ListView.builder(
-                    shrinkWrap: true,
                     padding: const EdgeInsets.all(8),
                     itemCount: widget.request.data.myLists.length,
                     itemBuilder: (context, index) => CheckboxListTile(

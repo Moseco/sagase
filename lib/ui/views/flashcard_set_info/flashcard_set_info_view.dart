@@ -195,37 +195,7 @@ class FlashcardSetInfoView extends StatelessWidget {
                     ),
                   ),
                   if (viewModel.challengingFlashcards.isNotEmpty)
-                    CardWithTitleSection(
-                      title: 'Top challenging flashcards',
-                      child: ListView.separated(
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          indent: 8,
-                          endIndent: 8,
-                        ),
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: viewModel.challengingFlashcards.length,
-                        itemBuilder: (context, index) {
-                          final current =
-                              viewModel.challengingFlashcards[index];
-                          if (current is Vocab) {
-                            return VocabListItem(
-                              vocab: current,
-                              onPressed: () =>
-                                  viewModel.navigateToVocab(current),
-                            );
-                          } else {
-                            return KanjiListItem(
-                              kanji: current as Kanji,
-                              onPressed: () =>
-                                  viewModel.navigateToKanji(current),
-                            );
-                          }
-                        },
-                      ),
-                    ),
+                    const _Challenging(),
                   SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
@@ -260,6 +230,55 @@ class _Indicator extends StatelessWidget {
         const SizedBox(width: 4),
         Text(text)
       ],
+    );
+  }
+}
+
+class _Challenging extends ViewModelWidget<FlashcardSetInfoViewModel> {
+  const _Challenging({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, FlashcardSetInfoViewModel viewModel) {
+    List<Widget> children = [
+      viewModel.challengingFlashcards[0] is Vocab
+          ? VocabListItem(
+              vocab: viewModel.challengingFlashcards[0] as Vocab,
+              onPressed: () => viewModel
+                  .navigateToVocab(viewModel.challengingFlashcards[0] as Vocab),
+            )
+          : KanjiListItem(
+              kanji: viewModel.challengingFlashcards[0] as Kanji,
+              onPressed: () => viewModel
+                  .navigateToKanji(viewModel.challengingFlashcards[0] as Kanji),
+            ),
+    ];
+
+    for (int i = 1; i < viewModel.challengingFlashcards.length; i++) {
+      final current = viewModel.challengingFlashcards[i];
+      children.addAll([
+        const Divider(
+          height: 1,
+          indent: 8,
+          endIndent: 8,
+        ),
+        current is Vocab
+            ? VocabListItem(
+                vocab: current,
+                onPressed: () => viewModel.navigateToVocab(current),
+              )
+            : KanjiListItem(
+                kanji: current as Kanji,
+                onPressed: () => viewModel.navigateToKanji(current),
+              ),
+      ]);
+    }
+
+    return CardWithTitleSection(
+      title: 'Top challenging flashcards',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(children: children),
+      ),
     );
   }
 }

@@ -585,40 +585,43 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
     return SelectionContainer.disabled(
       child: CardWithTitleSection(
         title: 'Kanji',
-        child: ListView.builder(
-          shrinkWrap: true,
-          primary: false,
+        child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: viewModel.kanjiList.length,
-          itemBuilder: (context, index) {
-            final current = viewModel.kanjiList[index];
-            if (viewModel.kanjiLoaded) {
-              return KanjiListItemLarge(
-                kanji: current,
-                onPressed: () => viewModel.navigateToKanji(current),
-              );
-            } else {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4, right: 12),
-                      child: Text(
-                        current.kanji,
-                        style: const TextStyle(fontSize: 24),
-                      ),
+          child: Column(
+            children: List.generate(
+              viewModel.kanjiList.length,
+              (index) {
+                final current = viewModel.kanjiList[index];
+                if (viewModel.kanjiLoaded) {
+                  return KanjiListItemLarge(
+                    kanji: current,
+                    onPressed: () => viewModel.navigateToKanji(current),
+                  );
+                } else {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4, right: 12),
+                          child: Text(
+                            current.kanji,
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                        ),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text(''), Text(''), Text('')],
+                        ),
+                      ],
                     ),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text(''), Text(''), Text('')],
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
+                  );
+                }
+              },
+            ),
+          ),
         ),
       ),
     );

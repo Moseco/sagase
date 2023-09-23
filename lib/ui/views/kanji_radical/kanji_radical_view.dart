@@ -187,118 +187,84 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
               SelectionContainer.disabled(
                 child: CardWithTitleSection(
                   title: 'Variants',
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: viewModel.variants!.length,
-                    itemBuilder: (context, index) => Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: GestureDetector(
-                              onLongPress: () => viewModel.copyToClipboard(
-                                  viewModel.variants![index].radical),
-                              child: Text(
-                                viewModel.variants![index].radical,
-                                style: const TextStyle(fontSize: 40),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: List.generate(
+                        viewModel.variants!.length,
+                        (index) => Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Center(
+                                child: GestureDetector(
+                                  onLongPress: () => viewModel.copyToClipboard(
+                                      viewModel.variants![index].radical),
+                                  child: Text(
+                                    viewModel.variants![index].radical,
+                                    style: const TextStyle(fontSize: 40),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
+                            Expanded(
+                              child: Center(
+                                child: Text.rich(
                                   TextSpan(
-                                    text: viewModel.variants![index].strokeCount
-                                        .toString(),
-                                  ),
-                                  const TextSpan(
-                                    text: '\nStrokes',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  viewModel.variants![index].position ==
-                                          KanjiRadicalPosition.none
-                                      ? const TextSpan(text: '—')
-                                      : WidgetSpan(
-                                          child: KanjiRadicalPositionImage(
-                                            viewModel.variants![index].position,
-                                          ),
+                                    children: [
+                                      TextSpan(
+                                        text: viewModel
+                                            .variants![index].strokeCount
+                                            .toString(),
+                                      ),
+                                      const TextSpan(
+                                        text: '\nStrokes',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
                                         ),
-                                  const TextSpan(
-                                    text: '\nPosition',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                          ),
+                            Expanded(
+                              child: Center(
+                                child: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      viewModel.variants![index].position ==
+                                              KanjiRadicalPosition.none
+                                          ? const TextSpan(text: '—')
+                                          : WidgetSpan(
+                                              child: KanjiRadicalPositionImage(
+                                                viewModel
+                                                    .variants![index].position,
+                                              ),
+                                            ),
+                                      const TextSpan(
+                                        text: '\nPosition',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            if (kanjiRadical.kanjiWithRadical.isNotEmpty)
-              SelectionContainer.disabled(
-                child: CardWithTitleSection(
-                  title: 'Kanji using the radical',
-                  child: Column(
-                    children: [
-                      ListView.separated(
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          indent: 8,
-                          endIndent: 8,
-                        ),
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount:
-                            min(10, kanjiRadical.kanjiWithRadical.length),
-                        itemBuilder: (context, index) => viewModel.isBusy
-                            ? const ListItemLoading(showLeading: true)
-                            : KanjiListItem(
-                                kanji: kanjiRadical.kanjiWithRadical
-                                    .elementAt(index),
-                                onPressed: () => viewModel.navigateToKanji(
-                                  kanjiRadical.kanjiWithRadical
-                                      .elementAt(index),
-                                ),
-                              ),
-                      ),
-                      if (kanjiRadical.kanjiWithRadical.length > 10)
-                        TextButton(
-                          onPressed: viewModel.showAllKanji,
-                          child: Text(
-                            'Show all ${kanjiRadical.kanjiWithRadical.length}',
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+            if (kanjiRadical.kanjiWithRadical.isNotEmpty) const _KanjiUsage(),
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
@@ -320,31 +286,60 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
   }
 }
 
-class _TitleInfoText extends StatelessWidget {
-  final String title;
-  final String content;
-
-  const _TitleInfoText({
-    required this.title,
-    required this.content,
-    Key? key,
-  }) : super(key: key);
+class _KanjiUsage extends ViewModelWidget<KanjiRadicalViewModel> {
+  const _KanjiUsage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const TextSpan(
-            text: ': ',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          TextSpan(text: content),
-        ],
+  Widget build(BuildContext context, KanjiRadicalViewModel viewModel) {
+    List<Widget> children = [
+      viewModel.isBusy
+          ? const ListItemLoading(showLeading: true)
+          : KanjiListItem(
+              kanji: viewModel.kanjiRadical.kanjiWithRadical.elementAt(0),
+              onPressed: () => viewModel.navigateToKanji(
+                viewModel.kanjiRadical.kanjiWithRadical.elementAt(0),
+              ),
+            ),
+    ];
+
+    for (int i = 1;
+        i < min(viewModel.kanjiRadical.kanjiWithRadical.length, 10);
+        i++) {
+      children.addAll([
+        const Divider(
+          height: 1,
+          indent: 8,
+          endIndent: 8,
+        ),
+        viewModel.isBusy
+            ? const ListItemLoading(showLeading: true)
+            : KanjiListItem(
+                kanji: viewModel.kanjiRadical.kanjiWithRadical.elementAt(i),
+                onPressed: () => viewModel.navigateToKanji(
+                  viewModel.kanjiRadical.kanjiWithRadical.elementAt(i),
+                ),
+              ),
+      ]);
+    }
+
+    return SelectionContainer.disabled(
+      child: CardWithTitleSection(
+        title: 'Kanji using the radical',
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(children: children),
+            ),
+            if (viewModel.kanjiRadical.kanjiWithRadical.length > 10)
+              TextButton(
+                onPressed: viewModel.showAllKanji,
+                child: Text(
+                  'Show all ${viewModel.kanjiRadical.kanjiWithRadical.length}',
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
