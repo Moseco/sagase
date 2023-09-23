@@ -6,6 +6,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -15,8 +16,12 @@ class KanjiViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _snackbarService = locator<SnackbarService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final Kanji kanji;
+
+  bool get strokeDiagramStartExpanded =>
+      _sharedPreferencesService.getStrokeDiagramStartExpanded();
 
   KanjiViewModel(this.kanji);
 
@@ -127,5 +132,9 @@ class KanjiViewModel extends FutureViewModel {
       message: 'Copied to clipboard',
       duration: const Duration(seconds: 1),
     );
+  }
+
+  void setStrokeDiagramStartExpanded(bool value) {
+    _sharedPreferencesService.setStrokeDiagramStartExpanded(value);
   }
 }

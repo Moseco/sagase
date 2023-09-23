@@ -14,6 +14,7 @@ const keyShowPitchAccent = 'show_pitch_accent';
 const keyUseJapaneseSerifFont = 'use_japanese_serif_font';
 const keyAnalyticsEnabled = 'analytics_enabled';
 const keyStartOnLearningView = 'start_on_learning_view';
+const keyStrokeDiagramStartExpanded = 'stroke_diagram_start_expanded';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -26,5 +27,6 @@ const defaultShowPitchAccent = false;
 const defaultUseJapaneseSerifFont = false;
 const defaultAnalyticsEnabled = true;
 const defaultStartOnLearningView = false;
+const defaultStrokeDiagramStartExpanded = true;
 
 const searchQueryLimit = 1000;

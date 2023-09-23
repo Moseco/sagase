@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class CardWithTitleExpandable extends StatefulWidget {
   final String title;
   final Widget child;
+  final bool startExpanded;
+  final void Function(bool)? expandedChanged;
 
   const CardWithTitleExpandable({
     required this.title,
     required this.child,
+    this.startExpanded = true,
+    this.expandedChanged,
     super.key,
   });
 
@@ -16,7 +20,7 @@ class CardWithTitleExpandable extends StatefulWidget {
 }
 
 class _CardWithTitleExpandableState extends State<CardWithTitleExpandable> {
-  bool _showFirst = true;
+  late bool _expanded = widget.startExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,12 @@ class _CardWithTitleExpandableState extends State<CardWithTitleExpandable> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
-          onTap: () => setState(() => _showFirst = !_showFirst),
+          onTap: () {
+            setState(() => _expanded = !_expanded);
+            if (widget.expandedChanged != null) {
+              widget.expandedChanged!(_expanded);
+            }
+          },
           child: Row(
             children: [
               Expanded(
@@ -44,7 +53,7 @@ class _CardWithTitleExpandableState extends State<CardWithTitleExpandable> {
               Padding(
                 padding: const EdgeInsets.only(left: 4, right: 8),
                 child: AnimatedCrossFade(
-                  crossFadeState: _showFirst
+                  crossFadeState: _expanded
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
                   duration: const Duration(milliseconds: 150),
@@ -57,7 +66,7 @@ class _CardWithTitleExpandableState extends State<CardWithTitleExpandable> {
         ),
         AnimatedCrossFade(
           crossFadeState:
-              _showFirst ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 150),
           firstChild: const SizedBox(width: double.infinity),
           secondChild: Card(

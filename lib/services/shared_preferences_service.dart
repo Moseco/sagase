@@ -136,4 +136,15 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setStartOnLearningView(bool value) async {
     await _sharedPreferences.setBool(constants.keyStartOnLearningView, value);
   }
+
+  bool getStrokeDiagramStartExpanded() {
+    return _sharedPreferences
+            .getBool(constants.keyStrokeDiagramStartExpanded) ??
+        constants.defaultStrokeDiagramStartExpanded;
+  }
+
+  Future<void> setStrokeDiagramStartExpanded(bool value) async {
+    await _sharedPreferences.setBool(
+        constants.keyStrokeDiagramStartExpanded, value);
+  }
 }

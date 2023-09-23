@@ -144,6 +144,8 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                 kanjiRadical.strokes!.isNotEmpty)
               CardWithTitleExpandable(
                 title: 'Radical stroke order',
+                startExpanded: viewModel.strokeDiagramStartExpanded,
+                expandedChanged: viewModel.setStrokeDiagramStartExpanded,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),

@@ -155,6 +155,8 @@ class KanjiView extends StackedView<KanjiViewModel> {
             if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
               CardWithTitleExpandable(
                 title: 'Kanji stroke order',
+                startExpanded: viewModel.strokeDiagramStartExpanded,
+                expandedChanged: viewModel.setStrokeDiagramStartExpanded,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
