@@ -55,8 +55,11 @@ test/helpers/test_helpers.mocks.dart
 *.g.dart
 
 # Local dictionary and mecab files
-assets/dictionary_source/
+assets/dictionary/
 assets/mecab/
+
+# Download options
+lib/utils/download_options.dart
 
 # Firebase files
 lib/firebase_options.dart

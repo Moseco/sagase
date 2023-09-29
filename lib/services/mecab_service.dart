@@ -50,9 +50,6 @@ class MecabService {
   }
 
   Future<void> extractFiles() async {
-    // Get zip data
-    final ByteData byteData = await rootBundle.load('assets/mecab/ipadic.zip');
-
     // Start isolate to handle exacting files
     final rootIsolateToken = RootIsolateToken.instance!;
     await Isolate.run(() async {
@@ -67,18 +64,14 @@ class MecabService {
       if (await dir.exists()) await dir.delete(recursive: true);
       await dir.create(recursive: true);
 
-      // Copy zip to temporary directory file
-      final ipadicZipBytes = byteData.buffer
-          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-      final tempDir = await path_provider.getTemporaryDirectory();
-      final File ipadicZipFile = File('${tempDir.path}/ipadic.zip');
-      await ipadicZipFile.writeAsBytes(ipadicZipBytes);
-
       // Extract zip to mecab directory
-      await archive.extractFileToDisk(ipadicZipFile.path, mecabDir);
+      final tempDir = await path_provider.getTemporaryDirectory();
+      final File mecabDictionaryZip =
+          File('${tempDir.path}/mecab_dictionary.zip');
+      await archive.extractFileToDisk(mecabDictionaryZip.path, mecabDir);
 
       // Remove the temp file
-      await ipadicZipFile.delete();
+      await mecabDictionaryZip.delete();
     });
   }
 

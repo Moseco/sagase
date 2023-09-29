@@ -38,6 +38,7 @@ dependencies:
   shimmer: ^3.0.0
   ruby_text: ^3.0.3
   introduction_screen: ^3.1.11
+  percent_indicator: ^4.2.3
 
   # Other
   isar: ^3.1.0+1
@@ -47,7 +48,7 @@ dependencies:
     git:
       url: https://github.com/Moseco/kana_kit
   async: ^2.11.0
-  archive: ^3.3.7
+  archive: ^3.4.2
   google_mlkit_digital_ink_recognition: ^0.9.0
   intl: ^0.18.1
   shared_preferences: ^2.2.0
@@ -59,8 +60,9 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '473c62d'
+      ref: 'ca06341'
   url_launcher: ^6.1.12
+  dio: ^5.3.3
 
 # Temporary override because of dependency from sagase_dictionary
 dependency_overrides:
@@ -93,12 +95,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    # Dictionary file
-    - assets/dictionary_source/db_export.zip
+    # Dictionary and mecab files for debug
+    # - assets/dictionary/base_dictionary.zip
+    # - assets/mecab/mecab_dictionary.zip
     # Kanji radical positions images
     - assets/images/kanji_radical_positions/
-    # Files for mecab
-    - assets/mecab/ipadic.zip
     # App Icon
     - assets/images/icon.png
     

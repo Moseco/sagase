@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import 'splash_screen_viewmodel.dart';
 
@@ -17,6 +18,31 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
           padding: const EdgeInsets.all(8.0),
           child: switch (viewModel.status) {
             SplashScreenStatus.waiting => Container(),
+            SplashScreenStatus.downloadingAssets => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      'Downloading dictionary',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  CircularPercentIndicator(
+                    radius: 40,
+                    lineWidth: 8,
+                    animation: true,
+                    animateFromLastPercent: true,
+                    percent: viewModel.downloadStatus,
+                    center: Text(
+                      "${(viewModel.downloadStatus * 100).toInt()}%",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: Colors.deepPurple,
+                  ),
+                ],
+              ),
             SplashScreenStatus.upgradingDictionary => const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -28,6 +54,22 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
                     ),
                   ),
                   CircularProgressIndicator(),
+                ],
+              ),
+            SplashScreenStatus.downloadError => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      'Failed to download the dictionary.\nMake sure you are connected to the internet and try again.\nIf it keeps happening try updating the app.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: viewModel.retryDownload,
+                    child: const Text('Retry download'),
+                  ),
                 ],
               ),
             SplashScreenStatus.databaseError => const Text(

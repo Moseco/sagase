@@ -22,6 +22,14 @@ This project uses Firebase for analytics and crash reporting.
 
 See [this set up guide](https://firebase.google.com/docs/flutter/setup) for how to configure your own Firebase project.
 
+### Dictionary assets
+
+The download urls for the required assets are not included in the repo. You can either set up remote storage yourself or include the assets in the app itself. To do this complete the following steps:
+
+1. Download the assets from the current [sagase dictionary Github](https://github.com/Moseco/sagase_dictionary) release.
+2. Uncomment the asset inclusion in ```pubspec.yaml``` and place the downloaded files accordingly.
+3. Modify ```splash_screen_viewmodel.dart``` and ```download_service.dart``` to always pull from the included assets.
+
 ## Feature list
 
 - [x] Vocab dictionary

@@ -1,6 +1,7 @@
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
@@ -18,6 +19,9 @@ class SplashScreenViewModel extends FutureViewModel {
   SplashScreenStatus _status = SplashScreenStatus.waiting;
   SplashScreenStatus get status => _status;
 
+  double _downloadStatus = 0;
+  double get downloadStatus => _downloadStatus;
+
   @override
   Future<void> futureToRun() async {
     await initialize();
@@ -31,18 +35,52 @@ class SplashScreenViewModel extends FutureViewModel {
       onboardingNavigation = _navigationService.navigateToOnboardingView();
     }
 
-    // Initialize isar service and skip validation if in debug mode
-    DictionaryStatus status =
+    // Get status of isar and mecab services
+    DictionaryStatus dictionaryStatus =
         await _isarService.initialize(validate: !kDebugMode);
-    if (status != DictionaryStatus.valid) {
-      _status = status == DictionaryStatus.invalid
+    bool mecabReady = await _mecabService.initialize();
+
+    // Download assets if needed
+    if (dictionaryStatus != DictionaryStatus.valid || !mecabReady) {
+      late Future<bool> downloadFuture;
+      if (dictionaryStatus != DictionaryStatus.valid && !mecabReady) {
+        downloadFuture = locator<DownloadService>().downloadRequiredAssets();
+      } else if (dictionaryStatus != DictionaryStatus.valid) {
+        downloadFuture = locator<DownloadService>().downloadBaseDictionary();
+      } else {
+        downloadFuture = locator<DownloadService>().downloadMecabDictionary();
+      }
+
+      _status = SplashScreenStatus.downloadingAssets;
+      rebuildUi();
+
+      locator<DownloadService>().progressStream?.listen((event) {
+        double newStatus = (event * 100).floorToDouble() / 100;
+        if (newStatus != _downloadStatus) {
+          _downloadStatus = newStatus;
+          rebuildUi();
+        }
+      });
+
+      final result = await downloadFuture;
+
+      if (!result) {
+        _status = SplashScreenStatus.downloadError;
+        rebuildUi();
+        return;
+      }
+    }
+
+    // Initialize isar service and skip validation if in debug mode
+    if (dictionaryStatus != DictionaryStatus.valid) {
+      _status = dictionaryStatus == DictionaryStatus.invalid
           ? SplashScreenStatus.importingDictionary
           : SplashScreenStatus.upgradingDictionary;
       rebuildUi();
 
       await _isarService.close();
       try {
-        await IsarService.importDatabase(status);
+        await IsarService.importDatabase(dictionaryStatus);
         final isarService = IsarService();
         await isarService.initialize();
 
@@ -69,7 +107,7 @@ class SplashScreenViewModel extends FutureViewModel {
     }
 
     // Initialize mecab service;
-    if (!(await _mecabService.initialize())) {
+    if (!mecabReady) {
       _status = SplashScreenStatus.importingMecab;
       rebuildUi();
       await _mecabService.extractFiles();
@@ -81,13 +119,22 @@ class SplashScreenViewModel extends FutureViewModel {
     // Finally, navigate to home
     _navigationService.replaceWith(Routes.homeView);
   }
+
+  void retryDownload() {
+    _status = SplashScreenStatus.waiting;
+    _downloadStatus = 0;
+    rebuildUi();
+    initialize();
+  }
 }
 
 enum SplashScreenStatus {
   waiting,
+  downloadingAssets,
   importingDictionary,
   downloadingDigitalInk,
   importingMecab,
   upgradingDictionary,
+  downloadError,
   databaseError,
 }

@@ -1,4 +1,5 @@
 import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/mecab_service.dart';
@@ -87,6 +88,7 @@ import 'package:stacked_themes/stacked_themes.dart';
       classType: ThemeService,
       resolveUsing: ThemeService.getInstance,
     ),
+    LazySingleton(classType: DownloadService),
     LazySingleton(classType: HomeViewModel),
     LazySingleton(classType: SearchViewModel),
   ],

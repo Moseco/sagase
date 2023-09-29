@@ -1159,20 +1159,13 @@ class IsarService {
   }
 
   static Future<void> importDatabase(DictionaryStatus status) async {
-    // Copy db_export.zip asset to temporary directory file
-    final ByteData byteData =
-        await rootBundle.load('assets/dictionary_source/db_export.zip');
-
     // Start isolate to handle import
     final rootIsolateToken = RootIsolateToken.instance!;
     await Isolate.run(() async {
       BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
 
-      final newDbZipBytes = byteData.buffer
-          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
       final tempDir = await path_provider.getTemporaryDirectory();
-      final File newDbZipFile = File('${tempDir.path}/db_export.zip');
-      await newDbZipFile.writeAsBytes(newDbZipBytes);
+      final File newDbZipFile = File('${tempDir.path}/base_dictionary.zip');
 
       // Extract zip to application support directory
       final appSupportDir =
@@ -1184,14 +1177,22 @@ class IsarService {
         await IsarService.transferUserData();
       }
 
-      // Remove old database file, rename new one, delete temp file
+      // Remove old database files
       final File oldDbFile = File('${appSupportDir.path}/default.isar');
-      if (await oldDbFile.exists()) {
-        await oldDbFile.delete();
-        await File('${appSupportDir.path}/default.isar.lock').delete();
-      }
-      await File('${appSupportDir.path}/db_export.isar')
+      final File oldDbLockFile =
+          File('${appSupportDir.path}/default.isar.lock');
+      if (await oldDbFile.exists()) await oldDbFile.delete();
+      if (await oldDbLockFile.exists()) await oldDbLockFile.delete();
+
+      // Rename new database
+      await File('${appSupportDir.path}/base_dictionary.isar')
           .rename('${appSupportDir.path}/default.isar');
+
+      // Delete temp files
+      final File newDbLockFile =
+          File('${appSupportDir.path}/base_dictionary.isar.lock');
+      if (await newDbLockFile.exists()) await newDbLockFile.delete();
+
       await newDbZipFile.delete();
     });
   }
@@ -1218,7 +1219,7 @@ class IsarService {
           schemas,
           directory:
               (await path_provider.getApplicationSupportDirectory()).path,
-          name: 'db_export',
+          name: 'base_dictionary',
         );
     await IsarService(isar: newIsar).importUserData(path);
     File(path).delete();
