@@ -484,6 +484,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         otherInfoTextSpans.add(
           TextSpan(
             text: definition.crossReferences![0].text,
+            style: const TextStyle(decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
                   viewModel.openVocabReference(definition.crossReferences![0]),
@@ -494,6 +495,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
           otherInfoTextSpans.add(
             TextSpan(
               text: definition.crossReferences![i].text,
+              style: const TextStyle(decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()
                 ..onTap = () => viewModel
                     .openVocabReference(definition.crossReferences![i]),
@@ -509,6 +511,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
         otherInfoTextSpans.add(
           TextSpan(
             text: definition.antonyms![0].text,
+            style: const TextStyle(decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap =
                   () => viewModel.openVocabReference(definition.antonyms![0]),
@@ -519,6 +522,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
           otherInfoTextSpans.add(
             TextSpan(
               text: definition.antonyms![i].text,
+              style: const TextStyle(decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()
                 ..onTap =
                     () => viewModel.openVocabReference(definition.antonyms![i]),
