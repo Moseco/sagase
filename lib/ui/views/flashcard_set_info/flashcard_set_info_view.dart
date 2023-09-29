@@ -85,120 +85,143 @@ class FlashcardSetInfoView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  CardWithTitleSection(
-                    title: 'Flashcard interval length',
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 200,
-                            child: PieChart(
-                              PieChartData(
-                                borderData: FlBorderData(show: false),
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 40,
-                                sections: [
-                                  PieChartSectionData(
-                                    color: Colors.red,
-                                    value: viewModel.flashcardIntervalCounts[0],
-                                    title: viewModel.flashcardIntervalCounts[0]
-                                        .toStringAsFixed(0),
-                                    radius: 50,
-                                    titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffffffff),
-                                    ),
-                                  ),
-                                  PieChartSectionData(
-                                    color: Colors.orange,
-                                    value: viewModel.flashcardIntervalCounts[1],
-                                    title: viewModel.flashcardIntervalCounts[1]
-                                        .toStringAsFixed(0),
-                                    radius: 50,
-                                    titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffffffff),
-                                    ),
-                                  ),
-                                  PieChartSectionData(
-                                    color: Colors.green,
-                                    value: viewModel.flashcardIntervalCounts[2],
-                                    title: viewModel.flashcardIntervalCounts[2]
-                                        .toStringAsFixed(0),
-                                    radius: 50,
-                                    titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffffffff),
-                                    ),
-                                  ),
-                                  PieChartSectionData(
-                                    color: Colors.blue,
-                                    value: viewModel.flashcardIntervalCounts[3],
-                                    title: viewModel.flashcardIntervalCounts[3]
-                                        .toStringAsFixed(0),
-                                    radius: 50,
-                                    titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffffffff),
-                                    ),
-                                  ),
-                                  PieChartSectionData(
-                                    color: Colors.deepPurple,
-                                    value: viewModel.flashcardIntervalCounts[4],
-                                    title: viewModel.flashcardIntervalCounts[4]
-                                        .toStringAsFixed(0),
-                                    radius: 50,
-                                    titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffffffff),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              _Indicator(
-                                color: Colors.red,
-                                text: 'Not started',
-                              ),
-                              _Indicator(
-                                color: Colors.orange,
-                                text: 'Less than 1 week',
-                              ),
-                              _Indicator(
-                                color: Colors.green,
-                                text: '1-4 weeks',
-                              ),
-                              _Indicator(
-                                color: Colors.blue,
-                                text: '1-2 months',
-                              ),
-                              _Indicator(
-                                color: Colors.deepPurple,
-                                text: '2+ months',
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _IntervalLength(viewModel.flashcardIntervalCounts),
                   if (viewModel.challengingFlashcards.isNotEmpty)
                     const _Challenging(),
                   SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+class _IntervalLength extends StatelessWidget {
+  final List<double> flashcardIntervalCounts;
+
+  const _IntervalLength(
+    this.flashcardIntervalCounts, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CardWithTitleSection(
+      title: 'Flashcard interval length',
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 200,
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      flashcardIntervalCounts
+                          .reduce((a, b) => a + b)
+                          .toInt()
+                          .toString(),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  PieChart(
+                    PieChartData(
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 40,
+                      sections: [
+                        PieChartSectionData(
+                          color: Colors.red,
+                          value: flashcardIntervalCounts[0],
+                          title: flashcardIntervalCounts[0].toStringAsFixed(0),
+                          radius: 50,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        PieChartSectionData(
+                          color: Colors.orange,
+                          value: flashcardIntervalCounts[1],
+                          title: flashcardIntervalCounts[1].toStringAsFixed(0),
+                          radius: 50,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        PieChartSectionData(
+                          color: Colors.green,
+                          value: flashcardIntervalCounts[2],
+                          title: flashcardIntervalCounts[2].toStringAsFixed(0),
+                          radius: 50,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        PieChartSectionData(
+                          color: Colors.blue,
+                          value: flashcardIntervalCounts[3],
+                          title: flashcardIntervalCounts[3].toStringAsFixed(0),
+                          radius: 50,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        PieChartSectionData(
+                          color: Colors.deepPurple,
+                          value: flashcardIntervalCounts[4],
+                          title: flashcardIntervalCounts[4].toStringAsFixed(0),
+                          radius: 50,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              alignment: WrapAlignment.center,
+              children: [
+                _Indicator(
+                  color: Colors.red,
+                  text: 'Not started',
+                ),
+                _Indicator(
+                  color: Colors.orange,
+                  text: 'Less than 1 week',
+                ),
+                _Indicator(
+                  color: Colors.green,
+                  text: '1-4 weeks',
+                ),
+                _Indicator(
+                  color: Colors.blue,
+                  text: '1-2 months',
+                ),
+                _Indicator(
+                  color: Colors.deepPurple,
+                  text: '2+ months',
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
