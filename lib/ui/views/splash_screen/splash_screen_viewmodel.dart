@@ -22,12 +22,15 @@ class SplashScreenViewModel extends FutureViewModel {
   double _downloadStatus = 0;
   double get downloadStatus => _downloadStatus;
 
+  DictionaryStatus? _dictionaryStatus;
+  bool? _mecabReady;
+
   @override
   Future<void> futureToRun() async {
-    await initialize();
+    await _initialize();
   }
 
-  Future<void> initialize() async {
+  Future<void> _initialize() async {
     // Navigate to onboarding if needed and keep track of the future
     Future<dynamic>? onboardingNavigation;
     if (!_sharedPreferencesService.getOnboardingFinished()) {
@@ -36,19 +39,19 @@ class SplashScreenViewModel extends FutureViewModel {
     }
 
     // Get status of isar and mecab services
-    DictionaryStatus dictionaryStatus =
-        await _isarService.initialize(validate: !kDebugMode);
-    bool mecabReady = await _mecabService.initialize();
+    // Don't have to check again if retrying the download
+    _dictionaryStatus ??= await _isarService.initialize(validate: !kDebugMode);
+    _mecabReady ??= await _mecabService.initialize();
 
     // Download assets if needed
-    if (dictionaryStatus != DictionaryStatus.valid || !mecabReady) {
-      late Future<bool> downloadFuture;
-      if (dictionaryStatus != DictionaryStatus.valid && !mecabReady) {
-        downloadFuture = locator<DownloadService>().downloadRequiredAssets();
-      } else if (dictionaryStatus != DictionaryStatus.valid) {
-        downloadFuture = locator<DownloadService>().downloadBaseDictionary();
+    if (_dictionaryStatus != DictionaryStatus.valid || !_mecabReady!) {
+      late Future<bool> downloadResult;
+      if (_dictionaryStatus != DictionaryStatus.valid && !_mecabReady!) {
+        downloadResult = locator<DownloadService>().downloadRequiredAssets();
+      } else if (_dictionaryStatus != DictionaryStatus.valid) {
+        downloadResult = locator<DownloadService>().downloadBaseDictionary();
       } else {
-        downloadFuture = locator<DownloadService>().downloadMecabDictionary();
+        downloadResult = locator<DownloadService>().downloadMecabDictionary();
       }
 
       _status = SplashScreenStatus.downloadingAssets;
@@ -62,9 +65,7 @@ class SplashScreenViewModel extends FutureViewModel {
         }
       });
 
-      final result = await downloadFuture;
-
-      if (!result) {
+      if (!(await downloadResult)) {
         _status = SplashScreenStatus.downloadError;
         rebuildUi();
         return;
@@ -72,15 +73,15 @@ class SplashScreenViewModel extends FutureViewModel {
     }
 
     // Initialize isar service and skip validation if in debug mode
-    if (dictionaryStatus != DictionaryStatus.valid) {
-      _status = dictionaryStatus == DictionaryStatus.invalid
+    if (_dictionaryStatus != DictionaryStatus.valid) {
+      _status = _dictionaryStatus == DictionaryStatus.invalid
           ? SplashScreenStatus.importingDictionary
           : SplashScreenStatus.upgradingDictionary;
       rebuildUi();
 
       await _isarService.close();
       try {
-        await IsarService.importDatabase(dictionaryStatus);
+        await IsarService.importDatabase(_dictionaryStatus!);
         final isarService = IsarService();
         await isarService.initialize();
 
@@ -107,7 +108,7 @@ class SplashScreenViewModel extends FutureViewModel {
     }
 
     // Initialize mecab service;
-    if (!mecabReady) {
+    if (!_mecabReady!) {
       _status = SplashScreenStatus.importingMecab;
       rebuildUi();
       await _mecabService.extractFiles();
@@ -124,7 +125,7 @@ class SplashScreenViewModel extends FutureViewModel {
     _status = SplashScreenStatus.waiting;
     _downloadStatus = 0;
     rebuildUi();
-    initialize();
+    _initialize();
   }
 }
 
