@@ -240,6 +240,7 @@ class FlashcardSetSettingsView extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
+                    const SizedBox(height: 8),
                     TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
