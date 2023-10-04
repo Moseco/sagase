@@ -95,7 +95,17 @@ class SplashScreenViewModel extends FutureViewModel {
       }
     }
 
-    // Initialize digital ink service
+    // Initialize mecab service
+    if (!_mecabReady!) {
+      _status = SplashScreenStatus.importingMecab;
+      rebuildUi();
+      await _mecabService.extractFiles();
+      await _mecabService.initialize();
+    }
+
+    if (onboardingNavigation != null) await onboardingNavigation;
+
+    // Initialize digital ink service (after onboarding to avoid jank)
     if (!(await _digitalInkService.initialize())) {
       _status = SplashScreenStatus.downloadingDigitalInk;
       rebuildUi();
@@ -106,16 +116,6 @@ class SplashScreenViewModel extends FutureViewModel {
         Future.delayed(const Duration(seconds: 5)),
       ]);
     }
-
-    // Initialize mecab service;
-    if (!_mecabReady!) {
-      _status = SplashScreenStatus.importingMecab;
-      rebuildUi();
-      await _mecabService.extractFiles();
-      await _mecabService.initialize();
-    }
-
-    if (onboardingNavigation != null) await onboardingNavigation;
 
     // Finally, navigate to home
     _navigationService.replaceWith(Routes.homeView);
@@ -133,8 +133,8 @@ enum SplashScreenStatus {
   waiting,
   downloadingAssets,
   importingDictionary,
-  downloadingDigitalInk,
   importingMecab,
+  downloadingDigitalInk,
   upgradingDictionary,
   downloadError,
   databaseError,
