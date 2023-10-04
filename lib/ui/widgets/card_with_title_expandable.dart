@@ -57,8 +57,8 @@ class _CardWithTitleExpandableState extends State<CardWithTitleExpandable> {
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
                   duration: const Duration(milliseconds: 150),
-                  firstChild: const Icon(Icons.expand_more),
-                  secondChild: const Icon(Icons.expand_less),
+                  firstChild: const Icon(Icons.expand_less),
+                  secondChild: const Icon(Icons.expand_more),
                 ),
               ),
             ],
