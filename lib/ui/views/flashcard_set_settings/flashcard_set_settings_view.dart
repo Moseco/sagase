@@ -165,7 +165,7 @@ class FlashcardSetSettingsView extends StatelessWidget {
                                     viewModel.setFrontType(FrontType.japanese),
                               ),
                               _ToggleOption(
-                                text: 'English',
+                                text: 'Definition',
                                 enabled:
                                     flashcardSet.frontType == FrontType.english,
                                 onTap: () =>
