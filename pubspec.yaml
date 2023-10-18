@@ -58,7 +58,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: 'ca06341'
+      ref: 'eb5b457'
   url_launcher: ^6.1.12
   dio: ^5.3.3
 

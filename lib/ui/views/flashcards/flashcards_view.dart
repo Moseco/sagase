@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/ui/widgets/pitch_accent_text.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
@@ -637,24 +638,68 @@ class _VocabFlashcardBack extends StatelessWidget {
     }
 
     // Add reading
-    late String reading;
-    if (flashcardSet.vocabShowAlternatives) {
-      List<String> readings = [];
-      for (var pairs in vocab.kanjiReadingPairs) {
-        for (var reading in pairs.readings) {
-          if (!readings.contains(reading.reading)) {
+    List<InlineSpan> readingSpans = [];
+    if (flashcardSet.vocabShowPitchAccent &&
+        vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null) {
+      readingSpans.add(
+        WidgetSpan(
+          child: PitchAccentText(
+            text: vocab.kanjiReadingPairs[0].readings[0].reading,
+            pitchAccents: [
+              vocab.kanjiReadingPairs[0].readings[0].pitchAccents![0],
+            ],
+            fontSize: children.isEmpty ? 32 : 24,
+          ),
+        ),
+      );
+
+      if (flashcardSet.vocabShowAlternatives) {
+        List<String> readings = [];
+        // Remaining readings from first pair
+        for (var reading in vocab.kanjiReadingPairs[0].readings) {
+          if (!readings.contains(reading.reading) &&
+              reading.reading !=
+                  vocab.kanjiReadingPairs[0].readings[0].reading) {
             readings.add(reading.reading);
           }
         }
+        // Remaining pairs
+        for (int i = 1; i < vocab.kanjiReadingPairs.length; i++) {
+          for (var reading in vocab.kanjiReadingPairs[i].readings) {
+            if (!readings.contains(reading.reading) &&
+                reading.reading !=
+                    vocab.kanjiReadingPairs[0].readings[0].reading) {
+              readings.add(reading.reading);
+            }
+          }
+        }
+        // Add to spans
+        if (readings.isNotEmpty) {
+          if (readingSpans.isNotEmpty) readings.insert(0, '');
+          readingSpans.add(TextSpan(text: readings.join(', ')));
+        }
       }
-      reading = readings.join(', ');
     } else {
-      reading = vocab.kanjiReadingPairs[0].readings[0].reading;
+      if (flashcardSet.vocabShowAlternatives) {
+        List<String> readings = [];
+        for (var pairs in vocab.kanjiReadingPairs) {
+          for (var reading in pairs.readings) {
+            if (!readings.contains(reading.reading)) {
+              readings.add(reading.reading);
+            }
+          }
+        }
+        readingSpans.add(TextSpan(text: readings.join(', ')));
+      } else {
+        readingSpans.add(
+          TextSpan(text: vocab.kanjiReadingPairs[0].readings[0].reading),
+        );
+      }
     }
 
     children.addAll([
-      Text(
-        reading,
+      Text.rich(
+        TextSpan(children: readingSpans),
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: children.isEmpty ? 32 : 24),
       ),

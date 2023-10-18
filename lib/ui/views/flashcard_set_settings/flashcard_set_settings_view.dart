@@ -177,6 +177,7 @@ class FlashcardSetSettingsView extends StatelessWidget {
                       ),
                     ),
                     CardWithTitleSection(
+                      key: ObjectKey(flashcardSet.frontType),
                       title: 'Appearance',
                       child: Column(
                         children: switch (flashcardSet.frontType) {
@@ -215,6 +216,15 @@ class FlashcardSetSettingsView extends StatelessWidget {
                                 ),
                               ),
                               ListTile(
+                                title: const Text('Show pitch accent'),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.vocabShowPitchAccent,
+                                  onChanged: viewModel.setVocabShowPitchAccent,
+                                ),
+                              ),
+                              ListTile(
                                 title: const Text('Show reading'),
                                 subtitle: const Text('Kanji flashcards'),
                                 trailing: Switch(
@@ -233,6 +243,15 @@ class FlashcardSetSettingsView extends StatelessWidget {
                                   value: flashcardSet.vocabShowPartsOfSpeech,
                                   onChanged:
                                       viewModel.setVocabShowPartsOfSpeech,
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text('Show pitch accent'),
+                                subtitle: const Text('Vocab flashcards'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.vocabShowPitchAccent,
+                                  onChanged: viewModel.setVocabShowPitchAccent,
                                 ),
                               ),
                             ],

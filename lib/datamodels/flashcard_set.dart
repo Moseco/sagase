@@ -14,6 +14,7 @@ class FlashcardSet {
   bool vocabShowReading = false;
   bool vocabShowReadingIfRareKanji = true;
   bool vocabShowAlternatives = false;
+  bool vocabShowPitchAccent = false;
   bool kanjiShowReading = false;
   bool vocabShowPartsOfSpeech = false;
   late DateTime timestamp;
@@ -33,6 +34,7 @@ class FlashcardSet {
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReading}": $vocabShowReading,
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReadingIfRareKanji}": $vocabShowReadingIfRareKanji,
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
+      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowPitchAccent}": $vocabShowPitchAccent,
       "${SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
       "${SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech}": $vocabShowPartsOfSpeech,
       "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
@@ -58,6 +60,9 @@ class FlashcardSet {
           .backupFlashcardSetVocabShowReadingIfRareKanji]
       ..vocabShowAlternatives =
           map[SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives]
+      ..vocabShowPitchAccent = map[SagaseDictionaryConstants
+              .backupFlashcardSetVocabShowPitchAccent] ??
+          false
       ..kanjiShowReading =
           map[SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading]
       ..vocabShowPartsOfSpeech = map[SagaseDictionaryConstants
