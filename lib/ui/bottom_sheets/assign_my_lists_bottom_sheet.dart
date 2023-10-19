@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class AssignMyListsBottomSheet extends StatefulWidget {
   final SheetRequest request;
   final Function(SheetResponse) completer;
 
-  final List<MyListsBottomSheetItem> changes = [];
-
-  AssignMyListsBottomSheet({
+  const AssignMyListsBottomSheet({
     required this.request,
     required this.completer,
     Key? key,
@@ -37,8 +34,8 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () => widget.completer(SheetResponse()),
-                  icon: const Icon(Icons.close),
+                  onPressed: () {},
+                  icon: const Icon(Icons.close, color: Colors.transparent),
                 ),
                 const Expanded(
                   child: Text(
@@ -51,8 +48,7 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () =>
-                      widget.completer(SheetResponse(data: widget.changes)),
+                  onPressed: () => widget.completer(SheetResponse()),
                   icon: const Icon(Icons.check),
                 ),
               ],
@@ -69,12 +65,9 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
                 onChanged: (bool? value) {
                   if (value == null) return;
                   setState(() {
+                    widget.request.data[index].changed =
+                        !widget.request.data[index].changed;
                     widget.request.data[index].enabled = value;
-                    if (!widget.changes.contains(widget.request.data[index])) {
-                      widget.changes.add(widget.request.data[index]);
-                    } else {
-                      widget.changes.remove(widget.request.data[index]);
-                    }
                   });
                 },
               ),

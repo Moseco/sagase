@@ -104,26 +104,22 @@ class KanjiViewModel extends FutureViewModel {
       }
     }
 
-    final response = await _bottomSheetService.showCustomSheet(
+    await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.assignMyListsBottom,
       data: list,
-      barrierDismissible: false,
     );
 
-    if (response?.data != null) {
-      for (int i = 0; i < response!.data.length; i++) {
-        if (response.data[i].enabled) {
-          await _isarService.addKanjiToMyDictionaryList(
-              response.data[i].list, kanji);
-        } else {
-          await _isarService.removeKanjiFromMyDictionaryList(
-              response.data[i].list, kanji);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (!list[i].changed) continue;
+      if (list[i].enabled) {
+        await _isarService.addKanjiToMyDictionaryList(list[i].list, kanji);
+      } else {
+        await _isarService.removeKanjiFromMyDictionaryList(list[i].list, kanji);
       }
-
-      // Reload back links
-      await _refreshMyDictionaryListLinks();
     }
+
+    // Reload back links
+    await _refreshMyDictionaryListLinks();
   }
 
   void copyKanji() {

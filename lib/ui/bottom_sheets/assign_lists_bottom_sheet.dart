@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
-import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
@@ -8,10 +6,7 @@ class AssignListsBottomSheet extends StatefulWidget {
   final SheetRequest request;
   final Function(SheetResponse) completer;
 
-  final Map<int, bool> predefinedListsChanges = {};
-  final List<MyListsBottomSheetItem> myListsChanges = [];
-
-  AssignListsBottomSheet({
+  const AssignListsBottomSheet({
     required this.request,
     required this.completer,
     Key? key,
@@ -41,8 +36,8 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => widget.completer(SheetResponse()),
-                    icon: const Icon(Icons.close),
+                    onPressed: () {},
+                    icon: const Icon(Icons.close, color: Colors.transparent),
                   ),
                   const Expanded(
                     child: Text(
@@ -55,14 +50,7 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => widget.completer(
-                      SheetResponse(
-                        data: ListsBottomSheetArgument(
-                          widget.predefinedListsChanges,
-                          widget.myListsChanges,
-                        ),
-                      ),
-                    ),
+                    onPressed: () => widget.completer(SheetResponse()),
                     icon: const Icon(Icons.check),
                   ),
                 ],
@@ -90,9 +78,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                     children: [
                       CheckboxListTile(
                         title: const Text('JLPT N5'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptVocabN5] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptVocabN5]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -101,9 +92,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N4'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptVocabN4] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptVocabN4]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -112,9 +106,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N3'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptVocabN3] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptVocabN3]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -123,9 +120,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N2'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptVocabN2] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptVocabN2]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -134,9 +134,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N1'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptVocabN1] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptVocabN1]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -149,9 +152,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                     children: [
                       CheckboxListTile(
                         title: const Text('Jouyou'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJouyou] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJouyou]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants.dictionaryListIdJouyou,
@@ -159,9 +165,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Jinmeiyou'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJinmeiyou] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJinmeiyou]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants.dictionaryListIdJinmeiyou,
@@ -169,9 +178,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N5'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptKanjiN5] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptKanjiN5]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -180,9 +192,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N4'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptKanjiN4] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptKanjiN4]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -191,9 +206,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N3'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptKanjiN3] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptKanjiN3]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -202,9 +220,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N2'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptKanjiN2] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptKanjiN2]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -213,9 +234,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('JLPT N1'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdJlptKanjiN1] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdJlptKanjiN1]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -224,9 +248,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('1st Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel1] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel1]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -235,9 +262,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('2nd Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel2] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel2]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -246,9 +276,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('3rd Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel3] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel3]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -257,9 +290,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('4th Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel4] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel4]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -268,9 +304,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('5th Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel5] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel5]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -279,9 +318,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('6th Grade'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdGradeLevel6] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdGradeLevel6]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -290,9 +332,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 10'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel10] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel10]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -301,9 +346,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 9'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel9] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel9]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -312,9 +360,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 8'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel8] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel8]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -323,9 +374,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 7'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel7] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel7]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -334,9 +388,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 6'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel6] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel6]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -345,9 +402,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 5'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel5] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel5]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -356,9 +416,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 4'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel4] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel4]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -367,9 +430,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 3'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel3] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel3]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -378,9 +444,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level Pre-2'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevelPre2] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevelPre2]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -389,9 +458,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 2'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel2] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel2]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -400,9 +472,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level Pre-1'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevelPre1] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevelPre1]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -411,9 +486,12 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       ),
                       CheckboxListTile(
                         title: const Text('Kanji Kentei level 1'),
-                        value: widget.request.data.predefinedLists[
-                                SagaseDictionaryConstants
-                                    .dictionaryListIdKenteiLevel1] ??
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKenteiLevel1]
+                                ?.enabled ??
                             false,
                         onChanged: (bool? value) => _setPredefinedList(
                             SagaseDictionaryConstants
@@ -431,15 +509,9 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                       onChanged: (bool? value) {
                         if (value == null) return;
                         setState(() {
+                          widget.request.data.myLists[index].changed =
+                              !widget.request.data.myLists[index].changed;
                           widget.request.data.myLists[index].enabled = value;
-                          if (widget.myListsChanges
-                              .contains(widget.request.data.myLists[index])) {
-                            widget.myListsChanges
-                                .remove(widget.request.data.myLists[index]);
-                          } else {
-                            widget.myListsChanges
-                                .add(widget.request.data.myLists[index]);
-                          }
                         });
                       },
                     ),
@@ -456,11 +528,14 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
   void _setPredefinedList(int id, bool? value) {
     if (value == null) return;
     setState(() {
-      widget.request.data.predefinedLists[id] = value;
-      if (widget.predefinedListsChanges.containsKey(id)) {
-        widget.predefinedListsChanges.remove(id);
+      if (widget.request.data.predefinedLists.containsKey(id)) {
+        widget.request.data.predefinedLists[id] = (
+          enabled: value,
+          changed: !widget.request.data.predefinedLists[id].changed,
+        );
       } else {
-        widget.predefinedListsChanges[id] = value;
+        widget.request.data.predefinedLists[id] =
+            (enabled: value, changed: true);
       }
     });
   }

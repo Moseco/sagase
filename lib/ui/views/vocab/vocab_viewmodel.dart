@@ -75,21 +75,26 @@ class VocabViewModel extends BaseViewModel {
     _kanjiLoaded = true;
     notifyListeners();
 
+    await _refreshMyDictionaryListLinks();
+  }
+
+  Future<void> _refreshMyDictionaryListLinks() async {
     // If my lists have been changed, reload back links
     if (_isarService.myDictionaryListsChanged) {
-      final newVocab = await _isarService.getVocab(vocab.id);
+      final updatedVocab = await _isarService.getVocab(vocab.id);
       vocab.myDictionaryListLinks.clear();
       vocab.myDictionaryListLinks
-          .addAll(newVocab!.myDictionaryListLinks.toList());
+          .addAll(updatedVocab!.myDictionaryListLinks.toList());
       notifyListeners();
     }
   }
 
-  void navigateToKanji(Kanji kanji) {
-    _navigationService.navigateTo(
+  Future<void> navigateToKanji(Kanji kanji) async {
+    await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
+    await _refreshMyDictionaryListLinks();
   }
 
   Future<void> openMyDictionaryListsSheet() async {
@@ -114,30 +119,22 @@ class VocabViewModel extends BaseViewModel {
       }
     }
 
-    final response = await _bottomSheetService.showCustomSheet(
+    await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.assignMyListsBottom,
       data: list,
-      barrierDismissible: false,
     );
 
-    if (response?.data != null) {
-      for (int i = 0; i < response!.data.length; i++) {
-        if (response.data[i].enabled) {
-          await _isarService.addVocabToMyDictionaryList(
-              response.data[i].list, vocab);
-        } else {
-          await _isarService.removeVocabFromMyDictionaryList(
-              response.data[i].list, vocab);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (!list[i].changed) continue;
+      if (list[i].enabled) {
+        await _isarService.addVocabToMyDictionaryList(list[i].list, vocab);
+      } else {
+        await _isarService.removeVocabFromMyDictionaryList(list[i].list, vocab);
       }
-
-      // Reload back links
-      final updatedVocab = await _isarService.getVocab(vocab.id);
-      vocab.myDictionaryListLinks.clear();
-      vocab.myDictionaryListLinks
-          .addAll(updatedVocab!.myDictionaryListLinks.toList());
-      notifyListeners();
     }
+
+    // Reload back links
+    await _refreshMyDictionaryListLinks();
   }
 
   List<RubyTextPair> getRubyTextPairs(String writing, String reading) {
@@ -153,17 +150,19 @@ class VocabViewModel extends BaseViewModel {
     return _conjugationUtils.getPartOfSpeech(vocab)!;
   }
 
-  void openExampleInAnalysis(VocabExample example) {
-    _navigationService.navigateTo(
+  Future<void> openExampleInAnalysis(VocabExample example) async {
+    await _navigationService.navigateTo(
       Routes.textAnalysisView,
       arguments: TextAnalysisViewArguments(initialText: example.japanese),
     );
+    await _refreshMyDictionaryListLinks();
   }
 
   Future<void> openVocabReference(VocabReference reference) async {
     if (reference.id != null) {
       final vocab = await _isarService.getVocab(reference.id!);
-      _navigationService.navigateToVocabView(vocab: vocab!);
+      await _navigationService.navigateToVocabView(vocab: vocab!);
+      await _refreshMyDictionaryListLinks();
     } else {
       Clipboard.setData(ClipboardData(text: reference.text));
       _snackbarService.showSnackbar(
