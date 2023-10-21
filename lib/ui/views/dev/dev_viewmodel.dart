@@ -1,11 +1,15 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class DevViewModel extends BaseViewModel {
-  final _isarService = locator<IsarService>();
+  var _isarService = locator<IsarService>();
 
   bool _loading = false;
   bool get loading => _loading;
@@ -13,8 +17,23 @@ class DevViewModel extends BaseViewModel {
   Future<void> importDatabase() async {
     _loading = true;
     notifyListeners();
+    // Get zip
+    final byteData =
+        await rootBundle.load('assets/dictionary/base_dictionary.zip');
+    final bytes = byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    final tempDir = await path_provider.getTemporaryDirectory();
+    final file = File('${tempDir.path}/base_dictionary.zip');
+    await file.writeAsBytes(bytes);
+    // Import
     await _isarService.close();
     await IsarService.importDatabase(DictionaryStatus.invalid);
+    // Reset isar
+    final isarService = IsarService();
+    await isarService.initialize(validate: false);
+    locator.removeRegistrationIfExists<IsarService>();
+    locator.registerSingleton<IsarService>(isarService);
+    _isarService = isarService;
     _loading = false;
     notifyListeners();
   }
