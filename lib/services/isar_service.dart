@@ -197,15 +197,18 @@ class IsarService {
       } else {
         // Check definition only
         late final List<Vocab> unsortedList;
-        // If start with 'to ' search as single string
-        if (searchString.startsWith('to ')) {
+        // If starts with 'to ' merge first and second word
+        if (split[0] == 'to') split[0] = '${split[0]} ${split.removeAt(1)}';
+
+        if (split.length == 1) {
+          // Search is only 'to ' and another word, search as single string
           unsortedList = await _isar.vocabs
               .where()
-              .definitionIndexElementStartsWith(searchString)
+              .definitionIndexElementStartsWith(split.first)
               .limit(constants.searchQueryLimit)
               .findAll();
         } else {
-          // Must do a where check with index and follow up with filters
+          // Do a where check with index and follow up with filters
           // Use -EqualTo for all but last element, and use -StartsWith for last element
           late QueryBuilder<Vocab, Vocab, QAfterFilterCondition> query;
 
