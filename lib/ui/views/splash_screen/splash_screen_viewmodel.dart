@@ -25,6 +25,8 @@ class SplashScreenViewModel extends FutureViewModel {
   DictionaryStatus? _dictionaryStatus;
   bool? _mecabReady;
 
+  bool _downloadApproved = false;
+
   @override
   Future<void> futureToRun() async {
     await _initialize();
@@ -42,6 +44,13 @@ class SplashScreenViewModel extends FutureViewModel {
     // Don't have to check again if retrying the download
     _dictionaryStatus ??= await _isarService.initialize(validate: !kDebugMode);
     _mecabReady ??= await _mecabService.initialize();
+
+    // If upgrading dictionary make sure user has approved the download
+    if (_dictionaryStatus == DictionaryStatus.outOfDate && !_downloadApproved) {
+      _status = SplashScreenStatus.downloadRequest;
+      rebuildUi();
+      return;
+    }
 
     // Download assets if needed
     if (_dictionaryStatus != DictionaryStatus.valid || !_mecabReady!) {
@@ -121,7 +130,8 @@ class SplashScreenViewModel extends FutureViewModel {
     _navigationService.replaceWith(Routes.homeView);
   }
 
-  void retryDownload() {
+  void startDownload() {
+    _downloadApproved = true;
     _status = SplashScreenStatus.waiting;
     _downloadStatus = 0;
     rebuildUi();
@@ -138,4 +148,5 @@ enum SplashScreenStatus {
   upgradingDictionary,
   downloadError,
   databaseError,
+  downloadRequest,
 }

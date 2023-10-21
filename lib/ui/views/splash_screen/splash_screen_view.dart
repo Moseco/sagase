@@ -67,7 +67,7 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: viewModel.retryDownload,
+                    onPressed: viewModel.startDownload,
                     child: const Text('Retry download'),
                   ),
                 ],
@@ -75,6 +75,22 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
             SplashScreenStatus.databaseError => const Text(
                 'Something went wrong with the dictionary.\nPlease try closing the app and reopening it.',
                 textAlign: TextAlign.center,
+              ),
+            SplashScreenStatus.downloadRequest => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      'There is a dictionary upgrade available.\nPlease keep the app open during the upgrade; it should take less then a minute.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: viewModel.startDownload,
+                    child: const Text('Start download'),
+                  ),
+                ],
               ),
             _ => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
