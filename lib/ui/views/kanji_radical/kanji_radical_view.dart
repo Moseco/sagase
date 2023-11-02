@@ -266,7 +266,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                   ),
                 ),
               ),
-            if (kanjiRadical.kanjiWithRadical.isNotEmpty) const _KanjiUsage(),
+            const _KanjiUsage(),
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
@@ -293,35 +293,34 @@ class _KanjiUsage extends ViewModelWidget<KanjiRadicalViewModel> {
 
   @override
   Widget build(BuildContext context, KanjiRadicalViewModel viewModel) {
-    List<Widget> children = [
-      viewModel.isBusy
-          ? const ListItemLoading(showLeading: true)
-          : KanjiListItem(
-              kanji: viewModel.kanjiRadical.kanjiWithRadical.elementAt(0),
-              onPressed: () => viewModel.navigateToKanji(
-                viewModel.kanjiRadical.kanjiWithRadical.elementAt(0),
-              ),
-            ),
-    ];
-
-    for (int i = 1;
-        i < min(viewModel.kanjiRadical.kanjiWithRadical.length, 10);
-        i++) {
-      children.addAll([
-        const Divider(
-          height: 1,
-          indent: 8,
-          endIndent: 8,
+    late List<Widget> children;
+    if (viewModel.kanjiWithRadical == null) {
+      children = [const ListItemLoading(showLeading: true)];
+    } else {
+      children = [
+        KanjiListItem(
+          kanji: viewModel.kanjiWithRadical![0],
+          onPressed: () => viewModel.navigateToKanji(
+            viewModel.kanjiWithRadical![0],
+          ),
         ),
-        viewModel.isBusy
-            ? const ListItemLoading(showLeading: true)
-            : KanjiListItem(
-                kanji: viewModel.kanjiRadical.kanjiWithRadical.elementAt(i),
-                onPressed: () => viewModel.navigateToKanji(
-                  viewModel.kanjiRadical.kanjiWithRadical.elementAt(i),
-                ),
-              ),
-      ]);
+      ];
+
+      for (int i = 1; i < min(10, viewModel.kanjiWithRadical!.length); i++) {
+        children.addAll([
+          const Divider(
+            height: 1,
+            indent: 8,
+            endIndent: 8,
+          ),
+          KanjiListItem(
+            kanji: viewModel.kanjiWithRadical![i],
+            onPressed: () => viewModel.navigateToKanji(
+              viewModel.kanjiWithRadical![i],
+            ),
+          ),
+        ]);
+      }
     }
 
     return SelectionContainer.disabled(
@@ -333,11 +332,12 @@ class _KanjiUsage extends ViewModelWidget<KanjiRadicalViewModel> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(children: children),
             ),
-            if (viewModel.kanjiRadical.kanjiWithRadical.length > 10)
+            if (viewModel.kanjiWithRadical != null &&
+                viewModel.kanjiWithRadical!.length > 10)
               TextButton(
                 onPressed: viewModel.showAllKanji,
                 child: Text(
-                  'Show all ${viewModel.kanjiRadical.kanjiWithRadical.length}',
+                  'Show all ${viewModel.kanjiWithRadical!.length}',
                 ),
               ),
           ],

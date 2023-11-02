@@ -11,56 +11,50 @@ import 'package:ruby_text/ruby_text.dart';
 
 import 'vocab_viewmodel.dart';
 
-class VocabView extends StatelessWidget {
+class VocabView extends StackedView<VocabViewModel> {
   final Vocab vocab;
 
   const VocabView(this.vocab, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<VocabViewModel>.reactive(
-      viewModelBuilder: () => VocabViewModel(vocab),
-      fireOnViewModelReadyOnce: true,
-      onViewModelReady: (viewModel) => viewModel.initialize(),
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              onPressed:
-                  vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null
-                      ? viewModel.toggleShowPitchAccent
-                      : null,
-              icon: Icon(
-                viewModel.showPitchAccent
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-              ),
+  VocabViewModel viewModelBuilder(context) => VocabViewModel(vocab);
+
+  @override
+  Widget builder(context, viewModel, child) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed:
+                vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null
+                    ? viewModel.toggleShowPitchAccent
+                    : null,
+            icon: Icon(
+              viewModel.showPitchAccent
+                  ? Icons.visibility_off
+                  : Icons.visibility,
             ),
-            IconButton(
-              onPressed: viewModel.openMyDictionaryListsSheet,
-              icon: Icon(
-                vocab.myDictionaryListLinks.isEmpty
-                    ? Icons.star_border
-                    : Icons.star,
-              ),
-            ),
-          ],
-        ),
-        // Can throw exception "'!_selectionStartsInScrollable': is not true."
-        // when long press then try to scroll on disabled areas.
-        // But seems to work okay in release builds.
-        body: SelectionArea(
-          child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: [
-              _KanjiReadingPairs(vocab.kanjiReadingPairs),
-              const _Definitions(),
-              if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
-              const _Examples(),
-              if (viewModel.conjugations != null) const _Conjugations(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
-            ],
           ),
+          IconButton(
+            onPressed: viewModel.openMyDictionaryListsSheet,
+            icon: Icon(viewModel.inMyLists ? Icons.star : Icons.star_border),
+          ),
+        ],
+      ),
+      // Can throw exception "'!_selectionStartsInScrollable': is not true."
+      // when long press then try to scroll on disabled areas.
+      // But seems to work okay in release builds.
+      body: SelectionArea(
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            _KanjiReadingPairs(vocab.kanjiReadingPairs),
+            const _Definitions(),
+            if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
+            const _Examples(),
+            if (viewModel.conjugations != null) const _Conjugations(),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
         ),
       ),
     );

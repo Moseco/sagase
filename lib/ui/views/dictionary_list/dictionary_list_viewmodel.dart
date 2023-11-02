@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -6,45 +8,69 @@ import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class DictionaryListViewModel extends BaseViewModel {
+class DictionaryListViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
   final _isarService = locator<IsarService>();
   final _dialogService = locator<DialogService>();
 
-  final DictionaryList dictionaryList;
+  DictionaryList dictionaryList;
 
-  bool _loading = true;
-  bool get loading => _loading;
+  late List<Vocab> vocab;
+  late List<Kanji> kanji;
 
-  DictionaryListViewModel(this.dictionaryList) {
-    _loadList();
+  StreamSubscription<void>? _myListWatcher;
+  bool _myListChanged = false;
+
+  DictionaryListViewModel(this.dictionaryList);
+
+  @override
+  Future<void> futureToRun() async {
+    vocab = await _isarService.getVocabList(dictionaryList.getVocab());
+    kanji = await _isarService.getKanjiList(dictionaryList.getKanji());
+    rebuildUi();
   }
 
-  Future<void> _loadList() async {
-    if (!dictionaryList.vocabLinks.isLoaded) {
-      await dictionaryList.vocabLinks.load();
+  void _startWatcher() {
+    // If MyDictionaryList start watching for changes
+    if (dictionaryList is MyDictionaryList) {
+      _myListWatcher ??=
+          _isarService.watchMyDictionaryList(dictionaryList.id).listen((event) {
+        _myListChanged = true;
+      });
     }
-    if (!dictionaryList.kanjiLinks.isLoaded) {
-      await dictionaryList.kanjiLinks.load();
-    }
-    _loading = false;
-    notifyListeners();
+  }
+
+  Future<void> _refreshMyList() async {
+    if (!_myListChanged) return;
+
+    final newList = await _isarService.getMyDictionaryList(dictionaryList.id);
+    if (newList == null) return;
+    dictionaryList = newList;
+    // Reload vocab and kanji
+    vocab = await _isarService.getVocabList(dictionaryList.getVocab());
+    kanji = await _isarService.getKanjiList(dictionaryList.getKanji());
+
+    _myListChanged = false;
+
+    rebuildUi();
   }
 
   Future<void> navigateToVocab(Vocab vocab) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.vocabView,
       arguments: VocabViewArguments(vocab: vocab),
     );
-    notifyListeners();
+    await _refreshMyList();
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
-    notifyListeners();
+    await _refreshMyList();
   }
 
   Future<void> renameMyList() async {
@@ -62,7 +88,7 @@ class DictionaryListViewModel extends BaseViewModel {
 
     dictionaryList.name = name;
     _isarService.updateMyDictionaryList(dictionaryList as MyDictionaryList);
-    notifyListeners();
+    rebuildUi();
   }
 
   Future<void> deleteMyList() async {
@@ -75,8 +101,15 @@ class DictionaryListViewModel extends BaseViewModel {
     );
 
     if (response != null && response.confirmed) {
-      _isarService.deleteMyDictionaryList(dictionaryList as MyDictionaryList);
+      await _isarService
+          .deleteMyDictionaryList(dictionaryList as MyDictionaryList);
       _navigationService.back();
     }
+  }
+
+  @override
+  void dispose() {
+    _myListWatcher?.cancel();
+    super.dispose();
   }
 }

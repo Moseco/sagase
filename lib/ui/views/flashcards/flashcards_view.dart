@@ -29,8 +29,6 @@ class FlashcardsView extends HookWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
       viewModelBuilder: () => FlashcardsViewModel(flashcardSet, startMode),
-      fireOnViewModelReadyOnce: true,
-      onViewModelReady: (viewModel) => viewModel.initialize(),
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,

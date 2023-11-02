@@ -26,16 +26,19 @@ void main() {
           ..spacedRepetitionData = SpacedRepetitionData();
         vocab3.spacedRepetitionData!.dueDate = 0;
         final kanji1 = Kanji()
-          ..id = 1
-          ..kanji = '1'
+          ..id = 'a'.codeUnitAt(0)
+          ..kanji = 'a'
+          ..radical = 'a'
           ..strokeCount = 0;
         final kanji2 = Kanji()
-          ..id = 2
-          ..kanji = '2'
+          ..id = 'b'.codeUnitAt(0)
+          ..kanji = 'b'
+          ..radical = 'b'
           ..strokeCount = 0;
         final kanji3 = Kanji()
-          ..id = 3
-          ..kanji = '3'
+          ..id = 'c'.codeUnitAt(0)
+          ..kanji = 'c'
+          ..radical = 'c'
           ..strokeCount = 0
           ..spacedRepetitionData = SpacedRepetitionData();
         kanji3.spacedRepetitionData!.dueDate = 0;
@@ -51,21 +54,18 @@ void main() {
         final myList = MyDictionaryList()
           ..id = 0
           ..name = 'list'
-          ..timestamp = DateTime.now();
+          ..timestamp = DateTime.now()
+          ..vocab = [vocab3.id]
+          ..kanji = [kanji1.id];
         await oldIsar.myDictionaryLists.put(myList);
-        myList.vocabLinks.add(vocab3);
-        await myList.vocabLinks.save();
-        myList.kanjiLinks.add(kanji1);
-        await myList.kanjiLinks.save();
 
         final flashcardSet = FlashcardSet()
           ..id = 0
           ..name = 'set'
           ..timestamp = DateTime.now()
-          ..kanjiShowReading = true;
+          ..kanjiShowReading = true
+          ..myDictionaryLists = [myList.id];
         await oldIsar.flashcardSets.put(flashcardSet);
-        flashcardSet.myDictionaryListLinks.add(myList);
-        await flashcardSet.myDictionaryListLinks.save();
 
         await oldIsar.searchHistoryItems.put(
           SearchHistoryItem()
@@ -82,16 +82,19 @@ void main() {
         final vocab2 = Vocab()..id = 2;
         final vocab3 = Vocab()..id = 3;
         final kanji1 = Kanji()
-          ..id = 1
-          ..kanji = '1'
+          ..id = 'a'.codeUnitAt(0)
+          ..kanji = 'a'
+          ..radical = 'a'
           ..strokeCount = 0;
         final kanji2 = Kanji()
-          ..id = 2
-          ..kanji = '2'
+          ..id = 'b'.codeUnitAt(0)
+          ..kanji = 'b'
+          ..radical = 'b'
           ..strokeCount = 0;
         final kanji3 = Kanji()
-          ..id = 3
-          ..kanji = '3'
+          ..id = 'c'.codeUnitAt(0)
+          ..kanji = 'c'
+          ..radical = 'c'
           ..strokeCount = 0;
 
         await newIsar.vocabs.put(vocab1);
@@ -113,19 +116,19 @@ void main() {
       final vocab = await newIsar.vocabs.get(3);
       expect(vocab!.spacedRepetitionData != null, true);
       expect(vocab.spacedRepetitionData!.dueDate, 0);
-      final kanji = await newIsar.kanjis.get(3);
+      final kanji = await newIsar.kanjis.get('c'.codeUnitAt(0));
       expect(kanji!.spacedRepetitionData != null, true);
       expect(kanji.spacedRepetitionData!.dueDate, 0);
 
       final myList = await newIsar.myDictionaryLists.get(0);
       expect(myList!.name, 'list');
-      expect(myList.vocabLinks.length, 1);
-      expect(myList.kanjiLinks.length, 1);
+      expect(myList.vocab.length, 1);
+      expect(myList.kanji.length, 1);
 
       final flashcardSet = await newIsar.flashcardSets.get(0);
       expect(flashcardSet!.name, 'set');
       expect(flashcardSet.kanjiShowReading, true);
-      expect(flashcardSet.myDictionaryListLinks.length, 1);
+      expect(flashcardSet.myDictionaryLists.length, 1);
 
       final searchHistory = await newIsar.searchHistoryItems.where().findAll();
       expect(searchHistory.length, 1);
@@ -170,7 +173,7 @@ void main() {
       // Do import and check database content
       await service.importUserData(path);
 
-      expect(service.myDictionaryLists!.length, 0);
+      expect((await service.getAllMyDictionaryLists()).length, 0);
       expect((await service.getFlashcardSets()).length, 0);
 
       // Cleanup
@@ -210,16 +213,19 @@ void main() {
       vocab3.spacedRepetitionDataEnglish!.totalAnswers = 2;
       vocab3.spacedRepetitionDataEnglish!.totalWrongAnswers = 1;
       final kanji1 = Kanji()
-        ..id = 1
+        ..id = 'a'.codeUnitAt(0)
         ..kanji = 'a'
+        ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 2
+        ..id = 'b'.codeUnitAt(0)
         ..kanji = 'b'
+        ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 3
+        ..id = 'c'.codeUnitAt(0)
         ..kanji = 'c'
+        ..radical = 'c'
         ..strokeCount = 0
         ..spacedRepetitionData = SpacedRepetitionData()
         ..spacedRepetitionDataEnglish = SpacedRepetitionData();
@@ -248,24 +254,17 @@ void main() {
       final service = IsarService(isar: isar);
 
       // Create my dictionary list
-      await service.getMyDictionaryLists();
-      await service.createMyDictionaryList('list1');
-      await service.addVocabToMyDictionaryList(
-          service.myDictionaryLists![0], vocab2);
-      await service.addVocabToMyDictionaryList(
-          service.myDictionaryLists![0], vocab3);
-      await service.addKanjiToMyDictionaryList(
-          service.myDictionaryLists![0], kanji2);
-      await service.addKanjiToMyDictionaryList(
-          service.myDictionaryLists![0], kanji3);
+      final list1 = await service.createMyDictionaryList('list1');
+      await service.addVocabToMyDictionaryList(list1, vocab2);
+      await service.addVocabToMyDictionaryList(list1, vocab3);
+      await service.addKanjiToMyDictionaryList(list1, kanji2);
+      await service.addKanjiToMyDictionaryList(list1, kanji3);
 
       // Create flashcard set
       final flashcardSet = await service.createFlashcardSet('set1');
       flashcardSet.vocabShowReading = true;
-      await service.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [service.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await service.updateFlashcardSet(flashcardSet);
 
       // Export data
       String path = await service.exportUserData();
@@ -287,7 +286,9 @@ void main() {
       );
       expect(map[SagaseDictionaryConstants.backupMyDictionaryLists].length, 1);
       final myList = MyDictionaryList.fromBackupJson(
-          map[SagaseDictionaryConstants.backupMyDictionaryLists][0]);
+        map[SagaseDictionaryConstants.backupMyDictionaryLists][0],
+        SagaseDictionaryConstants.dictionaryVersion,
+      );
       expect(myList.name, 'list1');
       expect(myList.timestamp.isDifferentDay(DateTime.now()), false);
       expect(
@@ -362,8 +363,8 @@ void main() {
           map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData][0]);
       expect(
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanji],
-        'c',
+            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
+        'c'.codeUnitAt(0),
       );
       expect(spaced4.interval, 5);
       expect(spaced4.repetitions, 2);
@@ -381,26 +382,27 @@ void main() {
               [0]);
       expect(
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanji],
-        'c',
+            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
+        'c'.codeUnitAt(0),
       );
       expect(spaced5.interval, 6);
 
       // Do import and check database content
       await service.importUserData(path);
 
-      expect(service.myDictionaryLists!.length, 1);
-      expect(service.myDictionaryLists![0].name, 'list1');
-      expect(service.myDictionaryLists![0].vocabLinks.length, 2);
-      expect(service.myDictionaryLists![0].kanjiLinks.length, 2);
+      final myLists = await service.getAllMyDictionaryLists();
+      expect(myLists.length, 1);
+      expect(myLists[0].name, 'list1');
+      expect(myLists[0].vocab.length, 2);
+      expect(myLists[0].kanji.length, 2);
 
       final flashcardSets = await service.getFlashcardSets();
       expect(flashcardSets.length, 1);
       expect(flashcardSets[0].name, 'set1');
       expect(flashcardSets[0].usingSpacedRepetition, true);
       expect(flashcardSets[0].vocabShowReading, true);
-      expect(flashcardSets[0].predefinedDictionaryListLinks.length, 0);
-      expect(flashcardSets[0].myDictionaryListLinks.length, 1);
+      expect(flashcardSets[0].predefinedDictionaryLists.length, 0);
+      expect(flashcardSets[0].myDictionaryLists.length, 1);
 
       final newVocab1 = await isar.vocabs.get(1);
       expect(newVocab1!.spacedRepetitionData, null);
@@ -412,13 +414,13 @@ void main() {
       expect(newVocab3!.spacedRepetitionData!.interval, 1);
       expect(newVocab3.spacedRepetitionDataEnglish!.interval, 2);
 
-      final newKanji1 = await isar.kanjis.getByKanji('a');
+      final newKanji1 = await isar.kanjis.get('a'.codeUnitAt(0));
       expect(newKanji1!.spacedRepetitionData, null);
       expect(newKanji1.spacedRepetitionDataEnglish, null);
-      final newKanji2 = await isar.kanjis.getByKanji('b');
+      final newKanji2 = await isar.kanjis.get('b'.codeUnitAt(0));
       expect(newKanji2!.spacedRepetitionData, null);
       expect(newKanji2.spacedRepetitionDataEnglish, null);
-      final newKanji3 = await isar.kanjis.getByKanji('c');
+      final newKanji3 = await isar.kanjis.get('c'.codeUnitAt(0));
       expect(newKanji3!.spacedRepetitionData!.interval, 5);
       expect(newKanji3.spacedRepetitionDataEnglish!.interval, 6);
 
@@ -517,6 +519,40 @@ void main() {
       expect(result[3][0].id, 7);
       expect(result[4][0].id, 8);
       expect(result[4][1].id, 13);
+
+      await isar.close(deleteFromDisk: true);
+    });
+
+    test('deleteMyDictionaryList', () async {
+      Isar isar = await setUpIsar();
+      final isarService = IsarService(isar: isar);
+
+      // Create my lists
+      final list1 = await isarService.createMyDictionaryList('list1');
+      final list2 = await isarService.createMyDictionaryList('list2');
+      await isarService.createMyDictionaryList('list3');
+
+      // Create flashcard set and add my lists
+      final flashcardSet = await isarService.createFlashcardSet('set1');
+      flashcardSet.myDictionaryLists.add(list1.id);
+      flashcardSet.myDictionaryLists.add(list2.id);
+      await isarService.updateFlashcardSet(flashcardSet);
+
+      // Verify set up
+      var myLists = await isarService.getAllMyDictionaryLists();
+      expect(myLists.length, 3);
+      final preFlashcardSet = (await isarService.getFlashcardSets())[0];
+      expect(preFlashcardSet.myDictionaryLists.length, 2);
+
+      // Delete my list
+      await isarService.deleteMyDictionaryList(list2);
+
+      // Verify
+      final newMyLists = await isarService.getAllMyDictionaryLists();
+      expect(newMyLists.length, 2);
+      final updateFlashcardSet = (await isarService.getFlashcardSets())[0];
+      expect(updateFlashcardSet.myDictionaryLists.length, 1);
+      expect(updateFlashcardSet.myDictionaryLists[0], list1.id);
 
       await isar.close(deleteFromDisk: true);
     });

@@ -24,7 +24,7 @@ import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart'
 import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_view.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
-import 'package:sagase/ui/views/kanji_links_list/kanji_links_view.dart';
+import 'package:sagase/ui/views/kanji_list/kanji_list_view.dart';
 import 'package:sagase/ui/views/kanji_radical/kanji_radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
@@ -64,7 +64,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: DictionaryListView),
     MaterialRoute(page: KanjiRadicalsView),
     MaterialRoute(page: KanjiRadicalView),
-    MaterialRoute(page: KanjiLinksView),
+    MaterialRoute(page: KanjiListView),
     MaterialRoute(page: KanaView),
     MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
