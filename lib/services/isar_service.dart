@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:flutter/material.dart' show visibleForTesting;
+import 'package:flutter/material.dart' show StringCharacters, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -13,7 +13,6 @@ import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/utils/constants.dart' as constants;
-import 'package:sagase/utils/string_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class IsarService {
@@ -89,9 +88,9 @@ class IsarService {
     if (filter == SearchFilter.vocab) {
       // First check if searching single kanji
       Kanji? kanji;
-      if (searchString.length == 1 &&
+      if (searchString.characters.length == 1 &&
           searchString.contains(constants.kanjiRegExp)) {
-        kanji = await _isar.kanjis.get(searchString.codeUnitAt(0));
+        kanji = await _isar.kanjis.get(searchString.kanjiCodePoint());
       }
 
       // Search vocab
@@ -390,9 +389,9 @@ class IsarService {
 
   Future<List<Kanji>> _searchKanji(String searchString) async {
     // If searching single kanji, just return it
-    if (searchString.length == 1 &&
+    if (searchString.characters.length == 1 &&
         searchString.contains(constants.kanjiRegExp)) {
-      final kanji = await _isar.kanjis.get(searchString.codeUnitAt(0));
+      final kanji = await _isar.kanjis.get(searchString.kanjiCodePoint());
       if (kanji != null) return [kanji];
     }
 
@@ -565,7 +564,7 @@ class IsarService {
   }
 
   Future<Kanji?> getKanji(String kanji) async {
-    return _isar.kanjis.get(kanji.codeUnitAt(0));
+    return _isar.kanjis.get(kanji.kanjiCodePoint());
   }
 
   Future<List<Kanji>> getKanjiList(List<int> list) async {
@@ -995,7 +994,7 @@ class IsarService {
         await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
     for (var kanji in kanjiSpacedRepetitionData) {
       kanjiSpacedRepetitionDataBackups.add(kanji.spacedRepetitionData!
-          .toBackupJson(kanjiId: kanji.kanji.codeUnitAt(0)));
+          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
     }
 
     // Kanji spaced repetition data English
@@ -1007,7 +1006,7 @@ class IsarService {
     for (var kanji in kanjiSpacedRepetitionDataEnglish) {
       kanjiSpacedRepetitionDataEnglishBackups.add(kanji
           .spacedRepetitionDataEnglish!
-          .toBackupJson(kanjiId: kanji.kanji.codeUnitAt(0)));
+          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
     }
 
     // Create instance
@@ -1135,9 +1134,9 @@ class IsarService {
           // Handles change in kanji id format
           int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
                   .backupSpacedRepetitionDataKanjiId] ??
-              spacedRepetitionMap[
-                      SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]
-                  .codeUnitAt(0);
+              (spacedRepetitionMap[SagaseDictionaryConstants
+                      .backupSpacedRepetitionDataKanji] as String)
+                  .kanjiCodePoint();
           final kanji = await _isar.kanjis.get(kanjiId);
           if (kanji != null) {
             kanji.spacedRepetitionData = newSpacedRepetition;
@@ -1154,9 +1153,9 @@ class IsarService {
           // Handles change in kanji id format
           int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
                   .backupSpacedRepetitionDataKanjiId] ??
-              spacedRepetitionMap[
-                      SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]
-                  .codeUnitAt(0);
+              (spacedRepetitionMap[SagaseDictionaryConstants
+                      .backupSpacedRepetitionDataKanji] as String)
+                  .kanjiCodePoint();
           final kanji = await _isar.kanjis.get(kanjiId);
           if (kanji != null) {
             kanji.spacedRepetitionDataEnglish = newSpacedRepetition;

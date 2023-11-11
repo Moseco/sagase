@@ -42,8 +42,8 @@ class KanjiViewModel extends FutureViewModel {
     kanjiRadical = await _isarService.getKanjiRadical(kanji.radical);
     rebuildUi();
     if (kanji.components != null) {
-      components = await _isarService
-          .getKanjiList(kanji.components!.map((e) => e.codeUnitAt(0)).toList());
+      components = await _isarService.getKanjiList(
+          kanji.components!.map((e) => e.kanjiCodePoint()).toList());
       rebuildUi();
     }
 

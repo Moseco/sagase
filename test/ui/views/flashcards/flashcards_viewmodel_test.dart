@@ -57,17 +57,17 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '3']
         ];
       final kanji1 = Kanji()
-        ..id = 'a'.codeUnitAt(0)
+        ..id = 'a'.kanjiCodePoint()
         ..kanji = 'a'
         ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 'b'.codeUnitAt(0)
+        ..id = 'b'.kanjiCodePoint()
         ..kanji = 'b'
         ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 'c'.codeUnitAt(0)
+        ..id = 'c'.kanjiCodePoint()
         ..kanji = 'c'
         ..radical = 'c'
         ..strokeCount = 0;
@@ -180,17 +180,17 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '3']
         ];
       final kanji1 = Kanji()
-        ..id = 'a'.codeUnitAt(0)
+        ..id = 'a'.kanjiCodePoint()
         ..kanji = 'a'
         ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 'b'.codeUnitAt(0)
+        ..id = 'b'.kanjiCodePoint()
         ..kanji = 'b'
         ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 'c'.codeUnitAt(0)
+        ..id = 'c'.kanjiCodePoint()
         ..kanji = 'c'
         ..radical = 'c'
         ..strokeCount = 0;
@@ -715,12 +715,12 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '2']
         ];
       final kanji1 = Kanji()
-        ..id = 'a'.codeUnitAt(0)
+        ..id = 'a'.kanjiCodePoint()
         ..kanji = 'a'
         ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 'b'.codeUnitAt(0)
+        ..id = 'b'.kanjiCodePoint()
         ..kanji = 'b'
         ..radical = 'b'
         ..strokeCount = 0;

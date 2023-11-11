@@ -26,17 +26,17 @@ void main() {
           ..spacedRepetitionData = SpacedRepetitionData();
         vocab3.spacedRepetitionData!.dueDate = 0;
         final kanji1 = Kanji()
-          ..id = 'a'.codeUnitAt(0)
+          ..id = 'a'.kanjiCodePoint()
           ..kanji = 'a'
           ..radical = 'a'
           ..strokeCount = 0;
         final kanji2 = Kanji()
-          ..id = 'b'.codeUnitAt(0)
+          ..id = 'b'.kanjiCodePoint()
           ..kanji = 'b'
           ..radical = 'b'
           ..strokeCount = 0;
         final kanji3 = Kanji()
-          ..id = 'c'.codeUnitAt(0)
+          ..id = 'c'.kanjiCodePoint()
           ..kanji = 'c'
           ..radical = 'c'
           ..strokeCount = 0
@@ -82,17 +82,17 @@ void main() {
         final vocab2 = Vocab()..id = 2;
         final vocab3 = Vocab()..id = 3;
         final kanji1 = Kanji()
-          ..id = 'a'.codeUnitAt(0)
+          ..id = 'a'.kanjiCodePoint()
           ..kanji = 'a'
           ..radical = 'a'
           ..strokeCount = 0;
         final kanji2 = Kanji()
-          ..id = 'b'.codeUnitAt(0)
+          ..id = 'b'.kanjiCodePoint()
           ..kanji = 'b'
           ..radical = 'b'
           ..strokeCount = 0;
         final kanji3 = Kanji()
-          ..id = 'c'.codeUnitAt(0)
+          ..id = 'c'.kanjiCodePoint()
           ..kanji = 'c'
           ..radical = 'c'
           ..strokeCount = 0;
@@ -116,7 +116,7 @@ void main() {
       final vocab = await newIsar.vocabs.get(3);
       expect(vocab!.spacedRepetitionData != null, true);
       expect(vocab.spacedRepetitionData!.dueDate, 0);
-      final kanji = await newIsar.kanjis.get('c'.codeUnitAt(0));
+      final kanji = await newIsar.kanjis.get('c'.kanjiCodePoint());
       expect(kanji!.spacedRepetitionData != null, true);
       expect(kanji.spacedRepetitionData!.dueDate, 0);
 
@@ -213,17 +213,17 @@ void main() {
       vocab3.spacedRepetitionDataEnglish!.totalAnswers = 2;
       vocab3.spacedRepetitionDataEnglish!.totalWrongAnswers = 1;
       final kanji1 = Kanji()
-        ..id = 'a'.codeUnitAt(0)
+        ..id = 'a'.kanjiCodePoint()
         ..kanji = 'a'
         ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 'b'.codeUnitAt(0)
+        ..id = 'b'.kanjiCodePoint()
         ..kanji = 'b'
         ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 'c'.codeUnitAt(0)
+        ..id = 'c'.kanjiCodePoint()
         ..kanji = 'c'
         ..radical = 'c'
         ..strokeCount = 0
@@ -364,7 +364,7 @@ void main() {
       expect(
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData][0]
             [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
-        'c'.codeUnitAt(0),
+        'c'.kanjiCodePoint(),
       );
       expect(spaced4.interval, 5);
       expect(spaced4.repetitions, 2);
@@ -383,7 +383,7 @@ void main() {
       expect(
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish][0]
             [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
-        'c'.codeUnitAt(0),
+        'c'.kanjiCodePoint(),
       );
       expect(spaced5.interval, 6);
 
@@ -414,13 +414,13 @@ void main() {
       expect(newVocab3!.spacedRepetitionData!.interval, 1);
       expect(newVocab3.spacedRepetitionDataEnglish!.interval, 2);
 
-      final newKanji1 = await isar.kanjis.get('a'.codeUnitAt(0));
+      final newKanji1 = await isar.kanjis.get('a'.kanjiCodePoint());
       expect(newKanji1!.spacedRepetitionData, null);
       expect(newKanji1.spacedRepetitionDataEnglish, null);
-      final newKanji2 = await isar.kanjis.get('b'.codeUnitAt(0));
+      final newKanji2 = await isar.kanjis.get('b'.kanjiCodePoint());
       expect(newKanji2!.spacedRepetitionData, null);
       expect(newKanji2.spacedRepetitionDataEnglish, null);
-      final newKanji3 = await isar.kanjis.get('c'.codeUnitAt(0));
+      final newKanji3 = await isar.kanjis.get('c'.kanjiCodePoint());
       expect(newKanji3!.spacedRepetitionData!.interval, 5);
       expect(newKanji3.spacedRepetitionDataEnglish!.interval, 6);
 
