@@ -6,52 +6,53 @@ import 'package:stacked/stacked.dart';
 
 import 'dictionary_list_viewmodel.dart';
 
-class DictionaryListView extends StatelessWidget {
+class DictionaryListView extends StackedView<DictionaryListViewModel> {
   final DictionaryList dictionaryList;
 
   const DictionaryListView(this.dictionaryList, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<DictionaryListViewModel>.reactive(
-      viewModelBuilder: () => DictionaryListViewModel(dictionaryList),
-      builder: (context, viewModel, child) => DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(dictionaryList.name),
-            actions: dictionaryList is MyDictionaryList
-                ? [
-                    IconButton(
-                      onPressed: viewModel.renameMyList,
-                      icon: const Icon(Icons.edit),
-                    ),
-                    IconButton(
-                      onPressed: viewModel.deleteMyList,
-                      icon: const Icon(Icons.delete),
-                    ),
-                  ]
-                : null,
-            bottom: dictionaryList.vocabLinks.isNotEmpty &&
-                    dictionaryList.kanjiLinks.isNotEmpty
-                ? const TabBar(tabs: [Tab(text: 'Vocab'), Tab(text: 'Kanji')])
-                : null,
-          ),
-          body: viewModel.loading
-              ? const Center(child: CircularProgressIndicator())
-              : dictionaryList.vocabLinks.isNotEmpty
-                  ? dictionaryList.kanjiLinks.isNotEmpty
-                      ? const TabBarView(
-                          children: [
-                            _VocabList(),
-                            _KanjiList(),
-                          ],
-                        )
-                      : const _VocabList()
-                  : dictionaryList.kanjiLinks.isNotEmpty
-                      ? const _KanjiList()
-                      : const _Empty(),
+  DictionaryListViewModel viewModelBuilder(BuildContext context) =>
+      DictionaryListViewModel(dictionaryList);
+
+  @override
+  Widget builder(context, viewModel, child) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(viewModel.dictionaryList.name),
+          actions: viewModel.dictionaryList is MyDictionaryList
+              ? [
+                  IconButton(
+                    onPressed: viewModel.renameMyList,
+                    icon: const Icon(Icons.edit),
+                  ),
+                  IconButton(
+                    onPressed: viewModel.deleteMyList,
+                    icon: const Icon(Icons.delete),
+                  ),
+                ]
+              : null,
+          bottom: viewModel.dictionaryList.getVocab().isNotEmpty &&
+                  viewModel.dictionaryList.getKanji().isNotEmpty
+              ? const TabBar(tabs: [Tab(text: 'Vocab'), Tab(text: 'Kanji')])
+              : null,
         ),
+        body: viewModel.isBusy
+            ? const Center(child: CircularProgressIndicator())
+            : viewModel.vocab.isNotEmpty
+                ? viewModel.kanji.isNotEmpty
+                    ? const TabBarView(
+                        children: [
+                          _VocabList(),
+                          _KanjiList(),
+                        ],
+                      )
+                    : const _VocabList()
+                : viewModel.kanji.isNotEmpty
+                    ? const _KanjiList()
+                    : const _Empty(),
       ),
     );
   }
@@ -68,9 +69,9 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
         indent: 8,
         endIndent: 8,
       ),
-      itemCount: viewModel.dictionaryList.vocabLinks.length,
+      itemCount: viewModel.vocab.length,
       itemBuilder: (context, index) {
-        final current = viewModel.dictionaryList.vocabLinks.elementAt(index);
+        final current = viewModel.vocab[index];
 
         return VocabListItem(
           vocab: current,
@@ -92,9 +93,9 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
         indent: 8,
         endIndent: 8,
       ),
-      itemCount: viewModel.dictionaryList.kanjiLinks.length,
+      itemCount: viewModel.kanji.length,
       itemBuilder: (context, index) {
-        final current = viewModel.dictionaryList.kanjiLinks.elementAt(index);
+        final current = viewModel.kanji[index];
 
         return KanjiListItem(
           kanji: current,

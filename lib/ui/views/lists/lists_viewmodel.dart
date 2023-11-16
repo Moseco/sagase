@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -16,7 +18,10 @@ class ListsViewModel extends BaseViewModel {
   ListSelection? _listSelection;
   ListSelection? get listSelection => _listSelection;
 
-  List<DictionaryList>? get myDictionaryLists => _isarService.myDictionaryLists;
+  List<DictionaryList>? myDictionaryLists;
+
+  StreamSubscription<void>? _myListsWatcher;
+  bool _myListsChanged = false;
 
   ListsViewModel(ListSelection? listSelection) {
     _listSelection = listSelection;
@@ -25,7 +30,7 @@ class ListsViewModel extends BaseViewModel {
   }
 
   Future<void> _loadMyLists() async {
-    await _isarService.getMyDictionaryLists();
+    myDictionaryLists = await _isarService.getAllMyDictionaryLists();
     notifyListeners();
   }
 
@@ -59,11 +64,17 @@ class ListsViewModel extends BaseViewModel {
   }
 
   Future<void> navigateToMyDictionaryList(DictionaryList list) async {
+    _myListsWatcher ??= _isarService.watchMyDictionaryLists().listen((event) {
+      _myListsChanged = true;
+    });
     await _navigationService.navigateTo(
       Routes.dictionaryListView,
       arguments: DictionaryListViewArguments(dictionaryList: list),
     );
-    notifyListeners();
+    if (_myListsChanged) {
+      _myListsChanged = false;
+      await _loadMyLists();
+    }
   }
 
   Future<void> createMyDictionaryList() async {
@@ -80,8 +91,16 @@ class ListsViewModel extends BaseViewModel {
     String? name = response?.data?.trim();
     if (name == null || name.isEmpty) return;
 
-    await _isarService.createMyDictionaryList(name);
+    myDictionaryLists!
+        .insert(0, await _isarService.createMyDictionaryList(name));
+
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _myListsWatcher?.cancel();
+    super.dispose();
   }
 }
 

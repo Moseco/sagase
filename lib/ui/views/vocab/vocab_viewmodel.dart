@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -13,7 +15,7 @@ import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class VocabViewModel extends BaseViewModel {
+class VocabViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
@@ -22,6 +24,11 @@ class VocabViewModel extends BaseViewModel {
   final _snackbarService = locator<SnackbarService>();
 
   final Vocab vocab;
+
+  bool _inMyLists = false;
+  bool get inMyLists => _inMyLists;
+  StreamSubscription<void>? _myListsWatcher;
+  bool _myListsChanged = false;
 
   final List<Kanji> kanjiList = [];
   bool _kanjiLoaded = false;
@@ -60,7 +67,10 @@ class VocabViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> initialize() async {
+  @override
+  Future<void> futureToRun() async {
+    _inMyLists = await _isarService.isVocabInMyDictionaryLists(vocab);
+    rebuildUi();
     // Load kanji from database that were found during class constructor
     for (int i = 0; i < kanjiList.length; i++) {
       final kanji = await _isarService.getKanji(kanjiList[i].kanji);
@@ -73,68 +83,68 @@ class VocabViewModel extends BaseViewModel {
     }
 
     _kanjiLoaded = true;
-    notifyListeners();
-
-    await _refreshMyDictionaryListLinks();
+    rebuildUi();
   }
 
-  Future<void> _refreshMyDictionaryListLinks() async {
-    // If my lists have been changed, reload back links
-    if (_isarService.myDictionaryListsChanged) {
-      final updatedVocab = await _isarService.getVocab(vocab.id);
-      vocab.myDictionaryListLinks.clear();
-      vocab.myDictionaryListLinks
-          .addAll(updatedVocab!.myDictionaryListLinks.toList());
-      notifyListeners();
-    }
+  void _startWatcher() {
+    _myListsWatcher ??= _isarService.watchMyDictionaryLists().listen((event) {
+      _myListsChanged = true;
+    });
+  }
+
+  Future<void> _refreshInMyLists() async {
+    if (!_myListsChanged) return;
+
+    _inMyLists = await _isarService.isVocabInMyDictionaryLists(vocab);
+    _myListsChanged = false;
+
+    rebuildUi();
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> openMyDictionaryListsSheet() async {
-    if (_isarService.myDictionaryLists == null) {
-      await _isarService.getMyDictionaryLists();
-    }
+    final myDictionaryLists = await _isarService.getAllMyDictionaryLists();
+
     // Create list for bottom sheet
-    List<MyListsBottomSheetItem> list = [];
-    for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      list.add(
-          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
+    List<MyListsBottomSheetItem> bottomSheetItems = [];
+    for (var myList in myDictionaryLists) {
+      bottomSheetItems.add(MyListsBottomSheetItem(myList, false));
     }
-    // Mark lists that the vocab is in and move them to the top
-    for (int i = 0; i < vocab.myDictionaryListLinks.length; i++) {
-      for (int j = 0; j < list.length; j++) {
-        if (vocab.myDictionaryListLinks.elementAt(i).id == list[j].list.id) {
-          list[j].enabled = true;
-          final temp = list.removeAt(j);
-          list.insert(0, temp);
-          break;
-        }
+    // Mark lists that the vocab are in and move them to the top
+    for (int i = 0; i < bottomSheetItems.length; i++) {
+      if (bottomSheetItems[i].list.vocab.contains(vocab.id)) {
+        bottomSheetItems[i].enabled = true;
+        bottomSheetItems.insert(0, bottomSheetItems.removeAt(i));
       }
     }
 
     await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.assignMyListsBottom,
-      data: list,
+      data: bottomSheetItems,
     );
 
-    for (int i = 0; i < list.length; i++) {
-      if (!list[i].changed) continue;
-      if (list[i].enabled) {
-        await _isarService.addVocabToMyDictionaryList(list[i].list, vocab);
+    _inMyLists = false;
+    for (int i = 0; i < bottomSheetItems.length; i++) {
+      if (bottomSheetItems[i].enabled) _inMyLists = true;
+      if (!bottomSheetItems[i].changed) continue;
+      if (bottomSheetItems[i].enabled) {
+        await _isarService.addVocabToMyDictionaryList(
+            bottomSheetItems[i].list, vocab);
       } else {
-        await _isarService.removeVocabFromMyDictionaryList(list[i].list, vocab);
+        await _isarService.removeVocabFromMyDictionaryList(
+            bottomSheetItems[i].list, vocab);
       }
     }
 
-    // Reload back links
-    await _refreshMyDictionaryListLinks();
+    rebuildUi();
   }
 
   List<RubyTextPair> getRubyTextPairs(String writing, String reading) {
@@ -151,18 +161,20 @@ class VocabViewModel extends BaseViewModel {
   }
 
   Future<void> openExampleInAnalysis(VocabExample example) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.textAnalysisView,
       arguments: TextAnalysisViewArguments(initialText: example.japanese),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> openVocabReference(VocabReference reference) async {
     if (reference.id != null) {
       final vocab = await _isarService.getVocab(reference.id!);
+      _startWatcher();
       await _navigationService.navigateToVocabView(vocab: vocab!);
-      await _refreshMyDictionaryListLinks();
+      await _refreshInMyLists();
     } else {
       Clipboard.setData(ClipboardData(text: reference.text));
       _snackbarService.showSnackbar(
@@ -171,5 +183,11 @@ class VocabViewModel extends BaseViewModel {
         duration: const Duration(seconds: 2),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _myListsWatcher?.cancel();
+    super.dispose();
   }
 }

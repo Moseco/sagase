@@ -45,44 +45,36 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 8; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
 
       // Check contents
-      expect(viewModel.upcomingDueFlashcards.length, 8);
-      expect(viewModel.upcomingDueFlashcards[0], 1);
-      expect(viewModel.upcomingDueFlashcards[1], 1);
-      expect(viewModel.upcomingDueFlashcards[2], 1);
-      expect(viewModel.upcomingDueFlashcards[3], 1);
-      expect(viewModel.upcomingDueFlashcards[4], 1);
-      expect(viewModel.upcomingDueFlashcards[5], 1);
-      expect(viewModel.upcomingDueFlashcards[6], 1);
-      expect(viewModel.upcomingDueFlashcards[7], 1);
+      expect(viewModel.upcomingDueFlashcards!.length, 8);
+      expect(viewModel.upcomingDueFlashcards![0], 1);
+      expect(viewModel.upcomingDueFlashcards![1], 1);
+      expect(viewModel.upcomingDueFlashcards![2], 1);
+      expect(viewModel.upcomingDueFlashcards![3], 1);
+      expect(viewModel.upcomingDueFlashcards![4], 1);
+      expect(viewModel.upcomingDueFlashcards![5], 1);
+      expect(viewModel.upcomingDueFlashcards![6], 1);
+      expect(viewModel.upcomingDueFlashcards![7], 1);
     });
 
     test('Upcoming due flashcards - English front', () async {
@@ -105,46 +97,37 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 8; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
 
       // Check contents
-      expect(viewModel.upcomingDueFlashcards.length, 8);
-      expect(viewModel.upcomingDueFlashcards[0], 1);
-      expect(viewModel.upcomingDueFlashcards[1], 1);
-      expect(viewModel.upcomingDueFlashcards[2], 1);
-      expect(viewModel.upcomingDueFlashcards[3], 1);
-      expect(viewModel.upcomingDueFlashcards[4], 1);
-      expect(viewModel.upcomingDueFlashcards[5], 1);
-      expect(viewModel.upcomingDueFlashcards[6], 1);
-      expect(viewModel.upcomingDueFlashcards[7], 1);
+      expect(viewModel.upcomingDueFlashcards!.length, 8);
+      expect(viewModel.upcomingDueFlashcards![0], 1);
+      expect(viewModel.upcomingDueFlashcards![1], 1);
+      expect(viewModel.upcomingDueFlashcards![2], 1);
+      expect(viewModel.upcomingDueFlashcards![3], 1);
+      expect(viewModel.upcomingDueFlashcards![4], 1);
+      expect(viewModel.upcomingDueFlashcards![5], 1);
+      expect(viewModel.upcomingDueFlashcards![6], 1);
+      expect(viewModel.upcomingDueFlashcards![7], 1);
     });
 
     test('Upcoming due flashcards - mismatched data and front type', () async {
@@ -167,46 +150,37 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 8; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
 
       // Check contents
-      expect(viewModel.upcomingDueFlashcards.length, 8);
-      expect(viewModel.upcomingDueFlashcards[0], 0);
-      expect(viewModel.upcomingDueFlashcards[1], 0);
-      expect(viewModel.upcomingDueFlashcards[2], 0);
-      expect(viewModel.upcomingDueFlashcards[3], 0);
-      expect(viewModel.upcomingDueFlashcards[4], 0);
-      expect(viewModel.upcomingDueFlashcards[5], 0);
-      expect(viewModel.upcomingDueFlashcards[6], 0);
-      expect(viewModel.upcomingDueFlashcards[7], 0);
+      expect(viewModel.upcomingDueFlashcards!.length, 8);
+      expect(viewModel.upcomingDueFlashcards![0], 0);
+      expect(viewModel.upcomingDueFlashcards![1], 0);
+      expect(viewModel.upcomingDueFlashcards![2], 0);
+      expect(viewModel.upcomingDueFlashcards![3], 0);
+      expect(viewModel.upcomingDueFlashcards![4], 0);
+      expect(viewModel.upcomingDueFlashcards![5], 0);
+      expect(viewModel.upcomingDueFlashcards![6], 0);
+      expect(viewModel.upcomingDueFlashcards![7], 0);
     });
 
     test('Flashcard interval counts', () async {
@@ -263,30 +237,22 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 5; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -353,32 +319,23 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 5; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -446,32 +403,23 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 5; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       final navigationService = getAndRegisterNavigationService();
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -530,28 +478,20 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 22; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Check contents
       expect(viewModel.challengingFlashcards.length, 10);
@@ -605,30 +545,21 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 22; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Check contents
       expect(viewModel.challengingFlashcards.length, 10);
@@ -683,30 +614,21 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 22; i++) {
         var vocab = Vocab()..id = i;
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       // Initialize viewmodel
       var viewModel = FlashcardSetInfoViewModel(flashcardSet);
-
-      // wait for loading to finished
-      while (true) {
-        if (!viewModel.loading) break;
-        await Future.delayed(const Duration(milliseconds: 1));
-      }
+      await viewModel.futureToRun();
 
       // Check contents
       expect(viewModel.challengingFlashcards.length, 0);

@@ -18,13 +18,20 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
 
   final FlashcardSet flashcardSet;
 
+  late List<PredefinedDictionaryList> predefinedDictionaryLists;
+  late List<MyDictionaryList> myDictionaryLists;
+
   FlashcardSetSettingsViewModel(this.flashcardSet);
 
   @override
   Future<void> futureToRun() async {
-    await flashcardSet.predefinedDictionaryListLinks.load();
-    await flashcardSet.myDictionaryListLinks.load();
-    notifyListeners();
+    predefinedDictionaryLists = await _isarService.getPredefinedDictionaryLists(
+      flashcardSet.predefinedDictionaryLists,
+    );
+    myDictionaryLists = await _isarService.getMyDictionaryLists(
+      flashcardSet.myDictionaryLists,
+    );
+    rebuildUi();
   }
 
   void handlePopupMenuButton(PopupMenuItemType type) {
@@ -102,75 +109,66 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   }
 
   Future<void> editIncludedLists() async {
-    if (_isarService.myDictionaryLists == null) {
-      await _isarService.getMyDictionaryLists();
-    }
     // Get included predefined lists
     Map<int, ({bool enabled, bool changed})> predefinedLists = {};
-    for (int i = 0;
-        i < flashcardSet.predefinedDictionaryListLinks.length;
-        i++) {
-      predefinedLists[flashcardSet.predefinedDictionaryListLinks
-          .elementAt(i)
-          .id!] = (enabled: true, changed: false);
+    for (var id in flashcardSet.predefinedDictionaryLists) {
+      predefinedLists[id] = (enabled: true, changed: false);
     }
+
     // Create list for my lists
-    List<MyListsBottomSheetItem> myDictionaryLists = [];
-    for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      myDictionaryLists.add(
-          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
+    List<MyListsBottomSheetItem> myLists = [];
+    for (var myList in await _isarService.getAllMyDictionaryLists()) {
+      myLists.add(MyListsBottomSheetItem(myList, false));
     }
     // Mark lists that the flashcard set uses and move them to the top
-    for (int i = 0; i < flashcardSet.myDictionaryListLinks.length; i++) {
-      for (int j = 0; j < myDictionaryLists.length; j++) {
-        if (flashcardSet.myDictionaryListLinks.elementAt(i).id ==
-            myDictionaryLists[j].list.id) {
-          myDictionaryLists[j].enabled = true;
-          final temp = myDictionaryLists.removeAt(j);
-          myDictionaryLists.insert(0, temp);
-          break;
-        }
+    for (int i = 0; i < myLists.length; i++) {
+      if (flashcardSet.myDictionaryLists.contains(myLists[i].list.id)) {
+        myLists[i].enabled = true;
+        myLists.insert(0, myLists.removeAt(i));
       }
     }
 
     await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.assignListsBottom,
-      data: ListsBottomSheetArgument(predefinedLists, myDictionaryLists),
+      data: ListsBottomSheetArgument(predefinedLists, myLists),
     );
 
-    // Get predefined dictionary lists to add or remove from flashcard set
-    List<int> predefinedListsToAdd = [];
-    List<int> predefinedListsToRemove = [];
-    for (var pairs in predefinedLists.entries) {
-      if (!pairs.value.changed) continue;
-      if (pairs.value.enabled) {
-        predefinedListsToAdd.add(pairs.key);
+    // Add and remove predefined dictionary lists from the flashcard set
+    flashcardSet.predefinedDictionaryLists =
+        flashcardSet.predefinedDictionaryLists.toList();
+    predefinedDictionaryLists = predefinedDictionaryLists.toList();
+    for (var entry in predefinedLists.entries) {
+      if (!entry.value.changed) continue;
+      if (entry.value.enabled) {
+        if (!flashcardSet.predefinedDictionaryLists.contains(entry.key)) {
+          flashcardSet.predefinedDictionaryLists.add(entry.key);
+          predefinedDictionaryLists.add(
+              (await _isarService.getPredefinedDictionaryList(entry.key))!);
+        }
       } else {
-        predefinedListsToRemove.add(pairs.key);
+        flashcardSet.predefinedDictionaryLists.remove(entry.key);
+        predefinedDictionaryLists
+            .removeWhere((element) => element.id == entry.key);
       }
     }
-    // Get my dictionary lists to add or remove from flashcard set
-    List<MyDictionaryList> myListsToAdd = [];
-    List<MyDictionaryList> myListsToRemove = [];
-    for (int i = 0; i < myDictionaryLists.length; i++) {
-      if (!myDictionaryLists[i].changed) continue;
-      if (myDictionaryLists[i].enabled) {
-        myListsToAdd.add(myDictionaryLists[i].list);
+    // Add and remove my dictionary lists from the flashcard set
+    flashcardSet.myDictionaryLists = flashcardSet.myDictionaryLists.toList();
+    myDictionaryLists = myDictionaryLists.toList();
+    for (var myList in myLists) {
+      if (!myList.changed) continue;
+      if (myList.enabled) {
+        if (!flashcardSet.myDictionaryLists.contains(myList.list.id)) {
+          flashcardSet.myDictionaryLists.add(myList.list.id);
+          myDictionaryLists.add(myList.list);
+        }
       } else {
-        myListsToRemove.add(myDictionaryLists[i].list);
+        flashcardSet.myDictionaryLists.remove(myList.list.id);
+        myDictionaryLists
+            .removeWhere((element) => element.id == myList.list.id);
       }
     }
-    // Add and remove from database
-    await _isarService.addDictionaryListsToFlashcardSet(
-      flashcardSet,
-      predefinedDictionaryListIds: predefinedListsToAdd,
-      myDictionaryLists: myListsToAdd,
-    );
-    await _isarService.removeDictionaryListsToFlashcardSet(
-      flashcardSet,
-      predefinedDictionaryListIds: predefinedListsToRemove,
-      myDictionaryLists: myListsToRemove,
-    );
+
+    await _isarService.updateFlashcardSet(flashcardSet);
     notifyListeners();
   }
 

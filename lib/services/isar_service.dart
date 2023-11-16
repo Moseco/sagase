@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:flutter/material.dart' show visibleForTesting;
+import 'package:flutter/material.dart' show StringCharacters, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -13,7 +13,6 @@ import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/utils/constants.dart' as constants;
-import 'package:sagase/utils/string_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class IsarService {
@@ -31,11 +30,6 @@ class IsarService {
   late final Isar _isar;
 
   final _kanaKit = const KanaKit().copyWithConfig(passRomaji: true);
-
-  bool _myDictionaryListsChanged = false;
-  bool get myDictionaryListsChanged => _myDictionaryListsChanged;
-  List<MyDictionaryList>? _myDictionaryLists;
-  List<MyDictionaryList>? get myDictionaryLists => _myDictionaryLists;
 
   IsarService({Isar? isar}) {
     if (isar != null) _isar = isar;
@@ -94,9 +88,9 @@ class IsarService {
     if (filter == SearchFilter.vocab) {
       // First check if searching single kanji
       Kanji? kanji;
-      if (searchString.length == 1 &&
+      if (searchString.characters.length == 1 &&
           searchString.contains(constants.kanjiRegExp)) {
-        kanji = await _isar.kanjis.getByKanji(searchString);
+        kanji = await _isar.kanjis.get(searchString.kanjiCodePoint());
       }
 
       // Search vocab
@@ -395,9 +389,9 @@ class IsarService {
 
   Future<List<Kanji>> _searchKanji(String searchString) async {
     // If searching single kanji, just return it
-    if (searchString.length == 1 &&
+    if (searchString.characters.length == 1 &&
         searchString.contains(constants.kanjiRegExp)) {
-      final kanji = await _isar.kanjis.getByKanji(searchString);
+      final kanji = await _isar.kanjis.get(searchString.kanjiCodePoint());
       if (kanji != null) return [kanji];
     }
 
@@ -483,6 +477,11 @@ class IsarService {
     return _isar.vocabs.get(id);
   }
 
+  Future<List<Vocab>> getVocabList(List<int> list) async {
+    if (list.isEmpty) return [];
+    return (await _isar.vocabs.getAll(list)).cast<Vocab>();
+  }
+
   Future<List<Vocab>> getVocabByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
@@ -565,14 +564,35 @@ class IsarService {
   }
 
   Future<Kanji?> getKanji(String kanji) async {
-    return _isar.kanjis.getByKanji(kanji);
+    return _isar.kanjis.get(kanji.kanjiCodePoint());
   }
 
-  Future<DictionaryList?> getPredefinedDictionaryList(int id) async {
+  Future<List<Kanji>> getKanjiList(List<int> list) async {
+    if (list.isEmpty) return [];
+    return (await _isar.kanjis.getAll(list)).cast<Kanji>();
+  }
+
+  Future<List<Kanji>> getKanjiWithRadical(String radical) async {
+    return _isar.kanjis
+        .where()
+        .radicalEqualTo(radical)
+        .sortByStrokeCount()
+        .findAll();
+  }
+
+  Future<PredefinedDictionaryList?> getPredefinedDictionaryList(int id) async {
     return _isar.predefinedDictionaryLists.get(id);
   }
 
-  Future<void> createMyDictionaryList(String name) async {
+  Future<List<PredefinedDictionaryList>> getPredefinedDictionaryLists(
+    List<int> list,
+  ) async {
+    if (list.isEmpty) return [];
+    return (await _isar.predefinedDictionaryLists.getAll(list))
+        .cast<PredefinedDictionaryList>();
+  }
+
+  Future<MyDictionaryList> createMyDictionaryList(String name) async {
     final list = MyDictionaryList()
       ..name = name
       ..timestamp = DateTime.now();
@@ -580,39 +600,57 @@ class IsarService {
     await _isar.writeTxn(() async {
       await _isar.myDictionaryLists.put(list);
     });
-    // If my lists are loaded, insert the new list, otherwise load my lists
-    if (_myDictionaryLists == null) {
-      await getMyDictionaryLists();
-    } else {
-      _myDictionaryLists!.insert(0, list);
-    }
+
+    return list;
   }
 
   Future<void> updateMyDictionaryList(MyDictionaryList list) async {
-    // Move list to start
-    _myDictionaryLists!.remove(list);
-    _myDictionaryLists!.insert(0, list);
-    // Update
     list.timestamp = DateTime.now();
     return _isar.writeTxn(() async {
       await _isar.myDictionaryLists.put(list);
-      await list.vocabLinks.save();
-      await list.kanjiLinks.save();
     });
   }
 
-  Future<void> getMyDictionaryLists() async {
-    _myDictionaryLists =
-        await _isar.myDictionaryLists.where().sortByTimestampDesc().findAll();
+  Future<MyDictionaryList?> getMyDictionaryList(int id) async {
+    return _isar.myDictionaryLists.get(id);
+  }
+
+  Future<List<MyDictionaryList>> getMyDictionaryLists(
+    List<int> list,
+  ) async {
+    if (list.isEmpty) return [];
+    return (await _isar.myDictionaryLists.getAll(list))
+        .cast<MyDictionaryList>();
+  }
+
+  Future<List<MyDictionaryList>> getAllMyDictionaryLists() async {
+    return _isar.myDictionaryLists.where().sortByTimestampDesc().findAll();
+  }
+
+  Stream<void> watchMyDictionaryList(int id) {
+    return _isar.myDictionaryLists.watchObjectLazy(id);
+  }
+
+  Stream<void> watchMyDictionaryLists() {
+    return _isar.myDictionaryLists.watchLazy();
   }
 
   Future<void> deleteMyDictionaryList(MyDictionaryList list) async {
-    _myDictionaryListsChanged = true;
-    // Remove from in memory list
-    _myDictionaryLists!.remove(list);
-    // Remove from database
-    await _isar.writeTxn(() async {
-      await _isar.myDictionaryLists.delete(list.id!);
+    return _isar.writeTxn(() async {
+      // Find flashcard sets using this list
+      final flashcardSets = await _isar.flashcardSets
+          .filter()
+          .myDictionaryListsElementEqualTo(list.id)
+          .findAll();
+
+      for (var flashcardSet in flashcardSets) {
+        flashcardSet.myDictionaryLists = flashcardSet.myDictionaryLists.toList()
+          ..remove(list.id);
+        await _isar.flashcardSets.put(flashcardSet);
+      }
+
+      // Delete the list
+      await _isar.myDictionaryLists.delete(list.id);
     });
   }
 
@@ -620,38 +658,50 @@ class IsarService {
     MyDictionaryList list,
     Vocab vocab,
   ) async {
-    _myDictionaryListsChanged = true;
-    list.vocabLinks.add(vocab);
-    await updateMyDictionaryList(list);
+    if (list.vocab.contains(vocab.id)) return;
+    list.vocab = list.vocab.toList()..insert(0, vocab.id);
+    return updateMyDictionaryList(list);
   }
 
   Future<void> removeVocabFromMyDictionaryList(
     MyDictionaryList list,
     Vocab vocab,
   ) async {
-    _myDictionaryListsChanged = true;
-    if (!list.vocabLinks.isLoaded) await list.vocabLinks.load();
-    list.vocabLinks.removeWhere((element) => element.id == vocab.id);
-    await updateMyDictionaryList(list);
+    list.vocab = list.vocab.toList()..remove(vocab.id);
+    return updateMyDictionaryList(list);
   }
 
   Future<void> addKanjiToMyDictionaryList(
     MyDictionaryList list,
     Kanji kanji,
   ) async {
-    _myDictionaryListsChanged = true;
-    list.kanjiLinks.add(kanji);
-    await updateMyDictionaryList(list);
+    if (list.kanji.contains(kanji.id)) return;
+    list.kanji = list.kanji.toList()..insert(0, kanji.id);
+    return updateMyDictionaryList(list);
   }
 
   Future<void> removeKanjiFromMyDictionaryList(
     MyDictionaryList list,
     Kanji kanji,
   ) async {
-    _myDictionaryListsChanged = true;
-    if (!list.kanjiLinks.isLoaded) await list.kanjiLinks.load();
-    list.kanjiLinks.removeWhere((element) => element.id == kanji.id);
-    await updateMyDictionaryList(list);
+    list.kanji = list.kanji.toList()..remove(kanji.id);
+    return updateMyDictionaryList(list);
+  }
+
+  Future<bool> isVocabInMyDictionaryLists(Vocab vocab) async {
+    return (await _isar.myDictionaryLists
+            .filter()
+            .vocabElementEqualTo(vocab.id)
+            .findFirst()) !=
+        null;
+  }
+
+  Future<bool> isKanjiInMyDictionaryLists(Kanji kanji) async {
+    return (await _isar.myDictionaryLists
+            .filter()
+            .kanjiElementEqualTo(kanji.id)
+            .findFirst()) !=
+        null;
   }
 
   Future<FlashcardSet> createFlashcardSet(String name) async {
@@ -672,8 +722,6 @@ class IsarService {
     if (updateTimestamp) flashcardSet.timestamp = DateTime.now();
     return _isar.writeTxn(() async {
       await _isar.flashcardSets.put(flashcardSet);
-      await flashcardSet.predefinedDictionaryListLinks.save();
-      await flashcardSet.myDictionaryListLinks.save();
     });
   }
 
@@ -700,63 +748,17 @@ class IsarService {
     });
   }
 
-  Future<void> addDictionaryListsToFlashcardSet(
-    FlashcardSet flashcardSet, {
-    List<int> predefinedDictionaryListIds = const [],
-    List<MyDictionaryList> myDictionaryLists = const [],
-  }) async {
-    // Add predefined dictionary lists
-    for (int i = 0; i < predefinedDictionaryListIds.length; i++) {
-      final predefinedDictionaryList = await _isar.predefinedDictionaryLists
-          .get(predefinedDictionaryListIds[i]);
-      if (predefinedDictionaryList != null) {
-        flashcardSet.predefinedDictionaryListLinks
-            .add(predefinedDictionaryList);
-      }
-    }
-    // Add my dictionary lists
-    for (int i = 0; i < myDictionaryLists.length; i++) {
-      flashcardSet.myDictionaryListLinks.add(myDictionaryLists[i]);
-    }
-    // Update in database if something was changed
-    if (predefinedDictionaryListIds.isNotEmpty ||
-        myDictionaryLists.isNotEmpty) {
-      return updateFlashcardSet(flashcardSet);
-    }
-  }
-
-  Future<void> removeDictionaryListsToFlashcardSet(
-    FlashcardSet flashcardSet, {
-    List<int> predefinedDictionaryListIds = const [],
-    List<MyDictionaryList> myDictionaryLists = const [],
-  }) async {
-    // Remove predefined dictionary lists
-    for (int i = 0; i < predefinedDictionaryListIds.length; i++) {
-      flashcardSet.predefinedDictionaryListLinks.removeWhere(
-          (element) => element.id == predefinedDictionaryListIds[i]);
-    }
-    // Remove my dictionary lists
-    for (int i = 0; i < myDictionaryLists.length; i++) {
-      flashcardSet.myDictionaryListLinks
-          .removeWhere((element) => element.id == myDictionaryLists[i].id);
-    }
-    // Update in database if something was changed
-    if (predefinedDictionaryListIds.isNotEmpty ||
-        myDictionaryLists.isNotEmpty) {
-      return updateFlashcardSet(flashcardSet);
-    }
-  }
-
   Future<void> resetFlashcardSetSpacedRepetitionData(
     FlashcardSet flashcardSet,
   ) async {
     await _isar.writeTxn(() async {
       // Predefined lists
-      await flashcardSet.predefinedDictionaryListLinks.load();
-      for (var list in flashcardSet.predefinedDictionaryListLinks) {
+      for (var predefinedId in flashcardSet.predefinedDictionaryLists) {
+        final list = await getPredefinedDictionaryList(predefinedId);
+        if (list == null) continue;
         // Reset vocab
-        await list.vocabLinks.load();
-        for (var vocab in list.vocabLinks) {
+        final vocabList = await getVocabList(list.vocab);
+        for (var vocab in vocabList) {
           switch (flashcardSet.frontType) {
             case FrontType.japanese:
               if (vocab.spacedRepetitionData != null) {
@@ -774,8 +776,8 @@ class IsarService {
         }
 
         // Reset kanji
-        await list.kanjiLinks.load();
-        for (var kanji in list.kanjiLinks) {
+        final kanjiList = await getKanjiList(list.kanji);
+        for (var kanji in kanjiList) {
           switch (flashcardSet.frontType) {
             case FrontType.japanese:
               if (kanji.spacedRepetitionData != null) {
@@ -794,11 +796,12 @@ class IsarService {
       }
 
       // My lists
-      await flashcardSet.myDictionaryListLinks.load();
-      for (var list in flashcardSet.myDictionaryListLinks) {
+      for (var myListId in flashcardSet.myDictionaryLists) {
+        final list = await getMyDictionaryList(myListId);
+        if (list == null) continue;
         // Reset vocab
-        await list.vocabLinks.load();
-        for (var vocab in list.vocabLinks) {
+        final vocabList = await getVocabList(list.vocab);
+        for (var vocab in vocabList) {
           switch (flashcardSet.frontType) {
             case FrontType.japanese:
               if (vocab.spacedRepetitionData != null) {
@@ -816,8 +819,8 @@ class IsarService {
         }
 
         // Reset kanji
-        await list.kanjiLinks.load();
-        for (var kanji in list.kanjiLinks) {
+        final kanjiList = await getKanjiList(list.kanji);
+        for (var kanji in kanjiList) {
           switch (flashcardSet.frontType) {
             case FrontType.japanese:
               if (kanji.spacedRepetitionData != null) {
@@ -949,10 +952,8 @@ class IsarService {
   Future<String> exportUserData() async {
     // My dictionary lists
     List<String> myDictionaryListBackups = [];
-    await getMyDictionaryLists();
-    for (var myList in _myDictionaryLists!) {
-      await myList.vocabLinks.load();
-      await myList.kanjiLinks.load();
+    final myLists = await getAllMyDictionaryLists();
+    for (var myList in myLists) {
       myDictionaryListBackups.add(myList.toBackupJson());
     }
 
@@ -960,8 +961,6 @@ class IsarService {
     List<String> flashcardSetBackups = [];
     final flashcardSets = await getFlashcardSets();
     for (var flashcardSet in flashcardSets) {
-      await flashcardSet.predefinedDictionaryListLinks.load();
-      await flashcardSet.myDictionaryListLinks.load();
       flashcardSetBackups.add(flashcardSet.toBackupJson());
     }
 
@@ -990,8 +989,8 @@ class IsarService {
     final kanjiSpacedRepetitionData =
         await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
     for (var kanji in kanjiSpacedRepetitionData) {
-      kanjiSpacedRepetitionDataBackups
-          .add(kanji.spacedRepetitionData!.toBackupJson(kanji: kanji.kanji));
+      kanjiSpacedRepetitionDataBackups.add(kanji.spacedRepetitionData!
+          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
     }
 
     // Kanji spaced repetition data English
@@ -1001,8 +1000,9 @@ class IsarService {
         .spacedRepetitionDataEnglishIsNotNull()
         .findAll();
     for (var kanji in kanjiSpacedRepetitionDataEnglish) {
-      kanjiSpacedRepetitionDataEnglishBackups.add(
-          kanji.spacedRepetitionDataEnglish!.toBackupJson(kanji: kanji.kanji));
+      kanjiSpacedRepetitionDataEnglishBackups.add(kanji
+          .spacedRepetitionDataEnglish!
+          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
     }
 
     // Create instance
@@ -1036,63 +1036,61 @@ class IsarService {
     // Try to decode the backup file
     try {
       Map<String, dynamic> backupMap = jsonDecode(await file.readAsString());
+      int backupDatabaseVersion =
+          backupMap[SagaseDictionaryConstants.backupDictionaryVersion];
 
       await _isar.writeTxn(() async {
         // My dictionary lists
         for (var myListMap
             in (backupMap[SagaseDictionaryConstants.backupMyDictionaryLists] ??
                 [])) {
-          final newMyList = MyDictionaryList.fromBackupJson(myListMap);
-
-          // Add vocab
-          for (var vocabId in myListMap[
-              SagaseDictionaryConstants.backupMyDictionaryListVocab]) {
-            final vocab = await _isar.vocabs.get(vocabId);
-            if (vocab != null) newMyList.vocabLinks.add(vocab);
+          final myList =
+              MyDictionaryList.fromBackupJson(myListMap, backupDatabaseVersion);
+          // Confirm vocab exists
+          final vocabList = (await _isar.vocabs.getAll(myList.vocab)).toList();
+          for (int i = 0; i < vocabList.length; i++) {
+            if (vocabList[i] == null) {
+              vocabList.removeAt(i);
+              myList.vocab.removeAt(i);
+              i--;
+            }
           }
-
-          // Add kanji
-          for (var kanjiId in myListMap[
-              SagaseDictionaryConstants.backupMyDictionaryListKanji]) {
-            final kanji = await _isar.kanjis.getByKanji(kanjiId);
-            if (kanji != null) newMyList.kanjiLinks.add(kanji);
+          // Confirm kanji exists
+          final kanjiList = (await _isar.kanjis.getAll(myList.kanji)).toList();
+          for (int i = 0; i < kanjiList.length; i++) {
+            if (kanjiList[i] == null) {
+              kanjiList.removeAt(i);
+              myList.kanji.removeAt(i);
+              i--;
+            }
           }
-
-          await _isar.myDictionaryLists.put(newMyList);
-          await newMyList.vocabLinks.save();
-          await newMyList.kanjiLinks.save();
+          await _isar.myDictionaryLists.put(myList);
         }
 
         // Flashcard sets
         for (var flashcardSetMap
             in (backupMap[SagaseDictionaryConstants.backupFlashcardSets] ??
                 [])) {
-          final newFlashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
-
-          // Predefined dictionary lists
-          for (var predefinedId in flashcardSetMap[SagaseDictionaryConstants
-              .backupFlashcardSetPredefinedDictionaryLists]) {
-            final predefinedDictionaryList =
-                await _isar.predefinedDictionaryLists.get(predefinedId);
-            if (predefinedDictionaryList != null) {
-              newFlashcardSet.predefinedDictionaryListLinks
-                  .add(predefinedDictionaryList);
+          final flashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
+          // Confirm predefined lists exist
+          for (int i = 0;
+              i < flashcardSet.predefinedDictionaryLists.length;
+              i++) {
+            if ((await _isar.predefinedDictionaryLists
+                    .get(flashcardSet.predefinedDictionaryLists[i])) ==
+                null) {
+              flashcardSet.predefinedDictionaryLists.removeAt(i--);
             }
           }
-
-          // My dictionary lists
-          for (var myId in (flashcardSetMap[SagaseDictionaryConstants
-                  .backupFlashcardSetMyDictionaryLists] ??
-              [])) {
-            final myDictionaryList = await _isar.myDictionaryLists.get(myId);
-            if (myDictionaryList != null) {
-              newFlashcardSet.myDictionaryListLinks.add(myDictionaryList);
+          // Confirm my lists exist
+          for (int i = 0; i < flashcardSet.myDictionaryLists.length; i++) {
+            if ((await _isar.myDictionaryLists
+                    .get(flashcardSet.myDictionaryLists[i])) ==
+                null) {
+              flashcardSet.myDictionaryLists.removeAt(i--);
             }
           }
-
-          await _isar.flashcardSets.put(newFlashcardSet);
-          await newFlashcardSet.predefinedDictionaryListLinks.save();
-          await newFlashcardSet.myDictionaryListLinks.save();
+          await _isar.flashcardSets.put(flashcardSet);
         }
 
         // Vocab spaced repetition data
@@ -1129,8 +1127,13 @@ class IsarService {
             [])) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final kanji = await _isar.kanjis.getByKanji(spacedRepetitionMap[
-              SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]);
+          // Handles change in kanji id format
+          int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
+                  .backupSpacedRepetitionDataKanjiId] ??
+              (spacedRepetitionMap[SagaseDictionaryConstants
+                      .backupSpacedRepetitionDataKanji] as String)
+                  .kanjiCodePoint();
+          final kanji = await _isar.kanjis.get(kanjiId);
           if (kanji != null) {
             kanji.spacedRepetitionData = newSpacedRepetition;
             await _isar.kanjis.put(kanji);
@@ -1143,8 +1146,13 @@ class IsarService {
             [])) {
           final newSpacedRepetition =
               SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final kanji = await _isar.kanjis.getByKanji(spacedRepetitionMap[
-              SagaseDictionaryConstants.backupSpacedRepetitionDataKanji]);
+          // Handles change in kanji id format
+          int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
+                  .backupSpacedRepetitionDataKanjiId] ??
+              (spacedRepetitionMap[SagaseDictionaryConstants
+                      .backupSpacedRepetitionDataKanji] as String)
+                  .kanjiCodePoint();
+          final kanji = await _isar.kanjis.get(kanjiId);
           if (kanji != null) {
             kanji.spacedRepetitionDataEnglish = newSpacedRepetition;
             await _isar.kanjis.put(kanji);
@@ -1154,9 +1162,6 @@ class IsarService {
     } catch (_) {
       return false;
     }
-
-    await getMyDictionaryLists();
-    _myDictionaryListsChanged = true;
 
     return true;
   }

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -18,6 +16,8 @@ class KanjiRadicalViewModel extends FutureViewModel {
   final KanjiRadical kanjiRadical;
 
   List<KanjiRadical>? variants;
+
+  List<Kanji>? kanjiWithRadical;
 
   bool get strokeDiagramStartExpanded =>
       _sharedPreferencesService.getStrokeDiagramStartExpanded();
@@ -50,10 +50,9 @@ class KanjiRadicalViewModel extends FutureViewModel {
       rebuildUi();
     }
 
-    // Load the first 10 kanji using the radical
-    for (int i = 0; i < min(10, kanjiRadical.kanjiWithRadical.length); i++) {
-      kanjiRadical.kanjiWithRadical.elementAt(i);
-    }
+    kanjiWithRadical =
+        await _isarService.getKanjiWithRadical(kanjiRadical.radical);
+    rebuildUi();
   }
 
   void navigateToKanji(Kanji kanji) {
@@ -65,10 +64,10 @@ class KanjiRadicalViewModel extends FutureViewModel {
 
   void showAllKanji() {
     _navigationService.navigateTo(
-      Routes.kanjiLinksView,
-      arguments: KanjiLinksViewArguments(
-        title: kanjiRadical.radical,
-        links: kanjiRadical.kanjiWithRadical,
+      Routes.kanjiListView,
+      arguments: KanjiListViewArguments(
+        title: 'Kanji Using ${kanjiRadical.radical}',
+        kanjiList: kanjiWithRadical!,
       ),
     );
   }

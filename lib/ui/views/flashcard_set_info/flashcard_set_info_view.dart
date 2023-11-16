@@ -10,88 +10,89 @@ import 'package:stacked/stacked.dart';
 
 import 'flashcard_set_info_viewmodel.dart';
 
-class FlashcardSetInfoView extends StatelessWidget {
+class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
   final FlashcardSet flashcardSet;
 
   const FlashcardSetInfoView(this.flashcardSet, {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  FlashcardSetInfoViewModel viewModelBuilder(BuildContext context) =>
+      FlashcardSetInfoViewModel(flashcardSet);
+
+  @override
+  Widget builder(context, viewModel, child) {
     final now = DateTime.now();
     final dayFormatter = DateFormat.EEEE();
-    return ViewModelBuilder<FlashcardSetInfoViewModel>.reactive(
-      viewModelBuilder: () => FlashcardSetInfoViewModel(flashcardSet),
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(title: Text(flashcardSet.name)),
-        body: viewModel.loading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(8),
-                children: [
-                  CardWithTitleSection(
-                    title: 'Upcoming due flashcards',
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(8),
-                      child: IntrinsicHeight(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const Text('Today'),
-                                  const Text('Tomorrow'),
-                                  Text(dayFormatter.format(
-                                      now.add(const Duration(days: 2)))),
-                                  Text(dayFormatter.format(
-                                      now.add(const Duration(days: 3)))),
-                                  Text(dayFormatter.format(
-                                      now.add(const Duration(days: 4)))),
-                                  Text(dayFormatter.format(
-                                      now.add(const Duration(days: 5)))),
-                                  Text(dayFormatter.format(
-                                      now.add(const Duration(days: 6)))),
-                                  const Text('Afterwards')
-                                ],
-                              ),
+    return Scaffold(
+      appBar: AppBar(title: Text(flashcardSet.name)),
+      body: viewModel.upcomingDueFlashcards == null
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(8),
+              children: [
+                CardWithTitleSection(
+                  title: 'Upcoming due flashcards',
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Text('Today'),
+                                const Text('Tomorrow'),
+                                Text(dayFormatter
+                                    .format(now.add(const Duration(days: 2)))),
+                                Text(dayFormatter
+                                    .format(now.add(const Duration(days: 3)))),
+                                Text(dayFormatter
+                                    .format(now.add(const Duration(days: 4)))),
+                                Text(dayFormatter
+                                    .format(now.add(const Duration(days: 5)))),
+                                Text(dayFormatter
+                                    .format(now.add(const Duration(days: 6)))),
+                                const Text('Afterwards')
+                              ],
                             ),
-                            const VerticalDivider(),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(viewModel.upcomingDueFlashcards[0]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[1]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[2]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[3]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[4]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[5]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[6]
-                                      .toString()),
-                                  Text(viewModel.upcomingDueFlashcards[7]
-                                      .toString()),
-                                ],
-                              ),
+                          ),
+                          const VerticalDivider(),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(viewModel.upcomingDueFlashcards![0]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![1]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![2]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![3]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![4]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![5]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![6]
+                                    .toString()),
+                                Text(viewModel.upcomingDueFlashcards![7]
+                                    .toString()),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  _IntervalLength(viewModel.flashcardIntervalCounts),
-                  if (viewModel.challengingFlashcards.isNotEmpty)
-                    const _Challenging(),
-                  SizedBox(height: MediaQuery.of(context).padding.bottom),
-                ],
-              ),
-      ),
+                ),
+                _IntervalLength(viewModel.flashcardIntervalCounts),
+                if (viewModel.challengingFlashcards.isNotEmpty)
+                  const _Challenging(),
+                SizedBox(height: MediaQuery.of(context).padding.bottom),
+              ],
+            ),
     );
   }
 }

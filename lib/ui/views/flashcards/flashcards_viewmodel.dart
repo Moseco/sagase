@@ -12,7 +12,7 @@ import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 
-class FlashcardsViewModel extends BaseViewModel {
+class FlashcardsViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
@@ -27,8 +27,6 @@ class FlashcardsViewModel extends BaseViewModel {
   final List<DictionaryItem> activeFlashcards = [];
   final List<DictionaryItem> dueFlashcards = [];
   final List<DictionaryItem> newFlashcards = [];
-
-  bool get initialLoading => allFlashcards == null;
 
   // Use this bool instead of flashcardSet variable because a spaced
   // repetition set can switch to random when out of due cards
@@ -49,7 +47,8 @@ class FlashcardsViewModel extends BaseViewModel {
     int? randomSeed,
   }) : _random = Random(randomSeed);
 
-  Future<void> initialize() async {
+  @override
+  Future<void> futureToRun() async {
     // If flashcard set timestamp is previous day, reset flashcards completed counts
     if (flashcardSet.timestamp.isDifferentDay(DateTime.now())) {
       flashcardSet.flashcardsCompletedToday = 0;
@@ -63,56 +62,54 @@ class FlashcardsViewModel extends BaseViewModel {
     startMode ??= _sharedPreferencesService.getFlashcardLearningModeEnabled()
         ? FlashcardStartMode.learning
         : FlashcardStartMode.normal;
-    // Load all vocab and kanji and add to maps to avoid duplicates
-    await flashcardSet.predefinedDictionaryListLinks.load();
-    await flashcardSet.myDictionaryListLinks.load();
 
-    Map<int, Vocab> vocabMap = {};
-    Map<String, Kanji> kanjiMap = {};
+    // Add all vocab and kanji ids to maps and then load to prevent duplicates
+    Set<int> vocabSet = {};
+    Set<int> kanjiSet = {};
 
-    // Get predefined list vocab and kanji
-    for (int i = 0;
-        i < flashcardSet.predefinedDictionaryListLinks.length;
-        i++) {
-      await flashcardSet.predefinedDictionaryListLinks
-          .elementAt(i)
-          .vocabLinks
-          .load();
-      await flashcardSet.predefinedDictionaryListLinks
-          .elementAt(i)
-          .kanjiLinks
-          .load();
-
-      for (var vocab in flashcardSet.predefinedDictionaryListLinks
-          .elementAt(i)
-          .vocabLinks) {
-        vocabMap[vocab.id] = vocab;
+    final predefinedLists = await _isarService.getPredefinedDictionaryLists(
+      flashcardSet.predefinedDictionaryLists,
+    );
+    for (var list in predefinedLists) {
+      for (var vocab in list.vocab) {
+        vocabSet.add(vocab);
       }
-      for (var kanji in flashcardSet.predefinedDictionaryListLinks
-          .elementAt(i)
-          .kanjiLinks) {
-        kanjiMap[kanji.kanji] = kanji;
+      for (var kanji in list.kanji) {
+        kanjiSet.add(kanji);
       }
     }
 
-    // Get my list vocab and kanji
-    for (int i = 0; i < flashcardSet.myDictionaryListLinks.length; i++) {
-      await flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks.load();
-      await flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks.load();
-
-      for (var vocab
-          in flashcardSet.myDictionaryListLinks.elementAt(i).vocabLinks) {
-        vocabMap[vocab.id] = vocab;
+    final myLists = await _isarService.getMyDictionaryLists(
+      flashcardSet.myDictionaryLists,
+    );
+    for (var list in myLists) {
+      for (var vocab in list.vocab) {
+        vocabSet.add(vocab);
       }
-      for (var kanji
-          in flashcardSet.myDictionaryListLinks.elementAt(i).kanjiLinks) {
-        kanjiMap[kanji.kanji] = kanji;
+      for (var kanji in list.kanji) {
+        kanjiSet.add(kanji);
       }
     }
 
     // Merge vocab and kanji lists
-    allFlashcards = vocabMap.values.toList().cast<DictionaryItem>() +
-        kanjiMap.values.toList().cast<DictionaryItem>();
+    allFlashcards = (await _isarService.getVocabList(vocabSet.toList()))
+            .cast<DictionaryItem>() +
+        (await _isarService.getKanjiList(kanjiSet.toList()))
+            .cast<DictionaryItem>();
+
+    // If have no flashcards tell user and exit
+    if (allFlashcards!.isEmpty) {
+      await _dialogService.showDialog(
+        title: 'No flashcards',
+        description: 'Add lists to the flashcard set to practice.',
+        buttonTitle: 'Exit',
+        barrierDismissible: true,
+      );
+
+      _navigationService.back();
+
+      return;
+    }
 
     // Go through flashcards and associate flashcards that would have the same front
     if (flashcardSet.frontType == FrontType.japanese) {
@@ -170,19 +167,7 @@ class FlashcardsViewModel extends BaseViewModel {
       _answeringDueFlashcards = true;
     }
 
-    // If have no flashcards tell user and exit
-    if (allFlashcards!.isEmpty) {
-      await _dialogService.showDialog(
-        title: 'No flashcards',
-        description: 'Add lists to the flashcard set to practice.',
-        buttonTitle: 'Exit',
-        barrierDismissible: true,
-      );
-
-      _navigationService.back();
-    } else {
-      await _prepareFlashcards(initial: true);
-    }
+    await _prepareFlashcards(initial: true);
   }
 
   Future<void> answerFlashcard(FlashcardAnswer answer) async {

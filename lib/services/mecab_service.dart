@@ -7,7 +7,6 @@ import 'package:mecab_dart/mecab_dart.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
-import 'package:sagase/utils/string_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class MecabService {

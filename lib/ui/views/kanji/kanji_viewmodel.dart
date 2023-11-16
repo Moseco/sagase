@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
@@ -20,106 +21,126 @@ class KanjiViewModel extends FutureViewModel {
 
   final Kanji kanji;
 
+  bool _inMyLists = false;
+  bool get inMyLists => _inMyLists;
+  StreamSubscription<void>? _myListsWatcher;
+  bool _myListsChanged = false;
+
   bool get strokeDiagramStartExpanded =>
       _sharedPreferencesService.getStrokeDiagramStartExpanded();
+
+  KanjiRadical? kanjiRadical;
+  List<Kanji>? components;
+  List<Vocab>? compoundPreviewList;
 
   KanjiViewModel(this.kanji);
 
   @override
   Future<void> futureToRun() async {
-    await _refreshMyDictionaryListLinks();
-    await kanji.radical.load();
+    _inMyLists = await _isarService.isKanjiInMyDictionaryLists(kanji);
     rebuildUi();
-    await kanji.componentLinks.load();
+    kanjiRadical = await _isarService.getKanjiRadical(kanji.radical);
     rebuildUi();
+    if (kanji.components != null) {
+      components = await _isarService.getKanjiList(
+          kanji.components!.map((e) => e.kanjiCodePoint()).toList());
+      rebuildUi();
+    }
 
     // Load the first 10 compounds
-    for (int i = 0; i < min(10, kanji.compounds.length); i++) {
-      kanji.compounds.elementAt(i);
-    }
-  }
-
-  Future<void> _refreshMyDictionaryListLinks() async {
-    // If my lists have been changed, reload back links
-    if (_isarService.myDictionaryListsChanged) {
-      final newKanji = await _isarService.getKanji(kanji.kanji);
-      kanji.myDictionaryListLinks.clear();
-      kanji.myDictionaryListLinks
-          .addAll(newKanji!.myDictionaryListLinks.toList());
+    if (kanji.compounds != null) {
+      compoundPreviewList = await _isarService.getVocabList(
+          kanji.compounds!.sublist(0, min(10, kanji.compounds!.length)));
       rebuildUi();
     }
   }
 
+  void _startWatcher() {
+    _myListsWatcher ??= _isarService.watchMyDictionaryLists().listen((event) {
+      _myListsChanged = true;
+    });
+  }
+
+  Future<void> _refreshInMyLists() async {
+    if (!_myListsChanged) return;
+
+    _inMyLists = await _isarService.isKanjiInMyDictionaryLists(kanji);
+    _myListsChanged = false;
+
+    rebuildUi();
+  }
+
   Future<void> navigateToKanjiRadical() async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiRadicalView,
-      arguments: KanjiRadicalViewArguments(kanjiRadical: kanji.radical.value!),
+      arguments: KanjiRadicalViewArguments(kanjiRadical: kanjiRadical!),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> navigateToVocab(Vocab vocab) async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.vocabView,
       arguments: VocabViewArguments(vocab: vocab),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> showAllCompounds() async {
+    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiCompoundsView,
       arguments: KanjiCompoundsViewArguments(kanji: kanji),
     );
-    await _refreshMyDictionaryListLinks();
+    await _refreshInMyLists();
   }
 
   Future<void> openMyDictionaryListsSheet() async {
-    if (_isarService.myDictionaryLists == null) {
-      await _isarService.getMyDictionaryLists();
-    }
+    final myDictionaryLists = await _isarService.getAllMyDictionaryLists();
+
     // Create list for bottom sheet
-    List<MyListsBottomSheetItem> list = [];
-    for (int i = 0; i < _isarService.myDictionaryLists!.length; i++) {
-      list.add(
-          MyListsBottomSheetItem(_isarService.myDictionaryLists![i], false));
+    List<MyListsBottomSheetItem> bottomSheetItems = [];
+    for (var myList in myDictionaryLists) {
+      bottomSheetItems.add(MyListsBottomSheetItem(myList, false));
     }
     // Mark lists that the kanji is in and move them to the top
-    for (int i = 0; i < kanji.myDictionaryListLinks.length; i++) {
-      for (int j = 0; j < list.length; j++) {
-        if (kanji.myDictionaryListLinks.elementAt(i).id == list[j].list.id) {
-          list[j].enabled = true;
-          final temp = list.removeAt(j);
-          list.insert(0, temp);
-          break;
-        }
+    for (int i = 0; i < bottomSheetItems.length; i++) {
+      if (bottomSheetItems[i].list.kanji.contains(kanji.id)) {
+        bottomSheetItems[i].enabled = true;
+        bottomSheetItems.insert(0, bottomSheetItems.removeAt(i));
       }
     }
 
     await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.assignMyListsBottom,
-      data: list,
+      data: bottomSheetItems,
     );
 
-    for (int i = 0; i < list.length; i++) {
-      if (!list[i].changed) continue;
-      if (list[i].enabled) {
-        await _isarService.addKanjiToMyDictionaryList(list[i].list, kanji);
+    _inMyLists = false;
+    for (int i = 0; i < bottomSheetItems.length; i++) {
+      if (bottomSheetItems[i].enabled) _inMyLists = true;
+      if (!bottomSheetItems[i].changed) continue;
+      if (bottomSheetItems[i].enabled) {
+        await _isarService.addKanjiToMyDictionaryList(
+            bottomSheetItems[i].list, kanji);
       } else {
-        await _isarService.removeKanjiFromMyDictionaryList(list[i].list, kanji);
+        await _isarService.removeKanjiFromMyDictionaryList(
+            bottomSheetItems[i].list, kanji);
       }
     }
 
-    // Reload back links
-    await _refreshMyDictionaryListLinks();
+    rebuildUi();
   }
 
   void copyKanji() {
@@ -132,5 +153,11 @@ class KanjiViewModel extends FutureViewModel {
 
   void setStrokeDiagramStartExpanded(bool value) {
     _sharedPreferencesService.setStrokeDiagramStartExpanded(value);
+  }
+
+  @override
+  void dispose() {
+    _myListsWatcher?.cancel();
+    super.dispose();
   }
 }

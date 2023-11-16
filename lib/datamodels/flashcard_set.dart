@@ -22,8 +22,8 @@ class FlashcardSet {
   int flashcardsCompletedToday = 0;
   int newFlashcardsCompletedToday = 0;
 
-  final predefinedDictionaryListLinks = IsarLinks<PredefinedDictionaryList>();
-  final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
+  List<int> predefinedDictionaryLists = [];
+  List<int> myDictionaryLists = [];
 
   String toBackupJson() {
     return '''{
@@ -40,12 +40,11 @@ class FlashcardSet {
       "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
       "${SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
       "${SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
-      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": ${predefinedDictionaryListLinks.map((e) => e.id).toList()},
-      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": ${myDictionaryListLinks.map((e) => e.id).toList()}
+      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": $predefinedDictionaryLists,
+      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": $myDictionaryLists
 }''';
   }
 
-  // IsarLinks must be added manually afterwards
   static FlashcardSet fromBackupJson(Map<String, dynamic> map) {
     return FlashcardSet()
       ..id = map[SagaseDictionaryConstants.backupFlashcardSetId]
@@ -73,7 +72,13 @@ class FlashcardSet {
       ..flashcardsCompletedToday = map[
           SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday]
       ..newFlashcardsCompletedToday = map[SagaseDictionaryConstants
-          .backupFlashcardSetNewFlashcardsCompletedToday];
+          .backupFlashcardSetNewFlashcardsCompletedToday]
+      ..predefinedDictionaryLists = map[SagaseDictionaryConstants
+              .backupFlashcardSetPredefinedDictionaryLists]
+          .cast<int>()
+      ..myDictionaryLists =
+          map[SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists]
+              .cast<int>();
   }
 }
 

@@ -33,7 +33,7 @@ void main() {
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was called correctly
       verify(navigationService.back());
@@ -57,16 +57,19 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '3']
         ];
       final kanji1 = Kanji()
-        ..id = 1
-        ..kanji = '1'
+        ..id = 'a'.kanjiCodePoint()
+        ..kanji = 'a'
+        ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 2
-        ..kanji = '2'
+        ..id = 'b'.kanjiCodePoint()
+        ..kanji = 'b'
+        ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 3
-        ..kanji = '3'
+        ..id = 'c'.kanjiCodePoint()
+        ..kanji = 'c'
+        ..radical = 'c'
         ..strokeCount = 0;
       await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -80,38 +83,28 @@ void main() {
 
       // Create dictionary lists to use
       // Overlap between lists is on purpose
-      await isarService.createMyDictionaryList('list1');
-      await isarService.createMyDictionaryList('list2');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![1], vocab2);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![1], vocab3);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji1);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji2);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![1], kanji2);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![1], kanji3);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      final list2 = await isarService.createMyDictionaryList('list2');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
+      await isarService.addVocabToMyDictionaryList(list2, vocab2);
+      await isarService.addVocabToMyDictionaryList(list2, vocab3);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji1);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji2);
+      await isarService.addKanjiToMyDictionaryList(list2, kanji2);
+      await isarService.addKanjiToMyDictionaryList(list2, kanji3);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [
-            isarService.myDictionaryLists![0],
-            isarService.myDictionaryLists![1]
-          ]);
+      flashcardSet.myDictionaryLists.add(list1.id);
+      flashcardSet.myDictionaryLists.add(list2.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -187,16 +180,19 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '3']
         ];
       final kanji1 = Kanji()
-        ..id = 1
-        ..kanji = '1'
+        ..id = 'a'.kanjiCodePoint()
+        ..kanji = 'a'
+        ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 2
-        ..kanji = '2'
+        ..id = 'b'.kanjiCodePoint()
+        ..kanji = 'b'
+        ..radical = 'b'
         ..strokeCount = 0;
       final kanji3 = Kanji()
-        ..id = 3
-        ..kanji = '3'
+        ..id = 'c'.kanjiCodePoint()
+        ..kanji = 'c'
+        ..radical = 'c'
         ..strokeCount = 0;
       await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -210,40 +206,29 @@ void main() {
 
       // Create dictionary lists to use
       // Overlap between lists is on purpose
-      await isarService.createMyDictionaryList('list1');
-      await isarService.createMyDictionaryList('list2');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![1], vocab2);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![1], vocab3);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji1);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji2);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![1], kanji2);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![1], kanji3);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      final list2 = await isarService.createMyDictionaryList('list2');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
+      await isarService.addVocabToMyDictionaryList(list2, vocab2);
+      await isarService.addVocabToMyDictionaryList(list2, vocab3);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji1);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji2);
+      await isarService.addKanjiToMyDictionaryList(list2, kanji2);
+      await isarService.addKanjiToMyDictionaryList(list2, kanji3);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
+      flashcardSet.myDictionaryLists.add(list2.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [
-            isarService.myDictionaryLists![0],
-            isarService.myDictionaryLists![1]
-          ]);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -323,22 +308,20 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -366,7 +349,7 @@ void main() {
 
       // Recreate the viewmodel (as if user exits and returns to a new session)
       viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -413,22 +396,20 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -557,21 +538,20 @@ void main() {
       });
 
       // Create dictionary list to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
 
       // Create flashcard set and assign list
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
       getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -648,24 +628,19 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab3);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
+      await isarService.addVocabToMyDictionaryList(list1, vocab3);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -740,12 +715,14 @@ void main() {
           KanjiReadingPair()..readings = [VocabReading()..reading = '2']
         ];
       final kanji1 = Kanji()
-        ..id = 1
-        ..kanji = '1'
+        ..id = 'a'.kanjiCodePoint()
+        ..kanji = 'a'
+        ..radical = 'a'
         ..strokeCount = 0;
       final kanji2 = Kanji()
-        ..id = 2
-        ..kanji = '2'
+        ..id = 'b'.kanjiCodePoint()
+        ..kanji = 'b'
+        ..radical = 'b'
         ..strokeCount = 0;
       await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -756,28 +733,23 @@ void main() {
       });
 
       // Create dictionary list to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji1);
-      await isarService.addKanjiToMyDictionaryList(
-          isarService.myDictionaryLists![0], kanji2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji1);
+      await isarService.addKanjiToMyDictionaryList(list1, kanji2);
 
       // Create flashcard set and assign list
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.usingSpacedRepetition = false;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
 
       final navigationService = getAndRegisterNavigationService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -835,23 +807,21 @@ void main() {
       });
 
       // Create dictionary list to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
 
       // Create flashcard set and assign list
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.usingSpacedRepetition = false;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
 
       final navigationService = getAndRegisterNavigationService();
       getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -896,25 +866,22 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 20; i++) {
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], Vocab()..id = i);
+        await isarService.addVocabToMyDictionaryList(list1, Vocab()..id = i);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       final navigationService = getAndRegisterNavigationService();
       getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -1010,27 +977,23 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (int i = 0; i < 20; i++) {
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], Vocab()..id = i);
+        await isarService.addVocabToMyDictionaryList(list1, Vocab()..id = i);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       final navigationService = getAndRegisterNavigationService();
       getAndRegisterDialogService(dialogResponseConfirmed: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Verify that back was not called
       verifyNever(navigationService.back());
@@ -1142,22 +1105,18 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1218,24 +1177,19 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1285,20 +1239,17 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1363,22 +1314,18 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
       flashcardSet.frontType = FrontType.english;
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1452,20 +1399,17 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1504,20 +1448,17 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1572,18 +1513,14 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
@@ -1591,7 +1528,7 @@ void main() {
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition with learning mode enabled
       expect(viewModel.usingSpacedRepetition, true);
@@ -1638,14 +1575,12 @@ void main() {
 
     test('Flashcard start in learning mode', () async {
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(
@@ -1653,7 +1588,7 @@ void main() {
         FlashcardStartMode.learning,
         randomSeed: 123,
       );
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition with learning mode enabled
       expect(viewModel.usingSpacedRepetition, true);
@@ -1687,18 +1622,14 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab1);
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab2);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab1);
+      await isarService.addVocabToMyDictionaryList(list1, vocab2);
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(
@@ -1706,7 +1637,7 @@ void main() {
         FlashcardStartMode.skip,
         randomSeed: 123,
       );
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition with learning mode enabled
       expect(viewModel.usingSpacedRepetition, true);
@@ -1720,14 +1651,12 @@ void main() {
 
     test('Flashcard start in normal mode with learning mode enabled', () async {
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
@@ -1739,7 +1668,7 @@ void main() {
         FlashcardStartMode.normal,
         randomSeed: 123,
       );
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition with learning mode enabled
       expect(viewModel.usingSpacedRepetition, true);
@@ -1781,18 +1710,15 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (var vocab in vocabs) {
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(newFlashcardsPerDay: 4);
@@ -1803,7 +1729,7 @@ void main() {
         FlashcardStartMode.learning,
         randomSeed: 123,
       );
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition with learning mode enabled
       expect(viewModel.usingSpacedRepetition, true);
@@ -1828,7 +1754,7 @@ void main() {
         FlashcardStartMode.learning,
         randomSeed: 123,
       );
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Flashcard contents
       expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
@@ -1875,25 +1801,22 @@ void main() {
       });
 
       // Create dictionary lists to use
-      await isarService.createMyDictionaryList('list1');
+      final list1 = await isarService.createMyDictionaryList('list1');
       for (var vocab in vocabs) {
-        await isarService.addVocabToMyDictionaryList(
-            isarService.myDictionaryLists![0], vocab);
+        await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
 
       // Create flashcard set and assign lists
       final flashcardSet = await isarService.createFlashcardSet('name');
-      await isarService.addDictionaryListsToFlashcardSet(
-        flashcardSet,
-        myDictionaryLists: [isarService.myDictionaryLists![0]],
-      );
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(flashcardDistance: 5);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);
@@ -1929,15 +1852,13 @@ void main() {
       });
 
       // Create dictionary list to use
-      await isarService.createMyDictionaryList('list1');
-      await isarService.addVocabToMyDictionaryList(
-          isarService.myDictionaryLists![0], vocab);
+      final list1 = await isarService.createMyDictionaryList('list1');
+      await isarService.addVocabToMyDictionaryList(list1, vocab);
 
       // Create flashcard set and assign list
       final flashcardSet = await isarService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(list1.id);
       await isarService.updateFlashcardSet(flashcardSet);
-      await isarService.addDictionaryListsToFlashcardSet(flashcardSet,
-          myDictionaryLists: [isarService.myDictionaryLists![0]]);
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
@@ -1945,7 +1866,7 @@ void main() {
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.initialize();
+      await viewModel.futureToRun();
 
       // Using spaced repetition
       expect(viewModel.usingSpacedRepetition, true);

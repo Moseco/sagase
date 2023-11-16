@@ -377,6 +377,8 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
   Widget build(BuildContext context, ListsViewModel viewModel) {
     if (viewModel.myDictionaryLists == null) {
       return const Center(child: CircularProgressIndicator());
+    } else if (viewModel.myDictionaryLists!.isEmpty) {
+      return const _NoMyLists();
     } else {
       return ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -390,6 +392,33 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
         },
       );
     }
+  }
+}
+
+class _NoMyLists extends ViewModelWidget<ListsViewModel> {
+  const _NoMyLists({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'You have no my lists. Try creating one to save important vocab and kanji.',
+              textAlign: TextAlign.center,
+            ),
+            TextButton.icon(
+              onPressed: viewModel.createMyDictionaryList,
+              icon: const Icon(Icons.add),
+              label: const Text('Create'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

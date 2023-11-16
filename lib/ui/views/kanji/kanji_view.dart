@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -28,11 +26,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
         actions: [
           IconButton(
             onPressed: viewModel.openMyDictionaryListsSheet,
-            icon: Icon(
-              kanji.myDictionaryListLinks.isEmpty
-                  ? Icons.star_border
-                  : Icons.star,
-            ),
+            icon: Icon(viewModel.inMyLists ? Icons.star : Icons.star_border),
           ),
         ],
       ),
@@ -237,16 +231,16 @@ class KanjiView extends StackedView<KanjiViewModel> {
                 title: 'Radical',
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: kanji.radical.isLoaded
+                  child: viewModel.kanjiRadical != null
                       ? _KanjiRadicalItem(
-                          radical: kanji.radical.value!,
+                          radical: viewModel.kanjiRadical!,
                           onPressed: viewModel.navigateToKanjiRadical,
                         )
                       : const ListItemLoading(showLeading: true),
                 ),
               ),
             ),
-            if (kanji.componentLinks.isNotEmpty)
+            if (kanji.components != null)
               SelectionContainer.disabled(
                 child: CardWithTitleSection(
                   title: 'Other components',
@@ -254,12 +248,12 @@ class KanjiView extends StackedView<KanjiViewModel> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Column(
                       children: List.generate(
-                        kanji.componentLinks.length,
-                        (index) => kanji.componentLinks.isLoaded
+                        kanji.components!.length,
+                        (index) => viewModel.components != null
                             ? KanjiListItem(
-                                kanji: kanji.componentLinks.elementAt(index),
+                                kanji: viewModel.components![index],
                                 onPressed: () => viewModel.navigateToKanji(
-                                  kanji.componentLinks.elementAt(index),
+                                  viewModel.components![index],
                                 ),
                               )
                             : const ListItemLoading(showLeading: true),
@@ -268,7 +262,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                   ),
                 ),
               ),
-            if (kanji.compounds.isNotEmpty) const _Compounds(),
+            if (kanji.compounds != null) const _Compounds(),
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
@@ -343,29 +337,30 @@ class _Compounds extends ViewModelWidget<KanjiViewModel> {
 
   @override
   Widget build(BuildContext context, KanjiViewModel viewModel) {
-    List<Widget> children = [
-      viewModel.isBusy
-          ? const ListItemLoading(showLeading: true)
-          : VocabListItem(
-              vocab: viewModel.kanji.compounds.elementAt(0),
-              onPressed: () => viewModel
-                  .navigateToVocab(viewModel.kanji.compounds.elementAt(0))),
-    ];
+    late List<Widget> children;
+    if (viewModel.compoundPreviewList == null) {
+      children = [const ListItemLoading(showLeading: true)];
+    } else {
+      children = [
+        VocabListItem(
+            vocab: viewModel.compoundPreviewList![0],
+            onPressed: () =>
+                viewModel.navigateToVocab(viewModel.compoundPreviewList![0])),
+      ];
 
-    for (int i = 1; i < min(viewModel.kanji.compounds.length, 10); i++) {
-      children.addAll([
-        const Divider(
-          height: 1,
-          indent: 8,
-          endIndent: 8,
-        ),
-        viewModel.isBusy
-            ? const ListItemLoading(showLeading: true)
-            : VocabListItem(
-                vocab: viewModel.kanji.compounds.elementAt(i),
-                onPressed: () => viewModel
-                    .navigateToVocab(viewModel.kanji.compounds.elementAt(i))),
-      ]);
+      for (int i = 1; i < viewModel.compoundPreviewList!.length; i++) {
+        children.addAll([
+          const Divider(
+            height: 1,
+            indent: 8,
+            endIndent: 8,
+          ),
+          VocabListItem(
+              vocab: viewModel.compoundPreviewList![i],
+              onPressed: () =>
+                  viewModel.navigateToVocab(viewModel.compoundPreviewList![i])),
+        ]);
+      }
     }
 
     return SelectionContainer.disabled(
@@ -377,10 +372,11 @@ class _Compounds extends ViewModelWidget<KanjiViewModel> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(children: children),
             ),
-            if (viewModel.kanji.compounds.length > 10)
+            if (viewModel.compoundPreviewList != null &&
+                viewModel.kanji.compounds!.length > 10)
               TextButton(
                 onPressed: viewModel.showAllCompounds,
-                child: Text('Show all ${viewModel.kanji.compounds.length}'),
+                child: Text('Show all ${viewModel.kanji.compounds!.length}'),
               ),
           ],
         ),
