@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -46,7 +47,7 @@ class ListsViewModel extends BaseViewModel {
     _navigationService.navigateToView(
       ListsView(selection: selection),
       id: nestedNavigationKey,
-      popGesture: true,
+      popGesture: Platform.isIOS,
       preventDuplicates: false,
     );
   }
