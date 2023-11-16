@@ -5,7 +5,7 @@ import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class KanjiRadicalsViewModel extends BaseViewModel {
+class KanjiRadicalsViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
 
@@ -14,20 +14,17 @@ class KanjiRadicalsViewModel extends BaseViewModel {
   RadicalSorting _radicalSorting = RadicalSorting.all;
   RadicalSorting get radicalSorting => _radicalSorting;
 
-  KanjiRadicalsViewModel() {
-    _getRadicals();
-  }
-
-  Future<void> _getRadicals() async {
+  @override
+  Future<void> futureToRun() async {
     kanjiRadicals = await _isarService.getAllKanjiRadicals();
-    notifyListeners();
+    rebuildUi();
   }
 
   Future<void> handleSortingChanged(RadicalSorting sorting) async {
     if (_radicalSorting == sorting) return;
     _radicalSorting = sorting;
     kanjiRadicals = null;
-    notifyListeners();
+    rebuildUi();
     switch (_radicalSorting) {
       case RadicalSorting.all:
         kanjiRadicals = await _isarService.getAllKanjiRadicals();
@@ -40,7 +37,7 @@ class KanjiRadicalsViewModel extends BaseViewModel {
         break;
     }
 
-    notifyListeners();
+    rebuildUi();
   }
 
   Future<void> openKanjiRadical(KanjiRadical kanjiRadical) async {

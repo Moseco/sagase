@@ -6,53 +6,54 @@ import 'package:stacked/stacked.dart';
 
 import 'kanji_radicals_viewmodel.dart';
 
-class KanjiRadicalsView extends StatelessWidget {
+class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
   const KanjiRadicalsView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<KanjiRadicalsViewModel>.reactive(
-      viewModelBuilder: () => KanjiRadicalsViewModel(),
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Radicals'),
-          actions: [
-            PopupMenuButton<RadicalSorting>(
-              onSelected: viewModel.handleSortingChanged,
-              itemBuilder: (context) => [
-                CheckedPopupMenuItem<RadicalSorting>(
-                  value: RadicalSorting.all,
-                  checked: viewModel.radicalSorting == RadicalSorting.all,
-                  child: const Text('All radicals'),
-                ),
-                CheckedPopupMenuItem<RadicalSorting>(
-                  value: RadicalSorting.classic,
-                  checked: viewModel.radicalSorting == RadicalSorting.classic,
-                  child: const Text('Classic 214 radicals'),
-                ),
-                CheckedPopupMenuItem<RadicalSorting>(
-                  value: RadicalSorting.important,
-                  checked: viewModel.radicalSorting == RadicalSorting.important,
-                  child: const Text('Important radicals'),
-                ),
-              ],
-            ),
-          ],
-        ),
-        body: viewModel.kanjiRadicals == null
-            ? Container()
-            : CustomScrollView(
-                slivers: viewModel.radicalSorting == RadicalSorting.important
-                    ? _getRadicalListByImportance(
-                        context,
-                        viewModel.kanjiRadicals!,
-                      )
-                    : _getRadicalListByStrokeCount(
-                        context,
-                        viewModel.kanjiRadicals!,
-                      ),
+  KanjiRadicalsViewModel viewModelBuilder(context) => KanjiRadicalsViewModel();
+
+  @override
+  Widget builder(context, viewModel, child) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Radicals'),
+        actions: [
+          PopupMenuButton<RadicalSorting>(
+            onSelected: viewModel.handleSortingChanged,
+            itemBuilder: (context) => [
+              CheckedPopupMenuItem<RadicalSorting>(
+                value: RadicalSorting.all,
+                checked: viewModel.radicalSorting == RadicalSorting.all,
+                child: const Text('All radicals'),
               ),
+              CheckedPopupMenuItem<RadicalSorting>(
+                value: RadicalSorting.classic,
+                checked: viewModel.radicalSorting == RadicalSorting.classic,
+                child: const Text('Classic 214 radicals'),
+              ),
+              CheckedPopupMenuItem<RadicalSorting>(
+                value: RadicalSorting.important,
+                checked: viewModel.radicalSorting == RadicalSorting.important,
+                child: const Text('Important radicals'),
+              ),
+            ],
+          ),
+        ],
       ),
+      body: viewModel.kanjiRadicals == null
+          ? Container()
+          : CustomScrollView(
+              key: UniqueKey(),
+              slivers: viewModel.radicalSorting == RadicalSorting.important
+                  ? _getRadicalListByImportance(
+                      context,
+                      viewModel.kanjiRadicals!,
+                    )
+                  : _getRadicalListByStrokeCount(
+                      context,
+                      viewModel.kanjiRadicals!,
+                    ),
+            ),
     );
   }
 
