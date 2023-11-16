@@ -22,9 +22,6 @@ class FlashcardSet {
   int flashcardsCompletedToday = 0;
   int newFlashcardsCompletedToday = 0;
 
-  // Temporarily include both links and new lists for transition
-  final predefinedDictionaryListLinks = IsarLinks<PredefinedDictionaryList>();
-  final myDictionaryListLinks = IsarLinks<MyDictionaryList>();
   List<int> predefinedDictionaryLists = [];
   List<int> myDictionaryLists = [];
 
@@ -43,12 +40,11 @@ class FlashcardSet {
       "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
       "${SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
       "${SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
-      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": ${(predefinedDictionaryListLinks.map((e) => e.id).toSet()..addAll(predefinedDictionaryLists)).toList()},
-      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": ${(myDictionaryListLinks.map((e) => e.id).toSet()..addAll(myDictionaryLists)).toList()}
+      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": $predefinedDictionaryLists,
+      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": $myDictionaryLists
 }''';
   }
 
-  // IsarLinks must be added manually afterwards
   static FlashcardSet fromBackupJson(Map<String, dynamic> map) {
     return FlashcardSet()
       ..id = map[SagaseDictionaryConstants.backupFlashcardSetId]

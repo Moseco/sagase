@@ -869,8 +869,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5c470b9"
-      resolved-ref: "5c470b99f2e262ca6149dec2bb41ef64243390bc"
+      ref: "61f0a60"
+      resolved-ref: "61f0a60b50c7c32511a415b2f94997df3cd776b9"
       url: "https://github.com/Moseco/sagase_dictionary"
     source: git
     version: "1.0.0"

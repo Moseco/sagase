@@ -954,8 +954,6 @@ class IsarService {
     List<String> myDictionaryListBackups = [];
     final myLists = await getAllMyDictionaryLists();
     for (var myList in myLists) {
-      await myList.vocabLinks.load();
-      await myList.kanjiLinks.load();
       myDictionaryListBackups.add(myList.toBackupJson());
     }
 
@@ -963,8 +961,6 @@ class IsarService {
     List<String> flashcardSetBackups = [];
     final flashcardSets = await getFlashcardSets();
     for (var flashcardSet in flashcardSets) {
-      await flashcardSet.predefinedDictionaryListLinks.load();
-      await flashcardSet.myDictionaryListLinks.load();
       flashcardSetBackups.add(flashcardSet.toBackupJson());
     }
 
