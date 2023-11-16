@@ -1,6 +1,7 @@
 const int nestedNavigationKey = 1;
 
 final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
+final onlyFullWidthRomajiRegExp = RegExp(r'^[\uff01-\uff5e]+$');
 
 const keyOnboardingFinished = 'onboarding_finished';
 const keyInitialCorrectInterval = 'initial_correct_interval';

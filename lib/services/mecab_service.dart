@@ -8,6 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 
 class MecabService {
   static const List<String> mecabFiles = [
@@ -200,7 +201,10 @@ class MecabService {
             // Get non-kana writing and reading then cut from writing and reading strings
             rubyTextPairs.add(RubyTextPair(
               writing: writing.substring(0, kanaStartingPosition),
-              reading: reading.substring(0, position),
+              reading: _getReading(
+                writing.substring(0, kanaStartingPosition),
+                reading.substring(0, position),
+              ),
             ));
             writing = writing.substring(kanaStartingPosition);
             reading = reading.substring(position);
@@ -208,7 +212,7 @@ class MecabService {
             // Could not find non-kana reading, add remaining and return
             rubyTextPairs.add(RubyTextPair(
               writing: writing,
-              reading: reading,
+              reading: _getReading(writing, reading),
             ));
             return rubyTextPairs;
           }
@@ -231,7 +235,7 @@ class MecabService {
       if (kanaStartingPosition == null) {
         rubyTextPairs.add(RubyTextPair(
           writing: writing,
-          reading: reading,
+          reading: _getReading(writing, reading),
         ));
       } else {
         // There is mixed kana and non-kana
@@ -245,13 +249,16 @@ class MecabService {
             // Get non-kana writing and reading
             rubyTextPairs.add(RubyTextPair(
               writing: writing.substring(0, kanaStartingPosition),
-              reading: reading.substring(0, position),
+              reading: _getReading(
+                writing.substring(0, kanaStartingPosition),
+                reading.substring(0, position),
+              ),
             ));
           } else {
             // Could not find non-kana reading, add remaining and return
             rubyTextPairs.add(RubyTextPair(
               writing: writing,
-              reading: reading,
+              reading: _getReading(writing, reading),
             ));
             return rubyTextPairs;
           }
@@ -280,5 +287,14 @@ class MecabService {
     }
 
     return rubyTextPairs;
+  }
+
+  String _getReading(String writing, String reading) {
+    // If writing is full width romaji, convert the reading to katakana
+    if (constants.onlyFullWidthRomajiRegExp.hasMatch(writing)) {
+      return _kanaKit.toKatakana(reading);
+    } else {
+      return reading;
+    }
   }
 }

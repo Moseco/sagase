@@ -84,6 +84,17 @@ void main() {
       expect(pairs[1].writing, '引');
       expect(pairs[1].reading, 'び');
       expect(pairs[2].writing, 'き');
+
+      pairs = service.createRubyTextPairs('ＰＡＳＭＯ', 'ぱすも');
+      expect(pairs.length, 1);
+      expect(pairs[0].writing, 'ＰＡＳＭＯ');
+      expect(pairs[0].reading, 'パスモ');
+
+      pairs = service.createRubyTextPairs('ＩＣカード', 'あいしいかあど');
+      expect(pairs.length, 2);
+      expect(pairs[0].writing, 'ＩＣ');
+      expect(pairs[0].reading, 'アイシイ');
+      expect(pairs[1].writing, 'カード');
     });
 
     test('createRubyTextPairs katakana reading', () {
@@ -165,6 +176,17 @@ void main() {
       expect(pairs[1].writing, '引');
       expect(pairs[1].reading, 'び');
       expect(pairs[2].writing, 'き');
+
+      pairs = service.createRubyTextPairs('ＰＡＳＭＯ', 'パスモ');
+      expect(pairs.length, 1);
+      expect(pairs[0].writing, 'ＰＡＳＭＯ');
+      expect(pairs[0].reading, 'パスモ');
+
+      pairs = service.createRubyTextPairs('ＩＣカード', 'アイシーカード');
+      expect(pairs.length, 2);
+      expect(pairs[0].writing, 'ＩＣ');
+      expect(pairs[0].reading, 'アイシイ');
+      expect(pairs[1].writing, 'カード');
     });
 
     test('createRubyTextPairs mismatched writing and reading', () {
