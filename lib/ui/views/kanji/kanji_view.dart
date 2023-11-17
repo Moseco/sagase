@@ -62,9 +62,11 @@ class KanjiView extends StackedView<KanjiViewModel> {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: kanji.grade != 255
-                                      ? kanji.grade.toString()
-                                      : '—',
+                                  text: switch (kanji.grade) {
+                                    255 => '—',
+                                    8 => '7-9',
+                                    _ => kanji.grade.toString(),
+                                  },
                                 ),
                                 const TextSpan(
                                   text: '\nGrade',
