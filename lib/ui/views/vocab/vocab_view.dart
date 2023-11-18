@@ -64,7 +64,7 @@ class VocabView extends StackedView<VocabViewModel> {
 class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
   final List<KanjiReadingPair> pairs;
 
-  const _KanjiReadingPairs(this.pairs, {Key? key}) : super(key: key);
+  const _KanjiReadingPairs(this.pairs);
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
@@ -336,8 +336,7 @@ class _RubyTextWrapper extends StatelessWidget {
   const _RubyTextWrapper({
     required this.pairs,
     this.fontSize,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -359,7 +358,7 @@ class _RubyTextWrapper extends StatelessWidget {
 }
 
 class _Definitions extends ViewModelWidget<VocabViewModel> {
-  const _Definitions({Key? key}) : super(key: key, reactive: false);
+  const _Definitions() : super(reactive: false);
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
@@ -577,7 +576,8 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
 }
 
 class _KanjiList extends ViewModelWidget<VocabViewModel> {
-  const _KanjiList({Key? key}) : super(key: key);
+  const _KanjiList();
+
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
     return SelectionContainer.disabled(
@@ -627,7 +627,8 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
 }
 
 class _Examples extends ViewModelWidget<VocabViewModel> {
-  const _Examples({Key? key}) : super(key: key, reactive: false);
+  const _Examples() : super(reactive: false);
+
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
     List<Widget> children = [];
@@ -717,7 +718,8 @@ class _Examples extends ViewModelWidget<VocabViewModel> {
 }
 
 class _Conjugations extends ViewModelWidget<VocabViewModel> {
-  const _Conjugations({Key? key}) : super(key: key, reactive: false);
+  const _Conjugations() : super(reactive: false);
+
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
     List<TableRow> rows = [

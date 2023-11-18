@@ -9,8 +9,8 @@ class FlashcardStartDialog extends StatelessWidget {
   const FlashcardStartDialog({
     required this.request,
     required this.completer,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

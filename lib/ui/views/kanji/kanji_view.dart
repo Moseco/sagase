@@ -280,8 +280,7 @@ class _KanjiRadicalItem extends StatelessWidget {
   const _KanjiRadicalItem({
     required this.radical,
     required this.onPressed,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -335,7 +334,7 @@ class _KanjiRadicalItem extends StatelessWidget {
 }
 
 class _Compounds extends ViewModelWidget<KanjiViewModel> {
-  const _Compounds({Key? key}) : super(key: key);
+  const _Compounds();
 
   @override
   Widget build(BuildContext context, KanjiViewModel viewModel) {

@@ -171,10 +171,7 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
 class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
   final KanjiRadical radical;
 
-  const _KanjiRadicalItem(
-    this.radical, {
-    Key? key,
-  }) : super(key: key);
+  const _KanjiRadicalItem(this.radical);
 
   @override
   Widget build(BuildContext context, KanjiRadicalsViewModel viewModel) {

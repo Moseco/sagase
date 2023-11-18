@@ -4,7 +4,7 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 class KanjiRadicalPositionImage extends StatelessWidget {
   final KanjiRadicalPosition position;
 
-  const KanjiRadicalPositionImage(this.position, {Key? key}) : super(key: key);
+  const KanjiRadicalPositionImage(this.position, {super.key});
 
   @override
   Widget build(BuildContext context) {

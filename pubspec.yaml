@@ -32,7 +32,7 @@ dependencies:
   settings_ui: ^2.0.2
   flip_card: ^0.7.0
   keyboard_actions: ^4.2.0
-  fl_chart: ^0.63.0
+  fl_chart: ^0.64.0
   flutter_svg: ^2.0.7
   flutter_sticky_header: ^0.6.5
   shimmer: ^3.0.0
@@ -48,8 +48,8 @@ dependencies:
     git:
       url: https://github.com/Moseco/kana_kit
   async: ^2.11.0
-  archive: ^3.4.2
-  google_mlkit_digital_ink_recognition: ^0.9.0
+  archive: ^3.4.9
+  google_mlkit_digital_ink_recognition: ^0.10.0
   intl: ^0.18.1
   shared_preferences: ^2.2.0
   mecab_dart: ^0.1.6
@@ -58,18 +58,14 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '66d11b4'
+      ref: '015d835'
   url_launcher: ^6.1.12
   dio: ^5.3.3
-
-# Temporary override because of dependency from sagase_dictionary
-dependency_overrides:
-  xml: "6.3.0"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.2
+  flutter_lints: ^3.0.1
 
   build_runner: any
   stacked_generator: ^1.4.0

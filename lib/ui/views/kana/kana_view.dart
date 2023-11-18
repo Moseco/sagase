@@ -242,8 +242,7 @@ class _GridItem extends StatelessWidget {
     this.kana,
     this.romaji, {
     this.obsolete = false,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

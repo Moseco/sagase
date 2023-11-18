@@ -4,7 +4,7 @@ import 'package:stacked/stacked.dart';
 import 'dev_viewmodel.dart';
 
 class DevView extends StatelessWidget {
-  const DevView({Key? key}) : super(key: key);
+  const DevView({super.key});
 
   @override
   Widget build(BuildContext context) {

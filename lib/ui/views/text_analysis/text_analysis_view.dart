@@ -21,7 +21,7 @@ class TextAnalysisView extends StackedView<TextAnalysisViewModel> {
 }
 
 class _Body extends StackedHookView<TextAnalysisViewModel> {
-  const _Body({Key? key}) : super(key: key);
+  const _Body();
 
   @override
   Widget builder(BuildContext context, TextAnalysisViewModel viewModel) {
@@ -70,7 +70,7 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
 class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
   final TextEditingController controller;
 
-  const _Editing(this.controller, {Key? key}) : super(key: key);
+  const _Editing(this.controller);
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
@@ -112,7 +112,7 @@ class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
 }
 
 class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
-  const _Analysis({Key? key}) : super(key: key);
+  const _Analysis();
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {

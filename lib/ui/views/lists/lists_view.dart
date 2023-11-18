@@ -396,7 +396,7 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
 }
 
 class _NoMyLists extends ViewModelWidget<ListsViewModel> {
-  const _NoMyLists({Key? key}) : super(key: key);
+  const _NoMyLists();
 
   @override
   Widget build(BuildContext context, ListsViewModel viewModel) {
@@ -433,9 +433,7 @@ class _MainListItem extends StatelessWidget {
     this.leadingIcon,
     required this.titleText,
     required this.onTap,
-    Key? key,
-  })  : assert(leadingText != null || leadingIcon != null),
-        super(key: key);
+  })  : assert(leadingText != null || leadingIcon != null);
 
   @override
   Widget build(BuildContext context) {
@@ -497,8 +495,7 @@ class _DictionaryListItem extends StatelessWidget {
     required this.text,
     required this.onTap,
     this.isFolder = false,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

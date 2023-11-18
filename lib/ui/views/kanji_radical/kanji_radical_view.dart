@@ -289,7 +289,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
 }
 
 class _KanjiUsage extends ViewModelWidget<KanjiRadicalViewModel> {
-  const _KanjiUsage({Key? key}) : super(key: key);
+  const _KanjiUsage();
 
   @override
   Widget build(BuildContext context, KanjiRadicalViewModel viewModel) {

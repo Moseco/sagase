@@ -9,8 +9,8 @@ class AssignListsBottomSheet extends StatefulWidget {
   const AssignListsBottomSheet({
     required this.request,
     required this.completer,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AssignListsBottomSheet> createState() => AssignListsBottomSheetState();

@@ -62,7 +62,7 @@ class LearningView extends StackedView<LearningViewModel> {
 }
 
 class _Loading extends StatelessWidget {
-  const _Loading({Key? key}) : super(key: key);
+  const _Loading();
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class _Loading extends StatelessWidget {
 }
 
 class _NoFlashcards extends ViewModelWidget<LearningViewModel> {
-  const _NoFlashcards({Key? key}) : super(key: key);
+  const _NoFlashcards();
 
   @override
   Widget build(BuildContext context, LearningViewModel viewModel) {
@@ -118,7 +118,7 @@ class _NoFlashcards extends ViewModelWidget<LearningViewModel> {
 class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
   final FlashcardSet flashcardSet;
 
-  const _FlashcardSet(this.flashcardSet, {Key? key}) : super(key: key);
+  const _FlashcardSet(this.flashcardSet);
 
   @override
   Widget build(BuildContext context, LearningViewModel viewModel) {

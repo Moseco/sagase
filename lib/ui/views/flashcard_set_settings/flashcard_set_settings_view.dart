@@ -295,8 +295,7 @@ class _ToggleOption extends StatelessWidget {
     required this.text,
     required this.enabled,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

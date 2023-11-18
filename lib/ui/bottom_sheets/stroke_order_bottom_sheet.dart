@@ -9,8 +9,8 @@ class StrokeOrderBottomSheet extends StatefulWidget {
   const StrokeOrderBottomSheet({
     required this.request,
     required this.completer,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StrokeOrderBottomSheet> createState() => StrokeOrderBottomSheetState();

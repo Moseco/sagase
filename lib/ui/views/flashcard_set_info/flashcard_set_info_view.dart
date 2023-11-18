@@ -100,10 +100,7 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
 class _IntervalLength extends StatelessWidget {
   final List<double> flashcardIntervalCounts;
 
-  const _IntervalLength(
-    this.flashcardIntervalCounts, {
-    Key? key,
-  }) : super(key: key);
+  const _IntervalLength(this.flashcardIntervalCounts);
 
   @override
   Widget build(BuildContext context) {
@@ -235,8 +232,7 @@ class _Indicator extends StatelessWidget {
   const _Indicator({
     required this.color,
     required this.text,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +255,7 @@ class _Indicator extends StatelessWidget {
 }
 
 class _Challenging extends ViewModelWidget<FlashcardSetInfoViewModel> {
-  const _Challenging({Key? key}) : super(key: key);
+  const _Challenging();
 
   @override
   Widget build(BuildContext context, FlashcardSetInfoViewModel viewModel) {

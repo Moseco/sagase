@@ -59,7 +59,7 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
 }
 
 class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
-  const _VocabList({Key? key}) : super(key: key);
+  const _VocabList();
 
   @override
   Widget build(BuildContext context, DictionaryListViewModel viewModel) {
@@ -83,7 +83,7 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
 }
 
 class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
-  const _KanjiList({Key? key}) : super(key: key);
+  const _KanjiList();
 
   @override
   Widget build(BuildContext context, DictionaryListViewModel viewModel) {
@@ -107,7 +107,7 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
 }
 
 class _Empty extends StatelessWidget {
-  const _Empty({Key? key}) : super(key: key);
+  const _Empty();
 
   @override
   Widget build(BuildContext context) {

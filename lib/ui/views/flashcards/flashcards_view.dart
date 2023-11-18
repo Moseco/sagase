@@ -293,8 +293,7 @@ class _FlashcardAnswerButton extends StatelessWidget {
     required this.color,
     required this.onTap,
     this.newInterval,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -336,8 +335,7 @@ class _Flashcard extends StatelessWidget {
   const _Flashcard({
     required this.constraints,
     required this.child,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -359,8 +357,7 @@ class _VocabFlashcardFront extends StatelessWidget {
   const _VocabFlashcardFront({
     required this.flashcardSet,
     required this.vocab,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -433,8 +430,7 @@ class _VocabFlashcardFrontEnglish extends StatelessWidget {
   const _VocabFlashcardFrontEnglish({
     required this.flashcardSet,
     required this.vocab,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -512,8 +508,7 @@ class _KanjiFlashcardFront extends StatelessWidget {
   const _KanjiFlashcardFront({
     required this.flashcardSet,
     required this.kanji,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -575,8 +570,7 @@ class _KanjiFlashcardFrontEnglish extends StatelessWidget {
   const _KanjiFlashcardFrontEnglish({
     required this.flashcardSet,
     required this.kanji,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -599,8 +593,7 @@ class _VocabFlashcardBack extends StatelessWidget {
   const _VocabFlashcardBack({
     required this.flashcardSet,
     required this.vocab,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -773,8 +766,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
   const _KanjiFlashcardBack({
     required this.flashcardSet,
     required this.kanji,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -863,8 +855,7 @@ class _KanjiReadingText extends StatelessWidget {
   const _KanjiReadingText({
     required this.title,
     required this.content,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -888,7 +879,7 @@ class _KanjiReadingText extends StatelessWidget {
 }
 
 class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
-  const _ProgressIndicator({Key? key}) : super(key: key);
+  const _ProgressIndicator();
 
   @override
   Widget build(BuildContext context, FlashcardsViewModel viewModel) {

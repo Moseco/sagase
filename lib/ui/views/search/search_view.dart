@@ -194,8 +194,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
     required this.searchController,
     required this.keyboardFocusNode,
     required this.handWritingFocusNode,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
@@ -371,7 +370,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
 }
 
 class _SearchResults extends ViewModelWidget<SearchViewModel> {
-  const _SearchResults({Key? key}) : super(key: key);
+  const _SearchResults();
 
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
@@ -449,7 +448,7 @@ class _SearchResults extends ViewModelWidget<SearchViewModel> {
 class _SearchHistory extends ViewModelWidget<SearchViewModel> {
   final TextEditingController searchController;
 
-  const _SearchHistory(this.searchController, {Key? key}) : super(key: key);
+  const _SearchHistory(this.searchController);
 
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
