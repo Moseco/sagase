@@ -170,16 +170,23 @@ class VocabViewModel extends FutureViewModel {
   }
 
   Future<void> openVocabReference(VocabReference reference) async {
-    if (reference.id != null) {
-      final vocab = await _isarService.getVocab(reference.id!);
+    if (reference.ids != null) {
       _startWatcher();
-      await _navigationService.navigateToVocabView(vocab: vocab!);
+      if (reference.ids!.length == 1) {
+        final vocab = await _isarService.getVocab(reference.ids![0]);
+        await _navigationService.navigateToVocabView(vocab: vocab!);
+      } else {
+        final vocabList = await _isarService.getVocabList(reference.ids!);
+        await _bottomSheetService.showCustomSheet(
+          variant: BottomSheetType.selectVocabBottom,
+          data: vocabList,
+        );
+      }
       await _refreshInMyLists();
     } else {
       Clipboard.setData(ClipboardData(text: reference.text));
       _snackbarService.showSnackbar(
-        message:
-            'Single vocab not found. ${reference.text} copied to clipboard.',
+        message: 'Reference not found. ${reference.text} copied to clipboard.',
         duration: const Duration(seconds: 2),
       );
     }
