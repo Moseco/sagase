@@ -108,8 +108,9 @@ class SplashScreenViewModel extends FutureViewModel {
     if (!_mecabReady!) {
       _status = SplashScreenStatus.importingMecab;
       rebuildUi();
-      await _mecabService.extractFiles();
-      await _mecabService.initialize();
+      if (await _mecabService.extractFiles()) {
+        await _mecabService.initialize();
+      }
     }
 
     if (onboardingNavigation != null) await onboardingNavigation;

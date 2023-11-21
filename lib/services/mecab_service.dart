@@ -28,54 +28,82 @@ class MecabService {
   final _mecab = Mecab();
   final _kanaKit = const KanaKit();
 
+  bool _ready = false;
+
   Future<bool> initialize() async {
-    // Check if directory exists
-    String mecabDir = path.join(
-      (await path_provider.getApplicationSupportDirectory()).path,
-      'mecab',
-    );
-    if (!(await Directory(mecabDir).exists())) return false;
-
-    // Check if files exist
-    for (var file in mecabFiles) {
-      if (!(await File('$mecabDir/$file').exists())) {
-        return false;
-      }
-    }
-
-    // Initialize mecab
-    _mecab.initWithIpadicDir(mecabDir, true);
-
-    return true;
-  }
-
-  Future<void> extractFiles() async {
-    // Start isolate to handle exacting files
-    final rootIsolateToken = RootIsolateToken.instance!;
-    await Isolate.run(() async {
-      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-      // Set up directory
+    try {
+      // Check if directory exists
       String mecabDir = path.join(
         (await path_provider.getApplicationSupportDirectory()).path,
         'mecab',
       );
-      final dir = Directory(mecabDir);
-      // If directory already exists, delete it first to avoid conflicting files
-      if (await dir.exists()) await dir.delete(recursive: true);
-      await dir.create(recursive: true);
+      if (!(await Directory(mecabDir).exists())) {
+        _ready = false;
+        return _ready;
+      }
 
-      // Extract zip to mecab directory
-      final tempDir = await path_provider.getTemporaryDirectory();
-      final File mecabDictionaryZip =
-          File('${tempDir.path}/mecab_dictionary.zip');
-      await archive.extractFileToDisk(mecabDictionaryZip.path, mecabDir);
+      // Check if files exist
+      for (var file in mecabFiles) {
+        if (!(await File(path.join(mecabDir, file)).exists())) {
+          _ready = false;
+          return _ready;
+        }
+      }
 
-      // Remove the temp file
-      await mecabDictionaryZip.delete();
-    });
+      // Initialize mecab
+      _mecab.initWithIpadicDir(mecabDir, true);
+
+      _ready = true;
+      return _ready;
+    } catch (_) {
+      _ready = false;
+      return _ready;
+    }
+  }
+
+  Future<bool> extractFiles() async {
+    // Start isolate to handle exacting files
+    try {
+      final rootIsolateToken = RootIsolateToken.instance!;
+      await Isolate.run(() async {
+        BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+        // Set up directory
+        String mecabDir = path.join(
+          (await path_provider.getApplicationSupportDirectory()).path,
+          'mecab',
+        );
+        final dir = Directory(mecabDir);
+        // If directory already exists, delete it first to avoid conflicting files
+        if (await dir.exists()) await dir.delete(recursive: true);
+        await dir.create(recursive: true);
+
+        // Extract zip to mecab directory
+        final tempDir = await path_provider.getTemporaryDirectory();
+        final mecabDictionaryZip =
+            File(path.join(tempDir.path, 'mecab_dictionary.zip'));
+        await archive.extractFileToDisk(mecabDictionaryZip.path, mecabDir);
+
+        // Remove the temp file
+        await mecabDictionaryZip.delete();
+      });
+    } catch (_) {
+      return false;
+    }
+    return true;
   }
 
   List<JapaneseTextToken> parseText(String text) {
+    if (!_ready) {
+      return [
+        JapaneseTextToken(
+          original: text,
+          base: text,
+          baseReading: text,
+          rubyTextPairs: [RubyTextPair(writing: text)],
+        ),
+      ];
+    }
+
     List<JapaneseTextToken> list = [];
 
     final tokens = _mecab.parse(text.romajiToFullWidth().toUpperCase());
