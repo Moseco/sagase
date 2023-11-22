@@ -92,6 +92,10 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
                   ),
                 ],
               ),
+            SplashScreenStatus.dictionaryUpgradeError => const Text(
+                'Something went wrong while upgrading the dictionary.\nPlease try closing the app and reopening it.',
+                textAlign: TextAlign.center,
+              ),
             _ => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

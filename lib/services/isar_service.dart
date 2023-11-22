@@ -14,6 +14,7 @@ import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:path/path.dart' as path;
 
 class IsarService {
   static const List<CollectionSchema<dynamic>> schemas = [
@@ -949,92 +950,99 @@ class IsarService {
     });
   }
 
-  Future<String> exportUserData() async {
-    // My dictionary lists
-    List<String> myDictionaryListBackups = [];
-    final myLists = await getAllMyDictionaryLists();
-    for (var myList in myLists) {
-      myDictionaryListBackups.add(myList.toBackupJson());
+  Future<String?> exportUserData() async {
+    try {
+      // My dictionary lists
+      List<String> myDictionaryListBackups = [];
+      final myLists = await getAllMyDictionaryLists();
+      for (var myList in myLists) {
+        myDictionaryListBackups.add(myList.toBackupJson());
+      }
+
+      // Flashcard sets
+      List<String> flashcardSetBackups = [];
+      final flashcardSets = await getFlashcardSets();
+      for (var flashcardSet in flashcardSets) {
+        flashcardSetBackups.add(flashcardSet.toBackupJson());
+      }
+
+      // Vocab spaced repetition data
+      List<String> vocabSpacedRepetitionDataBackups = [];
+      final vocabSpacedRepetitionData =
+          await _isar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
+      for (var vocab in vocabSpacedRepetitionData) {
+        vocabSpacedRepetitionDataBackups
+            .add(vocab.spacedRepetitionData!.toBackupJson(vocabId: vocab.id));
+      }
+
+      // Vocab spaced repetition data English
+      List<String> vocabSpacedRepetitionDataEnglishBackups = [];
+      final vocabSpacedRepetitionDataEnglish = await _isar.vocabs
+          .filter()
+          .spacedRepetitionDataEnglishIsNotNull()
+          .findAll();
+      for (var vocab in vocabSpacedRepetitionDataEnglish) {
+        vocabSpacedRepetitionDataEnglishBackups.add(
+            vocab.spacedRepetitionDataEnglish!.toBackupJson(vocabId: vocab.id));
+      }
+
+      // Kanji spaced repetition data
+      List<String> kanjiSpacedRepetitionDataBackups = [];
+      final kanjiSpacedRepetitionData =
+          await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
+      for (var kanji in kanjiSpacedRepetitionData) {
+        kanjiSpacedRepetitionDataBackups.add(kanji.spacedRepetitionData!
+            .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
+      }
+
+      // Kanji spaced repetition data English
+      List<String> kanjiSpacedRepetitionDataEnglishBackups = [];
+      final kanjiSpacedRepetitionDataEnglish = await _isar.kanjis
+          .filter()
+          .spacedRepetitionDataEnglishIsNotNull()
+          .findAll();
+      for (var kanji in kanjiSpacedRepetitionDataEnglish) {
+        kanjiSpacedRepetitionDataEnglishBackups.add(kanji
+            .spacedRepetitionDataEnglish!
+            .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
+      }
+
+      // Create instance
+      DateTime now = DateTime.now();
+      final backup = UserBackup(
+        dictionaryVersion: SagaseDictionaryConstants.dictionaryVersion,
+        timestamp: now,
+        myDictionaryLists: myDictionaryListBackups,
+        flashcardSets: flashcardSetBackups,
+        vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
+        vocabSpacedRepetitionDataEnglish:
+            vocabSpacedRepetitionDataEnglishBackups,
+        kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
+        kanjiSpacedRepetitionDataEnglish:
+            kanjiSpacedRepetitionDataEnglishBackups,
+      );
+
+      // Create file and write to it
+      final file = File(path.join(
+        (await path_provider.getTemporaryDirectory()).path,
+        'backup_${now.year}-${now.month}-${now.day}_${now.millisecondsSinceEpoch}.sagase',
+      ));
+
+      await file.writeAsString(backup.toJson());
+
+      return file.path;
+    } catch (_) {
+      return null;
     }
-
-    // Flashcard sets
-    List<String> flashcardSetBackups = [];
-    final flashcardSets = await getFlashcardSets();
-    for (var flashcardSet in flashcardSets) {
-      flashcardSetBackups.add(flashcardSet.toBackupJson());
-    }
-
-    // Vocab spaced repetition data
-    List<String> vocabSpacedRepetitionDataBackups = [];
-    final vocabSpacedRepetitionData =
-        await _isar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
-    for (var vocab in vocabSpacedRepetitionData) {
-      vocabSpacedRepetitionDataBackups
-          .add(vocab.spacedRepetitionData!.toBackupJson(vocabId: vocab.id));
-    }
-
-    // Vocab spaced repetition data English
-    List<String> vocabSpacedRepetitionDataEnglishBackups = [];
-    final vocabSpacedRepetitionDataEnglish = await _isar.vocabs
-        .filter()
-        .spacedRepetitionDataEnglishIsNotNull()
-        .findAll();
-    for (var vocab in vocabSpacedRepetitionDataEnglish) {
-      vocabSpacedRepetitionDataEnglishBackups.add(
-          vocab.spacedRepetitionDataEnglish!.toBackupJson(vocabId: vocab.id));
-    }
-
-    // Kanji spaced repetition data
-    List<String> kanjiSpacedRepetitionDataBackups = [];
-    final kanjiSpacedRepetitionData =
-        await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
-    for (var kanji in kanjiSpacedRepetitionData) {
-      kanjiSpacedRepetitionDataBackups.add(kanji.spacedRepetitionData!
-          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
-    }
-
-    // Kanji spaced repetition data English
-    List<String> kanjiSpacedRepetitionDataEnglishBackups = [];
-    final kanjiSpacedRepetitionDataEnglish = await _isar.kanjis
-        .filter()
-        .spacedRepetitionDataEnglishIsNotNull()
-        .findAll();
-    for (var kanji in kanjiSpacedRepetitionDataEnglish) {
-      kanjiSpacedRepetitionDataEnglishBackups.add(kanji
-          .spacedRepetitionDataEnglish!
-          .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
-    }
-
-    // Create instance
-    DateTime now = DateTime.now();
-    final backup = UserBackup(
-      dictionaryVersion: SagaseDictionaryConstants.dictionaryVersion,
-      timestamp: now,
-      myDictionaryLists: myDictionaryListBackups,
-      flashcardSets: flashcardSetBackups,
-      vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
-      vocabSpacedRepetitionDataEnglish: vocabSpacedRepetitionDataEnglishBackups,
-      kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
-      kanjiSpacedRepetitionDataEnglish: kanjiSpacedRepetitionDataEnglishBackups,
-    );
-
-    // Create file and write to it
-    final tempDir = await path_provider.getTemporaryDirectory();
-    final File file = File(
-        '${tempDir.path}${Platform.pathSeparator}backup_${now.year}-${now.month}-${now.day}_${now.millisecondsSinceEpoch}.sagase');
-
-    await file.writeAsString(backup.toJson());
-
-    return file.path;
   }
 
   Future<bool> importUserData(String path) async {
-    // Check if file exists in provided path
-    final file = File(path);
-    if (!await file.exists()) return false;
-
-    // Try to decode the backup file
     try {
+      // Check if file exists in provided path
+      final file = File(path);
+      if (!await file.exists()) return false;
+
+      // Try to decode the backup file
       Map<String, dynamic> backupMap = jsonDecode(await file.readAsString());
       int backupDatabaseVersion =
           backupMap[SagaseDictionaryConstants.backupDictionaryVersion];
@@ -1159,84 +1167,113 @@ class IsarService {
           }
         }
       });
+
+      return true;
     } catch (_) {
       return false;
     }
-
-    return true;
   }
 
-  static Future<void> importDatabase(DictionaryStatus status) async {
-    // Start isolate to handle import
-    final rootIsolateToken = RootIsolateToken.instance!;
-    await Isolate.run(() async {
-      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+  static Future<ImportResult> importDatabase(DictionaryStatus status) async {
+    try {
+      // Start isolate to handle import
+      final rootIsolateToken = RootIsolateToken.instance!;
+      return Isolate.run(() async {
+        BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
 
-      final tempDir = await path_provider.getTemporaryDirectory();
-      final File newDbZipFile = File('${tempDir.path}/base_dictionary.zip');
+        final tempDir = await path_provider.getTemporaryDirectory();
+        final newDbZipFile =
+            File(path.join(tempDir.path, 'base_dictionary.zip'));
 
-      // Extract zip to application support directory
-      final appSupportDir =
-          await path_provider.getApplicationSupportDirectory();
-      await archive.extractFileToDisk(newDbZipFile.path, appSupportDir.path);
+        // Extract zip to application support directory
+        final appSupportDir =
+            await path_provider.getApplicationSupportDirectory();
+        await archive.extractFileToDisk(newDbZipFile.path, appSupportDir.path);
 
-      // If upgrading from older database, transfer user data
-      if (status == DictionaryStatus.outOfDate) {
-        await IsarService.transferUserData();
-      }
+        // If upgrading from older database, transfer user data
+        if (status == DictionaryStatus.outOfDate) {
+          bool transferResult = await IsarService.transferUserData();
+          if (!transferResult) return ImportResult.transferDataFailed;
+        }
 
-      // Remove old database files
-      final File oldDbFile = File('${appSupportDir.path}/default.isar');
-      final File oldDbLockFile =
-          File('${appSupportDir.path}/default.isar.lock');
-      if (await oldDbFile.exists()) await oldDbFile.delete();
-      if (await oldDbLockFile.exists()) await oldDbLockFile.delete();
+        // Remove old database files
+        final oldDbFile = File(path.join(appSupportDir.path, 'default.isar'));
+        final oldDbLockFile =
+            File(path.join(appSupportDir.path, 'default.isar.lock'));
+        if (await oldDbFile.exists()) await oldDbFile.delete();
+        if (await oldDbLockFile.exists()) await oldDbLockFile.delete();
 
-      // Rename new database
-      await File('${appSupportDir.path}/base_dictionary.isar')
-          .rename('${appSupportDir.path}/default.isar');
+        // Rename new database
+        await File(path.join(appSupportDir.path, 'base_dictionary.isar'))
+            .rename(path.join(appSupportDir.path, 'default.isar'));
 
-      // Delete temp files
-      final File newDbLockFile =
-          File('${appSupportDir.path}/base_dictionary.isar.lock');
-      if (await newDbLockFile.exists()) await newDbLockFile.delete();
+        // Delete temp files
+        final newDbLockFile =
+            File(path.join(appSupportDir.path, 'base_dictionary.isar.lock'));
+        if (await newDbLockFile.exists()) await newDbLockFile.delete();
 
-      await newDbZipFile.delete();
-    });
+        await newDbZipFile.delete();
+
+        return ImportResult.success;
+      });
+    } catch (_) {
+      return ImportResult.failed;
+    }
   }
 
   // Optional arguments included for testing
-  static Future<void> transferUserData({
+  static Future<bool> transferUserData({
     Isar? testingOldIsar,
     Isar? testingNewIsar,
   }) async {
-    // Open old database and get data
-    final oldIsar = testingOldIsar ??
-        await Isar.open(
-          schemas,
-          directory:
-              (await path_provider.getApplicationSupportDirectory()).path,
-        );
-    final path = await IsarService(isar: oldIsar).exportUserData();
-    final historyResult = await oldIsar.searchHistoryItems.where().findAll();
-    if (testingOldIsar == null) await oldIsar.close();
+    Isar? isar;
+    try {
+      final supportDir = await path_provider.getApplicationSupportDirectory();
 
-    // Open new database and set data
-    final newIsar = testingNewIsar ??
-        await Isar.open(
-          schemas,
-          directory:
-              (await path_provider.getApplicationSupportDirectory()).path,
-          name: 'base_dictionary',
-        );
-    await IsarService(isar: newIsar).importUserData(path);
-    File(path).delete();
-    await newIsar.writeTxn(() async {
-      for (var history in historyResult) {
-        await newIsar.searchHistoryItems.put(history);
+      // Open old database and get data
+      isar = testingOldIsar ??
+          await Isar.open(
+            schemas,
+            directory: supportDir.path,
+          );
+      final backupPath = await IsarService(isar: isar).exportUserData();
+      if (backupPath == null) {
+        if (testingOldIsar == null) await isar.close();
+        return false;
       }
-    });
-    if (testingNewIsar == null) await newIsar.close();
+      final historyResult = await isar.searchHistoryItems.where().findAll();
+      if (testingOldIsar == null) await isar.close();
+
+      // Open new database and set data
+      isar = testingNewIsar ??
+          await Isar.open(
+            schemas,
+            directory: supportDir.path,
+            name: 'base_dictionary',
+          );
+
+      bool transferResult =
+          await IsarService(isar: isar).importUserData(backupPath);
+
+      File(backupPath).delete();
+      await isar.writeTxn(() async {
+        for (var history in historyResult) {
+          await isar!.searchHistoryItems.put(history);
+        }
+      });
+      if (testingNewIsar == null) await isar.close();
+
+      return transferResult;
+    } catch (_) {
+      if (testingOldIsar == null &&
+          testingNewIsar == null &&
+          isar != null &&
+          isar.isOpen) {
+        await isar.close();
+      }
+
+      return false;
+    }
   }
 }
 
@@ -1249,4 +1286,10 @@ enum DictionaryStatus {
 enum SearchFilter {
   vocab,
   kanji,
+}
+
+enum ImportResult {
+  success,
+  failed,
+  transferDataFailed,
 }

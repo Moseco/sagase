@@ -146,7 +146,7 @@ void main() {
       Isar isar = await setUpIsar();
 
       final service = IsarService(isar: isar);
-      String path = await service.exportUserData();
+      String path = (await service.exportUserData())!;
       final file = File(path);
 
       // Check file content
@@ -267,7 +267,7 @@ void main() {
       await service.updateFlashcardSet(flashcardSet);
 
       // Export data
-      String path = await service.exportUserData();
+      String path = (await service.exportUserData())!;
       final file = File(path);
 
       // Check file content

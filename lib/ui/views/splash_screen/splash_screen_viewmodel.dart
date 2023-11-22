@@ -81,7 +81,7 @@ class SplashScreenViewModel extends FutureViewModel {
       }
     }
 
-    // Initialize isar service and skip validation if in debug mode
+    // Initialize isar service
     if (_dictionaryStatus != DictionaryStatus.valid) {
       _status = _dictionaryStatus == DictionaryStatus.invalid
           ? SplashScreenStatus.importingDictionary
@@ -89,15 +89,26 @@ class SplashScreenViewModel extends FutureViewModel {
       rebuildUi();
 
       await _isarService.close();
-      try {
-        await IsarService.importDatabase(_dictionaryStatus!);
-        final isarService = IsarService();
-        await isarService.initialize();
 
-        locator.removeRegistrationIfExists<IsarService>();
-        locator.registerSingleton<IsarService>(isarService);
-      } catch (_) {
-        // Something went wrong importing database
+      final importResult = await IsarService.importDatabase(_dictionaryStatus!);
+      if (importResult == ImportResult.success) {
+        final newIsarService = IsarService();
+        final newDictionaryStatus = await newIsarService.initialize();
+
+        if (newDictionaryStatus == DictionaryStatus.valid) {
+          locator.removeRegistrationIfExists<IsarService>();
+          locator.registerSingleton<IsarService>(newIsarService);
+        } else {
+          newIsarService.close();
+          _status = SplashScreenStatus.databaseError;
+          rebuildUi();
+          return;
+        }
+      } else if (importResult == ImportResult.transferDataFailed) {
+        _status = SplashScreenStatus.dictionaryUpgradeError;
+        rebuildUi();
+        return;
+      } else {
         _status = SplashScreenStatus.databaseError;
         rebuildUi();
         return;
@@ -150,4 +161,5 @@ enum SplashScreenStatus {
   downloadError,
   databaseError,
   downloadRequest,
+  dictionaryUpgradeError,
 }

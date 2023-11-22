@@ -177,9 +177,17 @@ class SettingsViewModel extends BaseViewModel {
       barrierDismissible: false,
     );
 
-    String path = await _isarService.exportUserData();
+    String? path = await _isarService.exportUserData();
 
     _dialogService.completeDialog(DialogResponse());
+
+    if (path == null) {
+      _snackbarService.showSnackbar(
+        message: 'Failed to export data',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
 
     // Ask user to save file to a location
     String? newPath;
@@ -191,12 +199,10 @@ class SettingsViewModel extends BaseViewModel {
       newPath = null;
     }
 
-    if (newPath == null) {
-      _snackbarService.showSnackbar(
-        message: 'Failed to save file',
-        duration: const Duration(seconds: 2),
-      );
-    }
+    _snackbarService.showSnackbar(
+      message: newPath == null ? 'Failed to save file' : 'Export successful',
+      duration: const Duration(seconds: 2),
+    );
 
     // Delete the original file
     await File(path).delete();
