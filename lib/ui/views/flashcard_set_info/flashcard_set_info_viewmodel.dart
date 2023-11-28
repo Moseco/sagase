@@ -85,7 +85,7 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
     final today = DateTime.parse(DateTime.now().toInt().toString());
     upcomingDueFlashcards = List<int>.filled(8, 0);
     for (var flashcard in flashcards) {
-      if (_getSpacedRepetitionData(flashcard) != null) {
+      if (_getSpacedRepetitionData(flashcard)?.dueDate != null) {
         // Upcoming due count
         upcomingDueFlashcards![(DateTime.parse(
                     _getSpacedRepetitionData(flashcard)!.dueDate!.toString())

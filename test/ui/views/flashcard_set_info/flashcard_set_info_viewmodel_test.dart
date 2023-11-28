@@ -26,8 +26,8 @@ void main() {
     });
 
     test('Upcoming due flashcards', () async {
-      // Create 1 flashcard due each day for the upcoming week
       await isar.writeTxn(() async {
+        // Create 1 flashcard due each day for the upcoming week
         for (int i = 0; i < 8; i++) {
           var spacedRepetitionData = SpacedRepetitionData()
             ..dueDate = DateTime.now().toInt() + i;
@@ -42,11 +42,17 @@ void main() {
 
           await isar.vocabs.put(vocab);
         }
+
+        // Create flashcards that shouldn't be added
+        await isar.vocabs.put(Vocab()
+          ..id = 8
+          ..spacedRepetitionData = SpacedRepetitionData());
+        await isar.vocabs.put(Vocab()..id = 9);
       });
 
       // Create dictionary lists to use
       final list1 = await isarService.createMyDictionaryList('list1');
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 10; i++) {
         var vocab = Vocab()..id = i;
         await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
@@ -78,8 +84,8 @@ void main() {
     });
 
     test('Upcoming due flashcards - English front', () async {
-      // Create 1 flashcard due each day for the upcoming week
       await isar.writeTxn(() async {
+        // Create 1 flashcard due each day for the upcoming week
         for (int i = 0; i < 8; i++) {
           var spacedRepetitionData = SpacedRepetitionData()
             ..dueDate = DateTime.now().toInt() + i;
@@ -94,11 +100,17 @@ void main() {
 
           await isar.vocabs.put(vocab);
         }
+
+        // Create flashcards that shouldn't be added
+        await isar.vocabs.put(Vocab()
+          ..id = 8
+          ..spacedRepetitionData = SpacedRepetitionData());
+        await isar.vocabs.put(Vocab()..id = 9);
       });
 
       // Create dictionary lists to use
       final list1 = await isarService.createMyDictionaryList('list1');
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 10; i++) {
         var vocab = Vocab()..id = i;
         await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
@@ -227,6 +239,12 @@ void main() {
           ..id = 4
           ..kanjiReadingPairs = [
             KanjiReadingPair()..readings = [VocabReading()..reading = '4'],
+          ]
+          ..spacedRepetitionData = SpacedRepetitionData();
+        var vocab6 = Vocab()
+          ..id = 5
+          ..kanjiReadingPairs = [
+            KanjiReadingPair()..readings = [VocabReading()..reading = '5'],
           ];
 
         await isar.vocabs.put(vocab1);
@@ -234,11 +252,12 @@ void main() {
         await isar.vocabs.put(vocab3);
         await isar.vocabs.put(vocab4);
         await isar.vocabs.put(vocab5);
+        await isar.vocabs.put(vocab6);
       });
 
       // Create dictionary lists to use
       final list1 = await isarService.createMyDictionaryList('list1');
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 6; i++) {
         var vocab = Vocab()..id = i;
         await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
@@ -258,7 +277,7 @@ void main() {
       verifyNever(navigationService.back());
 
       // Check contents
-      expect(viewModel.flashcardIntervalCounts[0], 1);
+      expect(viewModel.flashcardIntervalCounts[0], 2);
       expect(viewModel.flashcardIntervalCounts[1], 1);
       expect(viewModel.flashcardIntervalCounts[2], 1);
       expect(viewModel.flashcardIntervalCounts[3], 1);
@@ -309,6 +328,12 @@ void main() {
           ..id = 4
           ..kanjiReadingPairs = [
             KanjiReadingPair()..readings = [VocabReading()..reading = '4'],
+          ]
+          ..spacedRepetitionData = SpacedRepetitionData();
+        var vocab6 = Vocab()
+          ..id = 5
+          ..kanjiReadingPairs = [
+            KanjiReadingPair()..readings = [VocabReading()..reading = '5'],
           ];
 
         await isar.vocabs.put(vocab1);
@@ -316,11 +341,12 @@ void main() {
         await isar.vocabs.put(vocab3);
         await isar.vocabs.put(vocab4);
         await isar.vocabs.put(vocab5);
+        await isar.vocabs.put(vocab6);
       });
 
       // Create dictionary lists to use
       final list1 = await isarService.createMyDictionaryList('list1');
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 6; i++) {
         var vocab = Vocab()..id = i;
         await isarService.addVocabToMyDictionaryList(list1, vocab);
       }
@@ -341,7 +367,7 @@ void main() {
       verifyNever(navigationService.back());
 
       // Check contents
-      expect(viewModel.flashcardIntervalCounts[0], 1);
+      expect(viewModel.flashcardIntervalCounts[0], 2);
       expect(viewModel.flashcardIntervalCounts[1], 1);
       expect(viewModel.flashcardIntervalCounts[2], 1);
       expect(viewModel.flashcardIntervalCounts[3], 1);

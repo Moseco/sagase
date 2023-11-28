@@ -26,6 +26,7 @@ class FlashcardsViewModel extends FutureViewModel {
   List<DictionaryItem>? allFlashcards;
   final List<DictionaryItem> activeFlashcards = [];
   final List<DictionaryItem> dueFlashcards = [];
+  final List<DictionaryItem> startedFlashcards = [];
   final List<DictionaryItem> newFlashcards = [];
 
   // Use this bool instead of flashcardSet variable because a spaced
@@ -155,9 +156,12 @@ class FlashcardsViewModel extends FutureViewModel {
     if (_usingSpacedRepetition) {
       int todayAsInt = DateTime.now().toInt();
       for (var item in allFlashcards!) {
-        if (_getSpacedRepetitionData(item) == null) {
+        final spacedRepetitionData = _getSpacedRepetitionData(item);
+        if (spacedRepetitionData == null) {
           newFlashcards.add(item);
-        } else if (_getSpacedRepetitionData(item)!.dueDate! <= todayAsInt) {
+        } else if (spacedRepetitionData.dueDate == null) {
+          startedFlashcards.add(item);
+        } else if (spacedRepetitionData.dueDate! <= todayAsInt) {
           dueFlashcards.add(item);
         }
       }
@@ -182,7 +186,7 @@ class FlashcardsViewModel extends FutureViewModel {
 
     if (usingSpacedRepetition) {
       if (answer == FlashcardAnswer.repeat) {
-        // Put current flashcard at a set amount or end of the active flashcard list
+        // Reinsert current flashcard
         activeFlashcards.insert(
           min(
             _sharedPreferencesService.getFlashcardDistance() - 1,
@@ -192,7 +196,7 @@ class FlashcardsViewModel extends FutureViewModel {
         );
         notifyListeners();
       } else if (answer == FlashcardAnswer.wrong) {
-        // Put current flashcard at a set amount or end of the active flashcard list
+        // Reinsert current flashcard
         activeFlashcards.insert(
           min(
             _sharedPreferencesService.getFlashcardDistance() - 1,
@@ -203,59 +207,38 @@ class FlashcardsViewModel extends FutureViewModel {
         notifyListeners();
         // Only modify spaced repetition data if flashcard has previous data
         if (_getSpacedRepetitionData(currentFlashcard) != null) {
-          // If answering a new card decrease the initial counter
-          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate == null) {
-            _setSpacedRepetitionData(
-              currentFlashcard,
-              _getSpacedRepetitionData(currentFlashcard)!
-                  .copyWithInitialCorrectCount(-1),
-            );
-          } else {
-            // Not new card, get new spaced repetition data
-            _setSpacedRepetitionData(
-              currentFlashcard,
-              _calculateSpacedRepetition(
-                answer.index,
-                _getSpacedRepetitionData(currentFlashcard)!,
-              ),
-            );
-            // Update in database
+          _setSpacedRepetitionData(
+            currentFlashcard,
+            _calculateSpacedRepetition(
+              answer,
+              _getSpacedRepetitionData(currentFlashcard)!,
+            ),
+          );
+          // Only update in database if completed flashcard
+          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null) {
             await _isarService.updateSpacedRepetitionData(currentFlashcard);
           }
         }
       } else if (answer == FlashcardAnswer.correct) {
+        bool isNewFlashcard =
+            _getSpacedRepetitionData(currentFlashcard)?.dueDate == null;
         _setSpacedRepetitionData(
           currentFlashcard,
-          (_getSpacedRepetitionData(currentFlashcard) ?? SpacedRepetitionData())
-              .copyWithInitialCorrectCount(1),
+          _calculateSpacedRepetition(
+            answer,
+            _getSpacedRepetitionData(currentFlashcard) ??
+                SpacedRepetitionData(),
+          ),
         );
-        // If answering not new card or have answered new card correctly a set number of times, get new spaced repetition data
-        if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null ||
-            _getSpacedRepetitionData(currentFlashcard)!.initialCorrectCount >=
-                _sharedPreferencesService
-                    .getFlashcardCorrectAnswersRequired()) {
+
+        if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null) {
           // If completing a new card, increase new flashcard count
-          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate == null) {
-            flashcardSet.newFlashcardsCompletedToday++;
-          }
+          if (isNewFlashcard) flashcardSet.newFlashcardsCompletedToday++;
           // Increase flashcards completed today and update in database
           flashcardSet.flashcardsCompletedToday++;
           _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
-          // Get new spaced repetition date and use enum index as argument
-          _setSpacedRepetitionData(
-            currentFlashcard,
-            _calculateSpacedRepetition(
-              answer.index,
-              _getSpacedRepetitionData(currentFlashcard)!,
-            ),
-          );
-
-          notifyListeners();
-          // Update in database
-          await _isarService.updateSpacedRepetitionData(currentFlashcard);
         } else {
-          // Not enough initial correct answers for new cards, reinsert to list
-          // at a set amount or end of the list
+          // New flashcard is not completed, reinsert current flashcard
           activeFlashcards.insert(
             min(
               _sharedPreferencesService.getFlashcardDistance() - 1,
@@ -263,8 +246,11 @@ class FlashcardsViewModel extends FutureViewModel {
             ),
             currentFlashcard,
           );
-          notifyListeners();
         }
+
+        notifyListeners();
+        // Update in database
+        await _isarService.updateSpacedRepetitionData(currentFlashcard);
       } else {
         // Very correct answer
         // If completing a new card, increase new flashcard count
@@ -278,7 +264,7 @@ class FlashcardsViewModel extends FutureViewModel {
         _setSpacedRepetitionData(
           currentFlashcard,
           _calculateSpacedRepetition(
-            answer.index,
+            answer,
             _getSpacedRepetitionData(currentFlashcard) ??
                 SpacedRepetitionData(),
           ),
@@ -327,11 +313,17 @@ class FlashcardsViewModel extends FutureViewModel {
         activeFlashcards.addAll(newFlashcards);
         newFlashcards.clear();
         _answeringDueFlashcards = false;
+        // Randomize
+        activeFlashcards.shuffle(_random);
+        // Add any started flashcards
+        activeFlashcards.insertAll(0, startedFlashcards..shuffle(_random));
+        startedFlashcards.clear();
       } else if (startMode == FlashcardStartMode.learning) {
         // If active list was not empty and in learning mode, add new cards with the due cards
         int flashcardsToAdd = min(
           _sharedPreferencesService.getNewFlashcardsPerDay() -
-              flashcardSet.newFlashcardsCompletedToday,
+              flashcardSet.newFlashcardsCompletedToday -
+              startedFlashcards.length,
           newFlashcards.length,
         );
         if (flashcardsToAdd < 0) flashcardsToAdd = 0;
@@ -340,11 +332,15 @@ class FlashcardsViewModel extends FutureViewModel {
               newFlashcards.removeAt(_random.nextInt(newFlashcards.length)));
         }
         // Also change initial due flashcard count
-        _initialDueFlashcardCount += flashcardsToAdd;
-      }
+        _initialDueFlashcardCount += flashcardsToAdd + startedFlashcards.length;
 
-      // Randomize active flashcards
-      activeFlashcards.shuffle(_random);
+        // Add started flashcards
+        activeFlashcards.addAll(startedFlashcards);
+        startedFlashcards.clear();
+
+        // Randomize
+        activeFlashcards.shuffle(_random);
+      }
 
       // If active flashcards is still empty then the user is finished with today's spaced repetition
       // Ask if they want to continue using random order
@@ -463,7 +459,7 @@ class FlashcardsViewModel extends FutureViewModel {
       return '~';
     } else {
       int interval = _calculateSpacedRepetition(
-        answer.index,
+        answer,
         _getSpacedRepetitionData(activeFlashcards[0]) ?? SpacedRepetitionData(),
       ).interval;
 
@@ -479,22 +475,33 @@ class FlashcardsViewModel extends FutureViewModel {
   }
 
   SpacedRepetitionData _calculateSpacedRepetition(
-    int quality,
+    FlashcardAnswer answer,
     SpacedRepetitionData currentData,
   ) {
+    // Check if completing initial correct requirement for new flashcards
+    if (currentData.dueDate == null) {
+      if (answer == FlashcardAnswer.wrong) {
+        return currentData.copyWithInitialCorrectCount(-1);
+      } else if (answer == FlashcardAnswer.correct &&
+          currentData.initialCorrectCount + 1 <
+              _sharedPreferencesService.getFlashcardCorrectAnswersRequired()) {
+        return currentData.copyWithInitialCorrectCount(1);
+      }
+    }
+
     late int interval;
     late int repetitions;
     late double easeFactor;
-    if (quality >= 2) {
+    if (answer.index >= FlashcardAnswer.correct.index) {
       switch (currentData.repetitions) {
         case 0:
-          interval = quality == 2
+          interval = answer.index == FlashcardAnswer.correct.index
               ? _sharedPreferencesService.getInitialCorrectInterval()
               : _sharedPreferencesService.getInitialVeryCorrectInterval();
           break;
         case 1:
           interval = 2 *
-              (quality == 2
+              (answer.index == FlashcardAnswer.correct.index
                   ? _sharedPreferencesService.getInitialCorrectInterval()
                   : _sharedPreferencesService.getInitialVeryCorrectInterval());
           break;
@@ -510,28 +517,33 @@ class FlashcardsViewModel extends FutureViewModel {
       easeFactor = currentData.easeFactor;
     }
 
-    easeFactor = currentData.easeFactor +
-        (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
+    if (currentData.repetitions == 0 &&
+        answer.index == FlashcardAnswer.wrong.index) {
+      // Current repetitions is 0 and answer was wrong then the previous answer was also wrong
+      // Use previous ease factor so it is not further decreased before a correct answer
+      easeFactor = currentData.easeFactor;
+    } else {
+      easeFactor = currentData.easeFactor +
+          (0.1 - (3 - answer.index) * (0.08 + (3 - answer.index) * 0.02));
 
-    // Give a slight bump if have a low ease factor for correct answer
-    if (quality == 2 && easeFactor < 1.85) easeFactor += 0.15;
+      // Give a slight bump if have a low ease factor for correct answer
+      if (answer.index == FlashcardAnswer.correct.index && easeFactor < 1.85) {
+        easeFactor += 0.15;
+      }
 
-    if (easeFactor < 1.3) {
-      easeFactor = 1.3;
+      if (easeFactor < 1.3) {
+        easeFactor = 1.3;
+      }
     }
 
-    // If current repetitions is 0 and answer was incorrect then the previous answer was also incorrect
-    // Use previous ease factor so it is not further decreased before a correct answer
     return SpacedRepetitionData()
       ..interval = interval
       ..repetitions = repetitions
-      ..easeFactor = currentData.repetitions == 0 && quality == 0
-          ? currentData.easeFactor
-          : easeFactor
+      ..easeFactor = easeFactor
       ..dueDate = DateTime.now().add(Duration(days: interval)).toInt()
       ..totalAnswers = currentData.totalAnswers + 1
-      ..totalWrongAnswers =
-          currentData.totalWrongAnswers + (quality == 0 ? 1 : 0);
+      ..totalWrongAnswers = currentData.totalWrongAnswers +
+          (answer.index == FlashcardAnswer.wrong.index ? 1 : 0);
   }
 
   void back() {

@@ -1891,5 +1891,274 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.dueDate != null, true);
     });
+
+    test('Partially completed flashcards - normal mode', () async {
+      final now = DateTime.now();
+      await isar.writeTxn(() async {
+        // Create 5 vocab with long due dates
+        final longDueDate = SpacedRepetitionData()..dueDate = 99999999;
+        for (int i = 0; i < 5; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = longDueDate);
+        }
+
+        // Create 5 vocab due today
+        final dueToday = SpacedRepetitionData()..dueDate = now.toInt();
+        for (int i = 5; i < 10; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = dueToday);
+        }
+
+        // Create 5 vocab that were partially completed
+        for (int i = 10; i < 15; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = SpacedRepetitionData());
+        }
+
+        // Create 35 new vocab
+        for (int i = 15; i < 50; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]);
+        }
+      });
+
+      // Create dictionary lists to use
+      final list1 = await isarService.createMyDictionaryList('list1');
+      for (int i = 0; i < 50; i++) {
+        await isarService.addVocabToMyDictionaryList(list1, Vocab()..id = i);
+      }
+
+      // Create flashcard set and assign list
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize using normal mode
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Flashcard contents
+      expect(viewModel.activeFlashcards.length, 5);
+      expect(viewModel.startedFlashcards.length, 5);
+      expect(viewModel.newFlashcards.length, 35);
+      expect(viewModel.initialDueFlashcardCount, 5);
+
+      // Verify due flashcard
+      expect(
+        viewModel.activeFlashcards[0].spacedRepetitionData!.dueDate != null,
+        true,
+      );
+
+      // Finish due flashcards
+      for (int i = 0; i < 5; i++) {
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      }
+
+      // Verify first flashcards are the partially complete ones followed by new ones
+      expect(viewModel.activeFlashcards.length, 40);
+      expect(viewModel.startedFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
+      expect(
+        viewModel.activeFlashcards[0].spacedRepetitionData!.dueDate == null,
+        true,
+      );
+      expect(
+        viewModel.activeFlashcards[4].spacedRepetitionData!.dueDate == null,
+        true,
+      );
+      expect(viewModel.activeFlashcards[5].spacedRepetitionData == null, true);
+    });
+
+    test('Partially completed flashcards - learning mode', () async {
+      final now = DateTime.now();
+      await isar.writeTxn(() async {
+        // Create 5 vocab with long due dates
+        final longDueDate = SpacedRepetitionData()..dueDate = 99999999;
+        for (int i = 0; i < 5; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = longDueDate);
+        }
+
+        // Create 5 vocab due today
+        final dueToday = SpacedRepetitionData()..dueDate = now.toInt();
+        for (int i = 5; i < 10; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = dueToday);
+        }
+
+        // Create 5 vocab that were partially completed
+        for (int i = 10; i < 15; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = SpacedRepetitionData());
+        }
+
+        // Create 35 new vocab
+        for (int i = 15; i < 50; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]);
+        }
+      });
+
+      // Create dictionary lists to use
+      final list1 = await isarService.createMyDictionaryList('list1');
+      for (int i = 0; i < 50; i++) {
+        await isarService.addVocabToMyDictionaryList(list1, Vocab()..id = i);
+      }
+
+      // Create flashcard set and assign list
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize using normal mode
+      var viewModel = FlashcardsViewModel(
+          flashcardSet, FlashcardStartMode.learning,
+          randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Flashcard contents
+      expect(viewModel.activeFlashcards.length, 15);
+      expect(viewModel.startedFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 30);
+      expect(viewModel.initialDueFlashcardCount, 15);
+
+      // Verify flashcard counts
+      int dueFlashcardCount = 0;
+      int partialFlashcardCount = 0;
+      int newFlashcardCount = 0;
+      for (var flashcard in viewModel.activeFlashcards) {
+        if (flashcard.spacedRepetitionData == null) {
+          newFlashcardCount++;
+        } else if (flashcard.spacedRepetitionData!.dueDate == null) {
+          partialFlashcardCount++;
+        } else {
+          dueFlashcardCount++;
+        }
+      }
+      expect(dueFlashcardCount, 5);
+      expect(partialFlashcardCount, 5);
+      expect(newFlashcardCount, 5);
+    });
+
+    test('Partially completed flashcards - skip mode', () async {
+      final now = DateTime.now();
+      await isar.writeTxn(() async {
+        // Create 5 vocab with long due dates
+        final longDueDate = SpacedRepetitionData()..dueDate = 99999999;
+        for (int i = 0; i < 5; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = longDueDate);
+        }
+
+        // Create 5 vocab due today
+        final dueToday = SpacedRepetitionData()..dueDate = now.toInt();
+        for (int i = 5; i < 10; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = dueToday);
+        }
+
+        // Create 5 vocab that were partially completed
+        for (int i = 10; i < 15; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]
+            ..spacedRepetitionData = SpacedRepetitionData());
+        }
+
+        // Create 35 new vocab
+        for (int i = 15; i < 50; i++) {
+          await isar.vocabs.put(Vocab()
+            ..id = i
+            ..kanjiReadingPairs = [
+              KanjiReadingPair()
+                ..readings = [VocabReading()..reading = i.toString()]
+            ]);
+        }
+      });
+
+      // Create dictionary lists to use
+      final list1 = await isarService.createMyDictionaryList('list1');
+      for (int i = 0; i < 50; i++) {
+        await isarService.addVocabToMyDictionaryList(list1, Vocab()..id = i);
+      }
+
+      // Create flashcard set and assign list
+      final flashcardSet = await isarService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(list1.id);
+      await isarService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize using normal mode
+      var viewModel = FlashcardsViewModel(flashcardSet, FlashcardStartMode.skip,
+          randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Flashcard contents
+      expect(viewModel.activeFlashcards.length, 40);
+      expect(viewModel.dueFlashcards.length, 0);
+      expect(viewModel.startedFlashcards.length, 0);
+      expect(viewModel.newFlashcards.length, 0);
+
+      // Verify first flashcards are the partially complete ones followed by new ones
+      expect(
+        viewModel.activeFlashcards[0].spacedRepetitionData!.dueDate == null,
+        true,
+      );
+      expect(
+        viewModel.activeFlashcards[4].spacedRepetitionData!.dueDate == null,
+        true,
+      );
+      expect(viewModel.activeFlashcards[5].spacedRepetitionData == null, true);
+    });
   });
 }
