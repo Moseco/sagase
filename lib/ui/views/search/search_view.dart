@@ -200,7 +200,10 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
   Widget build(BuildContext context, SearchViewModel viewModel) {
     return KeyboardActions(
       config: KeyboardActionsConfig(
-        keyboardBarColor: Theme.of(context).cardColor,
+        keyboardBarColor:
+            MediaQuery.of(context).platformBrightness == Brightness.light
+                ? const Color(0xFFD1D4D9)
+                : const Color(0xFF2B2B2B),
         actions: [
           KeyboardActionsItem(
             focusNode: keyboardFocusNode,

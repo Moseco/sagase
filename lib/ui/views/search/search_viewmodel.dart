@@ -13,7 +13,7 @@ import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class SearchViewModel extends BaseViewModel {
+class SearchViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _digitalInkService = locator<DigitalInkService>();
@@ -43,11 +43,8 @@ class SearchViewModel extends BaseViewModel {
   bool _promptAnalysis = false;
   bool get promptAnalysis => _promptAnalysis;
 
-  SearchViewModel() {
-    _loadSearchHistory();
-  }
-
-  Future<void> _loadSearchHistory() async {
+  @override
+  Future<void> futureToRun() async {
     searchHistory = await _isarService.getSearchHistory();
     notifyListeners();
   }
