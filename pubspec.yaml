@@ -61,6 +61,7 @@ dependencies:
       ref: '015d835'
   url_launcher: ^6.1.12
   dio: ^5.3.3
+  in_app_review: ^2.0.8
 
 dev_dependencies:
   flutter_test:

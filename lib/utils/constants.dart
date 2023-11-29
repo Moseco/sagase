@@ -16,6 +16,9 @@ const keyUseJapaneseSerifFont = 'use_japanese_serif_font';
 const keyAnalyticsEnabled = 'analytics_enabled';
 const keyStartOnLearningView = 'start_on_learning_view';
 const keyStrokeDiagramStartExpanded = 'stroke_diagram_start_expanded';
+const keyReviewStartTimestamp = 'review_start_timestamp';
+const keyReviewStartCount = 'review_start_count';
+const keyReviewRequested = 'review_requested';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;

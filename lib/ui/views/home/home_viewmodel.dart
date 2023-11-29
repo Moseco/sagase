@@ -1,3 +1,4 @@
+import 'package:in_app_review/in_app_review.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
@@ -17,6 +18,16 @@ class HomeViewModel extends IndexTrackingViewModel {
 
   HomeViewModel() {
     if (startOnLearningView) setIndex(2);
+    _tryRequestReview();
+  }
+
+  Future<void> _tryRequestReview() async {
+    final inAppReview = InAppReview.instance;
+
+    if (await inAppReview.isAvailable() &&
+        _sharedPreferencesService.shouldRequestAppReview()) {
+      inAppReview.requestReview();
+    }
   }
 
   void handleNavigation(int index) {

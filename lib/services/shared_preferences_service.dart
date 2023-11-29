@@ -147,4 +147,35 @@ class SharedPreferencesService implements InitializableDependency {
     await _sharedPreferences.setBool(
         constants.keyStrokeDiagramStartExpanded, value);
   }
+
+  bool shouldRequestAppReview() {
+    // Only allow requests once
+    if (_sharedPreferences.getBool(constants.keyReviewRequested) ?? false) {
+      return false;
+    }
+
+    late DateTime startDateTime;
+    int? millisecondsSinceEpoch =
+        _sharedPreferences.getInt(constants.keyReviewStartTimestamp);
+    if (millisecondsSinceEpoch == null) {
+      startDateTime = DateTime.now();
+      _sharedPreferences.setInt(constants.keyReviewStartTimestamp,
+          startDateTime.millisecondsSinceEpoch);
+    } else {
+      startDateTime =
+          DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+    }
+
+    int startCount =
+        (_sharedPreferences.getInt(constants.keyReviewStartCount) ?? 0) + 1;
+    // Make sure the user has used the app for a week and opened the app at least 20 times
+    if (startCount > 20 &&
+        DateTime.now().difference(startDateTime).inDays > 7) {
+      _sharedPreferences.setBool(constants.keyReviewRequested, true);
+      return true;
+    } else {
+      _sharedPreferences.setInt(constants.keyReviewStartCount, startCount);
+      return false;
+    }
+  }
 }
