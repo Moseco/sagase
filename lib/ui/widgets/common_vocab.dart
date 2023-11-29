@@ -16,7 +16,11 @@ class CommonVocab extends StatelessWidget {
       child: SelectionContainer.disabled(
         child: Text(
           'Common',
-          style: TextStyle(color: Colors.black, fontSize: fontSize),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: fontSize,
+            height: 1.1,
+          ),
         ),
       ),
     );
