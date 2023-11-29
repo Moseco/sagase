@@ -4,6 +4,6 @@ extension Converter on DateTime {
   }
 
   bool isDifferentDay(DateTime other) {
-    return year != other.year || month != other.month || day != other.day;
+    return day != other.day || month != other.month || year != other.year;
   }
 }

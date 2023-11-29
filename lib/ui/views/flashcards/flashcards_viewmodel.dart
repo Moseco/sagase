@@ -42,6 +42,8 @@ class FlashcardsViewModel extends FutureViewModel {
   final ListQueue<_UndoItem> _undoList = ListQueue<_UndoItem>();
   bool get canUndo => _undoList.isNotEmpty;
 
+  late DateTime sessionDateTime;
+
   FlashcardsViewModel(
     this.flashcardSet,
     this.startMode, {
@@ -50,8 +52,9 @@ class FlashcardsViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
+    sessionDateTime = DateTime.now();
     // If flashcard set timestamp is previous day, reset flashcards completed counts
-    if (flashcardSet.timestamp.isDifferentDay(DateTime.now())) {
+    if (flashcardSet.timestamp.isDifferentDay(sessionDateTime)) {
       flashcardSet.flashcardsCompletedToday = 0;
       flashcardSet.newFlashcardsCompletedToday = 0;
     }
@@ -154,7 +157,7 @@ class FlashcardsViewModel extends FutureViewModel {
 
     // If using spaced repetition get due cards and not started cards
     if (_usingSpacedRepetition) {
-      int todayAsInt = DateTime.now().toInt();
+      int todayAsInt = sessionDateTime.toInt();
       for (var item in allFlashcards!) {
         final spacedRepetitionData = _getSpacedRepetitionData(item);
         if (spacedRepetitionData == null) {
@@ -536,11 +539,20 @@ class FlashcardsViewModel extends FutureViewModel {
       }
     }
 
+    // Change session DateTime if different day and past 4am
+    // Could happen if flashcards kept open until the next day
+    // 4am rule allows for finishing flashcards last minute
+    final now = DateTime.now();
+    if ((sessionDateTime.isDifferentDay(now) && now.hour > 3) ||
+        now.difference(sessionDateTime).inDays > 0) {
+      sessionDateTime = now;
+    }
+
     return SpacedRepetitionData()
       ..interval = interval
       ..repetitions = repetitions
       ..easeFactor = easeFactor
-      ..dueDate = DateTime.now().add(Duration(days: interval)).toInt()
+      ..dueDate = sessionDateTime.add(Duration(days: interval)).toInt()
       ..totalAnswers = currentData.totalAnswers + 1
       ..totalWrongAnswers = currentData.totalWrongAnswers +
           (answer.index == FlashcardAnswer.wrong.index ? 1 : 0);
