@@ -343,6 +343,8 @@ class FlashcardsViewModel extends FutureViewModel {
 
         // Randomize
         activeFlashcards.shuffle(_random);
+      } else {
+        activeFlashcards.shuffle(_random);
       }
 
       // If active flashcards is still empty then the user is finished with today's spaced repetition
