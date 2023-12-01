@@ -19,6 +19,9 @@ const keyStrokeDiagramStartExpanded = 'stroke_diagram_start_expanded';
 const keyReviewStartTimestamp = 'review_start_timestamp';
 const keyReviewStartCount = 'review_start_count';
 const keyReviewRequested = 'review_requested';
+const keyTutorialFlashcardSetSettings = 'tutorial_flashcard_set_settings';
+const keyTutorialFlashcards = 'tutorial_flashcards';
+const keyTutorialVocab = 'tutorial_vocab';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;

@@ -4,6 +4,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -15,6 +16,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final FlashcardSet flashcardSet;
 
@@ -228,6 +230,10 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
     );
+  }
+
+  bool shouldShowTutorial() {
+    return _sharedPreferencesService.getAndSetTutorialFlashcardSetSettings();
   }
 }
 

@@ -192,6 +192,14 @@ class VocabViewModel extends FutureViewModel {
     }
   }
 
+  bool shouldShowTutorial() {
+    if (vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null) {
+      return _sharedPreferencesService.getAndSetTutorialVocab();
+    } else {
+      return false;
+    }
+  }
+
   @override
   void dispose() {
     _myListsWatcher?.cancel();

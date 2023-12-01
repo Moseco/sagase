@@ -178,4 +178,35 @@ class SharedPreferencesService implements InitializableDependency {
       return false;
     }
   }
+
+  bool getAndSetTutorialFlashcardSetSettings() {
+    bool value =
+        _sharedPreferences.getBool(constants.keyTutorialFlashcardSetSettings) ??
+            true;
+    if (value) {
+      _sharedPreferences.setBool(
+          constants.keyTutorialFlashcardSetSettings, false);
+    }
+
+    return value;
+  }
+
+  bool getAndSetTutorialFlashcards() {
+    bool value =
+        _sharedPreferences.getBool(constants.keyTutorialFlashcards) ?? true;
+    if (value) {
+      _sharedPreferences.setBool(constants.keyTutorialFlashcards, false);
+    }
+
+    return value;
+  }
+
+  bool getAndSetTutorialVocab() {
+    bool value = _sharedPreferences.getBool(constants.keyTutorialVocab) ?? true;
+    if (value) {
+      _sharedPreferences.setBool(constants.keyTutorialVocab, false);
+    }
+
+    return value;
+  }
 }

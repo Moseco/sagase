@@ -12,6 +12,7 @@ import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import 'flashcards_viewmodel.dart';
 import 'widgets/flashcard_deck.dart';
@@ -20,7 +21,9 @@ class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
   final FlashcardStartMode? startMode;
 
-  const FlashcardsView(this.flashcardSet, {this.startMode, super.key});
+  final answersKey = GlobalKey();
+
+  FlashcardsView(this.flashcardSet, {this.startMode, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,14 @@ class FlashcardsView extends HookWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
       viewModelBuilder: () => FlashcardsViewModel(flashcardSet, startMode),
+      fireOnViewModelReadyOnce: true,
+      onViewModelReady: (viewModel) {
+        if (viewModel.shouldShowTutorial()) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showTutorial(context);
+          });
+        }
+      },
       builder: (context, viewModel, child) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -227,6 +238,7 @@ class FlashcardsView extends HookWidget {
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: Row(
+                  key: answersKey,
                   mainAxisSize: MainAxisSize.max,
                   children: viewModel.usingSpacedRepetition
                       ? [
@@ -279,6 +291,88 @@ class FlashcardsView extends HookWidget {
         ),
       ),
     );
+  }
+
+  void _showTutorial(BuildContext context) {
+    TutorialCoachMark(
+      pulseEnable: false,
+      targets: [
+        TargetFocus(
+          identify: 'answersKey',
+          keyTarget: answersKey,
+          alignSkip: Alignment.topRight,
+          enableOverlayTab: true,
+          shape: ShapeLightFocus.RRect,
+          paddingFocus: 16,
+          radius: 8,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Wrong',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' will reset the interval before the flashcard is shown again and put it back into the stack.\n\n',
+                        ),
+                        TextSpan(
+                          text: 'Repeat',
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' will put the flashcard back into the stack and have no other effect.\n\n',
+                        ),
+                        TextSpan(
+                          text: 'Correct',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' will increase the interval. New flashcards will take several correct answers to be completed.\n\n',
+                        ),
+                        TextSpan(
+                          text: 'Very correct',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' will increase the interval and accelerate how fast it will grow. New flashcards are completed right away.',
+                        ),
+                      ],
+                    ),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    ).show(context: context);
   }
 }
 

@@ -8,16 +8,29 @@ import 'package:sagase/ui/widgets/pitch_accent_text.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:stacked/stacked.dart';
 import 'package:ruby_text/ruby_text.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import 'vocab_viewmodel.dart';
 
 class VocabView extends StackedView<VocabViewModel> {
   final Vocab vocab;
 
-  const VocabView(this.vocab, {super.key});
+  final pitchAccentKey = GlobalKey();
+
+  VocabView(this.vocab, {super.key});
 
   @override
-  VocabViewModel viewModelBuilder(context) => VocabViewModel(vocab);
+  VocabViewModel viewModelBuilder(context) {
+    final viewModel = VocabViewModel(vocab);
+
+    if (viewModel.shouldShowTutorial()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showTutorial(context);
+      });
+    }
+
+    return viewModel;
+  }
 
   @override
   Widget builder(context, viewModel, child) {
@@ -25,6 +38,7 @@ class VocabView extends StackedView<VocabViewModel> {
       appBar: AppBar(
         actions: [
           IconButton(
+            key: pitchAccentKey,
             onPressed:
                 vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null
                     ? viewModel.toggleShowPitchAccent
@@ -58,6 +72,38 @@ class VocabView extends StackedView<VocabViewModel> {
         ),
       ),
     );
+  }
+
+  void _showTutorial(BuildContext context) {
+    TutorialCoachMark(
+      pulseEnable: false,
+      targets: [
+        TargetFocus(
+          identify: 'pitchAccentKey',
+          keyTarget: pitchAccentKey,
+          alignSkip: Alignment.topLeft,
+          enableOverlayTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.bottom,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tap to view or hide the pitch accent of a word.',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    ).show(context: context);
   }
 }
 

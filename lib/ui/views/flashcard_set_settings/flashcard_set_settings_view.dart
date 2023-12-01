@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:stacked/stacked.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import 'flashcard_set_settings_viewmodel.dart';
 
@@ -9,11 +10,25 @@ class FlashcardSetSettingsView
     extends StackedView<FlashcardSetSettingsViewModel> {
   final FlashcardSet flashcardSet;
 
-  const FlashcardSetSettingsView(this.flashcardSet, {super.key});
+  final orderTypeKey = GlobalKey();
+  final spacedRepetitionKey = GlobalKey();
+  final randomKey = GlobalKey();
+  final appearanceKey = GlobalKey();
+
+  FlashcardSetSettingsView(this.flashcardSet, {super.key});
 
   @override
-  FlashcardSetSettingsViewModel viewModelBuilder(BuildContext context) =>
-      FlashcardSetSettingsViewModel(flashcardSet);
+  FlashcardSetSettingsViewModel viewModelBuilder(BuildContext context) {
+    final viewModel = FlashcardSetSettingsViewModel(flashcardSet);
+
+    if (viewModel.shouldShowTutorial()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showTutorial(context);
+      });
+    }
+
+    return viewModel;
+  }
 
   @override
   Widget builder(context, viewModel, child) {
@@ -127,6 +142,7 @@ class FlashcardSetSettingsView
                     ),
                   ),
                   CardWithTitleSection(
+                    key: orderTypeKey,
                     title: 'Order Type',
                     child: Padding(
                       padding: const EdgeInsets.all(8),
@@ -134,11 +150,13 @@ class FlashcardSetSettingsView
                         child: Row(
                           children: [
                             _ToggleOption(
+                              key: spacedRepetitionKey,
                               text: 'Spaced repetition',
                               enabled: flashcardSet.usingSpacedRepetition,
                               onTap: () => viewModel.setOrderType(true),
                             ),
                             _ToggleOption(
+                              key: randomKey,
                               text: 'Random',
                               enabled: !flashcardSet.usingSpacedRepetition,
                               onTap: () => viewModel.setOrderType(false),
@@ -175,9 +193,10 @@ class FlashcardSetSettingsView
                     ),
                   ),
                   CardWithTitleSection(
-                    key: ObjectKey(flashcardSet.frontType),
+                    key: appearanceKey,
                     title: 'Appearance',
                     child: Column(
+                      key: ObjectKey(flashcardSet.frontType),
                       children: switch (flashcardSet.frontType) {
                         FrontType.japanese => [
                             ListTile(
@@ -284,6 +303,127 @@ class FlashcardSetSettingsView
       ),
     );
   }
+
+  void _showTutorial(BuildContext context) {
+    TutorialCoachMark(
+      pulseEnable: false,
+      targets: [
+        TargetFocus(
+          identify: 'orderTypeKey',
+          keyTarget: orderTypeKey,
+          alignSkip: Alignment.topRight,
+          enableOverlayTab: true,
+          shape: ShapeLightFocus.RRect,
+          radius: 8,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Practice using flashcards in two different ways.',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        TargetFocus(
+          identify: 'spacedRepetitionKey',
+          keyTarget: spacedRepetitionKey,
+          alignSkip: Alignment.topRight,
+          enableOverlayTab: true,
+          shape: ShapeLightFocus.RRect,
+          paddingFocus: 16,
+          radius: 8,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Spaced repetition is a proven way of learning information. New and difficult flashcards are shown frequently while old and easy flashcards are shown less often.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        TargetFocus(
+          identify: 'randomKey',
+          keyTarget: randomKey,
+          alignSkip: Alignment.topRight,
+          enableOverlayTab: true,
+          shape: ShapeLightFocus.RRect,
+          paddingFocus: 16,
+          radius: 8,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Random order simply shuffles all the flashcards without saving progress between sessions.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        TargetFocus(
+          identify: 'appearanceKey',
+          keyTarget: appearanceKey,
+          alignSkip: Alignment.topRight,
+          enableOverlayTab: true,
+          shape: ShapeLightFocus.RRect,
+          radius: 8,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) => const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Customize what is shown on the front of flashcards.',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'The behavior of flashcards can also be customized in the app settings.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    ).show(context: context);
+  }
 }
 
 class _ToggleOption extends StatelessWidget {
@@ -295,6 +435,7 @@ class _ToggleOption extends StatelessWidget {
     required this.text,
     required this.enabled,
     required this.onTap,
+    super.key,
   });
 
   @override

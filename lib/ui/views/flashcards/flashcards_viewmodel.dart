@@ -631,6 +631,14 @@ class FlashcardsViewModel extends FutureViewModel {
         break;
     }
   }
+
+  bool shouldShowTutorial() {
+    if (flashcardSet.usingSpacedRepetition) {
+      return _sharedPreferencesService.getAndSetTutorialFlashcards();
+    } else {
+      return false;
+    }
+  }
 }
 
 enum FlashcardAnswer {
