@@ -11,6 +11,7 @@ import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
+import 'package:sagase/ui/dialogs/info_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
@@ -108,6 +109,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: FontSelectionDialog),
     StackedDialog(classType: SearchFilterDialog),
     StackedDialog(classType: ThemeSelectionDialog),
+    StackedDialog(classType: InfoDialog),
   ],
 )
 class AppSetup {

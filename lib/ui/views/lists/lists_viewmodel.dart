@@ -11,21 +11,22 @@ import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class ListsViewModel extends BaseViewModel {
+class ListsViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
 
-  ListSelection? _listSelection;
-  ListSelection? get listSelection => _listSelection;
+  final ListSelection listSelection;
 
   List<DictionaryList>? myDictionaryLists;
 
   StreamSubscription<void>? _myListsWatcher;
   bool _myListsChanged = false;
 
-  ListsViewModel(ListSelection? listSelection) {
-    _listSelection = listSelection;
+  ListsViewModel(this.listSelection);
+
+  @override
+  Future<void> futureToRun() async {
     // If opening my lists, load them
     if (listSelection == ListSelection.myLists) _loadMyLists();
   }
@@ -43,9 +44,9 @@ class ListsViewModel extends BaseViewModel {
     _navigationService.navigateTo(Routes.kanjiRadicalsView);
   }
 
-  Future<void> setListSelection(ListSelection? selection) async {
+  Future<void> setListSelection(ListSelection listSelection) async {
     _navigationService.navigateToView(
-      ListsView(selection: selection),
+      ListsView(listSelection: listSelection),
       id: nestedNavigationKey,
       popGesture: Platform.isIOS,
       preventDuplicates: false,
@@ -98,6 +99,15 @@ class ListsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  void showDescriptionDialog(String title, String description) {
+    _dialogService.showCustomDialog(
+      variant: DialogType.info,
+      title: title,
+      description: description,
+      barrierDismissible: true,
+    );
+  }
+
   @override
   void dispose() {
     _myListsWatcher?.cancel();
@@ -106,6 +116,7 @@ class ListsViewModel extends BaseViewModel {
 }
 
 enum ListSelection {
+  main,
   vocab,
   kanji,
   myLists,
