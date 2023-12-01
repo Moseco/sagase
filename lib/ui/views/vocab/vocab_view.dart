@@ -24,9 +24,24 @@ class VocabView extends StackedView<VocabViewModel> {
     final viewModel = VocabViewModel(vocab);
 
     if (viewModel.shouldShowTutorial()) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showTutorial(context);
-      });
+      // Try to show tutorial after transition animation ends
+      final animation = ModalRoute.of(context)?.animation;
+      if (animation != null) {
+        void handler(status) {
+          if (status == AnimationStatus.completed) {
+            _showTutorial(context);
+            animation.removeStatusListener(handler);
+          }
+        }
+
+        animation.addStatusListener(handler);
+      } else {
+        // Animation was not available, show tutorial after short delay
+        Future.delayed(
+          const Duration(milliseconds: 150),
+          () => _showTutorial(context),
+        );
+      }
     }
 
     return viewModel;
