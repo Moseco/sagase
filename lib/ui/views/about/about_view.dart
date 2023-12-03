@@ -30,7 +30,7 @@ class AboutView extends StackedView<AboutViewModel> {
               'Sagase',
               style: TextStyle(fontSize: 24),
             ),
-            const Text('0.11.0'),
+            const Text('1.0.0'),
             const SizedBox(height: 16),
             Text.rich(
               textAlign: TextAlign.left,
