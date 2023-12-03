@@ -30,7 +30,9 @@ dependencies:
   # UI
   google_nav_bar: ^5.0.6
   settings_ui: ^2.0.2
-  flip_card: ^0.7.0
+  flip_card: # TODO change after new version published
+    git:
+      url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.2.0
   fl_chart: ^0.64.0
   flutter_svg: ^2.0.7

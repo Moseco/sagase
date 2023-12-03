@@ -1,5 +1,4 @@
 import 'package:flip_card/flip_card.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -95,9 +94,7 @@ class FlashcardsView extends HookWidget {
                         child: FlipCard(
                           flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
                           controller: flipCardController,
-                          fill: Fill.fillBack,
-                          direction: FlipDirection.HORIZONTAL,
-                          speed: 300,
+                          duration: const Duration(milliseconds: 300),
                           front: _Flashcard(
                             constraints: constraints,
                             child: viewModel.activeFlashcards.isEmpty
@@ -188,9 +185,8 @@ class FlashcardsView extends HookWidget {
                       ),
                       onSwipeFinished: (swipeAnimation) {
                         if (swipeAnimation != SwipeAnimation.reset) {
-                          if (!flipCardController.state!.isFront) {
-                            flipCardController.toggleCardWithoutAnimation();
-                          }
+                          flipCardController
+                              .flipWithoutAnimation(CardSide.front);
                         }
 
                         switch (swipeAnimation) {
@@ -228,9 +224,8 @@ class FlashcardsView extends HookWidget {
                   IconButton(
                     onPressed: viewModel.canUndo
                         ? () {
-                            if (!flipCardController.state!.isFront) {
-                              flipCardController.toggleCardWithoutAnimation();
-                            }
+                            flipCardController
+                                .flipWithoutAnimation(CardSide.front);
                             viewModel.undo();
                             flashcardDeckController.undoSwipe();
                           }

@@ -332,10 +332,11 @@ packages:
   flip_card:
     dependency: "direct main"
     description:
-      name: flip_card
-      sha256: "5d4aa58f3983cced0782f4ce45826b7eea36e8e464964d9209dcbc7a87b2292f"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "5943e0e4bd2754d501f06aa41df6138ef2cb8cfe"
+      url: "https://github.com/Moseco/flip_card"
+    source: git
     version: "0.7.0"
   flutter:
     dependency: "direct main"
