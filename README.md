@@ -3,18 +3,21 @@
 A Japanese-English dictionary and learning tool built with [Flutter](https://docs.flutter.dev/).
 
 <p align="center">
-    <img width="400" alt="Search" src="https://user-images.githubusercontent.com/10720298/208696336-c4b5cab8-26d4-456a-bcbf-b2fe4e5ecc62.png"> 
-    <img width="400" alt="Vocab" src="https://user-images.githubusercontent.com/10720298/208696345-4c77d60a-9528-4191-99fd-1ee8c0db6ebc.png">
-    <img width="400" alt="Hand writing recognition" src="https://user-images.githubusercontent.com/10720298/209070998-3792e9c2-b14b-40e5-b686-283de429295e.png"> 
-    <img width="400" alt="Lists" src="https://user-images.githubusercontent.com/10720298/208696348-b727ab3d-1d5c-4445-b20e-436cf8fc801c.png">
-    <img width="400" alt="Flashcards" src="https://user-images.githubusercontent.com/10720298/208696328-d7a6c1c5-a7a9-487c-b078-32b82fa06aff.png">
+    <img width="400" alt="Search" src="https://github.com/Moseco/sagase/assets/10720298/4a0c240f-fc80-4135-aebd-4d48c15343af">
+    <img width="400" alt="Hand writing recognition" src="https://github.com/Moseco/sagase/assets/10720298/7e08ac1f-efe7-47f3-bb13-051b5b14903c"> 
+    <img width="400" alt="Vocab (light)" src="https://github.com/Moseco/sagase/assets/10720298/796609e5-aa3f-4199-bed9-82406525b174">
+    <img width="400" alt="Vocab (dark)" src="https://github.com/Moseco/sagase/assets/10720298/5629c95f-c46f-4352-a09a-d721e6f323c1">
+    <img width="400" alt="Kanji" src="https://github.com/Moseco/sagase/assets/10720298/37b0e0a6-242b-4941-9270-d079f590af52"> 
+    <img width="400" alt="Lists" src="https://github.com/Moseco/sagase/assets/10720298/11da274a-fa29-47dc-bf95-33263bc5e6c4">
+    <img width="400" alt="Flashcards front" src="https://github.com/Moseco/sagase/assets/10720298/08320b50-25ec-45ab-b8c5-63fb44be709a">
+    <img width="400" alt="Flashcards back" src="https://github.com/Moseco/sagase/assets/10720298/00ce936f-f26f-43ee-923e-4998c13d2d74">
 </p>
 
 ## Getting Started
 
 ### Generate files with the following command:
 
-```dart run build_runner build --delete-conflicting-outputs```
+```dart run build_runner build```
 
 ### Firebase
 
