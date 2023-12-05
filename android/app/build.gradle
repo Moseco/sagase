@@ -58,6 +58,11 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // Make sure to only build for platforms supported by Flutter
+        ndk { 
+            abiFilters 'armeabi-v7a','arm64-v8a', 'x86_64' 
+        }
     }
 
     signingConfigs {
