@@ -12,8 +12,8 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
 
   @override
   Widget builder(context, viewModel, child) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         body: IntroductionScreen(
           next: const Text('Next'),
