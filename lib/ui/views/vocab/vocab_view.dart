@@ -106,7 +106,7 @@ class VocabView extends StackedView<VocabViewModel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tap to view or hide the pitch accent of a word.',
+                    'Tap to view or hide the pitch accent.',
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,

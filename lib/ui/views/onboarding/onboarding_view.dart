@@ -31,7 +31,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               image: const Text('探', style: TextStyle(fontSize: 80)),
               title: 'Sagase',
               body:
-                  'Welcome to Sagase, a Japanese-English dictionary and learning tool.',
+                  'Welcome to Sagase, a Japanese-English dictionary and learning app.',
             ),
             PageViewModel(
               image: const Text('辞書', style: TextStyle(fontSize: 80)),
@@ -43,7 +43,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               image: const Text('練習', style: TextStyle(fontSize: 80)),
               title: 'Practice',
               body:
-                  'Master the language with learning optimized flashcards using the built in lists, such as JLPT and Jouyou, or create your own.',
+                  'Master the language with learning optimized flashcards using the built in lists, such as JLPT and Kanji Kentei, or create your own.',
             ),
             PageViewModel(
               image: const Text('設定', style: TextStyle(fontSize: 80)),

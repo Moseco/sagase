@@ -345,7 +345,7 @@ class FlashcardsView extends HookWidget {
                         ),
                         TextSpan(
                           text:
-                              ' will put the flashcard back into the stack and have no other effect.\n\n',
+                              ' will put the flashcard back into the stack and not affect the interval.\n\n',
                         ),
                         TextSpan(
                           text: 'Correct',
