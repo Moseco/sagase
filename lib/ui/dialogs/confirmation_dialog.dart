@@ -43,14 +43,18 @@ class ConfirmationDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => completer(DialogResponse(confirmed: false)),
-                  child: Text(request.secondaryButtonTitle!),
+                  child: Text(
+                    request.secondaryButtonTitle!,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => completer(DialogResponse(confirmed: true)),
-                  child: Text(
-                    request.mainButtonTitle!,
-                    style: const TextStyle(color: Colors.red),
-                  ),
+                  child: Text(request.mainButtonTitle!),
                 ),
               ],
             ),
