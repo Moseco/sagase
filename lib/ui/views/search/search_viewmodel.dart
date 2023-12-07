@@ -123,7 +123,6 @@ class SearchViewModel extends FutureViewModel {
       _snackbarService.showSnackbar(
         message:
             'Hand writing detection is setting up. Please try again later.',
-        duration: const Duration(seconds: 2),
       );
       return;
     }

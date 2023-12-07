@@ -75,7 +75,7 @@ class KanjiRadicalViewModel extends FutureViewModel {
   void copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     _snackbarService.showSnackbar(
-      message: 'Copied $text to clipboard',
+      message: '$text copied to clipboard',
       duration: const Duration(seconds: 1),
     );
   }

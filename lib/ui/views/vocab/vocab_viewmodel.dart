@@ -187,7 +187,6 @@ class VocabViewModel extends FutureViewModel {
       Clipboard.setData(ClipboardData(text: reference.text));
       _snackbarService.showSnackbar(
         message: 'Reference not found. ${reference.text} copied to clipboard.',
-        duration: const Duration(seconds: 2),
       );
     }
   }

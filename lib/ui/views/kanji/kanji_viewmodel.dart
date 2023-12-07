@@ -146,7 +146,7 @@ class KanjiViewModel extends FutureViewModel {
   void copyKanji() {
     Clipboard.setData(ClipboardData(text: kanji.kanji));
     _snackbarService.showSnackbar(
-      message: 'Copied to clipboard',
+      message: '${kanji.kanji} copied to clipboard',
       duration: const Duration(seconds: 1),
     );
   }

@@ -87,7 +87,6 @@ class InitialIntervalDialog extends HookWidget {
                     veryCorrectController.text.isEmpty) {
                   _snackbarService.showSnackbar(
                     message: 'Both intervals must be provided',
-                    duration: const Duration(seconds: 2),
                   );
                   return;
                 }
@@ -100,8 +99,7 @@ class InitialIntervalDialog extends HookWidget {
                     correctInterval > veryCorrectInterval) {
                   _snackbarService.showSnackbar(
                     message:
-                        'Intervals must be greater than 0 and the correct answer interval cannot be larger than the very correct answer interval',
-                    duration: const Duration(seconds: 3),
+                        'Both intervals must be greater than 0 and the very correct answer interval must be larger',
                   );
                   return;
                 }

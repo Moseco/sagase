@@ -9,16 +9,10 @@ class AboutViewModel extends BaseViewModel {
   Future<void> openUrl(String url) async {
     try {
       if (!await launchUrl(Uri.parse(url))) {
-        _snackbarService.showSnackbar(
-          message: 'Failed to open link',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Failed to open link');
       }
     } catch (_) {
-      _snackbarService.showSnackbar(
-        message: 'Failed to open link',
-        duration: const Duration(seconds: 2),
-      );
+      _snackbarService.showSnackbar(message: 'Failed to open link');
     }
   }
 }

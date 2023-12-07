@@ -89,10 +89,7 @@ class SettingsViewModel extends BaseViewModel {
     try {
       int amount = int.parse(data);
       if (amount <= 0) {
-        _snackbarService.showSnackbar(
-          message: 'Must be greater than 0',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Amount must be greater than 0');
         return;
       }
       _sharedPreferencesService.setNewFlashcardsPerDay(amount);
@@ -116,10 +113,7 @@ class SettingsViewModel extends BaseViewModel {
     try {
       int amount = int.parse(data);
       if (amount <= 0) {
-        _snackbarService.showSnackbar(
-          message: 'Must be greater than 0',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Amount must be greater than 0');
         return;
       }
       _sharedPreferencesService.setFlashcardDistance(amount);
@@ -143,10 +137,7 @@ class SettingsViewModel extends BaseViewModel {
     try {
       int amount = int.parse(data);
       if (amount <= 0) {
-        _snackbarService.showSnackbar(
-          message: 'Must be greater than 0',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Amount must be greater than 0');
         return;
       }
       _sharedPreferencesService.setFlashcardCorrectAnswersRequired(amount);
@@ -182,10 +173,7 @@ class SettingsViewModel extends BaseViewModel {
     _dialogService.completeDialog(DialogResponse());
 
     if (path == null) {
-      _snackbarService.showSnackbar(
-        message: 'Failed to export data',
-        duration: const Duration(seconds: 2),
-      );
+      _snackbarService.showSnackbar(message: 'Failed to export data');
       return;
     }
 
@@ -201,7 +189,6 @@ class SettingsViewModel extends BaseViewModel {
 
     _snackbarService.showSnackbar(
       message: newPath == null ? 'Failed to save file' : 'Export successful',
-      duration: const Duration(seconds: 2),
     );
 
     // Delete the original file
@@ -232,21 +219,12 @@ class SettingsViewModel extends BaseViewModel {
       _dialogService.completeDialog(DialogResponse());
 
       if (result) {
-        _snackbarService.showSnackbar(
-          message: 'Import successful',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Import successful');
       } else {
-        _snackbarService.showSnackbar(
-          message: 'Import failed',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Import failed');
       }
     } else {
-      _snackbarService.showSnackbar(
-        message: 'Import cancelled',
-        duration: const Duration(seconds: 2),
-      );
+      _snackbarService.showSnackbar(message: 'Import cancelled');
     }
   }
 
@@ -285,16 +263,10 @@ class SettingsViewModel extends BaseViewModel {
         Uri.parse(
             r'https://docs.google.com/forms/d/e/1FAIpQLSeXqXf_b4Xvi_t5JuhpwTYsYmVLnQ9AwV7aIHwvvFFT25j42Q/viewform?usp=sf_link'),
       )) {
-        _snackbarService.showSnackbar(
-          message: 'Failed to open form',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Failed to open form');
       }
     } catch (_) {
-      _snackbarService.showSnackbar(
-        message: 'Failed to open form',
-        duration: const Duration(seconds: 2),
-      );
+      _snackbarService.showSnackbar(message: 'Failed to open form');
     }
   }
 
@@ -337,10 +309,7 @@ class SettingsViewModel extends BaseViewModel {
     if (response != null && response.confirmed) {
       final id = await _firebaseService.getAppInstanceId();
       if (id == null) {
-        _snackbarService.showSnackbar(
-          message: 'Failed to get ID',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Failed to get ID');
       } else {
         Clipboard.setData(ClipboardData(text: id));
         try {
@@ -348,16 +317,10 @@ class SettingsViewModel extends BaseViewModel {
             Uri.parse(
                 r'https://docs.google.com/forms/d/e/1FAIpQLSdZ2wEkhsVNjFcHh7XpJjdETF9JFPxfn16x_KHCiFWhrbsrmg/viewform?usp=sf_link'),
           )) {
-            _snackbarService.showSnackbar(
-              message: 'Failed to open form',
-              duration: const Duration(seconds: 2),
-            );
+            _snackbarService.showSnackbar(message: 'Failed to open form');
           }
         } catch (_) {
-          _snackbarService.showSnackbar(
-            message: 'Failed to open form',
-            duration: const Duration(seconds: 2),
-          );
+          _snackbarService.showSnackbar(message: 'Failed to open form');
         }
       }
     }
@@ -368,16 +331,10 @@ class SettingsViewModel extends BaseViewModel {
       if (!await launchUrl(
         Uri.parse(r'https://hammarlund.dev/sagase/privacy'),
       )) {
-        _snackbarService.showSnackbar(
-          message: 'Failed to open privacy policy',
-          duration: const Duration(seconds: 2),
-        );
+        _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
       }
     } catch (_) {
-      _snackbarService.showSnackbar(
-        message: 'Failed to open privacy policy',
-        duration: const Duration(seconds: 2),
-      );
+      _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
     }
   }
 }

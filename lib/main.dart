@@ -16,6 +16,7 @@ void main() async {
   await ThemeManager.initialise();
   setupDialogUi();
   setupBottomSheetUi();
+  locator<SnackbarService>().registerSnackbarConfig(getSnackbarConfig());
   runApp(const MyApp());
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 ThemeData getDarkTheme(bool useJapaneseSerifFont) {
   return ThemeData(
@@ -44,3 +45,8 @@ ThemeData getLightTheme(bool useJapaneseSerifFont) {
 String _getFontName(bool useJapaneseSerifFont) {
   return useJapaneseSerifFont ? 'NotoSansWithSerifJP' : 'NotoSansJP';
 }
+
+SnackbarConfig getSnackbarConfig() => SnackbarConfig(
+      borderRadius: 8,
+      backgroundColor: const Color(0xFF323232),
+    );
