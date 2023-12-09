@@ -1,6 +1,6 @@
 # Sagase 探せ
 
-A Japanese-English dictionary and learning tool built with [Flutter](https://docs.flutter.dev/).
+A Japanese-English dictionary and learning app built with [Flutter](https://docs.flutter.dev/).
 
 <p align="center">
     <img width="400" alt="Search" src="https://github.com/Moseco/sagase/assets/10720298/4a0c240f-fc80-4135-aebd-4d48c15343af">
@@ -97,6 +97,10 @@ The download urls for the required assets are not included in the repo. You can 
 
 Thanks to [Electronic Dictionary Research and Development Group](http://www.edrdg.org/) for managing the source vocab and kanji dictionary files.
 
+Thanks to [Tatoeba](https://tatoeba.org) for managing the Japanese-English example sentence pairs.
+
 Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji stroke order and kanji component data.
+
+Thanks to the [creator of MeCab](https://taku910.github.io/mecab) for the Japanese text analyzer and tokenizer.
 
 Thanks to [mifunetoshiro on Github](https://github.com/mifunetoshiro/kanjium) for providing the pitch accent data.
