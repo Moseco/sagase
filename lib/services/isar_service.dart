@@ -486,6 +486,9 @@ class IsarService {
   Future<List<Vocab>> getVocabByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
+    // If proper noun skip search
+    if (token.pos == PartOfSpeech.nounProper) return [];
+
     final baseQuery = _isar.vocabs.where().japaneseTextIndexElementEqualTo(
         _kanaKit.toHiragana(token.base.toLowerCase().romajiToHalfWidth()));
 

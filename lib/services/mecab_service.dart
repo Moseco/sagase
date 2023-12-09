@@ -132,6 +132,8 @@ class MecabService {
         pos = PartOfSpeech.particle;
       } else if (tokens[i].features[4] == 'サ変・スル') {
         pos = PartOfSpeech.verbSuruIncluded;
+      } else if (tokens[i].features[2] == '人名') {
+        pos = PartOfSpeech.nounProper;
       }
 
       // Handle corner cases where the base form (index 6) is different than the real base form
