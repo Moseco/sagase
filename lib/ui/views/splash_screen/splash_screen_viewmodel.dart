@@ -15,6 +15,7 @@ class SplashScreenViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _digitalInkService = locator<DigitalInkService>();
   final _mecabService = locator<MecabService>();
+  final _downloadService = locator<DownloadService>();
 
   SplashScreenStatus _status = SplashScreenStatus.waiting;
   SplashScreenStatus get status => _status;
@@ -54,19 +55,24 @@ class SplashScreenViewModel extends FutureViewModel {
 
     // Download assets if needed
     if (_dictionaryStatus != DictionaryStatus.valid || !_mecabReady!) {
+      if (!await _downloadService.hasSufficientFreeSpace()) {
+        _status = SplashScreenStatus.downloadFreeSpaceError;
+        rebuildUi();
+        return;
+      }
       late Future<bool> downloadResult;
       if (_dictionaryStatus != DictionaryStatus.valid && !_mecabReady!) {
-        downloadResult = locator<DownloadService>().downloadRequiredAssets();
+        downloadResult = _downloadService.downloadRequiredAssets();
       } else if (_dictionaryStatus != DictionaryStatus.valid) {
-        downloadResult = locator<DownloadService>().downloadBaseDictionary();
+        downloadResult = _downloadService.downloadBaseDictionary();
       } else {
-        downloadResult = locator<DownloadService>().downloadMecabDictionary();
+        downloadResult = _downloadService.downloadMecabDictionary();
       }
 
       _status = SplashScreenStatus.downloadingAssets;
       rebuildUi();
 
-      locator<DownloadService>().progressStream?.listen((event) {
+      _downloadService.progressStream?.listen((event) {
         double newStatus = (event * 100).floorToDouble() / 100;
         if (newStatus != _downloadStatus) {
           _downloadStatus = newStatus;
@@ -162,4 +168,5 @@ enum SplashScreenStatus {
   databaseError,
   downloadRequest,
   dictionaryUpgradeError,
+  downloadFreeSpaceError,
 }

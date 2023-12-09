@@ -67,6 +67,10 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
                 subtitle:
                     'Something went wrong while upgrading the dictionary.\nPlease try closing the app and reopening it.',
               ),
+            SplashScreenStatus.downloadFreeSpaceError => const _Body(
+                title: 'Download Failed',
+                subtitle: 'Not enough free space to set up the dictionary.',
+              ),
             _ => _Body(
                 title: 'Finishing Setup',
                 subtitle:

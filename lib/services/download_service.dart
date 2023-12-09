@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:sagase/utils/download_options.dart';
+import 'package:disk_space_plus/disk_space_plus.dart';
 
 class DownloadService {
   StreamController<double>? _streamController;
@@ -113,5 +114,18 @@ class DownloadService {
 
     _streamController!.close();
     return result;
+  }
+
+  Future<bool> hasSufficientFreeSpace() async {
+    // Get free space in MB
+    final freeSpace = await DiskSpacePlus.getFreeDiskSpace ?? 0;
+
+    // If 0 return true
+    // Can receive 0 (or null originally) if platform function fails
+    // Download should be attempted and any possible error can caught later
+    if (freeSpace == 0) return true;
+
+    // Make sure there is at least 500 MB of free spaces
+    return freeSpace > 500;
   }
 }

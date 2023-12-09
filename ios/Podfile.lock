@@ -1,4 +1,6 @@
 PODS:
+  - disk_space_plus (0.0.1):
+    - Flutter
   - Firebase/Analytics (10.17.0):
     - Firebase/Core
   - Firebase/Core (10.17.0):
@@ -190,6 +192,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - disk_space_plus (from `.symlinks/plugins/disk_space_plus/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
@@ -234,6 +237,8 @@ SPEC REPOS:
     - SSZipArchive
 
 EXTERNAL SOURCES:
+  disk_space_plus:
+    :path: ".symlinks/plugins/disk_space_plus/ios"
   firebase_analytics:
     :path: ".symlinks/plugins/firebase_analytics/ios"
   firebase_core:
@@ -266,6 +271,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  disk_space_plus: faa27633429bb392ecf7342395bf12040ca4ac9b
   Firebase: f4ac0b02927af9253ae094d23deecf0890da7374
   firebase_analytics: d6f520c1030d2c1215851f6e332d39a489a30bd2
   firebase_core: efc9455611b8769fa90fbdae5da182600bd6901c
