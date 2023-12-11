@@ -2,15 +2,27 @@
 
 A Japanese-English dictionary and learning app built with [Flutter](https://docs.flutter.dev/).
 
+<p align="left">
+    <a href="https://play.google.com/store/apps/details?id=dev.hammarlund.sagase">
+        <img height="50" alt="Get it on Google Play" src="https://github.com/Moseco/sagase/assets/10720298/4084b6df-6ce8-413c-8cc9-fe652bc70c10"/>
+    </a>
+    <a href="https://apps.apple.com/us/app/sagase-japanese-dictionary/id1665484082">
+        <img height="50" alt="Download on the App Store" hspace="10" src="https://github.com/Moseco/sagase/assets/10720298/46c148d2-0eff-429c-931c-75aba0b37676"/>
+    </a>
+</p>
+    
+
+## Screenshots
+
 <p align="center">
-    <img width="400" alt="Search" src="https://github.com/Moseco/sagase/assets/10720298/4a0c240f-fc80-4135-aebd-4d48c15343af">
-    <img width="400" alt="Hand writing recognition" src="https://github.com/Moseco/sagase/assets/10720298/7e08ac1f-efe7-47f3-bb13-051b5b14903c"> 
-    <img width="400" alt="Vocab (light)" src="https://github.com/Moseco/sagase/assets/10720298/796609e5-aa3f-4199-bed9-82406525b174">
-    <img width="400" alt="Vocab (dark)" src="https://github.com/Moseco/sagase/assets/10720298/5629c95f-c46f-4352-a09a-d721e6f323c1">
-    <img width="400" alt="Kanji" src="https://github.com/Moseco/sagase/assets/10720298/37b0e0a6-242b-4941-9270-d079f590af52"> 
-    <img width="400" alt="Lists" src="https://github.com/Moseco/sagase/assets/10720298/11da274a-fa29-47dc-bf95-33263bc5e6c4">
-    <img width="400" alt="Flashcards front" src="https://github.com/Moseco/sagase/assets/10720298/08320b50-25ec-45ab-b8c5-63fb44be709a">
-    <img width="400" alt="Flashcards back" src="https://github.com/Moseco/sagase/assets/10720298/00ce936f-f26f-43ee-923e-4998c13d2d74">
+    <img width="400" alt="Search" src="https://github.com/Moseco/sagase/assets/10720298/4a0c240f-fc80-4135-aebd-4d48c15343af"/>
+    <img width="400" alt="Hand writing recognition" src="https://github.com/Moseco/sagase/assets/10720298/7e08ac1f-efe7-47f3-bb13-051b5b14903c"/> 
+    <img width="400" alt="Vocab (light)" src="https://github.com/Moseco/sagase/assets/10720298/796609e5-aa3f-4199-bed9-82406525b174"/>
+    <img width="400" alt="Vocab (dark)" src="https://github.com/Moseco/sagase/assets/10720298/5629c95f-c46f-4352-a09a-d721e6f323c1"/>
+    <img width="400" alt="Kanji" src="https://github.com/Moseco/sagase/assets/10720298/37b0e0a6-242b-4941-9270-d079f590af52"/> 
+    <img width="400" alt="Lists" src="https://github.com/Moseco/sagase/assets/10720298/11da274a-fa29-47dc-bf95-33263bc5e6c4"/>
+    <img width="400" alt="Flashcards front" src="https://github.com/Moseco/sagase/assets/10720298/08320b50-25ec-45ab-b8c5-63fb44be709a"/>
+    <img width="400" alt="Flashcards back" src="https://github.com/Moseco/sagase/assets/10720298/00ce936f-f26f-43ee-923e-4998c13d2d74"/>
 </p>
 
 ## Getting Started
