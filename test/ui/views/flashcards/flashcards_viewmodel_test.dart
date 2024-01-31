@@ -1524,7 +1524,7 @@ void main() {
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
-          flashcardLearningModeEnabled: true);
+          getFlashcardLearningModeEnabled: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
@@ -1660,7 +1660,7 @@ void main() {
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
-          flashcardLearningModeEnabled: true);
+          getFlashcardLearningModeEnabled: true);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(
@@ -1721,7 +1721,7 @@ void main() {
       await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
-      getAndRegisterSharedPreferencesService(newFlashcardsPerDay: 4);
+      getAndRegisterSharedPreferencesService(getNewFlashcardsPerDay: 4);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(
@@ -1812,7 +1812,7 @@ void main() {
       await isarService.updateFlashcardSet(flashcardSet);
 
       // Set shared preferences
-      getAndRegisterSharedPreferencesService(flashcardDistance: 5);
+      getAndRegisterSharedPreferencesService(getFlashcardDistance: 5);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
@@ -1862,7 +1862,7 @@ void main() {
 
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
-          flashcardCorrectAnswersRequired: 2);
+          getFlashcardCorrectAnswersRequired: 2);
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
