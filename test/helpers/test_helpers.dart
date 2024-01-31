@@ -7,7 +7,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:path/path.dart' as path;
 import 'package:sagase/utils/constants.dart' as constants;
@@ -19,15 +21,20 @@ import 'test_helpers.mocks.dart';
 @GenerateMocks([], customMocks: [
   MockSpec<NavigationService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<BottomSheetService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<SnackbarService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<IsarService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<SharedPreferencesService>(
       onMissingStub: OnMissingStub.throwException),
+  MockSpec<MecabService>(onMissingStub: OnMissingStub.throwException),
 ])
 MockNavigationService getAndRegisterNavigationService() {
   _removeRegistrationIfExists<NavigationService>();
   final service = MockNavigationService();
 
-  when(service.back()).thenAnswer((realInvocation) => false);
+  when(service.back()).thenReturn(false);
+  when(service.navigateTo(any, arguments: anyNamed('arguments')))
+      .thenAnswer((_) async => null);
 
   locator.registerSingleton<NavigationService>(service);
   return service;
@@ -48,16 +55,63 @@ MockDialogService getAndRegisterDialogService({
     description: anyNamed('description'),
     dialogPlatform: anyNamed('dialogPlatform'),
     title: anyNamed('title'),
-  )).thenAnswer((realInvocation) =>
-      Future.value(DialogResponse(confirmed: dialogResponseConfirmed)));
+  )).thenAnswer(
+      (_) async => DialogResponse(confirmed: dialogResponseConfirmed));
 
   locator.registerSingleton<DialogService>(service);
   return service;
 }
 
-MockIsarService getAndRegisterIsarService() {
+MockBottomSheetService getAndRegisterBottomSheetService() {
+  _removeRegistrationIfExists<BottomSheetService>();
+  final service = MockBottomSheetService();
+  locator.registerSingleton<BottomSheetService>(service);
+  return service;
+}
+
+MockSnackbarService getAndRegisterSnackbarService() {
+  _removeRegistrationIfExists<SnackbarService>();
+  final service = MockSnackbarService();
+  locator.registerSingleton<SnackbarService>(service);
+  return service;
+}
+
+MockIsarService getAndRegisterIsarService({
+  List<Vocab>? getVocabList,
+  List<Kanji>? getKanjiList,
+  Stream<void>? watchMyDictionaryList,
+  MyDictionaryList? getMyDictionaryList,
+  bool? isKanjiInMyDictionaryLists,
+  KanjiRadical? getKanjiRadical,
+  List<Kanji>? getKanjiWithRadical,
+  Kanji? getKanji,
+  bool? isVocabInMyDictionaryLists,
+  List<PredefinedDictionaryList>? getPredefinedDictionaryLists,
+  List<MyDictionaryList>? getMyDictionaryLists,
+}) {
   _removeRegistrationIfExists<IsarService>();
   final service = MockIsarService();
+
+  when(service.getVocabList(any)).thenAnswer((_) async => getVocabList!);
+  when(service.getKanjiList(any)).thenAnswer((_) async => getKanjiList!);
+  when(service.watchMyDictionaryList(any))
+      .thenAnswer((_) => watchMyDictionaryList!);
+  when(service.getMyDictionaryList(any))
+      .thenAnswer((_) async => getMyDictionaryList);
+  when(service.isKanjiInMyDictionaryLists(any))
+      .thenAnswer((_) async => isKanjiInMyDictionaryLists!);
+  when(service.getKanjiRadical(any)).thenAnswer((_) async => getKanjiRadical!);
+  when(service.getKanjiWithRadical(any))
+      .thenAnswer((_) async => getKanjiWithRadical!);
+  when(service.getKanji(any)).thenAnswer((_) async => getKanji!);
+  when(service.isVocabInMyDictionaryLists(any))
+      .thenAnswer((_) async => isVocabInMyDictionaryLists!);
+  when(service.getPredefinedDictionaryLists(any))
+      .thenAnswer((_) async => getPredefinedDictionaryLists!);
+  when(service.getMyDictionaryLists(any))
+      .thenAnswer((_) async => getMyDictionaryLists!);
+  when(service.updateFlashcardSet(any)).thenAnswer((_) async {});
+
   locator.registerSingleton<IsarService>(service);
   return service;
 }
@@ -70,43 +124,80 @@ Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
 }
 
 MockSharedPreferencesService getAndRegisterSharedPreferencesService({
-  bool flashcardLearningModeEnabled =
+  int getInitialCorrectInterval = constants.defaultInitialCorrectInterval,
+  int getInitialVeryCorrectInterval =
+      constants.defaultInitialVeryCorrectInterval,
+  bool getFlashcardLearningModeEnabled =
       constants.defaultFlashcardLearningModeEnabled,
-  int newFlashcardsPerDay = constants.defaultNewFlashcardsPerDay,
-  int flashcardDistance = constants.defaultFlashcardDistance,
-  int flashcardCorrectAnswersRequired =
+  int getNewFlashcardsPerDay = constants.defaultNewFlashcardsPerDay,
+  int getFlashcardDistance = constants.defaultFlashcardDistance,
+  int getFlashcardCorrectAnswersRequired =
       constants.defaultFlashcardCorrectAnswersRequired,
+  bool getStrokeDiagramStartExpanded =
+      constants.defaultStrokeDiagramStartExpanded,
+  bool getAndSetTutorialVocab = false,
+  bool getAndSetTutorialFlashcards = false,
+  bool getShowPitchAccent = constants.defaultShowPitchAccent,
+  bool getShowNewInterval = constants.defaultShowNewInterval,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
 
   when(service.getInitialCorrectInterval())
-      .thenReturn(constants.defaultInitialCorrectInterval);
+      .thenReturn(getInitialCorrectInterval);
   when(service.getInitialVeryCorrectInterval())
-      .thenReturn(constants.defaultInitialVeryCorrectInterval);
+      .thenReturn(getInitialVeryCorrectInterval);
   when(service.getFlashcardLearningModeEnabled())
-      .thenReturn(flashcardLearningModeEnabled);
-  when(service.getNewFlashcardsPerDay()).thenReturn(newFlashcardsPerDay);
-  when(service.getFlashcardDistance()).thenReturn(flashcardDistance);
+      .thenReturn(getFlashcardLearningModeEnabled);
+  when(service.getNewFlashcardsPerDay()).thenReturn(getNewFlashcardsPerDay);
+  when(service.getFlashcardDistance()).thenReturn(getFlashcardDistance);
   when(service.getFlashcardCorrectAnswersRequired())
-      .thenReturn(flashcardCorrectAnswersRequired);
+      .thenReturn(getFlashcardCorrectAnswersRequired);
+  when(service.getStrokeDiagramStartExpanded())
+      .thenReturn(getStrokeDiagramStartExpanded);
+  when(service.getAndSetTutorialVocab()).thenReturn(getAndSetTutorialVocab);
+  when(service.getAndSetTutorialFlashcards())
+      .thenReturn(getAndSetTutorialFlashcards);
+  when(service.getShowPitchAccent()).thenReturn(getShowPitchAccent);
+  when(service.getShowNewInterval()).thenReturn(getShowNewInterval);
 
   locator.registerSingleton<SharedPreferencesService>(service);
+  return service;
+}
+
+MockMecabService getAndRegisterMecabService({
+  List<List<JapaneseTextToken>>? parseTextList,
+  List<List<RubyTextPair>>? createRubyTextPairs,
+}) {
+  _removeRegistrationIfExists<MecabService>();
+  final service = MockMecabService();
+
+  when(service.parseText(any)).thenAnswer((_) => parseTextList!.removeAt(0));
+  when(service.createRubyTextPairs(any, any))
+      .thenAnswer((_) => createRubyTextPairs!.removeAt(0));
+
+  locator.registerSingleton<MecabService>(service);
   return service;
 }
 
 void registerServices() {
   getAndRegisterNavigationService();
   getAndRegisterDialogService();
+  getAndRegisterBottomSheetService();
+  getAndRegisterSnackbarService();
   getAndRegisterIsarService();
   getAndRegisterSharedPreferencesService();
+  getAndRegisterMecabService();
 }
 
 void unregisterServices() {
   locator.unregister<NavigationService>();
   locator.unregister<DialogService>();
+  locator.unregister<BottomSheetService>();
+  locator.unregister<SnackbarService>();
   locator.unregister<IsarService>();
   locator.unregister<SharedPreferencesService>();
+  locator.unregister<MecabService>();
 }
 
 void _removeRegistrationIfExists<T extends Object>() {
