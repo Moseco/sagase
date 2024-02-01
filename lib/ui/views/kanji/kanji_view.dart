@@ -39,12 +39,12 @@ class KanjiView extends StackedView<KanjiViewModel> {
           child: ListView(
             padding: const EdgeInsets.all(8),
             children: [
-              IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: SelectionContainer.disabled(
+              SelectionContainer.disabled(
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
                           child: GestureDetector(
                             onLongPress: viewModel.copyKanji,
                             child: Text(
@@ -54,100 +54,102 @@ class KanjiView extends StackedView<KanjiViewModel> {
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: switch (kanji.grade) {
-                                      255 => '—',
-                                      8 => '7-9',
-                                      _ => kanji.grade.toString(),
-                                    },
-                                  ),
-                                  const TextSpan(
-                                    text: '\nGrade',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: switch (kanji.grade) {
+                                        255 => '—',
+                                        8 => '7-9',
+                                        _ => kanji.grade.toString(),
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(text: kanji.strokeCount.toString()),
-                                  const TextSpan(
-                                    text: '\nStrokes',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                                    const TextSpan(
+                                      text: '\nGrade',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: kanji.strokeCount.toString(),
+                                    ),
+                                    const TextSpan(
+                                      text: '\nStrokes',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanji.frequency != null
-                                        ? kanji.frequency.toString()
-                                        : '—',
-                                  ),
-                                  const TextSpan(
-                                    text: '\nRank',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: kanji.frequency != null
+                                          ? kanji.frequency.toString()
+                                          : '—',
                                     ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanji.jlpt != 255
-                                        ? 'N${kanji.jlpt}'
-                                        : '—',
-                                  ),
-                                  const TextSpan(
-                                    text: '\nJLPT',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                                    const TextSpan(
+                                      text: '\nRank',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: kanji.jlpt != 255
+                                          ? 'N${kanji.jlpt}'
+                                          : '—',
+                                    ),
+                                    const TextSpan(
+                                      text: '\nJLPT',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
