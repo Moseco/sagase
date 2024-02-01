@@ -21,54 +21,57 @@ class StrokeOrderBottomSheetState extends State<StrokeOrderBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: StrokeOrderDiagramLarge(
-                    strokes: widget.request.data,
-                    page: page,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: StrokeOrderDiagramLarge(
+                      strokes: widget.request.data,
+                      page: page,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_left),
-                    onPressed: () => setState(() {
-                      page = (page - 1)
-                          .clamp(0, widget.request.data.length - 1)
-                          .toInt();
-                    }),
+              Row(
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: () => setState(() {
+                        page = (page - 1)
+                            .clamp(0, widget.request.data.length - 1)
+                            .toInt();
+                      }),
+                    ),
                   ),
-                ),
-                Text('${page + 1}/${widget.request.data.length}'),
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_right),
-                    onPressed: () => setState(() {
-                      page = (page + 1)
-                          .clamp(0, widget.request.data.length - 1)
-                          .toInt();
-                    }),
+                  Text('${page + 1}/${widget.request.data.length}'),
+                  Expanded(
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: () => setState(() {
+                        page = (page + 1)
+                            .clamp(0, widget.request.data.length - 1)
+                            .toInt();
+                      }),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

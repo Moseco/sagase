@@ -61,6 +61,8 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
     BuildContext context,
     List<KanjiRadical> radicals,
   ) {
+    final padding = MediaQuery.of(context).padding;
+
     final List<Widget> radicalGroups = [];
 
     int currentStrokeCount = -1;
@@ -76,19 +78,31 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
               color: Theme.of(context).appBarTheme.backgroundColor,
               padding: const EdgeInsets.all(12),
               child: SelectionContainer.disabled(
-                child: Text(
-                  currentStrokeCount == 1
-                      ? '$currentStrokeCount stroke'
-                      : '$currentStrokeCount strokes',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: padding.left,
+                    right: padding.right,
+                  ),
+                  child: Text(
+                    currentStrokeCount == 1
+                        ? '$currentStrokeCount stroke'
+                        : '$currentStrokeCount strokes',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(currentRadicals),
+            sliver: SliverPadding(
+              padding: EdgeInsets.only(
+                left: padding.left,
+                right: padding.right,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(currentRadicals),
+              ),
             ),
           ),
         );
@@ -110,6 +124,8 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
     BuildContext context,
     List<KanjiRadical> radicals,
   ) {
+    final padding = MediaQuery.of(context).padding;
+
     final List<Widget> radicalGroups = [];
 
     KanjiRadicalImportance currentImportance = KanjiRadicalImportance.none;
@@ -139,17 +155,29 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
               color: Theme.of(context).appBarTheme.backgroundColor,
               padding: const EdgeInsets.all(12),
               child: SelectionContainer.disabled(
-                child: Text(
-                  headerText,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: padding.left,
+                    right: padding.right,
+                  ),
+                  child: Text(
+                    headerText,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(currentRadicals),
+            sliver: SliverPadding(
+              padding: EdgeInsets.only(
+                left: padding.left,
+                right: padding.right,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(currentRadicals),
+              ),
             ),
           ),
         );

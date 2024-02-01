@@ -25,250 +25,255 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
   Widget builder(context, viewModel, child) {
     return Scaffold(
       appBar: AppBar(),
-      body: SelectionArea(
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            SelectionContainer.disabled(
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: GestureDetector(
-                          onLongPress: () =>
-                              viewModel.copyToClipboard(kanjiRadical.radical),
-                          child: Text(
-                            kanjiRadical.radical,
-                            style: const TextStyle(fontSize: 80),
+      body: SafeArea(
+        bottom: false,
+        child: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: [
+              SelectionContainer.disabled(
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: GestureDetector(
+                            onLongPress: () =>
+                                viewModel.copyToClipboard(kanjiRadical.radical),
+                            child: Text(
+                              kanjiRadical.radical,
+                              style: const TextStyle(fontSize: 80),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanjiRadical.kangxiId.toString(),
-                                  ),
-                                  const TextSpan(
-                                    text: '\nRadical #',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: kanjiRadical.kangxiId.toString(),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kanjiRadical.strokeCount.toString(),
-                                  ),
-                                  const TextSpan(
-                                    text: '\nStrokes',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                                    const TextSpan(
+                                      text: '\nRadical #',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: kanjiRadical.strokeCount.toString(),
+                                    ),
+                                    const TextSpan(
+                                      text: '\nStrokes',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: _getImportanceString(),
-                                  ),
-                                  const TextSpan(
-                                    text: '\nImportance',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: _getImportanceString(),
                                     ),
-                                  ),
-                                ],
+                                    const TextSpan(
+                                      text: '\nImportance',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  kanjiRadical.position ==
-                                          KanjiRadicalPosition.none
-                                      ? const TextSpan(text: '—')
-                                      : WidgetSpan(
-                                          child: KanjiRadicalPositionImage(
-                                            kanjiRadical.position,
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    kanjiRadical.position ==
+                                            KanjiRadicalPosition.none
+                                        ? const TextSpan(text: '—')
+                                        : WidgetSpan(
+                                            child: KanjiRadicalPositionImage(
+                                              kanjiRadical.position,
+                                            ),
                                           ),
-                                        ),
-                                  const TextSpan(
-                                    text: '\nPosition',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                                    const TextSpan(
+                                      text: '\nPosition',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (kanjiRadical.strokes != null &&
-                kanjiRadical.strokes!.isNotEmpty)
-              CardWithTitleExpandable(
-                title: 'Radical stroke order',
-                startExpanded: viewModel.strokeDiagramStartExpanded,
-                expandedChanged: viewModel.setStrokeDiagramStartExpanded,
+              if (kanjiRadical.strokes != null &&
+                  kanjiRadical.strokes!.isNotEmpty)
+                CardWithTitleExpandable(
+                  title: 'Radical stroke order',
+                  startExpanded: viewModel.strokeDiagramStartExpanded,
+                  expandedChanged: viewModel.setStrokeDiagramStartExpanded,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: StrokeOrderDiagram(kanjiRadical.strokes!),
+                  ),
+                ),
+              CardWithTitleSection(
+                title: 'Radical info',
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  child: StrokeOrderDiagram(kanjiRadical.strokes!),
+                  padding: const EdgeInsets.all(8),
+                  child: Table(
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: FlexColumnWidth(),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          const Text(
+                            'Meaning: ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(kanjiRadical.meaning),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const Text(
+                            'Reading: ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(kanjiRadical.reading),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            CardWithTitleSection(
-              title: 'Radical info',
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                child: Table(
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: FlexColumnWidth(),
-                  },
-                  children: [
-                    TableRow(
-                      children: [
-                        const Text(
-                          'Meaning: ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(kanjiRadical.meaning),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        const Text(
-                          'Reading: ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(kanjiRadical.reading),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (viewModel.variants != null)
-              SelectionContainer.disabled(
-                child: CardWithTitleSection(
-                  title: 'Variants',
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: List.generate(
-                        viewModel.variants!.length,
-                        (index) => Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Center(
-                                child: GestureDetector(
-                                  onLongPress: () => viewModel.copyToClipboard(
-                                      viewModel.variants![index].radical),
-                                  child: Text(
-                                    viewModel.variants![index].radical,
-                                    style: const TextStyle(fontSize: 40),
+              if (viewModel.variants != null)
+                SelectionContainer.disabled(
+                  child: CardWithTitleSection(
+                    title: 'Variants',
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: List.generate(
+                          viewModel.variants!.length,
+                          (index) => Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: GestureDetector(
+                                    onLongPress: () =>
+                                        viewModel.copyToClipboard(
+                                            viewModel.variants![index].radical),
+                                    child: Text(
+                                      viewModel.variants![index].radical,
+                                      style: const TextStyle(fontSize: 40),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: viewModel
-                                            .variants![index].strokeCount
-                                            .toString(),
-                                      ),
-                                      const TextSpan(
-                                        text: '\nStrokes',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
+                              Expanded(
+                                child: Center(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: viewModel
+                                              .variants![index].strokeCount
+                                              .toString(),
                                         ),
-                                      ),
-                                    ],
+                                        const TextSpan(
+                                          text: '\nStrokes',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      viewModel.variants![index].position ==
-                                              KanjiRadicalPosition.none
-                                          ? const TextSpan(text: '—')
-                                          : WidgetSpan(
-                                              child: KanjiRadicalPositionImage(
-                                                viewModel
-                                                    .variants![index].position,
+                              Expanded(
+                                child: Center(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        viewModel.variants![index].position ==
+                                                KanjiRadicalPosition.none
+                                            ? const TextSpan(text: '—')
+                                            : WidgetSpan(
+                                                child:
+                                                    KanjiRadicalPositionImage(
+                                                  viewModel.variants![index]
+                                                      .position,
+                                                ),
                                               ),
-                                            ),
-                                      const TextSpan(
-                                        text: '\nPosition',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
+                                        const TextSpan(
+                                          text: '\nPosition',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            const _KanjiUsage(),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+              const _KanjiUsage(),
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
         ),
       ),
     );

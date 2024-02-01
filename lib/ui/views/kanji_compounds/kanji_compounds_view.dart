@@ -18,21 +18,24 @@ class KanjiCompoundsView extends StackedView<KanjiCompoundsViewModel> {
   Widget builder(context, viewModel, child) {
     return Scaffold(
       appBar: AppBar(title: Text('${kanji.kanji} Compounds')),
-      body: viewModel.vocabList == null
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.separated(
-              separatorBuilder: (_, __) => const Divider(
-                height: 1,
-                indent: 8,
-                endIndent: 8,
+      body: SafeArea(
+        bottom: false,
+        child: viewModel.vocabList == null
+            ? const Center(child: CircularProgressIndicator())
+            : ListView.separated(
+                separatorBuilder: (_, __) => const Divider(
+                  height: 1,
+                  indent: 8,
+                  endIndent: 8,
+                ),
+                itemCount: viewModel.vocabList!.length,
+                itemBuilder: (context, index) => VocabListItem(
+                  vocab: viewModel.vocabList![index],
+                  onPressed: () =>
+                      viewModel.navigateToVocab(viewModel.vocabList![index]),
+                ),
               ),
-              itemCount: viewModel.vocabList!.length,
-              itemBuilder: (context, index) => VocabListItem(
-                vocab: viewModel.vocabList![index],
-                onPressed: () =>
-                    viewModel.navigateToVocab(viewModel.vocabList![index]),
-              ),
-            ),
+      ),
     );
   }
 }

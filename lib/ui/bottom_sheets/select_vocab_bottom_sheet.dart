@@ -16,32 +16,37 @@ class SelectVocabBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
-      ),
-      child: ListView.separated(
-        separatorBuilder: (_, __) => const Divider(
-          height: 1,
-          indent: 8,
-          endIndent: 8,
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
         ),
-        padding: EdgeInsets.only(
-          top: 16,
-          bottom: MediaQuery.of(context).padding.bottom,
+        child: ListView.separated(
+          separatorBuilder: (_, __) => const Divider(
+            height: 1,
+            indent: 8,
+            endIndent: 8,
+          ),
+          padding: EdgeInsets.only(
+            top: 16,
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          itemCount: request.data.length,
+          itemBuilder: (context, index) {
+            return VocabListItem(
+              vocab: request.data[index],
+              onPressed: () => locator<NavigationService>().navigateTo(
+                Routes.vocabView,
+                arguments: VocabViewArguments(vocab: request.data[index]),
+              ),
+            );
+          },
         ),
-        itemCount: request.data.length,
-        itemBuilder: (context, index) {
-          return VocabListItem(
-            vocab: request.data[index],
-            onPressed: () => locator<NavigationService>().navigateTo(
-              Routes.vocabView,
-              arguments: VocabViewArguments(vocab: request.data[index]),
-            ),
-          );
-        },
       ),
     );
   }

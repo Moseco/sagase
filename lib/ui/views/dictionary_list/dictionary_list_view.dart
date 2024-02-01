@@ -39,20 +39,23 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
               ? const TabBar(tabs: [Tab(text: 'Vocab'), Tab(text: 'Kanji')])
               : null,
         ),
-        body: viewModel.isBusy
-            ? const Center(child: CircularProgressIndicator())
-            : viewModel.vocab.isNotEmpty
-                ? viewModel.kanji.isNotEmpty
-                    ? const TabBarView(
-                        children: [
-                          _VocabList(),
-                          _KanjiList(),
-                        ],
-                      )
-                    : const _VocabList()
-                : viewModel.kanji.isNotEmpty
-                    ? const _KanjiList()
-                    : const _Empty(),
+        body: SafeArea(
+          bottom: false,
+          child: viewModel.isBusy
+              ? const Center(child: CircularProgressIndicator())
+              : viewModel.vocab.isNotEmpty
+                  ? viewModel.kanji.isNotEmpty
+                      ? const TabBarView(
+                          children: [
+                            _VocabList(),
+                            _KanjiList(),
+                          ],
+                        )
+                      : const _VocabList()
+                  : viewModel.kanji.isNotEmpty
+                      ? const _KanjiList()
+                      : const _Empty(),
+        ),
       ),
     );
   }
