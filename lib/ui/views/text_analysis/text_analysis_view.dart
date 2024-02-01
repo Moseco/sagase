@@ -77,17 +77,20 @@ class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
     return Column(
       children: [
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: TextField(
-              controller: controller,
-              autofocus: true,
-              maxLines: null,
-              decoration: const InputDecoration.collapsed(
-                hintText: 'Enter Japanese text to analyze...',
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                controller: controller,
+                autofocus: true,
+                maxLines: null,
+                decoration: const InputDecoration.collapsed(
+                  hintText: 'Enter Japanese text to analyze...',
+                ),
+                maxLength: 1000,
+                inputFormatters: [LengthLimitingTextInputFormatter(1000)],
               ),
-              maxLength: 1000,
-              inputFormatters: [LengthLimitingTextInputFormatter(1000)],
             ),
           ),
         ),
@@ -228,28 +231,36 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
       }
     }
 
+    final padding = MediaQuery.of(context).padding;
+
     return Column(
       children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height / 2,
-          ),
-          child: SingleChildScrollView(
-            primary: false,
-            padding: const EdgeInsets.all(8),
-            child: SizedBox(
-              width: double.infinity,
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.end,
-                spacing: 6,
-                children: textChildren,
+        Padding(
+          padding: EdgeInsets.only(left: padding.left, right: padding.right),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height / 2,
+            ),
+            child: SingleChildScrollView(
+              primary: false,
+              padding: const EdgeInsets.all(8),
+              child: SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  spacing: 6,
+                  children: textChildren,
+                ),
               ),
             ),
           ),
         ),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: EdgeInsets.symmetric(
+            horizontal: 8 + padding.left,
+            vertical: 4,
+          ),
           color: Colors.deepPurple,
           child: const Text(
             'Vocab found in text',
@@ -265,7 +276,9 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
             ),
             primary: false,
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom,
+              left: padding.left,
+              right: padding.right,
+              bottom: padding.bottom,
             ),
             itemCount: associatedVocabChildren.length,
             itemBuilder: (context, index) => associatedVocabChildren[index],

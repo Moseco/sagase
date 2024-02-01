@@ -22,20 +22,23 @@ class KanjiListView extends StackedView<KanjiListViewModel> {
   Widget builder(context, viewModel, child) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: ListView.separated(
-        separatorBuilder: (_, __) => const Divider(
-          height: 1,
-          indent: 8,
-          endIndent: 8,
+      body: SafeArea(
+        bottom: false,
+        child: ListView.separated(
+          separatorBuilder: (_, __) => const Divider(
+            height: 1,
+            indent: 8,
+            endIndent: 8,
+          ),
+          itemCount: kanjiList.length,
+          itemBuilder: (context, index) {
+            final current = kanjiList[index];
+            return KanjiListItem(
+              kanji: current,
+              onPressed: () => viewModel.navigateToKanji(current),
+            );
+          },
         ),
-        itemCount: kanjiList.length,
-        itemBuilder: (context, index) {
-          final current = kanjiList[index];
-          return KanjiListItem(
-            kanji: current,
-            onPressed: () => viewModel.navigateToKanji(current),
-          );
-        },
       ),
     );
   }

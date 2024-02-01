@@ -33,240 +33,243 @@ class KanjiView extends StackedView<KanjiViewModel> {
       // Can throw exception "'!_selectionStartsInScrollable': is not true."
       // when long press then try to scroll on disabled areas.
       // But seems to work okay in release builds.
-      body: SelectionArea(
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            IntrinsicHeight(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: SelectionContainer.disabled(
-                        child: GestureDetector(
-                          onLongPress: viewModel.copyKanji,
-                          child: Text(
-                            kanji.kanji,
-                            style: const TextStyle(fontSize: 80),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: switch (kanji.grade) {
-                                    255 => '—',
-                                    8 => '7-9',
-                                    _ => kanji.grade.toString(),
-                                  },
-                                ),
-                                const TextSpan(
-                                  text: '\nGrade',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: kanji.strokeCount.toString()),
-                                const TextSpan(
-                                  text: '\nStrokes',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: kanji.frequency != null
-                                      ? kanji.frequency.toString()
-                                      : '—',
-                                ),
-                                const TextSpan(
-                                  text: '\nRank',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: kanji.jlpt != 255
-                                      ? 'N${kanji.jlpt}'
-                                      : '—',
-                                ),
-                                const TextSpan(
-                                  text: '\nJLPT',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
-              CardWithTitleExpandable(
-                title: 'Kanji stroke order',
-                startExpanded: viewModel.strokeDiagramStartExpanded,
-                expandedChanged: viewModel.setStrokeDiagramStartExpanded,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  child: StrokeOrderDiagram(kanji.strokes!),
-                ),
-              ),
-            CardWithTitleSection(
-              title: 'Kanji info',
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                child: Table(
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: FlexColumnWidth(),
-                  },
+      body: SafeArea(
+        bottom: false,
+        child: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: [
+              IntrinsicHeight(
+                child: Row(
                   children: [
-                    TableRow(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Meaning: ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Center(
+                        child: SelectionContainer.disabled(
+                          child: GestureDetector(
+                            onLongPress: viewModel.copyKanji,
+                            child: Text(
+                              kanji.kanji,
+                              style: const TextStyle(fontSize: 80),
+                            ),
                           ),
                         ),
-                        Text(kanji.meanings?.join(', ') ?? '(no meaning)'),
-                      ],
+                      ),
                     ),
-                    if (kanji.kunReadings != null)
-                      TableRow(
-                        children: [
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Kun reading: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: switch (kanji.grade) {
+                                      255 => '—',
+                                      8 => '7-9',
+                                      _ => kanji.grade.toString(),
+                                    },
+                                  ),
+                                  const TextSpan(
+                                    text: '\nGrade',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          KanjiKunReadings(
-                            kanji.kunReadings!,
-                            maxLines: 99,
-                          ),
-                        ],
-                      ),
-                    if (kanji.onReadings != null)
-                      TableRow(
-                        children: [
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'On reading: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(text: kanji.strokeCount.toString()),
+                                  const TextSpan(
+                                    text: '\nStrokes',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          Text(kanji.onReadings!.join(', ')),
-                        ],
+                          ],
+                        ),
                       ),
-                    if (kanji.nanori != null)
-                      TableRow(
-                        children: [
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Nanori: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: kanji.frequency != null
+                                        ? kanji.frequency.toString()
+                                        : '—',
+                                  ),
+                                  const TextSpan(
+                                    text: '\nRank',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          Text(kanji.nanori!.join(', ')),
-                        ],
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: kanji.jlpt != 255
+                                        ? 'N${kanji.jlpt}'
+                                        : '—',
+                                  ),
+                                  const TextSpan(
+                                    text: '\nJLPT',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            SelectionContainer.disabled(
-              child: CardWithTitleSection(
-                title: 'Radical',
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: viewModel.kanjiRadical != null
-                      ? _KanjiRadicalItem(
-                          radical: viewModel.kanjiRadical!,
-                          onPressed: viewModel.navigateToKanjiRadical,
-                        )
-                      : const ListItemLoading(showLeading: true),
+              if (kanji.strokes != null && kanji.strokes!.isNotEmpty)
+                CardWithTitleExpandable(
+                  title: 'Kanji stroke order',
+                  startExpanded: viewModel.strokeDiagramStartExpanded,
+                  expandedChanged: viewModel.setStrokeDiagramStartExpanded,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: StrokeOrderDiagram(kanji.strokes!),
+                  ),
+                ),
+              CardWithTitleSection(
+                title: 'Kanji info',
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  child: Table(
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: FlexColumnWidth(),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Meaning: ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(kanji.meanings?.join(', ') ?? '(no meaning)'),
+                        ],
+                      ),
+                      if (kanji.kunReadings != null)
+                        TableRow(
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                'Kun reading: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            KanjiKunReadings(
+                              kanji.kunReadings!,
+                              maxLines: 99,
+                            ),
+                          ],
+                        ),
+                      if (kanji.onReadings != null)
+                        TableRow(
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                'On reading: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Text(kanji.onReadings!.join(', ')),
+                          ],
+                        ),
+                      if (kanji.nanori != null)
+                        TableRow(
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                'Nanori: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Text(kanji.nanori!.join(', ')),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (kanji.components != null)
               SelectionContainer.disabled(
                 child: CardWithTitleSection(
-                  title: 'Other components',
+                  title: 'Radical',
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Column(
-                      children: List.generate(
-                        kanji.components!.length,
-                        (index) => viewModel.components != null
-                            ? KanjiListItem(
-                                kanji: viewModel.components![index],
-                                onPressed: () => viewModel.navigateToKanji(
-                                  viewModel.components![index],
-                                ),
-                              )
-                            : const ListItemLoading(showLeading: true),
+                    child: viewModel.kanjiRadical != null
+                        ? _KanjiRadicalItem(
+                            radical: viewModel.kanjiRadical!,
+                            onPressed: viewModel.navigateToKanjiRadical,
+                          )
+                        : const ListItemLoading(showLeading: true),
+                  ),
+                ),
+              ),
+              if (kanji.components != null)
+                SelectionContainer.disabled(
+                  child: CardWithTitleSection(
+                    title: 'Other components',
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        children: List.generate(
+                          kanji.components!.length,
+                          (index) => viewModel.components != null
+                              ? KanjiListItem(
+                                  kanji: viewModel.components![index],
+                                  onPressed: () => viewModel.navigateToKanji(
+                                    viewModel.components![index],
+                                  ),
+                                )
+                              : const ListItemLoading(showLeading: true),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            if (kanji.compounds != null) const _Compounds(),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+              if (kanji.compounds != null) const _Compounds(),
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
         ),
       ),
     );

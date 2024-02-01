@@ -8,24 +8,34 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusBarHeight = MediaQuery.of(context).viewPadding.top;
+    final padding = MediaQuery.of(context).padding;
     return Column(
       children: [
         Container(
-          height: 80 + statusBarHeight,
+          height: 80 + padding.top,
           decoration: const BoxDecoration(
             color: Colors.deepPurple,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(24),
             ),
           ),
-          padding: EdgeInsets.only(top: statusBarHeight),
+          padding: EdgeInsets.only(
+            top: padding.top,
+            left: padding.left,
+            right: padding.right,
+          ),
           child: Center(child: title),
         ),
         Expanded(
           child: Stack(
             children: [
-              child,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: padding.left,
+                  right: padding.right,
+                ),
+                child: child,
+              ),
               Align(
                 alignment: Alignment.topRight,
                 child: ClipPath(

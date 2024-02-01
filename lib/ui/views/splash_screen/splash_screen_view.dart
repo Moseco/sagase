@@ -13,71 +13,73 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
   @override
   Widget builder(context, viewModel, child) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: switch (viewModel.status) {
-            SplashScreenStatus.waiting => Container(),
-            SplashScreenStatus.downloadingAssets => _Body(
-                title: 'Downloading Assets',
-                widget: CircularPercentIndicator(
-                  radius: 40,
-                  lineWidth: 8,
-                  animation: true,
-                  animateFromLastPercent: true,
-                  percent: viewModel.downloadStatus,
-                  center: Text(
-                    "${(viewModel.downloadStatus * 100).toInt()}%",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: switch (viewModel.status) {
+              SplashScreenStatus.waiting => Container(),
+              SplashScreenStatus.downloadingAssets => _Body(
+                  title: 'Downloading Assets',
+                  widget: CircularPercentIndicator(
+                    radius: 40,
+                    lineWidth: 8,
+                    animation: true,
+                    animateFromLastPercent: true,
+                    percent: viewModel.downloadStatus,
+                    center: Text(
+                      "${(viewModel.downloadStatus * 100).toInt()}%",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: Colors.deepPurple,
                   ),
-                  circularStrokeCap: CircularStrokeCap.round,
-                  progressColor: Colors.deepPurple,
                 ),
-              ),
-            SplashScreenStatus.upgradingDictionary => const _Body(
-                title: 'Upgrading Dictionary',
-                subtitle: 'This should be pretty quick.',
-                widget: CircularProgressIndicator(),
-              ),
-            SplashScreenStatus.downloadError => _Body(
-                title: 'Download Failed',
-                subtitle:
-                    'Make sure you are connected to the internet and try again.\nIf it keeps happening try updating the app.',
-                widget: ElevatedButton(
-                  onPressed: viewModel.startDownload,
-                  child: const Text('Retry download'),
+              SplashScreenStatus.upgradingDictionary => const _Body(
+                  title: 'Upgrading Dictionary',
+                  subtitle: 'This should be pretty quick.',
+                  widget: CircularProgressIndicator(),
                 ),
-              ),
-            SplashScreenStatus.databaseError => const _Body(
-                title: 'Dictionary Error',
-                subtitle:
-                    'Something went wrong with the dictionary.\nPlease try closing the app and reopening it.',
-              ),
-            SplashScreenStatus.downloadRequest => _Body(
-                title: 'Upgrade Available',
-                subtitle:
-                    'There is a new version of the dictionary available.\nPlease keep the app open during the upgrade.\nIt should take less then a minute.',
-                widget: ElevatedButton(
-                  onPressed: viewModel.startDownload,
-                  child: const Text('Start download'),
+              SplashScreenStatus.downloadError => _Body(
+                  title: 'Download Failed',
+                  subtitle:
+                      'Make sure you are connected to the internet and try again.\nIf it keeps happening try updating the app.',
+                  widget: ElevatedButton(
+                    onPressed: viewModel.startDownload,
+                    child: const Text('Retry download'),
+                  ),
                 ),
-              ),
-            SplashScreenStatus.dictionaryUpgradeError => const _Body(
-                title: 'Upgrade Failed',
-                subtitle:
-                    'Something went wrong while upgrading the dictionary.\nPlease try closing the app and reopening it.',
-              ),
-            SplashScreenStatus.downloadFreeSpaceError => const _Body(
-                title: 'Download Failed',
-                subtitle: 'Not enough free space to set up the dictionary.',
-              ),
-            _ => _Body(
-                title: 'Finishing Setup',
-                subtitle:
-                    'Completed ${viewModel.status.index - SplashScreenStatus.importingDictionary.index}/3',
-                widget: const CircularProgressIndicator(),
-              ),
-          },
+              SplashScreenStatus.databaseError => const _Body(
+                  title: 'Dictionary Error',
+                  subtitle:
+                      'Something went wrong with the dictionary.\nPlease try closing the app and reopening it.',
+                ),
+              SplashScreenStatus.downloadRequest => _Body(
+                  title: 'Upgrade Available',
+                  subtitle:
+                      'There is a new version of the dictionary available.\nPlease keep the app open during the upgrade.\nIt should take less then a minute.',
+                  widget: ElevatedButton(
+                    onPressed: viewModel.startDownload,
+                    child: const Text('Start download'),
+                  ),
+                ),
+              SplashScreenStatus.dictionaryUpgradeError => const _Body(
+                  title: 'Upgrade Failed',
+                  subtitle:
+                      'Something went wrong while upgrading the dictionary.\nPlease try closing the app and reopening it.',
+                ),
+              SplashScreenStatus.downloadFreeSpaceError => const _Body(
+                  title: 'Download Failed',
+                  subtitle: 'Not enough free space to set up the dictionary.',
+                ),
+              _ => _Body(
+                  title: 'Finishing Setup',
+                  subtitle:
+                      'Completed ${viewModel.status.index - SplashScreenStatus.importingDictionary.index}/3',
+                  widget: const CircularProgressIndicator(),
+                ),
+            },
+          ),
         ),
       ),
     );
