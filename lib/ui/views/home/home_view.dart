@@ -18,7 +18,9 @@ class HomeView extends StatelessWidget {
       viewModelBuilder: () => locator<HomeViewModel>(),
       builder: (context, viewModel, child) => PopScope(
         canPop: viewModel.currentIndex == 0,
-        onPopInvoked: (_) => viewModel.handleBackButton(),
+        onPopInvoked: (didPop) {
+          if (!didPop) viewModel.handleBackButton();
+        },
         child: Scaffold(
           body: ExtendedNavigator(
             navigatorKey:
