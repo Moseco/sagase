@@ -111,10 +111,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
           left: 0,
           child: Transform.scale(
             scale: _scale,
-            child: _currentSwipeAnimation != SwipeAnimation.none &&
-                    _currentSwipeAnimation != SwipeAnimation.reset
-                ? widget.nextFlashcard
-                : widget.blankFlashcard,
+            child: widget.nextFlashcard,
           ),
         ),
         Positioned(
