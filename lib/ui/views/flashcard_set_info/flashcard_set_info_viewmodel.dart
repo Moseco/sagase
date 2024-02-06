@@ -14,6 +14,8 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
 
   final FlashcardSet flashcardSet;
 
+  late int _flashcardCount;
+  int get flashcardCount => _flashcardCount;
   // Information about when flashcards are due
   // index 0-6 is days of the week starting from today
   // last index is cards due afterwards
@@ -27,6 +29,9 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
   List<double> flashcardIntervalCounts = [0, 0, 0, 0, 0];
   // Top challenging flashcards
   List<DictionaryItem> challengingFlashcards = [];
+
+  bool _showIntervalAsPercent = false;
+  bool get showIntervalAsPercent => _showIntervalAsPercent;
 
   FlashcardSetInfoViewModel(this.flashcardSet);
 
@@ -65,6 +70,7 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
             .cast<DictionaryItem>() +
         (await _isarService.getKanjiList(kanjiSet.toList()))
             .cast<DictionaryItem>();
+    _flashcardCount = flashcards.length;
 
     // Exit if nothing available
     if (flashcards.isEmpty) {
@@ -129,7 +135,7 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
       }
     }
 
-    notifyListeners();
+    rebuildUi();
   }
 
   void navigateToVocab(Vocab vocab) {
@@ -144,6 +150,11 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
+  }
+
+  void toggleIntervalDisplay() {
+    _showIntervalAsPercent = !_showIntervalAsPercent;
+    rebuildUi();
   }
 
   // Convenience function for getting the correct spaced repetition data

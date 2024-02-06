@@ -30,7 +30,12 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
         child: viewModel.upcomingDueFlashcards == null
             ? const Center(child: CircularProgressIndicator())
             : ListView(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.only(
+                  left: 8,
+                  top: 8,
+                  right: 8,
+                  bottom: 8 + MediaQuery.of(context).padding.bottom,
+                ),
                 children: [
                   CardWithTitleSection(
                     title: 'Upcoming due flashcards',
@@ -89,10 +94,18 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
                       ),
                     ),
                   ),
-                  _IntervalLength(viewModel.flashcardIntervalCounts),
+                  GestureDetector(
+                    onTap: viewModel.toggleIntervalDisplay,
+                    onLongPress: () {},
+                    child: _IntervalLength(
+                      flashcardIntervalCounts:
+                          viewModel.flashcardIntervalCounts,
+                      showIntervalAsPercent: viewModel.showIntervalAsPercent,
+                      flashcardCount: viewModel.flashcardCount,
+                    ),
+                  ),
                   if (viewModel.challengingFlashcards.isNotEmpty)
                     const _Challenging(),
-                  SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
       ),
@@ -102,8 +115,14 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
 
 class _IntervalLength extends StatelessWidget {
   final List<double> flashcardIntervalCounts;
+  final bool showIntervalAsPercent;
+  final int flashcardCount;
 
-  const _IntervalLength(this.flashcardIntervalCounts);
+  const _IntervalLength({
+    required this.flashcardIntervalCounts,
+    required this.showIntervalAsPercent,
+    required this.flashcardCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +155,9 @@ class _IntervalLength extends StatelessWidget {
                         PieChartSectionData(
                           color: Colors.red,
                           value: flashcardIntervalCounts[0],
-                          title: flashcardIntervalCounts[0].toStringAsFixed(0),
+                          title: showIntervalAsPercent
+                              ? '${(flashcardIntervalCounts[0] / flashcardCount * 100).round()}%'
+                              : flashcardIntervalCounts[0].toStringAsFixed(0),
                           radius: 50,
                           titleStyle: const TextStyle(
                             fontSize: 16,
@@ -147,7 +168,9 @@ class _IntervalLength extends StatelessWidget {
                         PieChartSectionData(
                           color: Colors.orange,
                           value: flashcardIntervalCounts[1],
-                          title: flashcardIntervalCounts[1].toStringAsFixed(0),
+                          title: showIntervalAsPercent
+                              ? '${(flashcardIntervalCounts[1] / flashcardCount * 100).round()}%'
+                              : flashcardIntervalCounts[1].toStringAsFixed(0),
                           radius: 50,
                           titleStyle: const TextStyle(
                             fontSize: 16,
@@ -158,7 +181,9 @@ class _IntervalLength extends StatelessWidget {
                         PieChartSectionData(
                           color: Colors.green,
                           value: flashcardIntervalCounts[2],
-                          title: flashcardIntervalCounts[2].toStringAsFixed(0),
+                          title: showIntervalAsPercent
+                              ? '${(flashcardIntervalCounts[2] / flashcardCount * 100).round()}%'
+                              : flashcardIntervalCounts[2].toStringAsFixed(0),
                           radius: 50,
                           titleStyle: const TextStyle(
                             fontSize: 16,
@@ -169,7 +194,9 @@ class _IntervalLength extends StatelessWidget {
                         PieChartSectionData(
                           color: Colors.blue,
                           value: flashcardIntervalCounts[3],
-                          title: flashcardIntervalCounts[3].toStringAsFixed(0),
+                          title: showIntervalAsPercent
+                              ? '${(flashcardIntervalCounts[3] / flashcardCount * 100).round()}%'
+                              : flashcardIntervalCounts[3].toStringAsFixed(0),
                           radius: 50,
                           titleStyle: const TextStyle(
                             fontSize: 16,
@@ -180,7 +207,9 @@ class _IntervalLength extends StatelessWidget {
                         PieChartSectionData(
                           color: Colors.deepPurple,
                           value: flashcardIntervalCounts[4],
-                          title: flashcardIntervalCounts[4].toStringAsFixed(0),
+                          title: showIntervalAsPercent
+                              ? '${(flashcardIntervalCounts[4] / flashcardCount * 100).round()}%'
+                              : flashcardIntervalCounts[4].toStringAsFixed(0),
                           radius: 50,
                           titleStyle: const TextStyle(
                             fontSize: 16,
