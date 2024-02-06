@@ -37,6 +37,8 @@ class SettingsViewModel extends BaseViewModel {
   bool get startOnLearningView =>
       _sharedPreferencesService.getStartOnLearningView();
   bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
+  bool get showDetailedProgress =>
+      _sharedPreferencesService.getShowDetailedProgress();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -292,6 +294,11 @@ class SettingsViewModel extends BaseViewModel {
 
   void setShowPitchAccent(bool value) {
     _sharedPreferencesService.setShowPitchAccent(value);
+    notifyListeners();
+  }
+
+  void setShowDetailedProgress(bool value) {
+    _sharedPreferencesService.setShowDetailedProgress(value);
     notifyListeners();
   }
 

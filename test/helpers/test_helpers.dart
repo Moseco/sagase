@@ -139,6 +139,7 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   bool getAndSetTutorialFlashcards = false,
   bool getShowPitchAccent = constants.defaultShowPitchAccent,
   bool getShowNewInterval = constants.defaultShowNewInterval,
+  bool getShowDetailedProgress = constants.defaultShowDetailedProgress,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -160,6 +161,7 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
       .thenReturn(getAndSetTutorialFlashcards);
   when(service.getShowPitchAccent()).thenReturn(getShowPitchAccent);
   when(service.getShowNewInterval()).thenReturn(getShowNewInterval);
+  when(service.getShowDetailedProgress()).thenReturn(getShowDetailedProgress);
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

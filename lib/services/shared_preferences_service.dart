@@ -209,4 +209,13 @@ class SharedPreferencesService implements InitializableDependency {
 
     return value;
   }
+
+  bool getShowDetailedProgress() {
+    return _sharedPreferences.getBool(constants.keyShowDetailedProgress) ??
+        constants.defaultShowDetailedProgress;
+  }
+
+  Future<void> setShowDetailedProgress(bool value) async {
+    await _sharedPreferences.setBool(constants.keyShowDetailedProgress, value);
+  }
 }

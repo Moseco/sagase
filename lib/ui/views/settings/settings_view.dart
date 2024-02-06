@@ -69,20 +69,6 @@ class SettingsView extends StatelessWidget {
               SettingsSection(
                 title: const Text('Flashcards'),
                 tiles: [
-                  SettingsTile.navigation(
-                    title: const Text('Set initial spaced repetition interval'),
-                    onPressed: (_) =>
-                        viewModel.setInitialSpacedRepetitionInterval(),
-                  ),
-                  SettingsTile.switchTile(
-                    initialValue: viewModel.showNewInterval,
-                    onToggle: viewModel.setShowNewInterval,
-                    activeSwitchColor: Theme.of(context).colorScheme.primary,
-                    title: const Text('Preview new spaced repetition interval'),
-                    description: const Text(
-                      'Shown underneath flashcard answer buttons.',
-                    ),
-                  ),
                   SettingsTile.switchTile(
                     initialValue: viewModel.flashcardLearningModeEnabled,
                     onToggle: viewModel.setFlashcardLearningModeEnabled,
@@ -101,6 +87,11 @@ class SettingsView extends StatelessWidget {
                     onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
                   ),
                   SettingsTile.navigation(
+                    title: const Text('Set initial spaced repetition interval'),
+                    onPressed: (_) =>
+                        viewModel.setInitialSpacedRepetitionInterval(),
+                  ),
+                  SettingsTile.navigation(
                     title: const Text('Set flashcard distance'),
                     description: const Text(
                       'How far into the stack a flashcard is put after a wrong answer, repeat answer, or while completing a new flashcard.',
@@ -112,6 +103,24 @@ class SettingsView extends StatelessWidget {
                         'Set correct answers required to complete a new flashcard'),
                     onPressed: (_) =>
                         viewModel.setFlashcardCorrectAnswersRequired(),
+                  ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.showNewInterval,
+                    onToggle: viewModel.setShowNewInterval,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Preview new spaced repetition interval'),
+                    description: const Text(
+                      'Shown underneath flashcard answer buttons.',
+                    ),
+                  ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.showDetailedProgress,
+                    onToggle: viewModel.setShowDetailedProgress,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Show detailed progress'),
+                    description: const Text(
+                      'If enabled and in learning mode, the progress bar will display due flashcards and new flashcards as separate numbers instead of as one number.',
+                    ),
                   ),
                 ],
               ),

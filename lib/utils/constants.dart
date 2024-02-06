@@ -22,6 +22,7 @@ const keyReviewRequested = 'review_requested';
 const keyTutorialFlashcardSetSettings = 'tutorial_flashcard_set_settings';
 const keyTutorialFlashcards = 'tutorial_flashcards';
 const keyTutorialVocab = 'tutorial_vocab';
+const keyShowDetailedProgress = 'show_detailed_progress';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -35,5 +36,6 @@ const defaultUseJapaneseSerifFont = false;
 const defaultAnalyticsEnabled = true;
 const defaultStartOnLearningView = false;
 const defaultStrokeDiagramStartExpanded = true;
+const defaultShowDetailedProgress = false;
 
 const searchQueryLimit = 1000;

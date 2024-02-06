@@ -36,6 +36,10 @@ class FlashcardsViewModel extends FutureViewModel {
 
   int _initialDueFlashcardCount = 0;
   int get initialDueFlashcardCount => _initialDueFlashcardCount;
+  int _newFlashcardsAdded = 0;
+  int get newFlashcardsAdded => _newFlashcardsAdded;
+  int _initialNewFlashcardsCompleted = 0;
+  int get initialNewFlashcardsCompleted => _initialNewFlashcardsCompleted;
   bool _answeringDueFlashcards = false;
   bool get answeringDueFlashcards => _answeringDueFlashcards;
 
@@ -43,6 +47,13 @@ class FlashcardsViewModel extends FutureViewModel {
   bool get canUndo => _undoList.isNotEmpty;
 
   late DateTime sessionDateTime;
+
+  bool? _showDetailedProgress;
+  bool get showDetailedProgress {
+    _showDetailedProgress ??=
+        _sharedPreferencesService.getShowDetailedProgress();
+    return _showDetailedProgress!;
+  }
 
   FlashcardsViewModel(
     this.flashcardSet,
@@ -171,6 +182,7 @@ class FlashcardsViewModel extends FutureViewModel {
       // Set initial due flashcard count and add flashcards completed today
       _initialDueFlashcardCount =
           dueFlashcards.length + flashcardSet.flashcardsCompletedToday;
+      _initialNewFlashcardsCompleted = flashcardSet.newFlashcardsCompletedToday;
       _answeringDueFlashcards = true;
     }
 
@@ -323,19 +335,21 @@ class FlashcardsViewModel extends FutureViewModel {
         startedFlashcards.clear();
       } else if (startMode == FlashcardStartMode.learning) {
         // If active list was not empty and in learning mode, add new cards with the due cards
-        int flashcardsToAdd = min(
+        _newFlashcardsAdded = min(
           _sharedPreferencesService.getNewFlashcardsPerDay() -
               flashcardSet.newFlashcardsCompletedToday -
               startedFlashcards.length,
           newFlashcards.length,
         );
-        if (flashcardsToAdd < 0) flashcardsToAdd = 0;
-        for (int i = 0; i < flashcardsToAdd; i++) {
+        if (_newFlashcardsAdded < 0) _newFlashcardsAdded = 0;
+        for (int i = 0; i < _newFlashcardsAdded; i++) {
           activeFlashcards.add(
               newFlashcards.removeAt(_random.nextInt(newFlashcards.length)));
         }
+        // Add started length to new flashcards added
+        _newFlashcardsAdded += startedFlashcards.length;
         // Also change initial due flashcard count
-        _initialDueFlashcardCount += flashcardsToAdd + startedFlashcards.length;
+        _initialDueFlashcardCount += _newFlashcardsAdded;
 
         // Add started flashcards
         activeFlashcards.addAll(startedFlashcards);

@@ -19,17 +19,27 @@ import 'widgets/flashcard_deck.dart';
 class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
   final FlashcardStartMode? startMode;
+  final int? randomSeed;
 
   final answersKey = GlobalKey();
 
-  FlashcardsView(this.flashcardSet, {this.startMode, super.key});
+  FlashcardsView(
+    this.flashcardSet, {
+    this.startMode,
+    this.randomSeed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final flashcardDeckController = use(const FlashcardDeckControllerHook());
     final flipCardController = FlipCardController();
     return ViewModelBuilder<FlashcardsViewModel>.reactive(
-      viewModelBuilder: () => FlashcardsViewModel(flashcardSet, startMode),
+      viewModelBuilder: () => FlashcardsViewModel(
+        flashcardSet,
+        startMode,
+        randomSeed: randomSeed,
+      ),
       fireOnViewModelReadyOnce: true,
       onViewModelReady: (viewModel) {
         if (viewModel.shouldShowTutorial()) {
@@ -1013,15 +1023,26 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
         completedBar = viewModel.initialDueFlashcardCount -
             viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
-        bottomLeftString = '$completedBar completed';
-        bottomRightString = '$emptyBar due cards left';
+        if (viewModel.showDetailedProgress &&
+            viewModel.newFlashcardsAdded != 0) {
+          bottomLeftString =
+              '${completedBar - viewModel.flashcardSet.newFlashcardsCompletedToday} (${viewModel.flashcardSet.newFlashcardsCompletedToday}) completed';
+          int newFlashcardRemaining = viewModel.initialNewFlashcardsCompleted +
+              viewModel.newFlashcardsAdded -
+              viewModel.flashcardSet.newFlashcardsCompletedToday;
+          bottomRightString =
+              '${emptyBar - newFlashcardRemaining} ($newFlashcardRemaining) due cards left';
+        } else {
+          bottomLeftString = '$completedBar completed';
+          bottomRightString = '$emptyBar due cards left';
+        }
       } else {
         // Answering new flashcards
         completedBar =
             viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
         bottomLeftString =
-            '${viewModel.flashcardSet.newFlashcardsCompletedToday} new cards done today';
+            '${viewModel.flashcardSet.newFlashcardsCompletedToday} new cards completed';
         bottomRightString = '$emptyBar new cards left';
       }
     } else {
@@ -1033,10 +1054,13 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
       bottomRightString = '${viewModel.allFlashcards!.length} cards left';
     }
 
-    // If completedBar would be too small, set minimum size
+    // If completedBar or emptyBar would be too small, set minimum size
     if (completedBar != 0 && completedBar / emptyBar < 0.04) {
       completedBar = 1;
       emptyBar = 25;
+    } else if (emptyBar != 0 && emptyBar / completedBar < 0.04) {
+      completedBar = 25;
+      emptyBar = 1;
     }
 
     return Padding(
