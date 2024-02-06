@@ -94,25 +94,33 @@ class FlashcardsView extends HookWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: viewModel.openFlashcardItem,
-                      icon: const Icon(Icons.info_outline),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: viewModel.canUndo
-                          ? () {
-                              flipCardController
-                                  .flipWithoutAnimation(CardSide.front);
-                              viewModel.undo();
-                              flashcardDeckController.undoSwipe();
-                            }
-                          : null,
-                      icon: const Icon(Icons.undo),
-                    ),
-                  ],
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: viewModel.openFlashcardItem,
+                        icon: const Icon(Icons.info_outline),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: flipCardController.flip,
+                          onLongPress: () {},
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: viewModel.canUndo
+                            ? () {
+                                flipCardController
+                                    .flipWithoutAnimation(CardSide.front);
+                                viewModel.undo();
+                                flashcardDeckController.undoSwipe();
+                              }
+                            : null,
+                        icon: const Icon(Icons.undo),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Card(
@@ -283,123 +291,128 @@ class _Flashcards extends ViewModelWidget<FlashcardsViewModel> {
   Widget build(BuildContext context, FlashcardsViewModel viewModel) {
     final double screenWidth = MediaQuery.of(context).size.width;
     return Expanded(
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          constraints: BoxConstraints(
-            maxHeight: screenWidth * 0.85 * 1.5,
-            maxWidth: screenWidth * 0.85,
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) => FlashcardDeck(
-              swipeUpEnabled: viewModel.usingSpacedRepetition,
-              controller: flashcardDeckController,
-              currentFlashcard: GestureDetector(
-                onLongPress: viewModel.openFlashcardItem,
-                child: FlipCard(
-                  flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
-                  controller: flipCardController,
-                  duration: const Duration(milliseconds: 300),
-                  front: _Flashcard(
-                    constraints: constraints,
-                    child: viewModel.activeFlashcards.isEmpty
-                        ? Container()
-                        : viewModel.activeFlashcards[0] is Vocab
-                            ? switch (viewModel.flashcardSet.frontType) {
-                                FrontType.japanese => _VocabFlashcardFront(
-                                    flashcardSet: viewModel.flashcardSet,
-                                    vocab:
-                                        viewModel.activeFlashcards[0] as Vocab,
-                                  ),
-                                FrontType.english =>
-                                  _VocabFlashcardFrontEnglish(
-                                    flashcardSet: viewModel.flashcardSet,
-                                    vocab:
-                                        viewModel.activeFlashcards[0] as Vocab,
-                                  ),
-                              }
-                            : switch (viewModel.flashcardSet.frontType) {
-                                FrontType.japanese => _KanjiFlashcardFront(
-                                    flashcardSet: viewModel.flashcardSet,
-                                    kanji:
-                                        viewModel.activeFlashcards[0] as Kanji,
-                                  ),
-                                FrontType.english =>
-                                  _KanjiFlashcardFrontEnglish(
-                                    flashcardSet: viewModel.flashcardSet,
-                                    kanji:
-                                        viewModel.activeFlashcards[0] as Kanji,
-                                  ),
-                              },
-                  ),
-                  back: _Flashcard(
-                    constraints: constraints,
-                    child: viewModel.activeFlashcards.isEmpty
-                        ? Container()
-                        : viewModel.activeFlashcards[0] is Vocab
-                            ? _VocabFlashcardBack(
-                                flashcardSet: viewModel.flashcardSet,
-                                vocab: viewModel.activeFlashcards[0] as Vocab,
-                              )
-                            : _KanjiFlashcardBack(
-                                flashcardSet: viewModel.flashcardSet,
-                                kanji: viewModel.activeFlashcards[0] as Kanji,
-                              ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: flipCardController.flip,
+        onLongPress: () {},
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            constraints: BoxConstraints(
+              maxHeight: screenWidth * 0.85 * 1.5,
+              maxWidth: screenWidth * 0.85,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) => FlashcardDeck(
+                swipeUpEnabled: viewModel.usingSpacedRepetition,
+                controller: flashcardDeckController,
+                currentFlashcard: GestureDetector(
+                  onLongPress: viewModel.openFlashcardItem,
+                  child: FlipCard(
+                    flipOnTouch: viewModel.activeFlashcards.isNotEmpty,
+                    controller: flipCardController,
+                    duration: const Duration(milliseconds: 300),
+                    front: _Flashcard(
+                      constraints: constraints,
+                      child: viewModel.activeFlashcards.isEmpty
+                          ? Container()
+                          : viewModel.activeFlashcards[0] is Vocab
+                              ? switch (viewModel.flashcardSet.frontType) {
+                                  FrontType.japanese => _VocabFlashcardFront(
+                                      flashcardSet: viewModel.flashcardSet,
+                                      vocab: viewModel.activeFlashcards[0]
+                                          as Vocab,
+                                    ),
+                                  FrontType.english =>
+                                    _VocabFlashcardFrontEnglish(
+                                      flashcardSet: viewModel.flashcardSet,
+                                      vocab: viewModel.activeFlashcards[0]
+                                          as Vocab,
+                                    ),
+                                }
+                              : switch (viewModel.flashcardSet.frontType) {
+                                  FrontType.japanese => _KanjiFlashcardFront(
+                                      flashcardSet: viewModel.flashcardSet,
+                                      kanji: viewModel.activeFlashcards[0]
+                                          as Kanji,
+                                    ),
+                                  FrontType.english =>
+                                    _KanjiFlashcardFrontEnglish(
+                                      flashcardSet: viewModel.flashcardSet,
+                                      kanji: viewModel.activeFlashcards[0]
+                                          as Kanji,
+                                    ),
+                                },
+                    ),
+                    back: _Flashcard(
+                      constraints: constraints,
+                      child: viewModel.activeFlashcards.isEmpty
+                          ? Container()
+                          : viewModel.activeFlashcards[0] is Vocab
+                              ? _VocabFlashcardBack(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  vocab: viewModel.activeFlashcards[0] as Vocab,
+                                )
+                              : _KanjiFlashcardBack(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  kanji: viewModel.activeFlashcards[0] as Kanji,
+                                ),
+                    ),
                   ),
                 ),
-              ),
-              nextFlashcard: _Flashcard(
-                constraints: constraints,
-                child: viewModel.activeFlashcards.length < 2
-                    ? Container()
-                    : viewModel.activeFlashcards[1] is Vocab
-                        ? switch (viewModel.flashcardSet.frontType) {
-                            FrontType.japanese => _VocabFlashcardFront(
-                                flashcardSet: viewModel.flashcardSet,
-                                vocab: viewModel.activeFlashcards[1] as Vocab,
-                              ),
-                            FrontType.english => _VocabFlashcardFrontEnglish(
-                                flashcardSet: viewModel.flashcardSet,
-                                vocab: viewModel.activeFlashcards[1] as Vocab,
-                              ),
-                          }
-                        : switch (viewModel.flashcardSet.frontType) {
-                            FrontType.japanese => _KanjiFlashcardFront(
-                                flashcardSet: viewModel.flashcardSet,
-                                kanji: viewModel.activeFlashcards[1] as Kanji,
-                              ),
-                            FrontType.english => _KanjiFlashcardFrontEnglish(
-                                flashcardSet: viewModel.flashcardSet,
-                                kanji: viewModel.activeFlashcards[1] as Kanji,
-                              ),
-                          },
-              ),
-              blankFlashcard: _Flashcard(
-                constraints: constraints,
-                child: Container(),
-              ),
-              onSwipeFinished: (swipeAnimation) {
-                if (swipeAnimation != SwipeAnimation.reset) {
-                  flipCardController.flipWithoutAnimation(CardSide.front);
-                }
+                nextFlashcard: _Flashcard(
+                  constraints: constraints,
+                  child: viewModel.activeFlashcards.length < 2
+                      ? Container()
+                      : viewModel.activeFlashcards[1] is Vocab
+                          ? switch (viewModel.flashcardSet.frontType) {
+                              FrontType.japanese => _VocabFlashcardFront(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  vocab: viewModel.activeFlashcards[1] as Vocab,
+                                ),
+                              FrontType.english => _VocabFlashcardFrontEnglish(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  vocab: viewModel.activeFlashcards[1] as Vocab,
+                                ),
+                            }
+                          : switch (viewModel.flashcardSet.frontType) {
+                              FrontType.japanese => _KanjiFlashcardFront(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  kanji: viewModel.activeFlashcards[1] as Kanji,
+                                ),
+                              FrontType.english => _KanjiFlashcardFrontEnglish(
+                                  flashcardSet: viewModel.flashcardSet,
+                                  kanji: viewModel.activeFlashcards[1] as Kanji,
+                                ),
+                            },
+                ),
+                blankFlashcard: _Flashcard(
+                  constraints: constraints,
+                  child: Container(),
+                ),
+                onSwipeFinished: (swipeAnimation) {
+                  if (swipeAnimation != SwipeAnimation.reset) {
+                    flipCardController.flipWithoutAnimation(CardSide.front);
+                  }
 
-                switch (swipeAnimation) {
-                  case SwipeAnimation.wrong:
-                    viewModel.answerFlashcard(FlashcardAnswer.wrong);
-                    break;
-                  case SwipeAnimation.correct:
-                    viewModel.answerFlashcard(FlashcardAnswer.correct);
-                    break;
-                  case SwipeAnimation.veryCorrect:
-                    viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
-                    break;
-                  case SwipeAnimation.repeat:
-                    viewModel.answerFlashcard(FlashcardAnswer.repeat);
-                    break;
-                  default:
-                    break;
-                }
-              },
+                  switch (swipeAnimation) {
+                    case SwipeAnimation.wrong:
+                      viewModel.answerFlashcard(FlashcardAnswer.wrong);
+                      break;
+                    case SwipeAnimation.correct:
+                      viewModel.answerFlashcard(FlashcardAnswer.correct);
+                      break;
+                    case SwipeAnimation.veryCorrect:
+                      viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+                      break;
+                    case SwipeAnimation.repeat:
+                      viewModel.answerFlashcard(FlashcardAnswer.repeat);
+                      break;
+                    default:
+                      break;
+                  }
+                },
+              ),
             ),
           ),
         ),
