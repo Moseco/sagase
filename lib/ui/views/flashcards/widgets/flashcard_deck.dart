@@ -111,7 +111,9 @@ class _FlashcardDeckState extends State<FlashcardDeck>
           left: 0,
           child: Transform.scale(
             scale: _scale,
-            child: widget.nextFlashcard,
+            child: _horizontalOffset == 0 && _verticalOffset == 0
+                ? widget.blankFlashcard
+                : widget.nextFlashcard,
           ),
         ),
         Positioned(
