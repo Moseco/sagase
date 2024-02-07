@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -7,6 +8,9 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as path;
 
 class DictionaryListViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
@@ -73,7 +77,21 @@ class DictionaryListViewModel extends FutureViewModel {
     await _refreshMyList();
   }
 
-  Future<void> renameMyList() async {
+  void handlePopupMenuButton(PopupMenuItemType type) {
+    switch (type) {
+      case PopupMenuItemType.rename:
+        _renameMyList();
+        break;
+      case PopupMenuItemType.delete:
+        _deleteMyList();
+        break;
+      case PopupMenuItemType.share:
+        _shareMyList();
+        break;
+    }
+  }
+
+  Future<void> _renameMyList() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.textField,
       title: 'Rename list',
@@ -91,7 +109,7 @@ class DictionaryListViewModel extends FutureViewModel {
     rebuildUi();
   }
 
-  Future<void> deleteMyList() async {
+  Future<void> _deleteMyList() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
       title: 'Delete list?',
@@ -107,9 +125,45 @@ class DictionaryListViewModel extends FutureViewModel {
     }
   }
 
+  Future<void> _shareMyList() async {
+    // Show confirmation dialog
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Share list?',
+      description:
+          'Sharing this list will create a file that you can send to others. All they have to do is import the list from the my lists screen. No flashcard progress is included.',
+      mainButtonTitle: 'Share',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      // Write export to file
+      final file = File(
+        path.join(
+          (await path_provider.getApplicationCacheDirectory()).path,
+          '${dictionaryList.name} list.sagase',
+        ),
+      );
+
+      await file.writeAsString(
+        (dictionaryList as MyDictionaryList).toExportJson(),
+      );
+
+      // Share the file
+      await Share.shareXFiles([XFile(file.path)]);
+    }
+  }
+
   @override
   void dispose() {
     _myListWatcher?.cancel();
     super.dispose();
   }
+}
+
+enum PopupMenuItemType {
+  rename,
+  delete,
+  share,
 }

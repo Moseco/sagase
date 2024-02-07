@@ -24,13 +24,22 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
           title: Text(viewModel.dictionaryList.name),
           actions: viewModel.dictionaryList is MyDictionaryList
               ? [
-                  IconButton(
-                    onPressed: viewModel.renameMyList,
-                    icon: const Icon(Icons.edit),
-                  ),
-                  IconButton(
-                    onPressed: viewModel.deleteMyList,
-                    icon: const Icon(Icons.delete),
+                  PopupMenuButton<PopupMenuItemType>(
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: PopupMenuItemType.rename,
+                        child: Text('Rename'),
+                      ),
+                      const PopupMenuItem(
+                        value: PopupMenuItemType.delete,
+                        child: Text('Delete'),
+                      ),
+                      const PopupMenuItem(
+                        value: PopupMenuItemType.share,
+                        child: Text('Share'),
+                      ),
+                    ],
+                    onSelected: viewModel.handlePopupMenuButton,
                   ),
                 ]
               : null,

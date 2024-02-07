@@ -61,11 +61,12 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '8667b5d'
+      ref: '1e568a7'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
   disk_space_plus: ^0.2.3
+  share_plus: ^7.2.2
 
 dev_dependencies:
   flutter_test:

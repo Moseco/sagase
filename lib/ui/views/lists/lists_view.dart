@@ -506,10 +506,19 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
           ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: IconButton(
-              onPressed: viewModel.createMyDictionaryList,
-              color: Colors.white,
+            child: PopupMenuButton<PopupMenuItemType>(
               icon: const Icon(Icons.add),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: PopupMenuItemType.create,
+                  child: Text('Create'),
+                ),
+                const PopupMenuItem(
+                  value: PopupMenuItemType.import,
+                  child: Text('Import'),
+                ),
+              ],
+              onSelected: viewModel.handlePopupMenuButton,
             ),
           ),
         ],
