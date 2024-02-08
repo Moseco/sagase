@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
@@ -15,6 +16,7 @@ class ListsViewModel extends FutureViewModel {
   final _isarService = locator<IsarService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final ListSelection listSelection;
 
@@ -79,6 +81,17 @@ class ListsViewModel extends FutureViewModel {
     }
   }
 
+  void handlePopupMenuButton(PopupMenuItemType type) {
+    switch (type) {
+      case PopupMenuItemType.create:
+        createMyDictionaryList();
+        break;
+      case PopupMenuItemType.import:
+        _importMyDictionaryList();
+        break;
+    }
+  }
+
   Future<void> createMyDictionaryList() async {
     if (listSelection != ListSelection.myLists) return;
 
@@ -97,6 +110,44 @@ class ListsViewModel extends FutureViewModel {
         .insert(0, await _isarService.createMyDictionaryList(name));
 
     notifyListeners();
+  }
+
+  Future<void> _importMyDictionaryList() async {
+    // Ask user for the file they want to import
+    String? filePath;
+    try {
+      filePath = await FlutterFileDialog.pickFile(
+        params: const OpenFileDialogParams(fileExtensionsFilter: ['sagase']),
+      );
+    } catch (_) {
+      filePath = null;
+    }
+
+    if (filePath == null) {
+      _snackbarService.showSnackbar(message: 'Import cancelled');
+      return;
+    }
+
+    // Show progress indicator dialog
+    _dialogService.showCustomDialog(
+      variant: DialogType.progressIndicator,
+      title: 'Importing list',
+      barrierDismissible: false,
+    );
+
+    final myList = await _isarService.importMyDictionaryList(filePath);
+
+    _dialogService.completeDialog(DialogResponse());
+
+    if (myList == null) {
+      _snackbarService.showSnackbar(message: 'Import failed');
+      return;
+    }
+
+    myDictionaryLists!.insert(0, myList);
+    rebuildUi();
+
+    navigateToMyDictionaryList(myList);
   }
 
   void showDescriptionDialog(String title, String description) {
@@ -123,4 +174,9 @@ enum ListSelection {
   jlptKanji,
   schoolKanji,
   kanjiKentei,
+}
+
+enum PopupMenuItemType {
+  create,
+  import,
 }

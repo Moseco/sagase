@@ -708,6 +708,36 @@ class IsarService {
         null;
   }
 
+  Future<MyDictionaryList?> importMyDictionaryList(String path) async {
+    try {
+      // Parse file
+      final myList = MyDictionaryList.fromExportJson(
+        await File(path).readAsString(),
+      );
+
+      if (myList == null) return null;
+
+      // Truncate name length
+      myList.name = myList.name.substring(0, min(50, myList.name.length));
+
+      // Remove missing vocab and kanji
+      final vocab = await _isar.vocabs.getAll(myList.vocab);
+      vocab.toList().removeWhere((element) => element == null);
+      myList.vocab = vocab.map((e) => e!.id).toList();
+
+      final kanji = await _isar.kanjis.getAll(myList.kanji);
+      kanji.toList().removeWhere((element) => element == null);
+      myList.kanji = kanji.map((e) => e!.id).toList();
+
+      // Add to database
+      await updateMyDictionaryList(myList);
+
+      return myList;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<FlashcardSet> createFlashcardSet(String name) async {
     final flashcardSet = FlashcardSet()
       ..name = name
