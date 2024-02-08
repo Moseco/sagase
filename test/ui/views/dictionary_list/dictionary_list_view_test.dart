@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
+import 'package:sagase/ui/views/dictionary_list/dictionary_list_viewmodel.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -23,7 +24,7 @@ void main() {
       );
 
       expect(find.text('Name'), findsOne);
-      expect(find.byType(IconButton), findsNothing);
+      expect(find.byType(PopupMenuButton<PopupMenuItemType>), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsOne);
 
       await tester.pumpAndSettle();
@@ -42,7 +43,7 @@ void main() {
       );
 
       expect(find.text('My name'), findsOneWidget);
-      expect(find.byType(IconButton), findsExactly(2));
+      expect(find.byType(PopupMenuButton<PopupMenuItemType>), findsOne);
       expect(find.byType(CircularProgressIndicator), findsOne);
 
       await tester.pumpAndSettle();
