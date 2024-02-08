@@ -507,7 +507,7 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
           Padding(
             padding: const EdgeInsets.all(8),
             child: PopupMenuButton<PopupMenuItemType>(
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, color: Colors.white),
               itemBuilder: (context) => [
                 const PopupMenuItem(
                   value: PopupMenuItemType.create,

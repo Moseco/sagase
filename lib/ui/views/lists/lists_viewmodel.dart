@@ -113,13 +113,15 @@ class ListsViewModel extends FutureViewModel {
   }
 
   Future<void> _importMyDictionaryList() async {
-    final filePath = await FlutterFileDialog.pickFile(
-      params: const OpenFileDialogParams(
-        dialogType: OpenFileDialogType.document,
-        sourceType: SourceType.photoLibrary,
-        allowedUtiTypes: ['sagase'],
-      ),
-    );
+    // Ask user for the file they want to import
+    String? filePath;
+    try {
+      filePath = await FlutterFileDialog.pickFile(
+        params: const OpenFileDialogParams(fileExtensionsFilter: ['sagase']),
+      );
+    } catch (_) {
+      filePath = null;
+    }
 
     if (filePath == null) {
       _snackbarService.showSnackbar(message: 'Import cancelled');
