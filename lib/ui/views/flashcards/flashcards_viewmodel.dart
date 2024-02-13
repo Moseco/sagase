@@ -442,8 +442,10 @@ class FlashcardsViewModel extends FutureViewModel {
       flashcardSet.newFlashcardsCompletedToday--;
       _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
     }
-    // If undoing a not new card, decrease count
-    if (current.previousData?.dueDate != null) {
+    // If undoing a not new card and previous answer was correct, decrease count
+    if (current.previousData?.dueDate != null &&
+        current.previousData!.interval <
+            _getSpacedRepetitionData(current.flashcard)!.interval) {
       flashcardSet.flashcardsCompletedToday--;
       _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
     }

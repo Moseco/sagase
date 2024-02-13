@@ -943,6 +943,32 @@ void main() {
       expect(viewModel.activeFlashcards.length, 19);
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
 
+      // Answer wrong and undo
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Answer repeat and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.repeat);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Answer correct and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
       // Answer all flashcards and check that undo does not work after starting random
       for (int i = 0; i < 19; i++) {
         await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
@@ -1058,6 +1084,32 @@ void main() {
       expect(viewModel.activeFlashcards.length, 19);
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
 
+      // Answer wrong and undo
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Answer repeat and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.repeat);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
+      // Answer correct and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+
       // Answer all flashcards and check that undo does not work after starting random
       for (int i = 0; i < 19; i++) {
         await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
@@ -1125,7 +1177,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 1);
 
-      // Answer flashcard
+      // Answer correct
       DictionaryItem flashcard = viewModel.activeFlashcards[0];
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
       expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
@@ -1148,6 +1200,22 @@ void main() {
       // Verify database has old spaced repetition data
       fetchedVocab = await isar.vocabs.get(1);
       expect(fetchedVocab!.spacedRepetitionData!.repetitions, 1);
+
+      // Answer wrong and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+
+      // Answer repeat and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.repeat);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
     });
 
     test('Undo with previous spaced repetition data - English front', () async {
@@ -1201,7 +1269,7 @@ void main() {
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 1);
 
-      // Answer flashcard
+      // Answer correct
       DictionaryItem flashcard = viewModel.activeFlashcards[0];
       expect(flashcard.spacedRepetitionDataEnglish!.repetitions, 1);
       expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
@@ -1224,6 +1292,22 @@ void main() {
       // Verify database has old spaced repetition data
       fetchedVocab = await isar.vocabs.get(1);
       expect(fetchedVocab!.spacedRepetitionDataEnglish!.repetitions, 1);
+
+      // Answer wrong and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+
+      // Answer repeat and undo
+      await viewModel.answerFlashcard(FlashcardAnswer.repeat);
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      viewModel.undo();
+      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
     });
 
     test('Undo with new card initial correct requirement', () async {
