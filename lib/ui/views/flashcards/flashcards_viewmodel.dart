@@ -519,7 +519,7 @@ class FlashcardsViewModel extends FutureViewModel {
               : _sharedPreferencesService.getInitialVeryCorrectInterval();
           break;
         case 1:
-          interval = 2 *
+          interval = currentData.interval +
               (answer.index == FlashcardAnswer.correct.index
                   ? _sharedPreferencesService.getInitialCorrectInterval()
                   : _sharedPreferencesService.getInitialVeryCorrectInterval());
