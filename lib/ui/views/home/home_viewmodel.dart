@@ -18,15 +18,26 @@ class HomeViewModel extends IndexTrackingViewModel {
 
   HomeViewModel() {
     if (startOnLearningView) setIndex(2);
-    _tryRequestReview();
+    _checkReviewRequest();
   }
 
-  Future<void> _tryRequestReview() async {
-    final inAppReview = InAppReview.instance;
+  Future<void> _checkReviewRequest() async {
+    // Only allow requests once
+    if (_sharedPreferencesService.getReviewRequested()) return;
 
-    if (await inAppReview.isAvailable() &&
-        _sharedPreferencesService.shouldRequestAppReview()) {
+    final inAppReview = InAppReview.instance;
+    int startCount = _sharedPreferencesService.getReviewStartCount() + 1;
+    // Make sure the user has used the app for a week and opened the app more than 20 times
+    if (startCount > 20 &&
+        DateTime.now()
+                .difference(_sharedPreferencesService.getReviewStartTimestamp())
+                .inDays >
+            7 &&
+        await inAppReview.isAvailable()) {
       inAppReview.requestReview();
+      _sharedPreferencesService.setReviewRequested();
+    } else {
+      _sharedPreferencesService.setReviewStartCount(startCount);
     }
   }
 

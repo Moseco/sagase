@@ -148,35 +148,34 @@ class SharedPreferencesService implements InitializableDependency {
         constants.keyStrokeDiagramStartExpanded, value);
   }
 
-  bool shouldRequestAppReview() {
-    // Only allow requests once
-    if (_sharedPreferences.getBool(constants.keyReviewRequested) ?? false) {
-      return false;
-    }
+  bool getReviewRequested() {
+    return _sharedPreferences.getBool(constants.keyReviewRequested) ?? false;
+  }
 
-    late DateTime startDateTime;
+  Future<void> setReviewRequested() async {
+    await _sharedPreferences.setBool(constants.keyReviewRequested, true);
+  }
+
+  DateTime getReviewStartTimestamp() {
+    late DateTime dateTime;
     int? millisecondsSinceEpoch =
         _sharedPreferences.getInt(constants.keyReviewStartTimestamp);
     if (millisecondsSinceEpoch == null) {
-      startDateTime = DateTime.now();
-      _sharedPreferences.setInt(constants.keyReviewStartTimestamp,
-          startDateTime.millisecondsSinceEpoch);
+      dateTime = DateTime.now();
+      _sharedPreferences.setInt(
+          constants.keyReviewStartTimestamp, dateTime.millisecondsSinceEpoch);
     } else {
-      startDateTime =
-          DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+      dateTime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
     }
+    return dateTime;
+  }
 
-    int startCount =
-        (_sharedPreferences.getInt(constants.keyReviewStartCount) ?? 0) + 1;
-    // Make sure the user has used the app for a week and opened the app at least 20 times
-    if (startCount > 20 &&
-        DateTime.now().difference(startDateTime).inDays > 7) {
-      _sharedPreferences.setBool(constants.keyReviewRequested, true);
-      return true;
-    } else {
-      _sharedPreferences.setInt(constants.keyReviewStartCount, startCount);
-      return false;
-    }
+  int getReviewStartCount() {
+    return _sharedPreferences.getInt(constants.keyReviewStartCount) ?? 0;
+  }
+
+  Future<void> setReviewStartCount(int value) async {
+    _sharedPreferences.setInt(constants.keyReviewStartCount, value);
   }
 
   bool getAndSetTutorialFlashcardSetSettings() {
