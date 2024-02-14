@@ -132,7 +132,8 @@ class MecabService {
         pos = PartOfSpeech.particle;
       } else if (tokens[i].features[4] == 'サ変・スル') {
         pos = PartOfSpeech.verbSuruIncluded;
-      } else if (tokens[i].features[2] == '人名') {
+      } else if (tokens[i].features[1] == '固有名詞' &&
+          tokens[i].features[2] == '人名') {
         pos = PartOfSpeech.nounProper;
       }
 
