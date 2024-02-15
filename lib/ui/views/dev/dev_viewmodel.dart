@@ -7,6 +7,8 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:sagase/utils/constants.dart' as constants;
+import 'package:path/path.dart' as path;
 
 class DevViewModel extends BaseViewModel {
   var _isarService = locator<IsarService>();
@@ -22,8 +24,10 @@ class DevViewModel extends BaseViewModel {
         await rootBundle.load('assets/dictionary/base_dictionary.zip');
     final bytes = byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-    final tempDir = await path_provider.getTemporaryDirectory();
-    final file = File('${tempDir.path}/base_dictionary.zip');
+    final file = File(path.join(
+      (await path_provider.getApplicationCacheDirectory()).path,
+      constants.baseDictionaryZip,
+    ));
     await file.writeAsBytes(bytes);
     // Import
     await _isarService.close();

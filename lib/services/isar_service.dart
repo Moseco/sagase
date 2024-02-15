@@ -1057,7 +1057,7 @@ class IsarService {
 
       // Create file and write to it
       final file = File(path.join(
-        (await path_provider.getTemporaryDirectory()).path,
+        (await path_provider.getApplicationCacheDirectory()).path,
         'backup_${now.year}-${now.month}-${now.day}_${now.millisecondsSinceEpoch}.sagase',
       ));
 
@@ -1214,9 +1214,10 @@ class IsarService {
       return Isolate.run(() async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
 
-        final tempDir = await path_provider.getTemporaryDirectory();
-        final newDbZipFile =
-            File(path.join(tempDir.path, 'base_dictionary.zip'));
+        final newDbZipFile = File(path.join(
+          (await path_provider.getApplicationCacheDirectory()).path,
+          constants.baseDictionaryZip,
+        ));
 
         // Extract zip to application support directory
         final appSupportDir =

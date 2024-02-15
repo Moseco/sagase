@@ -78,9 +78,10 @@ class MecabService {
         await dir.create(recursive: true);
 
         // Extract zip to mecab directory
-        final tempDir = await path_provider.getTemporaryDirectory();
-        final mecabDictionaryZip =
-            File(path.join(tempDir.path, 'mecab_dictionary.zip'));
+        final mecabDictionaryZip = File(path.join(
+          (await path_provider.getApplicationCacheDirectory()).path,
+          constants.mecabDictionaryZip,
+        ));
         await archive.extractFileToDisk(mecabDictionaryZip.path, mecabDir);
 
         // Remove the temp file

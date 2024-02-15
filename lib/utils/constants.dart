@@ -39,3 +39,7 @@ const defaultStrokeDiagramStartExpanded = true;
 const defaultShowDetailedProgress = false;
 
 const searchQueryLimit = 1000;
+
+const requiredAssetsTar = 'required_assets.tar';
+const baseDictionaryZip = 'base_dictionary.zip';
+const mecabDictionaryZip = 'mecab_dictionary.zip';
