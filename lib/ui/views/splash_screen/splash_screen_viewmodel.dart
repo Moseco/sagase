@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/digital_ink_service.dart';
@@ -8,6 +10,8 @@ import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:sagase/utils/constants.dart' as constants;
 
 class SplashScreenViewModel extends FutureViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
@@ -144,6 +148,9 @@ class SplashScreenViewModel extends FutureViewModel {
       ]);
     }
 
+    // Clean up cache files
+    _cleanCache();
+
     // Finally, navigate to home
     _navigationService.replaceWith(Routes.homeView);
   }
@@ -154,6 +161,36 @@ class SplashScreenViewModel extends FutureViewModel {
     _downloadStatus = 0;
     rebuildUi();
     _initialize();
+  }
+
+  Future<void> _cleanCache() async {
+    final dir =
+        Directory((await path_provider.getApplicationCacheDirectory()).path);
+
+    // Matches files ending in .sagase or related to initial setup
+    final filesToDeleteRegExp = RegExp(
+      r'(.+\.sagase$)|(^' +
+          RegExp.escape(constants.requiredAssetsTar) +
+          r'$)|(^' +
+          RegExp.escape(constants.baseDictionaryZip) +
+          r'$)|(^' +
+          RegExp.escape(constants.mecabDictionaryZip) +
+          r'$)',
+    );
+
+    for (var entity in (await dir.list().toList())) {
+      if (entity is Directory) {
+        // Delete share_plus directory which temporarily stores files for sharing
+        if (entity.path.endsWith('${Platform.pathSeparator}share_plus')) {
+          entity.delete(recursive: true);
+        }
+      } else if (entity is File) {
+        // Delete files that match the regex
+        if (filesToDeleteRegExp.hasMatch(entity.uri.pathSegments.last)) {
+          entity.delete();
+        }
+      }
+    }
   }
 }
 
