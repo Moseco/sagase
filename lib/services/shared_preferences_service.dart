@@ -217,4 +217,15 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setShowDetailedProgress(bool value) async {
     await _sharedPreferences.setBool(constants.keyShowDetailedProgress, value);
   }
+
+  int? getChangelogVersionShown() {
+    return _sharedPreferences.getInt(constants.keyChangelogVersionShown);
+  }
+
+  Future<void> setChangelogVersionShown() async {
+    await _sharedPreferences.setInt(
+      constants.keyChangelogVersionShown,
+      constants.currentChangelogVersion,
+    );
+  }
 }

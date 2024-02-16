@@ -4,7 +4,8 @@ import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:sagase/utils/constants.dart' show nestedNavigationKey;
+import 'package:sagase/utils/constants.dart'
+    show nestedNavigationKey, currentChangelogVersion;
 
 class HomeViewModel extends IndexTrackingViewModel {
   final _navigationService = locator<NavigationService>();
@@ -19,6 +20,7 @@ class HomeViewModel extends IndexTrackingViewModel {
   HomeViewModel() {
     if (startOnLearningView) setIndex(2);
     _checkReviewRequest();
+    _checkChangelog();
   }
 
   Future<void> _checkReviewRequest() async {
@@ -38,6 +40,23 @@ class HomeViewModel extends IndexTrackingViewModel {
       _sharedPreferencesService.setReviewRequested();
     } else {
       _sharedPreferencesService.setReviewStartCount(startCount);
+    }
+  }
+
+  void _checkChangelog() {
+    int? versionShown = _sharedPreferencesService.getChangelogVersionShown();
+
+    if (versionShown == null) {
+      // New user, don't show changelog
+      _sharedPreferencesService.setChangelogVersionShown();
+    } else if (versionShown < currentChangelogVersion) {
+      // Existing user, show changelog
+      _sharedPreferencesService.setChangelogVersionShown();
+      // Zero duration delay to avoid concurrent build/navigation issues
+      Future.delayed(
+        Duration.zero,
+        _navigationService.navigateToChangelogView,
+      );
     }
   }
 
