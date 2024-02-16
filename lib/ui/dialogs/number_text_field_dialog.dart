@@ -38,7 +38,7 @@ class NumberTextFieldDialog extends HookWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 10),
               child: TextField(
                 controller: controller,
                 maxLines: 1,
@@ -51,16 +51,17 @@ class NumberTextFieldDialog extends HookWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () => completer(DialogResponse(data: controller.text)),
-              child: Container(
-                alignment: Alignment.center,
+            TextButton(
+              style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple,
+                backgroundColor: Colors.deepPurple,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
+                  side: const BorderSide(color: Colors.deepPurple),
                 ),
+              ),
+              onPressed: () => completer(DialogResponse(data: controller.text)),
+              child: Center(
                 child: Text(
                   request.mainButtonTitle!,
                   style: const TextStyle(
@@ -69,7 +70,7 @@ class NumberTextFieldDialog extends HookWidget {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

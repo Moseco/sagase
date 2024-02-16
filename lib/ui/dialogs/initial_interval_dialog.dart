@@ -47,7 +47,7 @@ class InitialIntervalDialog extends HookWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
-                'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Default is $defaultInitialCorrectInterval and $defaultInitialVeryCorrectInterval.',
+                'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Defaults are $defaultInitialCorrectInterval and $defaultInitialVeryCorrectInterval.',
                 textAlign: TextAlign.justify,
                 style: TextStyle(),
               ),
@@ -81,8 +81,16 @@ class InitialIntervalDialog extends HookWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                backgroundColor: Colors.deepPurple,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  side: const BorderSide(color: Colors.deepPurple),
+                ),
+              ),
+              onPressed: () {
                 if (correctController.text.isEmpty ||
                     veryCorrectController.text.isEmpty) {
                   _snackbarService.showSnackbar(
@@ -108,15 +116,8 @@ class InitialIntervalDialog extends HookWidget {
                   DialogResponse(data: [correctInterval, veryCorrectInterval]),
                 );
               },
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: const Text(
+              child: const Center(
+                child: Text(
                   'Save',
                   style: TextStyle(
                     color: Colors.white,
@@ -124,7 +125,7 @@ class InitialIntervalDialog extends HookWidget {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

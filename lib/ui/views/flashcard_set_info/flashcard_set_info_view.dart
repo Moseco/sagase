@@ -96,7 +96,6 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
                   ),
                   GestureDetector(
                     onTap: viewModel.toggleIntervalDisplay,
-                    onLongPress: () {},
                     child: _IntervalLength(
                       flashcardIntervalCounts:
                           viewModel.flashcardIntervalCounts,

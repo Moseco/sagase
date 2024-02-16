@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -47,6 +48,7 @@ class FlashcardSetSettingsView
 
   @override
   Widget builder(context, viewModel, child) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(flashcardSet.name),
@@ -93,71 +95,85 @@ class FlashcardSetSettingsView
                   children: [
                     CardWithTitleSection(
                       title: 'Included Lists',
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Column(
-                          children: [
-                            viewModel.isBusy
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: viewModel.editIncludedLists,
-                                    child: Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Wrap(
-                                        spacing: 4,
-                                        children: List.generate(
-                                          viewModel.predefinedDictionaryLists
-                                                  .length +
-                                              viewModel
-                                                  .myDictionaryLists.length +
-                                              1,
-                                          (index) {
-                                            if (index ==
-                                                viewModel
-                                                        .predefinedDictionaryLists
-                                                        .length +
-                                                    viewModel.myDictionaryLists
-                                                        .length) {
-                                              return const Chip(
-                                                label: Text('Add list'),
-                                                avatar: Icon(Icons.add),
-                                              );
-                                            } else if (index <
-                                                viewModel
-                                                    .predefinedDictionaryLists
-                                                    .length) {
-                                              return Chip(
-                                                label: Text(
-                                                  viewModel
-                                                      .predefinedDictionaryLists[
-                                                          index]
-                                                      .name,
-                                                ),
-                                              );
-                                            } else {
-                                              return Chip(
-                                                label: Text(
-                                                  viewModel
-                                                      .myDictionaryLists[index -
-                                                          viewModel
-                                                              .predefinedDictionaryLists
-                                                              .length]
-                                                      .name,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                        ),
+                      child: Column(
+                        children: [
+                          viewModel.isBusy
+                              ? Shimmer.fromColors(
+                                  baseColor: isDark
+                                      ? const Color(0xFF3a3a3a)
+                                      : Colors.grey.shade300,
+                                  highlightColor: isDark
+                                      ? const Color(0xFF4a4a4a)
+                                      : Colors.grey.shade100,
+                                  child: Container(
+                                    height: 64,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(8),
                                       ),
                                     ),
                                   ),
-                          ],
-                        ),
+                                )
+                              : InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  onTap: viewModel.editIncludedLists,
+                                  child: Container(
+                                    alignment: Alignment.topLeft,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    child: Wrap(
+                                      spacing: 4,
+                                      children: List.generate(
+                                        viewModel.predefinedDictionaryLists
+                                                .length +
+                                            viewModel.myDictionaryLists.length +
+                                            1,
+                                        (index) {
+                                          if (index ==
+                                              viewModel
+                                                      .predefinedDictionaryLists
+                                                      .length +
+                                                  viewModel.myDictionaryLists
+                                                      .length) {
+                                            return const Chip(
+                                              label: Text('Add list'),
+                                              avatar: Icon(Icons.add),
+                                            );
+                                          } else if (index <
+                                              viewModel
+                                                  .predefinedDictionaryLists
+                                                  .length) {
+                                            return Chip(
+                                              label: Text(
+                                                viewModel
+                                                    .predefinedDictionaryLists[
+                                                        index]
+                                                    .name,
+                                              ),
+                                            );
+                                          } else {
+                                            return Chip(
+                                              label: Text(
+                                                viewModel
+                                                    .myDictionaryLists[index -
+                                                        viewModel
+                                                            .predefinedDictionaryLists
+                                                            .length]
+                                                    .name,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ],
                       ),
                     ),
                     CardWithTitleSection(
@@ -306,13 +322,12 @@ class FlashcardSetSettingsView
                       ),
                       onPressed: viewModel.openFlashcardSet,
                       child: Container(
+                        alignment: Alignment.center,
                         padding: const EdgeInsets.all(8),
-                        child: const Center(
-                          child: Text(
-                            'Open Flashcards',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+                        child: const Text(
+                          'Open Flashcards',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
                     ),

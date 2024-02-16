@@ -48,16 +48,17 @@ class TextFieldDialog extends HookWidget {
                 inputFormatters: [LengthLimitingTextInputFormatter(50)],
               ),
             ),
-            GestureDetector(
-              onTap: () => completer(DialogResponse(data: controller.text)),
-              child: Container(
-                alignment: Alignment.center,
+            TextButton(
+              style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple,
+                backgroundColor: Colors.deepPurple,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
+                  side: const BorderSide(color: Colors.deepPurple),
                 ),
+              ),
+              onPressed: () => completer(DialogResponse(data: controller.text)),
+              child: Center(
                 child: Text(
                   request.mainButtonTitle!,
                   style: const TextStyle(
@@ -66,7 +67,7 @@ class TextFieldDialog extends HookWidget {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

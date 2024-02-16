@@ -149,6 +149,7 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => viewModel.openFlashcardSetInfo(flashcardSet),
+                onLongPress: () {},
                 child: Container(
                   padding: const EdgeInsets.only(
                     left: 9,
@@ -162,6 +163,7 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () => viewModel.editFlashcardSet(flashcardSet),
+              onLongPress: () {},
               child: Container(
                 padding: const EdgeInsets.only(
                   left: 9,
