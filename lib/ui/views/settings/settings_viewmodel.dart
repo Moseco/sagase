@@ -344,4 +344,8 @@ class SettingsViewModel extends BaseViewModel {
       _snackbarService.showSnackbar(message: 'Failed to open privacy policy');
     }
   }
+
+  void openChangelog() {
+    _navigationService.navigateToChangelogView();
+  }
 }

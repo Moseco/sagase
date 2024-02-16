@@ -19,7 +19,7 @@ import 'package:sagase/ui/dialogs/search_filter_dialog.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/theme_selection_dialog.dart';
 import 'package:sagase/ui/views/about/about_view.dart';
-import 'package:sagase/ui/views/changelog_view/changelog_view.dart';
+import 'package:sagase/ui/views/changelog/changelog_view.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';

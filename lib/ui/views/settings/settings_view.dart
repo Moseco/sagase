@@ -176,6 +176,11 @@ class SettingsView extends StatelessWidget {
                     onPressed: (_) => viewModel.openFeedback(),
                   ),
                   SettingsTile.navigation(
+                    leading: const Icon(Icons.history),
+                    title: const Text('Open changelog'),
+                    onPressed: (_) => viewModel.openChangelog(),
+                  ),
+                  SettingsTile.navigation(
                     leading: const Icon(Icons.policy),
                     title: const Text('Privacy policy'),
                     onPressed: (_) => viewModel.openPrivacyPolicy(),
