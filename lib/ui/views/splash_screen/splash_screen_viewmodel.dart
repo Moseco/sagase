@@ -164,33 +164,36 @@ class SplashScreenViewModel extends FutureViewModel {
   }
 
   Future<void> _cleanCache() async {
-    final dir =
-        Directory((await path_provider.getApplicationCacheDirectory()).path);
+    try {
+      final dir =
+          Directory((await path_provider.getApplicationCacheDirectory()).path);
 
-    // Matches files ending in .sagase or related to initial setup
-    final filesToDeleteRegExp = RegExp(
-      r'(.+\.sagase$)|(^' +
-          RegExp.escape(constants.requiredAssetsTar) +
-          r'$)|(^' +
-          RegExp.escape(constants.baseDictionaryZip) +
-          r'$)|(^' +
-          RegExp.escape(constants.mecabDictionaryZip) +
-          r'$)',
-    );
+      // Matches files ending in .sagase or related to initial setup
+      final filesToDeleteRegExp = RegExp(
+        r'(.+\.sagase$)|(^' +
+            RegExp.escape(constants.requiredAssetsTar) +
+            r'$)|(^' +
+            RegExp.escape(constants.baseDictionaryZip) +
+            r'$)|(^' +
+            RegExp.escape(constants.mecabDictionaryZip) +
+            r'$)',
+      );
 
-    for (var entity in (await dir.list().toList())) {
-      if (entity is Directory) {
-        // Delete share_plus directory which temporarily stores files for sharing
-        if (entity.path.endsWith('${Platform.pathSeparator}share_plus')) {
-          entity.delete(recursive: true);
-        }
-      } else if (entity is File) {
-        // Delete files that match the regex
-        if (filesToDeleteRegExp.hasMatch(entity.uri.pathSegments.last)) {
-          entity.delete();
+      for (var entity in (await dir.list().toList())) {
+        if (entity is Directory) {
+          // Delete share_plus directory which temporarily stores files for sharing
+          if (entity.path.endsWith('${Platform.pathSeparator}share_plus')) {
+            entity.delete(recursive: true);
+          }
+        } else if (entity is File) {
+          // Delete files that match the regex and are a day old
+          if (filesToDeleteRegExp.hasMatch(entity.uri.pathSegments.last) &&
+              DateTime.now().difference(entity.lastModifiedSync()).inDays > 0) {
+            entity.delete();
+          }
         }
       }
-    }
+    } catch (_) {}
   }
 }
 
