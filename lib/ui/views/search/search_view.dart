@@ -243,7 +243,6 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                         readOnly: true,
                         showCursor: true,
                         autocorrect: false,
-                        enableSuggestions: false,
                         enableIMEPersonalizedLearning: false,
                         maxLines: 1,
                         focusNode: handWritingFocusNode,
@@ -301,7 +300,6 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                       )
                     : TextField(
                         autocorrect: false,
-                        enableSuggestions: false,
                         enableIMEPersonalizedLearning: false,
                         maxLines: 1,
                         textInputAction: TextInputAction.done,
