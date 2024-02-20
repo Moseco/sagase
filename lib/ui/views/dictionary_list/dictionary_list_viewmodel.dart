@@ -147,7 +147,7 @@ class DictionaryListViewModel extends FutureViewModel {
       );
 
       await file.writeAsString(
-        (dictionaryList as MyDictionaryList).toExportJson(),
+        (dictionaryList as MyDictionaryList).toShareJson(),
       );
 
       // Share the file

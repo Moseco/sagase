@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
 
@@ -25,7 +23,7 @@ void main() {
         ..myDictionaryLists = [6, 7];
 
       final newFlashcardSet = FlashcardSet.fromBackupJson(
-        jsonDecode(flashcardSet.toBackupJson()),
+        flashcardSet.toBackupJson(),
       );
 
       expect(newFlashcardSet.id, 1);

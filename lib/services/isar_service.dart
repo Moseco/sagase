@@ -711,7 +711,7 @@ class IsarService {
   Future<MyDictionaryList?> importMyDictionaryList(String path) async {
     try {
       // Parse file
-      final myList = MyDictionaryList.fromExportJson(
+      final myList = MyDictionaryList.fromShareJson(
         await File(path).readAsString(),
       );
 
@@ -1000,44 +1000,43 @@ class IsarService {
       }
 
       // Vocab spaced repetition data
-      List<String> vocabSpacedRepetitionDataBackups = [];
+      Map<String, String> vocabSpacedRepetitionDataBackups = {};
       final vocabSpacedRepetitionData =
           await _isar.vocabs.filter().spacedRepetitionDataIsNotNull().findAll();
       for (var vocab in vocabSpacedRepetitionData) {
-        vocabSpacedRepetitionDataBackups
-            .add(vocab.spacedRepetitionData!.toBackupJson(vocabId: vocab.id));
+        vocabSpacedRepetitionDataBackups[vocab.id.toString()] =
+            vocab.spacedRepetitionData!.toBackupJson();
       }
 
       // Vocab spaced repetition data English
-      List<String> vocabSpacedRepetitionDataEnglishBackups = [];
+      Map<String, String> vocabSpacedRepetitionDataEnglishBackups = {};
       final vocabSpacedRepetitionDataEnglish = await _isar.vocabs
           .filter()
           .spacedRepetitionDataEnglishIsNotNull()
           .findAll();
       for (var vocab in vocabSpacedRepetitionDataEnglish) {
-        vocabSpacedRepetitionDataEnglishBackups.add(
-            vocab.spacedRepetitionDataEnglish!.toBackupJson(vocabId: vocab.id));
+        vocabSpacedRepetitionDataEnglishBackups[vocab.id.toString()] =
+            vocab.spacedRepetitionDataEnglish!.toBackupJson();
       }
 
       // Kanji spaced repetition data
-      List<String> kanjiSpacedRepetitionDataBackups = [];
+      Map<String, String> kanjiSpacedRepetitionDataBackups = {};
       final kanjiSpacedRepetitionData =
           await _isar.kanjis.filter().spacedRepetitionDataIsNotNull().findAll();
       for (var kanji in kanjiSpacedRepetitionData) {
-        kanjiSpacedRepetitionDataBackups.add(kanji.spacedRepetitionData!
-            .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
+        kanjiSpacedRepetitionDataBackups[kanji.id.toString()] =
+            kanji.spacedRepetitionData!.toBackupJson();
       }
 
       // Kanji spaced repetition data English
-      List<String> kanjiSpacedRepetitionDataEnglishBackups = [];
+      Map<String, String> kanjiSpacedRepetitionDataEnglishBackups = {};
       final kanjiSpacedRepetitionDataEnglish = await _isar.kanjis
           .filter()
           .spacedRepetitionDataEnglishIsNotNull()
           .findAll();
       for (var kanji in kanjiSpacedRepetitionDataEnglish) {
-        kanjiSpacedRepetitionDataEnglishBackups.add(kanji
-            .spacedRepetitionDataEnglish!
-            .toBackupJson(kanjiId: kanji.kanji.kanjiCodePoint()));
+        kanjiSpacedRepetitionDataEnglishBackups[kanji.id.toString()] =
+            kanji.spacedRepetitionDataEnglish!.toBackupJson();
       }
 
       // Create instance
@@ -1061,7 +1060,7 @@ class IsarService {
         'backup_${now.year}-${now.month}-${now.day}_${now.millisecondsSinceEpoch}.sagase',
       ));
 
-      await file.writeAsString(backup.toJson());
+      await file.writeAsString(backup.toBackupJson());
 
       return file.path;
     } catch (_) {
@@ -1076,17 +1075,13 @@ class IsarService {
       if (!await file.exists()) return false;
 
       // Try to decode the backup file
-      Map<String, dynamic> backupMap = jsonDecode(await file.readAsString());
-      int backupDatabaseVersion =
-          backupMap[SagaseDictionaryConstants.backupDictionaryVersion];
+      final userBackup = UserBackup.fromBackupJson(await file.readAsString());
+      if (userBackup == null) return false;
 
       await _isar.writeTxn(() async {
         // My dictionary lists
-        for (var myListMap
-            in (backupMap[SagaseDictionaryConstants.backupMyDictionaryLists] ??
-                [])) {
-          final myList =
-              MyDictionaryList.fromBackupJson(myListMap, backupDatabaseVersion);
+        for (var myListJson in userBackup.myDictionaryLists) {
+          final myList = MyDictionaryList.fromBackupJson(myListJson);
           // Confirm vocab exists
           final vocabList = (await _isar.vocabs.getAll(myList.vocab)).toList();
           for (int i = 0; i < vocabList.length; i++) {
@@ -1109,10 +1104,8 @@ class IsarService {
         }
 
         // Flashcard sets
-        for (var flashcardSetMap
-            in (backupMap[SagaseDictionaryConstants.backupFlashcardSets] ??
-                [])) {
-          final flashcardSet = FlashcardSet.fromBackupJson(flashcardSetMap);
+        for (var flashcardSetJson in userBackup.flashcardSets) {
+          final flashcardSet = FlashcardSet.fromBackupJson(flashcardSetJson);
           // Confirm predefined lists exist
           for (int i = 0;
               i < flashcardSet.predefinedDictionaryLists.length;
@@ -1135,13 +1128,10 @@ class IsarService {
         }
 
         // Vocab spaced repetition data
-        for (var spacedRepetitionMap in (backupMap[
-                SagaseDictionaryConstants.backupVocabSpacedRepetitionData] ??
-            [])) {
+        for (var entry in userBackup.vocabSpacedRepetitionData.entries) {
           final newSpacedRepetition =
-              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final vocab = await _isar.vocabs.get(spacedRepetitionMap[
-              SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId]);
+              SpacedRepetitionData.fromBackupJson(jsonDecode(entry.value));
+          final vocab = await _isar.vocabs.get(int.parse(entry.key));
           if (vocab != null) {
             vocab.spacedRepetitionData = newSpacedRepetition;
             await _isar.vocabs.put(vocab);
@@ -1149,13 +1139,10 @@ class IsarService {
         }
 
         // Vocab spaced repetition data English
-        for (var spacedRepetitionMap in (backupMap[SagaseDictionaryConstants
-                .backupVocabSpacedRepetitionDataEnglish] ??
-            [])) {
+        for (var entry in userBackup.vocabSpacedRepetitionDataEnglish.entries) {
           final newSpacedRepetition =
-              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          final vocab = await _isar.vocabs.get(spacedRepetitionMap[
-              SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId]);
+              SpacedRepetitionData.fromBackupJson(jsonDecode(entry.value));
+          final vocab = await _isar.vocabs.get(int.parse(entry.key));
           if (vocab != null) {
             vocab.spacedRepetitionDataEnglish = newSpacedRepetition;
             await _isar.vocabs.put(vocab);
@@ -1163,18 +1150,10 @@ class IsarService {
         }
 
         // Kanji spaced repetition data
-        for (var spacedRepetitionMap in (backupMap[
-                SagaseDictionaryConstants.backupKanjiSpacedRepetitionData] ??
-            [])) {
+        for (var entry in userBackup.kanjiSpacedRepetitionData.entries) {
           final newSpacedRepetition =
-              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          // Handles change in kanji id format
-          int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
-                  .backupSpacedRepetitionDataKanjiId] ??
-              (spacedRepetitionMap[SagaseDictionaryConstants
-                      .backupSpacedRepetitionDataKanji] as String)
-                  .kanjiCodePoint();
-          final kanji = await _isar.kanjis.get(kanjiId);
+              SpacedRepetitionData.fromBackupJson(jsonDecode(entry.value));
+          final kanji = await _isar.kanjis.get(int.parse(entry.key));
           if (kanji != null) {
             kanji.spacedRepetitionData = newSpacedRepetition;
             await _isar.kanjis.put(kanji);
@@ -1182,18 +1161,10 @@ class IsarService {
         }
 
         // Kanji spaced repetition data English
-        for (var spacedRepetitionMap in (backupMap[SagaseDictionaryConstants
-                .backupKanjiSpacedRepetitionDataEnglish] ??
-            [])) {
+        for (var entry in userBackup.kanjiSpacedRepetitionDataEnglish.entries) {
           final newSpacedRepetition =
-              SpacedRepetitionData.fromBackupJson(spacedRepetitionMap);
-          // Handles change in kanji id format
-          int kanjiId = spacedRepetitionMap[SagaseDictionaryConstants
-                  .backupSpacedRepetitionDataKanjiId] ??
-              (spacedRepetitionMap[SagaseDictionaryConstants
-                      .backupSpacedRepetitionDataKanji] as String)
-                  .kanjiCodePoint();
-          final kanji = await _isar.kanjis.get(kanjiId);
+              SpacedRepetitionData.fromBackupJson(jsonDecode(entry.value));
+          final kanji = await _isar.kanjis.get(int.parse(entry.key));
           if (kanji != null) {
             kanji.spacedRepetitionDataEnglish = newSpacedRepetition;
             await _isar.kanjis.put(kanji);

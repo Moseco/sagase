@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/services/isar_service.dart';
@@ -23,8 +24,7 @@ void main() {
         final vocab2 = Vocab()..id = 2;
         final vocab3 = Vocab()
           ..id = 3
-          ..spacedRepetitionData = SpacedRepetitionData();
-        vocab3.spacedRepetitionData!.dueDate = 0;
+          ..spacedRepetitionData = (SpacedRepetitionData()..dueDate = 0);
         final kanji1 = Kanji()
           ..id = 'a'.kanjiCodePoint()
           ..kanji = 'a'
@@ -40,8 +40,7 @@ void main() {
           ..kanji = 'c'
           ..radical = 'c'
           ..strokeCount = 0
-          ..spacedRepetitionData = SpacedRepetitionData();
-        kanji3.spacedRepetitionData!.dueDate = 0;
+          ..spacedRepetitionData = (SpacedRepetitionData()..dueDate = 0);
 
         await oldIsar.vocabs.put(vocab1);
         await oldIsar.vocabs.put(vocab2);
@@ -107,17 +106,20 @@ void main() {
       });
 
       // Call actual function
-      await IsarService.transferUserData(
+      final result = await IsarService.transferUserData(
         testingOldIsar: oldIsar,
         testingNewIsar: newIsar,
       );
 
+      // Verify success
+      expect(result, isTrue);
+
       // Verify result
       final vocab = await newIsar.vocabs.get(3);
-      expect(vocab!.spacedRepetitionData != null, true);
+      expect(vocab!.spacedRepetitionData, isNotNull);
       expect(vocab.spacedRepetitionData!.dueDate, 0);
       final kanji = await newIsar.kanjis.get('c'.kanjiCodePoint());
-      expect(kanji!.spacedRepetitionData != null, true);
+      expect(kanji!.spacedRepetitionData, isNotNull);
       expect(kanji.spacedRepetitionData!.dueDate, 0);
 
       final myList = await newIsar.myDictionaryLists.get(0);
@@ -154,6 +156,10 @@ void main() {
       Map<String, dynamic> map = jsonDecode(backupContent);
 
       expect(
+        map[SagaseDictionaryConstants.exportType],
+        SagaseDictionaryConstants.exportTypeBackup,
+      );
+      expect(
         map[SagaseDictionaryConstants.backupDictionaryVersion],
         SagaseDictionaryConstants.dictionaryVersion,
       );
@@ -166,9 +172,15 @@ void main() {
       expect(map[SagaseDictionaryConstants.backupMyDictionaryLists], []);
       expect(map[SagaseDictionaryConstants.backupFlashcardSets], []);
       expect(
-          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData], []);
+          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData], {});
       expect(
-          map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData], []);
+          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish],
+          {});
+      expect(
+          map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData], {});
+      expect(
+          map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish],
+          {});
 
       // Do import and check database content
       await service.importUserData(path);
@@ -189,29 +201,29 @@ void main() {
       final vocab1 = Vocab()..id = 1;
       final vocab2 = Vocab()
         ..id = 2
-        ..spacedRepetitionData = SpacedRepetitionData();
-      vocab2.spacedRepetitionData!.interval = 0;
-      vocab2.spacedRepetitionData!.repetitions = 0;
-      vocab2.spacedRepetitionData!.easeFactor = 2.4;
-      vocab2.spacedRepetitionData!.dueDate = 0;
-      vocab2.spacedRepetitionData!.totalAnswers = 2;
-      vocab2.spacedRepetitionData!.totalWrongAnswers = 2;
+        ..spacedRepetitionData = (SpacedRepetitionData()
+          ..interval = 0
+          ..repetitions = 0
+          ..easeFactor = 2.4
+          ..dueDate = 0
+          ..totalAnswers = 2
+          ..totalWrongAnswers = 2);
       final vocab3 = Vocab()
         ..id = 3
-        ..spacedRepetitionData = SpacedRepetitionData()
-        ..spacedRepetitionDataEnglish = SpacedRepetitionData();
-      vocab3.spacedRepetitionData!.interval = 1;
-      vocab3.spacedRepetitionData!.repetitions = 1;
-      vocab3.spacedRepetitionData!.easeFactor = 2.6;
-      vocab3.spacedRepetitionData!.dueDate = 0;
-      vocab3.spacedRepetitionData!.totalAnswers = 1;
-      vocab3.spacedRepetitionData!.totalWrongAnswers = 0;
-      vocab3.spacedRepetitionDataEnglish!.interval = 2;
-      vocab3.spacedRepetitionDataEnglish!.repetitions = 2;
-      vocab3.spacedRepetitionDataEnglish!.easeFactor = 2.7;
-      vocab3.spacedRepetitionDataEnglish!.dueDate = 1;
-      vocab3.spacedRepetitionDataEnglish!.totalAnswers = 2;
-      vocab3.spacedRepetitionDataEnglish!.totalWrongAnswers = 1;
+        ..spacedRepetitionData = (SpacedRepetitionData()
+          ..interval = 1
+          ..repetitions = 1
+          ..easeFactor = 2.6
+          ..dueDate = 0
+          ..totalAnswers = 1
+          ..totalWrongAnswers = 0)
+        ..spacedRepetitionDataEnglish = (SpacedRepetitionData()
+          ..interval = 2
+          ..repetitions = 2
+          ..easeFactor = 2.7
+          ..dueDate = 1
+          ..totalAnswers = 2
+          ..totalWrongAnswers = 1);
       final kanji1 = Kanji()
         ..id = 'a'.kanjiCodePoint()
         ..kanji = 'a'
@@ -227,20 +239,20 @@ void main() {
         ..kanji = 'c'
         ..radical = 'c'
         ..strokeCount = 0
-        ..spacedRepetitionData = SpacedRepetitionData()
-        ..spacedRepetitionDataEnglish = SpacedRepetitionData();
-      kanji3.spacedRepetitionData!.interval = 5;
-      kanji3.spacedRepetitionData!.repetitions = 2;
-      kanji3.spacedRepetitionData!.easeFactor = 2.7776;
-      kanji3.spacedRepetitionData!.dueDate = 2;
-      kanji3.spacedRepetitionData!.totalAnswers = 2;
-      kanji3.spacedRepetitionData!.totalWrongAnswers = 1;
-      kanji3.spacedRepetitionDataEnglish!.interval = 6;
-      kanji3.spacedRepetitionDataEnglish!.repetitions = 3;
-      kanji3.spacedRepetitionDataEnglish!.easeFactor = 2.8776;
-      kanji3.spacedRepetitionDataEnglish!.dueDate = 3;
-      kanji3.spacedRepetitionDataEnglish!.totalAnswers = 3;
-      kanji3.spacedRepetitionDataEnglish!.totalWrongAnswers = 2;
+        ..spacedRepetitionData = (SpacedRepetitionData()
+          ..interval = 5
+          ..repetitions = 2
+          ..easeFactor = 2.7776
+          ..dueDate = 2
+          ..totalAnswers = 2
+          ..totalWrongAnswers = 1)
+        ..spacedRepetitionDataEnglish = (SpacedRepetitionData()
+          ..interval = 6
+          ..repetitions = 3
+          ..easeFactor = 2.8776
+          ..dueDate = 3
+          ..totalAnswers = 3
+          ..totalWrongAnswers = 2);
 
       await isar.writeTxn(() async {
         await isar.vocabs.put(vocab1);
@@ -270,125 +282,83 @@ void main() {
       String path = (await service.exportUserData())!;
       final file = File(path);
 
-      // Check file content
-      String backupContent = await file.readAsString();
-      Map<dynamic, dynamic> map = jsonDecode(backupContent);
+      // Export and import from class
+      final userBackup = UserBackup.fromBackupJson(await file.readAsString());
+
+      expect(userBackup, isNotNull);
 
       expect(
-        map[SagaseDictionaryConstants.backupDictionaryVersion],
+        userBackup!.dictionaryVersion,
         SagaseDictionaryConstants.dictionaryVersion,
       );
-      expect(
-        DateTime.fromMillisecondsSinceEpoch(
-                map[SagaseDictionaryConstants.backupTimestamp])
-            .isDifferentDay(DateTime.now()),
-        false,
-      );
-      expect(map[SagaseDictionaryConstants.backupMyDictionaryLists].length, 1);
-      final myList = MyDictionaryList.fromBackupJson(
-        map[SagaseDictionaryConstants.backupMyDictionaryLists][0],
-        SagaseDictionaryConstants.dictionaryVersion,
-      );
+      expect(userBackup.timestamp.isDifferentDay(DateTime.now()), false);
+
+      expect(userBackup.myDictionaryLists.length, 1);
+      final myList =
+          MyDictionaryList.fromBackupJson(userBackup.myDictionaryLists[0]);
       expect(myList.name, 'list1');
       expect(myList.timestamp.isDifferentDay(DateTime.now()), false);
-      expect(
-        map[SagaseDictionaryConstants.backupMyDictionaryLists][0]
-                [SagaseDictionaryConstants.backupMyDictionaryListVocab]
-            .length,
-        2,
-      );
-      expect(
-        map[SagaseDictionaryConstants.backupMyDictionaryLists][0]
-                [SagaseDictionaryConstants.backupMyDictionaryListKanji]
-            .length,
-        2,
-      );
-      final set = FlashcardSet.fromBackupJson(
-          map[SagaseDictionaryConstants.backupFlashcardSets][0]);
-      expect(map[SagaseDictionaryConstants.backupFlashcardSets].length, 1);
-      expect(
-        map[SagaseDictionaryConstants.backupFlashcardSets][0]
-                [SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists]
-            .length,
-        1,
-      );
+      expect(myList.vocab.length, 2);
+      expect(myList.kanji.length, 2);
+
+      expect(userBackup.flashcardSets.length, 1);
+      final set = FlashcardSet.fromBackupJson(userBackup.flashcardSets[0]);
+      expect(set.myDictionaryLists.length, 1);
       expect(set.name, 'set1');
       expect(set.usingSpacedRepetition, true);
       expect(set.frontType, FrontType.japanese);
       expect(set.vocabShowReading, true);
-      expect(
-        map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData].length,
-        2,
-      );
+
+      expect(userBackup.vocabSpacedRepetitionData.length, 2);
+      expect(userBackup.vocabSpacedRepetitionData['2'], isNotNull);
       final spaced1 = SpacedRepetitionData.fromBackupJson(
-          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData][0]);
-      expect(
-        map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId],
-        2,
-      );
+          jsonDecode(userBackup.vocabSpacedRepetitionData['2']));
       expect(spaced1.interval, 0);
       expect(spaced1.repetitions, 0);
       expect(spaced1.easeFactor, 2.4);
       expect(spaced1.dueDate, 0);
       expect(spaced1.totalAnswers, 2);
       expect(spaced1.totalWrongAnswers, 2);
+
+      expect(userBackup.vocabSpacedRepetitionData['3'], isNotNull);
       final spaced2 = SpacedRepetitionData.fromBackupJson(
-          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData][1]);
-      expect(
-        map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData][1]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId],
-        3,
-      );
+          jsonDecode(userBackup.vocabSpacedRepetitionData['3']));
       expect(spaced2.interval, 1);
-      expect(
-        map[SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish]
-            .length,
-        1,
-      );
+
+      expect(userBackup.vocabSpacedRepetitionDataEnglish.length, 1);
+      expect(userBackup.vocabSpacedRepetitionDataEnglish['3'], isNotNull);
       final spaced3 = SpacedRepetitionData.fromBackupJson(
-          map[SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish]
-              [0]);
-      expect(
-        map[SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataVocabId],
-        3,
-      );
+          jsonDecode(userBackup.vocabSpacedRepetitionDataEnglish['3']));
       expect(spaced3.interval, 2);
+
+      expect(userBackup.kanjiSpacedRepetitionData.length, 1);
       expect(
-        map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData].length,
-        1,
+        userBackup.kanjiSpacedRepetitionData['c'.kanjiCodePoint().toString()],
+        isNotNull,
       );
-      final spaced4 = SpacedRepetitionData.fromBackupJson(
-          map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData][0]);
-      expect(
-        map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionData][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
-        'c'.kanjiCodePoint(),
-      );
+      final spaced4 = SpacedRepetitionData.fromBackupJson(jsonDecode(userBackup
+          .kanjiSpacedRepetitionData['c'.kanjiCodePoint().toString()]));
       expect(spaced4.interval, 5);
       expect(spaced4.repetitions, 2);
       expect(spaced4.easeFactor, 2.7776);
       expect(spaced4.dueDate, 2);
       expect(spaced4.totalAnswers, 2);
       expect(spaced4.totalWrongAnswers, 1);
+
+      expect(userBackup.kanjiSpacedRepetitionDataEnglish.length, 1);
       expect(
-        map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish]
-            .length,
-        1,
+        userBackup
+            .kanjiSpacedRepetitionDataEnglish['c'.kanjiCodePoint().toString()],
+        isNotNull,
       );
-      final spaced5 = SpacedRepetitionData.fromBackupJson(
-          map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish]
-              [0]);
-      expect(
-        map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish][0]
-            [SagaseDictionaryConstants.backupSpacedRepetitionDataKanjiId],
-        'c'.kanjiCodePoint(),
-      );
+      final spaced5 = SpacedRepetitionData.fromBackupJson(jsonDecode(userBackup
+          .kanjiSpacedRepetitionDataEnglish['c'.kanjiCodePoint().toString()]));
+
       expect(spaced5.interval, 6);
 
       // Do import and check database content
-      await service.importUserData(path);
+      final result = await service.importUserData(path);
+      expect(result, true);
 
       final myLists = await service.getAllMyDictionaryLists();
       expect(myLists.length, 1);

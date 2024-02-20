@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:isar/isar.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
@@ -26,47 +28,60 @@ class FlashcardSet {
   List<int> myDictionaryLists = [];
 
   String toBackupJson() {
-    return '''{
-      "${SagaseDictionaryConstants.backupFlashcardSetId}": $id,
-      "${SagaseDictionaryConstants.backupFlashcardSetName}": "$name",
-      "${SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition}": $usingSpacedRepetition,
-      "${SagaseDictionaryConstants.backupFlashcardSetFrontType}": ${frontType.index},
-      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReading}": $vocabShowReading,
-      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowReadingIfRareKanji}": $vocabShowReadingIfRareKanji,
-      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives}": $vocabShowAlternatives,
-      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowPitchAccent}": $vocabShowPitchAccent,
-      "${SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading}": $kanjiShowReading,
-      "${SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech}": $vocabShowPartsOfSpeech,
-      "${SagaseDictionaryConstants.backupFlashcardSetTimestamp}": ${timestamp.millisecondsSinceEpoch},
-      "${SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday}": $flashcardsCompletedToday,
-      "${SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday}": $newFlashcardsCompletedToday,
-      "${SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists}": $predefinedDictionaryLists,
-      "${SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists}": $myDictionaryLists
-}''';
+    return jsonEncode(
+      {
+        SagaseDictionaryConstants.backupFlashcardSetId: id,
+        SagaseDictionaryConstants.backupFlashcardSetName: name,
+        SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition:
+            usingSpacedRepetition,
+        SagaseDictionaryConstants.backupFlashcardSetFrontType: frontType.index,
+        SagaseDictionaryConstants.backupFlashcardSetVocabShowReading:
+            vocabShowReading,
+        SagaseDictionaryConstants.backupFlashcardSetVocabShowReadingIfRareKanji:
+            vocabShowReadingIfRareKanji,
+        SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives:
+            vocabShowAlternatives,
+        SagaseDictionaryConstants.backupFlashcardSetVocabShowPitchAccent:
+            vocabShowPitchAccent,
+        SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading:
+            kanjiShowReading,
+        SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech:
+            vocabShowPartsOfSpeech,
+        SagaseDictionaryConstants.backupFlashcardSetTimestamp:
+            timestamp.millisecondsSinceEpoch,
+        SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday:
+            flashcardsCompletedToday,
+        SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday:
+            newFlashcardsCompletedToday,
+        SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists:
+            predefinedDictionaryLists,
+        SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists:
+            myDictionaryLists
+      },
+    );
   }
 
-  static FlashcardSet fromBackupJson(Map<String, dynamic> map) {
+  static FlashcardSet fromBackupJson(String json) {
+    final map = jsonDecode(json);
     return FlashcardSet()
       ..id = map[SagaseDictionaryConstants.backupFlashcardSetId]
       ..name = map[SagaseDictionaryConstants.backupFlashcardSetName]
       ..usingSpacedRepetition =
           map[SagaseDictionaryConstants.backupFlashcardSetUsingSpacedRepetition]
-      ..frontType = FrontType.values[
-          map[SagaseDictionaryConstants.backupFlashcardSetFrontType] ?? 0]
+      ..frontType = FrontType
+          .values[map[SagaseDictionaryConstants.backupFlashcardSetFrontType]]
       ..vocabShowReading =
           map[SagaseDictionaryConstants.backupFlashcardSetVocabShowReading]
       ..vocabShowReadingIfRareKanji = map[SagaseDictionaryConstants
           .backupFlashcardSetVocabShowReadingIfRareKanji]
       ..vocabShowAlternatives =
           map[SagaseDictionaryConstants.backupFlashcardSetVocabShowAlternatives]
-      ..vocabShowPitchAccent = map[SagaseDictionaryConstants
-              .backupFlashcardSetVocabShowPitchAccent] ??
-          false
+      ..vocabShowPitchAccent =
+          map[SagaseDictionaryConstants.backupFlashcardSetVocabShowPitchAccent]
       ..kanjiShowReading =
           map[SagaseDictionaryConstants.backupFlashcardSetKanjiShowReading]
-      ..vocabShowPartsOfSpeech = map[SagaseDictionaryConstants
-              .backupFlashcardSetVocabShowPartsOfSpeech] ??
-          false
+      ..vocabShowPartsOfSpeech = map[
+          SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech]
       ..timestamp = DateTime.fromMillisecondsSinceEpoch(
           map[SagaseDictionaryConstants.backupFlashcardSetTimestamp])
       ..flashcardsCompletedToday = map[
