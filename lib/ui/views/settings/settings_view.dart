@@ -146,7 +146,7 @@ class SettingsView extends StatelessWidget {
                     ),
                   ),
                   SettingsTile.navigation(
-                    title: const Text('Request data deletion'),
+                    title: const Text('Delete analytics data'),
                     onPressed: (_) => viewModel.requestDataDeletion(),
                   ),
                   SettingsTile.navigation(
@@ -154,15 +154,17 @@ class SettingsView extends StatelessWidget {
                     onPressed: (_) => viewModel.deleteSearchHistory(),
                   ),
                   SettingsTile.navigation(
-                    title: const Text('Export data'),
+                    title: const Text('Backup data'),
                     description: const Text(
-                        'Exports user created lists, flashcard sets, and spaced repetition data. The created file can then be saved in a safe place.'),
+                      'Exports user created lists, flashcard sets, and spaced repetition data. The created file can then be saved in a safe place.',
+                    ),
                     onPressed: (_) => viewModel.backupData(),
                   ),
                   SettingsTile.navigation(
-                    title: const Text('Import data'),
+                    title: const Text('Import backup'),
                     description: const Text(
-                        'Import previously exported data. This will overwrite any conflicting data.'),
+                      'This will merge the current app data with the data from the backup file. Conflicting data will be overwritten by the backup data.',
+                    ),
                     onPressed: (_) => viewModel.importData(),
                   ),
                 ],

@@ -717,8 +717,8 @@ class IsarService {
 
       if (myList == null) return null;
 
-      // Truncate name length
-      myList.name = myList.name.substring(0, min(50, myList.name.length));
+      // Sanitize name
+      myList.name = sanitizeName(myList.name);
 
       // Remove missing vocab and kanji
       final vocab = await _isar.vocabs.getAll(myList.vocab);
@@ -1279,6 +1279,13 @@ class IsarService {
 
       return false;
     }
+  }
+
+  static String sanitizeName(String value) {
+    // Remove new line characters
+    String name = value.replaceAll('\n', '');
+    // Enforce character length and trim whitespace
+    return name.substring(0, min(50, name.length)).trim();
   }
 }
 

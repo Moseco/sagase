@@ -11,6 +11,7 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as path;
+import 'package:sanitize_filename/sanitize_filename.dart' as sanitize_filename;
 
 class DictionaryListViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
@@ -131,7 +132,7 @@ class DictionaryListViewModel extends FutureViewModel {
       variant: DialogType.confirmation,
       title: 'Share list?',
       description:
-          'Sharing this list will create a file that you can send to others. All they have to do is import the list from the my lists screen. No flashcard progress is included.',
+          'Sharing this list will create a file that you can send to others. All they have to do is open the file with Sagase or import the list from the my lists screen. No flashcard progress is included.',
       mainButtonTitle: 'Share',
       secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,
@@ -142,7 +143,9 @@ class DictionaryListViewModel extends FutureViewModel {
       final file = File(
         path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          '${dictionaryList.name} list.sagase',
+          sanitize_filename
+              .sanitizeFilename('${dictionaryList.name} list.sagase')
+              .trim(),
         ),
       );
 

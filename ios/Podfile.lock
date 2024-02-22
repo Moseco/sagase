@@ -184,12 +184,16 @@ PODS:
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
+  - security_scoped_resource (0.0.1):
+    - Flutter
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
   - SSZipArchive (2.4.3)
+  - uni_links (0.0.1):
+    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -208,8 +212,10 @@ DEPENDENCIES:
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
   - mecab_dart (from `.symlinks/plugins/mecab_dart/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - security_scoped_resource (from `.symlinks/plugins/security_scoped_resource/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -268,10 +274,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/mecab_dart/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  security_scoped_resource:
+    :path: ".symlinks/plugins/security_scoped_resource/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
@@ -313,9 +323,11 @@ SPEC CHECKSUMS:
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
+  security_scoped_resource: ff26d31a9c6de0e45e5e8e0d7f43f3da0a1c6444
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
 PODFILE CHECKSUM: 63655fdb9cfebf15be1d740dc3902a7b39e1e653

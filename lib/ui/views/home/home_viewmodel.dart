@@ -1,15 +1,30 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:in_app_review/in_app_review.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:security_scoped_resource/security_scoped_resource.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase/utils/constants.dart'
     show nestedNavigationKey, currentChangelogVersion;
+import 'package:uni_links/uni_links.dart';
+import 'package:uri_to_file/uri_to_file.dart' as uri_to_file;
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as path;
 
 class HomeViewModel extends IndexTrackingViewModel {
   final _navigationService = locator<NavigationService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _snackbarService = locator<SnackbarService>();
+  final _dialogService = locator<DialogService>();
+  final _isarService = locator<IsarService>();
 
   bool _showNavigationBar = true;
   bool get showNavigationBar => _showNavigationBar;
@@ -17,10 +32,13 @@ class HomeViewModel extends IndexTrackingViewModel {
   bool get startOnLearningView =>
       _sharedPreferencesService.getStartOnLearningView();
 
+  late StreamSubscription<String?> _fileSubscription;
+
   HomeViewModel() {
     if (startOnLearningView) setIndex(2);
     _checkReviewRequest();
     _checkChangelog();
+    _listenForFiles();
   }
 
   Future<void> _checkReviewRequest() async {
@@ -60,9 +78,145 @@ class HomeViewModel extends IndexTrackingViewModel {
     }
   }
 
-  void handleNavigation(int index) {
+  void _listenForFiles() async {
+    // Get file that was opened while the app was closed
+    try {
+      _handleFiles(await getInitialLink());
+    } catch (_) {
+      _snackbarService.showSnackbar(message: 'Failed to get import file');
+    }
+
+    // Listen for files that are opened while the app is in memory
+    _fileSubscription = linkStream.listen(
+      _handleFiles,
+      onError: (_) {
+        _snackbarService.showSnackbar(message: 'Failed to get import file');
+      },
+    );
+  }
+
+  Future<void> _handleFiles(String? link) async {
+    if (link == null) return;
+
+    late File file;
+    try {
+      file = await uri_to_file.toFile(link);
+    } catch (_) {
+      _snackbarService.showSnackbar(message: 'Failed to get import file');
+      return;
+    }
+
+    // Skip if file does not end with .sagase
+    if (!file.path.endsWith('.sagase')) return;
+
+    // If iOS, get permission, copy to cache, and release permission
+    if (Platform.isIOS) {
+      if (await SecurityScopedResource.instance
+          .startAccessingSecurityScopedResource(file)) {
+        final newFile = await file.copy(
+          path.join(
+            (await path_provider.getApplicationCacheDirectory()).path,
+            'import.sagase',
+          ),
+        );
+        await SecurityScopedResource.instance
+            .stopAccessingSecurityScopedResource(file);
+        file = newFile;
+      }
+    }
+
+    // Determine type of sagase file
+    late Map<String, dynamic> map;
+    try {
+      map = jsonDecode(await file.readAsString());
+    } catch (_) {
+      _snackbarService.showSnackbar(message: 'Import failed');
+      return;
+    }
+    switch (map[SagaseDictionaryConstants.exportType]) {
+      case SagaseDictionaryConstants.exportTypeMyList:
+        // Show confirmation
+        String name = IsarService.sanitizeName(
+            map[SagaseDictionaryConstants.exportMyListName]);
+        final response = await _dialogService.showCustomDialog(
+          variant: DialogType.confirmation,
+          title: 'Import list?',
+          description:
+              'List to import: $name\nImporting a list will not overwrite existing lists, even those with the same name.',
+          mainButtonTitle: 'Import',
+          secondaryButtonTitle: 'Cancel',
+          barrierDismissible: true,
+        );
+
+        if (response != null && response.confirmed) {
+          // Show progress indicator dialog
+          _dialogService.showCustomDialog(
+            variant: DialogType.progressIndicator,
+            title: 'Importing list',
+            barrierDismissible: false,
+          );
+
+          final newList = await _isarService.importMyDictionaryList(file.path);
+
+          _dialogService.completeDialog(DialogResponse());
+
+          if (newList != null) {
+            _reloadHome();
+            _navigationService.navigateTo(
+              Routes.dictionaryListView,
+              arguments: DictionaryListViewArguments(dictionaryList: newList),
+            );
+          } else {
+            _snackbarService.showSnackbar(message: 'Import failed');
+          }
+        }
+        break;
+      case SagaseDictionaryConstants.exportTypeBackup:
+        // Show confirmation
+        final response = await _dialogService.showCustomDialog(
+          variant: DialogType.confirmation,
+          title: 'Import from backup?',
+          description:
+              'This will merge the current app data with the data from the backup file. Conflicting data will be overwritten by the backup data.',
+          mainButtonTitle: 'Import',
+          secondaryButtonTitle: 'Cancel',
+          barrierDismissible: true,
+        );
+
+        if (response != null && response.confirmed) {
+          // Show progress indicator dialog
+          _dialogService.showCustomDialog(
+            variant: DialogType.progressIndicator,
+            title: 'Importing data',
+            barrierDismissible: false,
+          );
+
+          bool result = await _isarService.importUserData(file.path);
+
+          _dialogService.completeDialog(DialogResponse());
+
+          if (result) {
+            _snackbarService.showSnackbar(message: 'Import successful');
+            _reloadHome();
+          } else {
+            _snackbarService.showSnackbar(message: 'Import failed');
+          }
+        }
+        break;
+    }
+
+    // Cleanup files
+    uri_to_file.clearTemporaryFiles();
+  }
+
+  void _reloadHome() {
+    _navigationService.popUntil((route) => route.isFirst);
+    handleNavigation(currentIndex, preventDuplicates: false);
+  }
+
+  void handleNavigation(int index, {bool preventDuplicates = true}) {
     // Prevent navigation to the same screen
-    if (index == currentIndex) {
+    if (index == currentIndex && preventDuplicates) {
       // If navigating to lists view, clear to base lists view
       if (index == 1) {
         _navigationService.popUntil(
@@ -108,5 +262,11 @@ class HomeViewModel extends IndexTrackingViewModel {
 
   void handleBackButton() {
     if (currentIndex != 0) handleNavigation(0);
+  }
+
+  @override
+  void dispose() {
+    _fileSubscription.cancel();
+    super.dispose();
   }
 }
