@@ -45,4 +45,4 @@ const requiredAssetsTar = 'required_assets.tar';
 const baseDictionaryZip = 'base_dictionary.zip';
 const mecabDictionaryZip = 'mecab_dictionary.zip';
 
-const currentChangelogVersion = 0;
+const currentChangelogVersion = 1;
