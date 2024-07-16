@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';

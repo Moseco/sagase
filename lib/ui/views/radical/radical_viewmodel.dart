@@ -3,35 +3,38 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class KanjiRadicalViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+class RadicalViewModel extends FutureViewModel {
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _snackbarService = locator<SnackbarService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
 
-  final KanjiRadical kanjiRadical;
+  final Radical radical;
 
-  List<KanjiRadical>? variants;
+  List<Radical>? variants;
 
   List<Kanji>? kanjiWithRadical;
 
   bool get strokeDiagramStartExpanded =>
       _sharedPreferencesService.getStrokeDiagramStartExpanded();
 
-  KanjiRadicalViewModel(this.kanjiRadical) {
+  RadicalViewModel(this.radical) {
     // If radical has variants, add temporary versions for smoother loading
-    if (kanjiRadical.variants != null) {
+    if (radical.variants != null) {
       variants = [];
-      for (var radicalString in kanjiRadical.variants!) {
+      for (var radicalString in radical.variants!) {
         variants!.add(
-          KanjiRadical()
-            ..radical = radicalString
-            ..strokeCount = 0
-            ..position = KanjiRadicalPosition.none,
+          Radical(
+            id: 0,
+            radical: radicalString,
+            strokeCount: 0,
+            meaning: '',
+            reading: '',
+          ),
         );
       }
     }
@@ -39,19 +42,18 @@ class KanjiRadicalViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    if (kanjiRadical.variants != null) {
+    if (radical.variants != null) {
       // Load variants and replace temporary versions
-      for (int i = 0; i < kanjiRadical.variants!.length; i++) {
-        final radical =
-            await _isarService.getKanjiRadical(kanjiRadical.variants![i]);
-        if (radical != null) variants![i] = radical;
+      for (int i = 0; i < radical.variants!.length; i++) {
+        variants![i] =
+            await _dictionaryService.getRadical(radical.variants![i]);
       }
 
       rebuildUi();
     }
 
     kanjiWithRadical =
-        await _isarService.getKanjiWithRadical(kanjiRadical.radical);
+        await _dictionaryService.getKanjiWithRadical(radical.radical);
     rebuildUi();
   }
 
@@ -66,7 +68,7 @@ class KanjiRadicalViewModel extends FutureViewModel {
     _navigationService.navigateTo(
       Routes.kanjiListView,
       arguments: KanjiListViewArguments(
-        title: 'Kanji Using ${kanjiRadical.radical}',
+        title: 'Kanji Using ${radical.radical}',
         kanjiList: kanjiWithRadical!,
       ),
     );

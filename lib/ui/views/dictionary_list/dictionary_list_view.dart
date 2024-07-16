@@ -43,17 +43,18 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
                   ),
                 ]
               : null,
-          bottom: viewModel.dictionaryList.getVocab().isNotEmpty &&
-                  viewModel.dictionaryList.getKanji().isNotEmpty
+          bottom: viewModel.loaded &&
+                  viewModel.vocabList!.isNotEmpty &&
+                  viewModel.kanjiList!.isNotEmpty
               ? const TabBar(tabs: [Tab(text: 'Vocab'), Tab(text: 'Kanji')])
               : null,
         ),
         body: SafeArea(
           bottom: false,
-          child: viewModel.isBusy
+          child: !viewModel.loaded
               ? const Center(child: CircularProgressIndicator())
-              : viewModel.vocab.isNotEmpty
-                  ? viewModel.kanji.isNotEmpty
+              : viewModel.vocabList!.isNotEmpty
+                  ? viewModel.kanjiList!.isNotEmpty
                       ? const TabBarView(
                           children: [
                             _VocabList(),
@@ -61,7 +62,7 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
                           ],
                         )
                       : const _VocabList()
-                  : viewModel.kanji.isNotEmpty
+                  : viewModel.kanjiList!.isNotEmpty
                       ? const _KanjiList()
                       : const _Empty(),
         ),
@@ -81,9 +82,9 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
         indent: 8,
         endIndent: 8,
       ),
-      itemCount: viewModel.vocab.length,
+      itemCount: viewModel.vocabList!.length,
       itemBuilder: (context, index) {
-        final current = viewModel.vocab[index];
+        final current = viewModel.vocabList![index];
 
         return VocabListItem(
           vocab: current,
@@ -105,9 +106,9 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
         indent: 8,
         endIndent: 8,
       ),
-      itemCount: viewModel.kanji.length,
+      itemCount: viewModel.kanjiList!.length,
       itemBuilder: (context, index) {
-        final current = viewModel.kanji[index];
+        final current = viewModel.kanjiList![index];
 
         return KanjiListItem(
           kanji: current,

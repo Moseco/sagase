@@ -1,26 +1,22 @@
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class LearningViewModel extends BaseViewModel {
-  final _isarService = locator<IsarService>();
+class LearningViewModel extends FutureViewModel {
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
 
   List<FlashcardSet>? _flashcardSets;
   List<FlashcardSet>? get flashcardSets => _flashcardSets;
 
-  LearningViewModel() {
-    _loadFlashcardSets();
-  }
-
-  Future<void> _loadFlashcardSets() async {
-    _flashcardSets = await _isarService.getFlashcardSets();
-    rebuildUi();
+  @override
+  Future<void> futureToRun() async {
+    _flashcardSets = await _dictionaryService.getFlashcardSets();
   }
 
   Future<void> createFlashcardSet() async {
@@ -32,13 +28,13 @@ class LearningViewModel extends BaseViewModel {
       barrierDismissible: true,
     );
 
-    String? name = response?.data?.trim();
-    if (name == null || name.isEmpty) return;
+    if (response?.data == null) return;
+    final name = (response!.data as String).sanitizeName();
+    if (name.isEmpty) return;
 
-    final flashcardSet = await _isarService.createFlashcardSet(name);
+    final flashcardSet = await _dictionaryService.createFlashcardSet(name);
     if (_flashcardSets != null) {
       _flashcardSets!.insert(0, flashcardSet);
-      rebuildUi();
     }
 
     editFlashcardSet(flashcardSet);

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-import '../../../helpers/test_helpers.dart';
+import '../../../helpers/common/flashcard_set_data.dart';
+import '../../../helpers/common/vocab_data.dart';
+import '../../../helpers/mocks.dart';
 
 void main() {
   group('FlashcardSetInfoViewTest', () {
@@ -14,34 +15,40 @@ void main() {
     tearDown(() => unregisterServices());
 
     testWidgets('Upcoming due flashcards', (tester) async {
-      final todayAsInt = DateTime.now().toInt();
-
-      getAndRegisterIsarService(
-        getPredefinedDictionaryLists: [],
-        getMyDictionaryLists: [],
-        getKanjiList: [],
-        // Generates a list of vocab with different amount of vocab per due date
-        getVocabList: [Vocab()] +
-            List.generate(
-              8,
-              (i) => List.generate(
-                i,
-                (x) => Vocab()
-                  ..spacedRepetitionData = (SpacedRepetitionData()
-                    ..dueDate = todayAsInt + i
-                    ..interval = 1
-                    ..totalAnswers = 1
-                    ..totalWrongAnswers = 0),
-              ),
-            ).expand((element) => element).toList(),
+      getAndRegisterDictionaryService(
+        getFlashcardSetFlashcards:
+            // No spaced repetition data
+            [
+                  Vocab(id: 1, pos: null, common: true, frequencyScore: 0),
+                ] +
+                // Spaced repetition with increasing due date
+                List.generate(
+                  8,
+                  (i) => List.generate(
+                    i,
+                    (j) {
+                      final vocab = Vocab(
+                        id: 1,
+                        pos: null,
+                        common: true,
+                        frequencyScore: 0,
+                      );
+                      vocab.spacedRepetitionData = SpacedRepetitionData.initial(
+                        dictionaryItem: vocab,
+                        frontType: FrontType.japanese,
+                      ).copyWith(
+                        dueDate: DateTime.now().add(Duration(days: i)).toInt(),
+                      );
+                      return vocab;
+                    },
+                  ),
+                ).expand((element) => element).toList(),
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: FlashcardSetInfoView(
-            FlashcardSet()
-              ..name = 'set'
-              ..myDictionaryLists = [0],
+            createDefaultFlashcardSet(),
           ),
         ),
       );
@@ -76,54 +83,41 @@ void main() {
 
     testWidgets('Top challenging flashcards', (tester) async {
       final todayAsInt = DateTime.now().toInt();
-
-      getAndRegisterIsarService(
-        getPredefinedDictionaryLists: [],
-        getMyDictionaryLists: [],
-        getKanjiList: [],
-        // Generates a list of vocab with different amount of vocab per due date
-        getVocabList: [
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [VocabKanji()..kanji = '秋']
-                ..readings = [VocabReading()..reading = 'あき'],
-            ]
-            ..definitions = [VocabDefinition()..definition = 'autumn; fall']
-            ..spacedRepetitionData = (SpacedRepetitionData()
-              ..dueDate = todayAsInt
-              ..interval = 1
-              ..totalAnswers = 10
-              ..totalWrongAnswers = 1),
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()..readings = [VocabReading()..reading = 'はい'],
-            ]
-            ..definitions = [VocabDefinition()..definition = 'yes']
-            ..spacedRepetitionData = (SpacedRepetitionData()
-              ..dueDate = todayAsInt
-              ..interval = 1
-              ..totalAnswers = 10
-              ..totalWrongAnswers = 8),
+      getAndRegisterDictionaryService(
+        getFlashcardSetFlashcards: [
+          getVocab1()
+            ..spacedRepetitionData = SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+                .copyWith(
+              dueDate: todayAsInt,
+              totalAnswers: 10,
+              totalWrongAnswers: 1,
+            ),
+          getVocab2()
+            ..spacedRepetitionData = SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab2(), frontType: FrontType.japanese)
+                .copyWith(
+              dueDate: todayAsInt,
+              totalAnswers: 10,
+              totalWrongAnswers: 8,
+            ),
         ],
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: FlashcardSetInfoView(
-            FlashcardSet()
-              ..name = 'set'
-              ..myDictionaryLists = [0],
+            createDefaultFlashcardSet(),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(find.text('はい'), 100);
+      await tester.scrollUntilVisible(find.text('二【に】'), 100);
 
       expect(find.text('Top challenging flashcards'), findsOne);
-      expect(find.text('秋【あき】'), findsNothing);
-      expect(find.text('はい'), findsOne);
+      expect(find.text('一【いち】'), findsNothing);
+      expect(find.text('二【に】'), findsOne);
     });
   });
 }

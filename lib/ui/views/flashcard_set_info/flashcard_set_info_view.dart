@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';

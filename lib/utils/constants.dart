@@ -42,7 +42,12 @@ const defaultShowDetailedProgress = false;
 const searchQueryLimit = 1000;
 
 const requiredAssetsTar = 'required_assets.tar';
-const baseDictionaryZip = 'base_dictionary.zip';
-const mecabDictionaryZip = 'mecab_dictionary.zip';
+const dictionaryZip = 'dictionary.zip';
+const mecabZip = 'mecab.zip';
+
+const dictionaryDatabaseFile = 'dictionary.sqlite';
+const userDataTransferFile = 'user_data_transfer.sagase';
+const isarDatabaseFile = 'default.isar';
+const isarDatabaseLockFile = 'default.isar.lock';
 
 const currentChangelogVersion = 1;

@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:isar/isar.dart';
-import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart'
+    show SagaseDictionaryConstants;
 
 part 'flashcard_set.g.dart';
 

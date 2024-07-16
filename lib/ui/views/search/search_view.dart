@@ -522,12 +522,12 @@ class _SearchHistory extends ViewModelWidget<SearchViewModel> {
                         },
                         child: ListTile(
                           leading: const Icon(Icons.search),
-                          title: Text(current.searchQuery),
+                          title: Text(current.searchText),
                           onTap: () {
-                            searchController.text = current.searchQuery;
+                            searchController.text = current.searchText;
                             searchController.selection =
                                 TextSelection.fromPosition(TextPosition(
-                                    offset: current.searchQuery.length));
+                                    offset: current.searchText.length));
                             viewModel.searchHistoryItemSelected(current);
                           },
                         ),

@@ -35,9 +35,9 @@ class VocabListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    vocab.kanjiReadingPairs[0].kanjiWritings != null
-                        ? '${vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji}【${vocab.kanjiReadingPairs[0].readings[0].reading}】'
-                        : vocab.kanjiReadingPairs[0].readings[0].reading,
+                    vocab.writings != null
+                        ? '${vocab.writings![0].writing}【${vocab.readings[0].reading}】'
+                        : vocab.readings[0].reading,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -49,8 +49,7 @@ class VocabListItem extends StatelessWidget {
                 ],
               ),
             ),
-            if (vocab.commonWord && showCommonWord)
-              const CommonVocab(fontSize: 10),
+            if (vocab.common && showCommonWord) const CommonVocab(fontSize: 10),
           ],
         ),
       ),

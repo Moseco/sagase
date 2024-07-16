@@ -3,9 +3,8 @@ import 'dart:math';
 
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/date_time_utils.dart';
@@ -13,7 +12,7 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 
 class FlashcardsViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
@@ -70,7 +69,7 @@ class FlashcardsViewModel extends FutureViewModel {
       flashcardSet.newFlashcardsCompletedToday = 0;
     }
     // Update flashcard set to also update timestamp
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
     // Set if using spaced repetition
     _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
     // If not given start mode in constructor, get default start mode
@@ -78,39 +77,9 @@ class FlashcardsViewModel extends FutureViewModel {
         ? FlashcardStartMode.learning
         : FlashcardStartMode.normal;
 
-    // Add all vocab and kanji ids to maps and then load to prevent duplicates
-    Set<int> vocabSet = {};
-    Set<int> kanjiSet = {};
-
-    final predefinedLists = await _isarService.getPredefinedDictionaryLists(
-      flashcardSet.predefinedDictionaryLists,
-    );
-    for (var list in predefinedLists) {
-      for (var vocab in list.vocab) {
-        vocabSet.add(vocab);
-      }
-      for (var kanji in list.kanji) {
-        kanjiSet.add(kanji);
-      }
-    }
-
-    final myLists = await _isarService.getMyDictionaryLists(
-      flashcardSet.myDictionaryLists,
-    );
-    for (var list in myLists) {
-      for (var vocab in list.vocab) {
-        vocabSet.add(vocab);
-      }
-      for (var kanji in list.kanji) {
-        kanjiSet.add(kanji);
-      }
-    }
-
-    // Merge vocab and kanji lists
-    allFlashcards = (await _isarService.getVocabList(vocabSet.toList()))
-            .cast<DictionaryItem>() +
-        (await _isarService.getKanjiList(kanjiSet.toList()))
-            .cast<DictionaryItem>();
+    // Get all the flashcards
+    allFlashcards =
+        await _dictionaryService.getFlashcardSetFlashcards(flashcardSet);
 
     // If have no flashcards tell user and exit
     if (allFlashcards!.isEmpty) {
@@ -133,14 +102,14 @@ class FlashcardsViewModel extends FutureViewModel {
         // Create string that represents the front of a flashcard
         final front = StringBuffer();
         if (flashcard is Vocab) {
-          if (flashcard.kanjiReadingPairs[0].kanjiWritings != null) {
-            front.write(flashcard.kanjiReadingPairs[0].kanjiWritings![0].kanji);
+          if (flashcard.writings != null) {
+            front.write(flashcard.writings![0].writing);
           }
           if (flashcardSet.vocabShowReading ||
-              flashcard.kanjiReadingPairs[0].kanjiWritings == null ||
+              flashcard.writings == null ||
               (flashcard.isUsuallyKanaAlone() &&
                   flashcardSet.vocabShowReadingIfRareKanji)) {
-            front.write(flashcard.kanjiReadingPairs[0].readings[0].reading);
+            front.write(flashcard.readings[0].reading);
           }
         } else {
           front.write((flashcard as Kanji).kanji);
@@ -170,12 +139,11 @@ class FlashcardsViewModel extends FutureViewModel {
     if (_usingSpacedRepetition) {
       int todayAsInt = sessionDateTime.toInt();
       for (var item in allFlashcards!) {
-        final spacedRepetitionData = _getSpacedRepetitionData(item);
-        if (spacedRepetitionData == null) {
+        if (item.spacedRepetitionData == null) {
           newFlashcards.add(item);
-        } else if (spacedRepetitionData.dueDate == null) {
+        } else if (item.spacedRepetitionData!.dueDate == null) {
           startedFlashcards.add(item);
-        } else if (spacedRepetitionData.dueDate! <= todayAsInt) {
+        } else if (item.spacedRepetitionData!.dueDate! <= todayAsInt) {
           dueFlashcards.add(item);
         }
       }
@@ -196,7 +164,7 @@ class FlashcardsViewModel extends FutureViewModel {
     // Add to the undo list
     _undoList.add(_UndoItem(
       currentFlashcard,
-      _getSpacedRepetitionData(currentFlashcard),
+      currentFlashcard.spacedRepetitionData,
     ));
 
     if (usingSpacedRepetition) {
@@ -221,37 +189,35 @@ class FlashcardsViewModel extends FutureViewModel {
         );
         notifyListeners();
         // Only modify spaced repetition data if flashcard has previous data
-        if (_getSpacedRepetitionData(currentFlashcard) != null) {
-          _setSpacedRepetitionData(
-            currentFlashcard,
-            _calculateSpacedRepetition(
-              answer,
-              _getSpacedRepetitionData(currentFlashcard)!,
-            ),
+        if (currentFlashcard.spacedRepetitionData != null) {
+          currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
+            answer,
+            currentFlashcard.spacedRepetitionData!,
           );
           // Only update in database if completed flashcard
-          if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null) {
-            await _isarService.updateSpacedRepetitionData(currentFlashcard);
+          if (currentFlashcard.spacedRepetitionData!.dueDate != null) {
+            await _dictionaryService.setSpacedRepetitionData(
+                currentFlashcard.spacedRepetitionData!);
           }
         }
       } else if (answer == FlashcardAnswer.correct) {
         bool isNewFlashcard =
-            _getSpacedRepetitionData(currentFlashcard)?.dueDate == null;
-        _setSpacedRepetitionData(
-          currentFlashcard,
-          _calculateSpacedRepetition(
-            answer,
-            _getSpacedRepetitionData(currentFlashcard) ??
-                SpacedRepetitionData(),
-          ),
+            currentFlashcard.spacedRepetitionData?.dueDate == null;
+        currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
+          answer,
+          currentFlashcard.spacedRepetitionData ??
+              SpacedRepetitionData.initial(
+                dictionaryItem: currentFlashcard,
+                frontType: flashcardSet.frontType,
+              ),
         );
 
-        if (_getSpacedRepetitionData(currentFlashcard)!.dueDate != null) {
+        if (currentFlashcard.spacedRepetitionData!.dueDate != null) {
           // If completing a new card, increase new flashcard count
           if (isNewFlashcard) flashcardSet.newFlashcardsCompletedToday++;
           // Increase flashcards completed today and update in database
           flashcardSet.flashcardsCompletedToday++;
-          _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
+          _dictionaryService.updateFlashcardSet(flashcardSet);
         } else {
           // New flashcard is not completed, reinsert current flashcard
           activeFlashcards.insert(
@@ -265,29 +231,32 @@ class FlashcardsViewModel extends FutureViewModel {
 
         notifyListeners();
         // Update in database
-        await _isarService.updateSpacedRepetitionData(currentFlashcard);
+        await _dictionaryService
+            .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
       } else {
         // Very correct answer
         // If completing a new card, increase new flashcard count
-        if (_getSpacedRepetitionData(currentFlashcard)?.dueDate == null) {
+        if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
           flashcardSet.newFlashcardsCompletedToday++;
         }
         // Increase flashcards completed today and update in database
         flashcardSet.flashcardsCompletedToday++;
-        _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
+        _dictionaryService.updateFlashcardSet(flashcardSet);
         // Get new spaced repetition date and use enum index as argument
-        _setSpacedRepetitionData(
-          currentFlashcard,
-          _calculateSpacedRepetition(
-            answer,
-            _getSpacedRepetitionData(currentFlashcard) ??
-                SpacedRepetitionData(),
-          ),
+
+        currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
+          answer,
+          currentFlashcard.spacedRepetitionData ??
+              SpacedRepetitionData.initial(
+                dictionaryItem: currentFlashcard,
+                frontType: flashcardSet.frontType,
+              ),
         );
 
         notifyListeners();
         // Update in database
-        await _isarService.updateSpacedRepetitionData(currentFlashcard);
+        await _dictionaryService
+            .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
       }
     } else {
       if (answer == FlashcardAnswer.wrong) {
@@ -311,7 +280,7 @@ class FlashcardsViewModel extends FutureViewModel {
     if (activeFlashcards.isEmpty) {
       await _prepareFlashcards();
     } else if (activeFlashcards[0] is Vocab) {
-      _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
+      await _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
     }
   }
 
@@ -412,7 +381,7 @@ class FlashcardsViewModel extends FutureViewModel {
     notifyListeners();
 
     if (activeFlashcards.isNotEmpty && activeFlashcards[0] is Vocab) {
-      _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
+      await _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
     }
   }
 
@@ -437,32 +406,32 @@ class FlashcardsViewModel extends FutureViewModel {
 
     // If undoing a newly completed card, decrease flashcards completed counts
     if (current.previousData?.dueDate == null &&
-        _getSpacedRepetitionData(current.flashcard)?.dueDate != null) {
+        current.flashcard.spacedRepetitionData?.dueDate != null) {
       flashcardSet.flashcardsCompletedToday--;
       flashcardSet.newFlashcardsCompletedToday--;
-      _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
+      _dictionaryService.updateFlashcardSet(flashcardSet);
     }
     // If undoing a not new card and previous answer was correct, decrease count
     if (current.previousData?.dueDate != null &&
         current.previousData!.interval <
-            _getSpacedRepetitionData(current.flashcard)!.interval) {
+            current.flashcard.spacedRepetitionData!.interval) {
       flashcardSet.flashcardsCompletedToday--;
-      _isarService.updateFlashcardSet(flashcardSet, updateTimestamp: false);
+      _dictionaryService.updateFlashcardSet(flashcardSet);
     }
 
     // Put flashcard at the front of active list with the previous data
     activeFlashcards.insert(0, current.flashcard);
-    _setSpacedRepetitionData(current.flashcard, current.previousData);
+    current.flashcard.spacedRepetitionData = current.previousData;
 
     notifyListeners();
 
     // Update in database with old data
-    // If old data was keeping track of initial correct count for new cards, set to null
-    if (current.previousData != null && current.previousData!.dueDate == null) {
-      return _isarService.setSpacedRepetitionDataToNull(
+    if (current.previousData == null) {
+      return _dictionaryService.deleteSpacedRepetitionData(
           current.flashcard, flashcardSet.frontType);
     } else {
-      return _isarService.updateSpacedRepetitionData(current.flashcard);
+      return _dictionaryService
+          .setSpacedRepetitionData(current.flashcard.spacedRepetitionData!);
     }
   }
 
@@ -471,7 +440,7 @@ class FlashcardsViewModel extends FutureViewModel {
     if (activeFlashcards.isEmpty) return '';
 
     if (answer == FlashcardAnswer.wrong) {
-      if (_getSpacedRepetitionData(activeFlashcards[0]) == null) {
+      if (activeFlashcards[0].spacedRepetitionData == null) {
         return '~';
       } else {
         return '0';
@@ -481,7 +450,11 @@ class FlashcardsViewModel extends FutureViewModel {
     } else {
       int interval = _calculateSpacedRepetition(
         answer,
-        _getSpacedRepetitionData(activeFlashcards[0]) ?? SpacedRepetitionData(),
+        activeFlashcards[0].spacedRepetitionData ??
+            SpacedRepetitionData.initial(
+              dictionaryItem: activeFlashcards[0],
+              frontType: flashcardSet.frontType,
+            ),
       ).interval;
 
       // Format interval
@@ -502,11 +475,15 @@ class FlashcardsViewModel extends FutureViewModel {
     // Check if completing initial correct requirement for new flashcards
     if (currentData.dueDate == null) {
       if (answer == FlashcardAnswer.wrong) {
-        return currentData.copyWithInitialCorrectCount(-1);
+        return currentData.copyWith(
+          initialCorrectCount: max(0, currentData.initialCorrectCount - 1),
+        );
       } else if (answer == FlashcardAnswer.correct &&
           currentData.initialCorrectCount + 1 <
               _sharedPreferencesService.getFlashcardCorrectAnswersRequired()) {
-        return currentData.copyWithInitialCorrectCount(1);
+        return currentData.copyWith(
+          initialCorrectCount: currentData.initialCorrectCount + 1,
+        );
       }
     }
 
@@ -566,14 +543,15 @@ class FlashcardsViewModel extends FutureViewModel {
       sessionDateTime = now;
     }
 
-    return SpacedRepetitionData()
-      ..interval = interval
-      ..repetitions = repetitions
-      ..easeFactor = easeFactor
-      ..dueDate = sessionDateTime.add(Duration(days: interval)).toInt()
-      ..totalAnswers = currentData.totalAnswers + 1
-      ..totalWrongAnswers = currentData.totalWrongAnswers +
-          (answer.index == FlashcardAnswer.wrong.index ? 1 : 0);
+    return currentData.copyWith(
+      interval: interval,
+      repetitions: repetitions,
+      easeFactor: easeFactor,
+      dueDate: sessionDateTime.add(Duration(days: interval)).toInt(),
+      totalAnswers: currentData.totalAnswers + 1,
+      totalWrongAnswers: currentData.totalWrongAnswers +
+          (answer.index == FlashcardAnswer.wrong.index ? 1 : 0),
+    );
   }
 
   void back() {
@@ -609,43 +587,19 @@ class FlashcardsViewModel extends FutureViewModel {
 
     vocab.includedKanji = [];
     List<String> kanjiStrings = [];
-    if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
-      final foundKanjiList = kanjiRegExp
-          .allMatches(vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji);
+    if (vocab.writings != null) {
+      final foundKanjiList = kanjiRegExp.allMatches(vocab.writings![0].writing);
       for (var foundKanji in foundKanjiList) {
         // Prevent duplicate kanji
         if (kanjiStrings.contains(foundKanji[0]!)) continue;
         kanjiStrings.add(foundKanji[0]!);
         // Load from database
-        final kanji = await _isarService.getKanji(foundKanji[0]!);
-        if (kanji != null) vocab.includedKanji!.add(kanji);
+        vocab.includedKanji!
+            .add(await _dictionaryService.getKanji(foundKanji[0]!));
       }
     }
 
     notifyListeners();
-  }
-
-  // Convenience function for getting the correct spaced repetition data
-  SpacedRepetitionData? _getSpacedRepetitionData(DictionaryItem item) {
-    return switch (flashcardSet.frontType) {
-      FrontType.japanese => item.spacedRepetitionData,
-      FrontType.english => item.spacedRepetitionDataEnglish,
-    };
-  }
-
-  // Convenience function for setting the correct spaced repetition data
-  void _setSpacedRepetitionData(
-    DictionaryItem item,
-    SpacedRepetitionData? data,
-  ) {
-    switch (flashcardSet.frontType) {
-      case FrontType.japanese:
-        item.spacedRepetitionData = data;
-        break;
-      case FrontType.english:
-        item.spacedRepetitionDataEnglish = data;
-        break;
-    }
   }
 
   bool shouldShowTutorial() {

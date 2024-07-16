@@ -661,22 +661,22 @@ extension LanguageSourceExtension on LanguageSource {
   }
 }
 
-extension KanjiInfoExtension on KanjiInfo {
+extension WritingInfoExtension on WritingInfo {
   String get displayTitle {
     switch (this) {
-      case KanjiInfo.ateji:
+      case WritingInfo.ateji:
         return 'ateji (kanji used for reading, not meaning)';
-      case KanjiInfo.irregularKana:
+      case WritingInfo.irregularKana:
         return 'irregular kana';
-      case KanjiInfo.irregularKanji:
+      case WritingInfo.irregularKanji:
         return 'irregular kanji';
-      case KanjiInfo.irregularOkurigana:
+      case WritingInfo.irregularOkurigana:
         return 'irregular okurigana (kana following kanji)';
-      case KanjiInfo.outdatedKanji:
+      case WritingInfo.outdatedKanji:
         return 'outdated kanji';
-      case KanjiInfo.rareKanjiForm:
+      case WritingInfo.rareKanjiForm:
         return 'rare kanji form';
-      case KanjiInfo.searchOnlyForm:
+      case WritingInfo.searchOnlyForm:
         return 'search only form';
     }
   }
@@ -693,6 +693,59 @@ extension ReadingInfoExtension on ReadingInfo {
         return 'outdated kana';
       case ReadingInfo.searchOnlyForm:
         return 'search only form';
+    }
+  }
+}
+
+extension GradeLevelExtension on KanjiGrade {
+  String get displayTitle {
+    switch (this) {
+      case KanjiGrade.first:
+        return '1';
+      case KanjiGrade.second:
+        return '2';
+      case KanjiGrade.third:
+        return '3';
+      case KanjiGrade.fourth:
+        return '4';
+      case KanjiGrade.fifth:
+        return '5';
+      case KanjiGrade.sixth:
+        return '6';
+      case KanjiGrade.middleSchool:
+        return '7-9';
+      case KanjiGrade.jinmeiyou:
+        return '—';
+    }
+  }
+}
+
+extension JlptLevelExtension on JlptLevel {
+  String get displayTitle {
+    switch (this) {
+      case JlptLevel.n1:
+        return 'N1';
+      case JlptLevel.n2:
+        return 'N2';
+      case JlptLevel.n3:
+        return 'N3';
+      case JlptLevel.n4:
+        return 'N4';
+      case JlptLevel.n5:
+        return 'N5';
+    }
+  }
+}
+
+extension RadicalImportanceExtension on RadicalImportance {
+  String get displayTitle {
+    switch (this) {
+      case RadicalImportance.top25:
+        return 'Top 25%';
+      case RadicalImportance.top50:
+        return 'Top 50%';
+      case RadicalImportance.top75:
+        return 'Top 75%';
     }
   }
 }

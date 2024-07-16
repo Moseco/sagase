@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/ui/widgets/kanji_radical_position.dart';
+import 'package:sagase/ui/widgets/radical_position_image.dart';
 import 'package:stacked/stacked.dart';
 
-import 'kanji_radicals_viewmodel.dart';
+import 'radicals_viewmodel.dart';
 
-class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
-  const KanjiRadicalsView({super.key});
+class RadicalsView extends StackedView<RadicalsViewModel> {
+  const RadicalsView({super.key});
 
   @override
-  KanjiRadicalsViewModel viewModelBuilder(context) => KanjiRadicalsViewModel();
+  RadicalsViewModel viewModelBuilder(context) => RadicalsViewModel();
 
   @override
   Widget builder(context, viewModel, child) {
@@ -40,18 +41,18 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
           ),
         ],
       ),
-      body: viewModel.kanjiRadicals == null
+      body: viewModel.radicals == null
           ? Container()
           : CustomScrollView(
               key: UniqueKey(),
               slivers: viewModel.radicalSorting == RadicalSorting.important
                   ? _getRadicalListByImportance(
                       context,
-                      viewModel.kanjiRadicals!,
+                      viewModel.radicals!,
                     )
                   : _getRadicalListByStrokeCount(
                       context,
-                      viewModel.kanjiRadicals!,
+                      viewModel.radicals!,
                     ),
             ),
     );
@@ -59,7 +60,7 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
 
   List<Widget> _getRadicalListByStrokeCount(
     BuildContext context,
-    List<KanjiRadical> radicals,
+    List<Radical> radicals,
   ) {
     final padding = MediaQuery.of(context).padding;
 
@@ -108,7 +109,7 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
         );
       }
 
-      currentRadicals.add(_KanjiRadicalItem(radical));
+      currentRadicals.add(_RadicalItem(radical));
     }
 
     // Add padding to bottom of the last sliver
@@ -122,32 +123,18 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
 
   List<Widget> _getRadicalListByImportance(
     BuildContext context,
-    List<KanjiRadical> radicals,
+    List<Radical> radicals,
   ) {
     final padding = MediaQuery.of(context).padding;
 
     final List<Widget> radicalGroups = [];
 
-    KanjiRadicalImportance currentImportance = KanjiRadicalImportance.none;
+    RadicalImportance? currentImportance;
     late List<Widget> currentRadicals;
     for (var radical in radicals) {
       if (radical.importance != currentImportance) {
         currentImportance = radical.importance;
         currentRadicals = [];
-        late String headerText;
-        switch (currentImportance) {
-          case KanjiRadicalImportance.none:
-            break;
-          case KanjiRadicalImportance.top25:
-            headerText = 'Top 25%';
-            break;
-          case KanjiRadicalImportance.top50:
-            headerText = 'Top 50%';
-            break;
-          case KanjiRadicalImportance.top75:
-            headerText = 'Top 75%';
-            break;
-        }
         radicalGroups.add(
           SliverStickyHeader(
             header: Container(
@@ -161,7 +148,7 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
                     right: padding.right,
                   ),
                   child: Text(
-                    headerText,
+                    currentImportance!.displayTitle,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -183,7 +170,7 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
         );
       }
 
-      currentRadicals.add(_KanjiRadicalItem(radical));
+      currentRadicals.add(_RadicalItem(radical));
     }
 
     // Add padding to bottom of the last sliver
@@ -196,15 +183,15 @@ class KanjiRadicalsView extends StackedView<KanjiRadicalsViewModel> {
   }
 }
 
-class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
-  final KanjiRadical radical;
+class _RadicalItem extends ViewModelWidget<RadicalsViewModel> {
+  final Radical radical;
 
-  const _KanjiRadicalItem(this.radical);
+  const _RadicalItem(this.radical);
 
   @override
-  Widget build(BuildContext context, KanjiRadicalsViewModel viewModel) {
+  Widget build(BuildContext context, RadicalsViewModel viewModel) {
     return InkWell(
-      onTap: () => viewModel.openKanjiRadical(radical),
+      onTap: () => viewModel.openRadical(radical),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Row(
@@ -248,8 +235,8 @@ class _KanjiRadicalItem extends ViewModelWidget<KanjiRadicalsViewModel> {
                 ],
               ),
             ),
-            if (radical.position != KanjiRadicalPosition.none)
-              KanjiRadicalPositionImage(radical.position),
+            if (radical.position != null)
+              RadicalPositionImage(radical.position!),
           ],
         ),
       ),

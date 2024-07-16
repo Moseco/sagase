@@ -80,7 +80,7 @@ class MecabService {
         // Extract zip to mecab directory
         final mecabDictionaryZip = File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.mecabDictionaryZip,
+          constants.mecabZip,
         ));
         await archive.extractFileToDisk(mecabDictionaryZip.path, mecabDir);
 

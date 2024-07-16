@@ -1,57 +1,55 @@
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class KanjiRadicalsViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+class RadicalsViewModel extends FutureViewModel {
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
 
-  List<KanjiRadical>? kanjiRadicals;
+  List<Radical>? radicals;
 
   RadicalSorting _radicalSorting = RadicalSorting.all;
   RadicalSorting get radicalSorting => _radicalSorting;
 
   @override
   Future<void> futureToRun() async {
-    kanjiRadicals = await _isarService.getAllKanjiRadicals();
-    rebuildUi();
+    radicals = await _dictionaryService.getAllRadicals();
   }
 
   Future<void> handleSortingChanged(RadicalSorting sorting) async {
     if (_radicalSorting == sorting) return;
     _radicalSorting = sorting;
-    kanjiRadicals = null;
+    radicals = null;
     rebuildUi();
     switch (_radicalSorting) {
       case RadicalSorting.all:
-        kanjiRadicals = await _isarService.getAllKanjiRadicals();
+        radicals = await _dictionaryService.getAllRadicals();
         break;
       case RadicalSorting.classic:
-        kanjiRadicals = await _isarService.getClassicKanjiRadicals();
+        radicals = await _dictionaryService.getClassicRadicals();
         break;
       case RadicalSorting.important:
-        kanjiRadicals = await _isarService.getImportantKanjiRadicals();
+        radicals = await _dictionaryService.getImportantRadicals();
         break;
     }
 
     rebuildUi();
   }
 
-  Future<void> openKanjiRadical(KanjiRadical kanjiRadical) async {
+  Future<void> openRadical(Radical radical) async {
     // If selected radical is a variant, load the parent and open it instead
-    KanjiRadical? radicalToOpen;
-    if (kanjiRadical.variantOf != null) {
-      radicalToOpen =
-          await _isarService.getKanjiRadical(kanjiRadical.variantOf!);
+    Radical? radicalToOpen;
+    if (radical.variantOf != null) {
+      radicalToOpen = await _dictionaryService.getRadical(radical.variantOf!);
     }
-    radicalToOpen ??= kanjiRadical;
+    radicalToOpen ??= radical;
 
     _navigationService.navigateTo(
-      Routes.kanjiRadicalView,
-      arguments: KanjiRadicalViewArguments(kanjiRadical: radicalToOpen),
+      Routes.radicalView,
+      arguments: RadicalViewArguments(radical: radicalToOpen),
     );
   }
 }

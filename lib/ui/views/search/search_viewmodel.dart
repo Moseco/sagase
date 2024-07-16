@@ -6,15 +6,14 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/datamodels/search_history_item.dart';
 import 'package:sagase/services/digital_ink_service.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class SearchViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _digitalInkService = locator<DigitalInkService>();
   final _snackbarService = locator<SnackbarService>();
@@ -45,7 +44,7 @@ class SearchViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    searchHistory = await _isarService.getSearchHistory();
+    searchHistory = await _dictionaryService.getSearchHistory();
     notifyListeners();
   }
 
@@ -73,7 +72,7 @@ class SearchViewModel extends FutureViewModel {
 
     if (_searchString.isNotEmpty) {
       _searchOperation = CancelableOperation.fromFuture(
-        _isarService.searchDictionary(_searchString, _searchFilter),
+        _dictionaryService.searchDictionary(_searchString, _searchFilter),
       );
 
       _searchOperation!.value.then((value) async {
@@ -89,7 +88,7 @@ class SearchViewModel extends FutureViewModel {
           final analysisResult = _mecabService.parseText(stringToSearch);
           if (analysisResult.length == 1) {
             // Try to search using the identified token (could be conjugated word)
-            searchResult = await _isarService.searchDictionary(
+            searchResult = await _dictionaryService.searchDictionary(
                 analysisResult[0].base, _searchFilter);
           } else if (analysisResult.isNotEmpty) {
             // Search could be for sentence/phrase, offer to analyze
@@ -101,15 +100,19 @@ class SearchViewModel extends FutureViewModel {
       });
 
       if (_currentSearchHistoryItem == null) {
-        _currentSearchHistoryItem = SearchHistoryItem()
-          ..searchQuery = _searchString
-          ..timestamp = DateTime.now();
+        _currentSearchHistoryItem = SearchHistoryItem(
+          id: searchHistory.isEmpty ? 0 : searchHistory[0].id + 1,
+          searchText: _searchString,
+          timestamp: DateTime.now(),
+        );
         searchHistory.insert(0, _currentSearchHistoryItem!);
-        _isarService.setSearchHistoryItem(_currentSearchHistoryItem!);
-      } else if (!_currentSearchHistoryItem!.searchQuery
+        _dictionaryService.setSearchHistoryItem(_currentSearchHistoryItem!);
+      } else if (!_currentSearchHistoryItem!.searchText
           .startsWith(_searchString)) {
-        searchHistory[0].searchQuery = _searchString;
-        _isarService.setSearchHistoryItem(_currentSearchHistoryItem!);
+        _currentSearchHistoryItem =
+            _currentSearchHistoryItem!.copyWith(searchText: _searchString);
+        searchHistory[0] = _currentSearchHistoryItem!;
+        _dictionaryService.setSearchHistoryItem(_currentSearchHistoryItem!);
       }
     } else {
       _currentSearchHistoryItem = null;
@@ -141,16 +144,16 @@ class SearchViewModel extends FutureViewModel {
     // Remove the selected one form the list
     searchHistory.remove(item);
     // Update in database
-    _isarService.deleteSearchHistoryItem(item);
+    _dictionaryService.deleteSearchHistoryItem(item);
     // Do the actual search
-    searchOnChange(item.searchQuery);
+    searchOnChange(item.searchText);
   }
 
   void searchHistoryItemDeleted(SearchHistoryItem item) {
     // Remove the selected one form the list
     searchHistory.remove(item);
     // Update in database
-    _isarService.deleteSearchHistoryItem(item);
+    _dictionaryService.deleteSearchHistoryItem(item);
     notifyListeners();
   }
 

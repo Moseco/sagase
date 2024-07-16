@@ -8,34 +8,39 @@ import 'package:sagase/app/app.router.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/utils/constants.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class ListsViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _snackbarService = locator<SnackbarService>();
 
   final ListSelection listSelection;
 
-  List<DictionaryList>? myDictionaryLists;
+  List<MyDictionaryList>? myDictionaryLists;
 
-  StreamSubscription<void>? _myListsWatcher;
-  bool _myListsChanged = false;
+  StreamSubscription<List<MyDictionaryList>>? _myListsWatcher;
 
   ListsViewModel(this.listSelection);
 
   @override
   Future<void> futureToRun() async {
     // If opening my lists, load them
-    if (listSelection == ListSelection.myLists) _loadMyLists();
+    if (listSelection == ListSelection.myLists) await _loadMyLists();
   }
 
   Future<void> _loadMyLists() async {
-    myDictionaryLists = await _isarService.getAllMyDictionaryLists();
-    notifyListeners();
+    final stream = _dictionaryService.watchMyDictionaryLists();
+    _myListsWatcher = stream.listen(
+      (event) {
+        myDictionaryLists = event;
+        rebuildUi();
+      },
+    );
+    await stream.first;
   }
 
   void navigateToKana() {
@@ -43,7 +48,7 @@ class ListsViewModel extends FutureViewModel {
   }
 
   void navigateToRadicals() {
-    _navigationService.navigateTo(Routes.kanjiRadicalsView);
+    _navigationService.navigateTo(Routes.radicalsView);
   }
 
   Future<void> setListSelection(ListSelection listSelection) async {
@@ -60,25 +65,18 @@ class ListsViewModel extends FutureViewModel {
   }
 
   Future<void> navigateToPredefinedDictionaryList(int id) async {
-    final list = await _isarService.getPredefinedDictionaryList(id);
+    final list = await _dictionaryService.getPredefinedDictionaryList(id);
     _navigationService.navigateTo(
       Routes.dictionaryListView,
-      arguments: DictionaryListViewArguments(dictionaryList: list!),
+      arguments: DictionaryListViewArguments(dictionaryList: list),
     );
   }
 
   Future<void> navigateToMyDictionaryList(DictionaryList list) async {
-    _myListsWatcher ??= _isarService.watchMyDictionaryLists().listen((event) {
-      _myListsChanged = true;
-    });
     await _navigationService.navigateTo(
       Routes.dictionaryListView,
       arguments: DictionaryListViewArguments(dictionaryList: list),
     );
-    if (_myListsChanged) {
-      _myListsChanged = false;
-      await _loadMyLists();
-    }
   }
 
   void handlePopupMenuButton(PopupMenuItemType type) {
@@ -103,11 +101,12 @@ class ListsViewModel extends FutureViewModel {
       barrierDismissible: true,
     );
 
-    String? name = response?.data?.trim();
-    if (name == null || name.isEmpty) return;
+    if (response?.data == null) return;
+    final name = (response!.data as String).sanitizeName();
+    if (name.isEmpty) return;
 
     myDictionaryLists!
-        .insert(0, await _isarService.createMyDictionaryList(name));
+        .insert(0, await _dictionaryService.createMyDictionaryList(name));
 
     notifyListeners();
   }
@@ -135,7 +134,7 @@ class ListsViewModel extends FutureViewModel {
       barrierDismissible: false,
     );
 
-    final myList = await _isarService.importMyDictionaryList(filePath);
+    final myList = await _dictionaryService.importMyDictionaryList(filePath);
 
     _dialogService.completeDialog(DialogResponse());
 

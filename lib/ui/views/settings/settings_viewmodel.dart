@@ -6,7 +6,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/firebase_service.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/themes.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
@@ -20,7 +20,7 @@ class SettingsViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _themeService = locator<ThemeService>();
   final _firebaseService = locator<FirebaseService>();
 
@@ -157,7 +157,7 @@ class SettingsViewModel extends BaseViewModel {
     );
 
     if (response != null && response.confirmed) {
-      _isarService.deleteSearchHistory();
+      _dictionaryService.deleteSearchHistory();
       locator<SearchViewModel>().clearSearchHistory();
     }
   }
@@ -170,7 +170,7 @@ class SettingsViewModel extends BaseViewModel {
       barrierDismissible: false,
     );
 
-    String? path = await _isarService.exportUserData();
+    String? path = await _dictionaryService.exportUserData();
 
     _dialogService.completeDialog(DialogResponse());
 
@@ -216,7 +216,7 @@ class SettingsViewModel extends BaseViewModel {
         barrierDismissible: false,
       );
 
-      bool result = await _isarService.importUserData(filePath);
+      bool result = await _dictionaryService.importUserData(filePath);
 
       _dialogService.completeDialog(DialogResponse());
 

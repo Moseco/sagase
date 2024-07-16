@@ -6,7 +6,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:security_scoped_resource/security_scoped_resource.dart';
@@ -24,7 +24,7 @@ class HomeViewModel extends IndexTrackingViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
   final _dialogService = locator<DialogService>();
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
 
   bool _showNavigationBar = true;
   bool get showNavigationBar => _showNavigationBar;
@@ -136,8 +136,9 @@ class HomeViewModel extends IndexTrackingViewModel {
     switch (map[SagaseDictionaryConstants.exportType]) {
       case SagaseDictionaryConstants.exportTypeMyList:
         // Show confirmation
-        String name = IsarService.sanitizeName(
-            map[SagaseDictionaryConstants.exportMyListName]);
+        String name =
+            (map[SagaseDictionaryConstants.exportMyListName] as String)
+                .sanitizeName();
         final response = await _dialogService.showCustomDialog(
           variant: DialogType.confirmation,
           title: 'Import list?',
@@ -156,7 +157,8 @@ class HomeViewModel extends IndexTrackingViewModel {
             barrierDismissible: false,
           );
 
-          final newList = await _isarService.importMyDictionaryList(file.path);
+          final newList =
+              await _dictionaryService.importMyDictionaryList(file.path);
 
           _dialogService.completeDialog(DialogResponse());
 
@@ -191,7 +193,7 @@ class HomeViewModel extends IndexTrackingViewModel {
             barrierDismissible: false,
           );
 
-          bool result = await _isarService.importUserData(file.path);
+          bool result = await _dictionaryService.importUserData(file.path);
 
           _dialogService.completeDialog(DialogResponse());
 

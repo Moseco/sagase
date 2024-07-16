@@ -7,12 +7,16 @@ void main() {
     const conjugationUtils = ConjugationUtils();
 
     test('conjugate adjectiveI', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '怖い']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '怖い')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.adjectiveI]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.adjectiveI],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -24,12 +28,21 @@ void main() {
     });
 
     test('conjugate adjectiveI - vocab level pos', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '怖い']
-        ]
-        ..definitions = [VocabDefinition()]
-        ..pos = [PartOfSpeech.adjectiveI];
+      final vocab = Vocab(
+        id: 0,
+        pos: [PartOfSpeech.adjectiveI],
+        common: true,
+        frequencyScore: 0,
+      )
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '怖い')]
+        ..definitions = [
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+          ),
+        ];
 
       final list = conjugationUtils.getConjugations(vocab);
 
@@ -40,12 +53,16 @@ void main() {
     });
 
     test('conjugate adjectiveNa', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '綺麗']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.adjectiveNa]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.adjectiveNa],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -56,13 +73,71 @@ void main() {
       expect(list[1].negative, '綺麗じゃなかった');
     });
 
-    test('conjugate adjectiveNa short', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '神']
-        ]
+    test('conjugate adjectiveNa - noun vocab pos and adj pos in definition',
+        () {
+      final vocab = Vocab(
+        id: 0,
+        pos: [PartOfSpeech.noun],
+        common: true,
+        frequencyScore: 0,
+      )
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.adjectiveNa]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.adjectiveNa],
+          ),
+        ];
+
+      final list = conjugationUtils.getConjugations(vocab);
+
+      expect(list![0].positive, '綺麗だ');
+      expect(list[0].negative, '綺麗じゃない');
+      expect(list[1].positive, '綺麗だった');
+      expect(list[1].negative, '綺麗じゃなかった');
+    });
+
+    test('conjugate adjectiveNa - adj pos in vocab and noun pos in definition',
+        () {
+      final vocab = Vocab(
+        id: 0,
+        pos: [PartOfSpeech.adjectiveNa],
+        common: true,
+        frequencyScore: 0,
+      )
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
+        ..definitions = [
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.noun],
+          ),
+        ];
+
+      final list = conjugationUtils.getConjugations(vocab);
+
+      expect(list![0].positive, '綺麗だ');
+      expect(list[0].negative, '綺麗じゃない');
+      expect(list[1].positive, '綺麗だった');
+      expect(list[1].negative, '綺麗じゃなかった');
+    });
+
+    test('conjugate adjectiveNa - short', () {
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '神')]
+        ..definitions = [
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.adjectiveNa],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -74,12 +149,16 @@ void main() {
     });
 
     test('conjugate adjectiveIx', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '頭がいい']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '頭がいい')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.adjectiveIx]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.adjectiveIx],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -91,12 +170,16 @@ void main() {
     });
 
     test('conjugate verbIchidan', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '上げる']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '上げる')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbIchidan]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbIchidan],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -136,16 +219,25 @@ void main() {
     });
 
     test('conjugate verbIchidanS', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()
-            ..kanjiWritings = [VocabKanji()..kanji = '呉れる']
-            ..readings = [VocabReading()..reading = 'くれる']
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '呉れる')]
+        ..readings = [
+          const VocabReading(
+            id: 0,
+            vocabId: 0,
+            reading: 'くれる',
+            readingRomaji: 'kureru',
+          )
         ]
         ..definitions = [
-          VocabDefinition()
-            ..pos = [PartOfSpeech.verbIchidanS]
-            ..miscInfo = [MiscellaneousInfo.usuallyKanaAlone]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbIchidanS],
+            miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -185,16 +277,25 @@ void main() {
     });
 
     test('conjugate verbGodanAru', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()
-            ..kanjiWritings = [VocabKanji()..kanji = '為さる']
-            ..readings = [VocabReading()..reading = 'なさる']
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '為さる')]
+        ..readings = [
+          const VocabReading(
+            id: 0,
+            vocabId: 0,
+            reading: 'なさる',
+            readingRomaji: 'nasaru',
+          )
         ]
         ..definitions = [
-          VocabDefinition()
-            ..pos = [PartOfSpeech.verbGodanAru]
-            ..miscInfo = [MiscellaneousInfo.usuallyKanaAlone]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanAru],
+            miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -234,12 +335,16 @@ void main() {
     });
 
     test('conjugate verbGodanB', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '呼ぶ']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '呼ぶ')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanB]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanB],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -279,12 +384,16 @@ void main() {
     });
 
     test('conjugate verbGodanG', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '泳ぐ']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '泳ぐ')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanG]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanG],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -324,12 +433,16 @@ void main() {
     });
 
     test('conjugate verbGodanK', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '書く']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '書く')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanK]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanK],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -369,12 +482,16 @@ void main() {
     });
 
     test('conjugate verbGodanKS', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '行く']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '行く')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanKS]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanKS],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -414,12 +531,16 @@ void main() {
     });
 
     test('conjugate verbGodanM', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '飲む']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '飲む')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanM]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanM],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -459,12 +580,16 @@ void main() {
     });
 
     test('conjugate verbGodanN', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '死ぬ']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '死ぬ')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanN]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanN],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -504,12 +629,16 @@ void main() {
     });
 
     test('conjugate verbGodanR', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '知る']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '知る')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanR]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanR],
+          )
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -549,16 +678,25 @@ void main() {
     });
 
     test('conjugate verbGodanRI', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()
-            ..kanjiWritings = [VocabKanji()..kanji = '有る']
-            ..readings = [VocabReading()..reading = 'ある']
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '有る')]
+        ..readings = [
+          const VocabReading(
+            id: 0,
+            vocabId: 0,
+            reading: 'ある',
+            readingRomaji: 'aru',
+          )
         ]
         ..definitions = [
-          VocabDefinition()
-            ..pos = [PartOfSpeech.verbGodanRI]
-            ..miscInfo = [MiscellaneousInfo.usuallyKanaAlone]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanRI],
+            miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -598,12 +736,16 @@ void main() {
     });
 
     test('conjugate verbGodanS', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '話す']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '話す')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanS]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanS],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -643,12 +785,16 @@ void main() {
     });
 
     test('conjugate verbGodanT', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '持つ']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '持つ')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanT]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanT],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -688,12 +834,16 @@ void main() {
     });
 
     test('conjugate verbGodanU', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '言う']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '言う')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanU]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanU],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -733,12 +883,16 @@ void main() {
     });
 
     test('conjugate verbGodanUS', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '問う']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '問う')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbGodanUS]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbGodanUS],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -778,12 +932,16 @@ void main() {
     });
 
     test('conjugate verbKuru', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '来る']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '来る')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbKuru]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbKuru],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -823,12 +981,16 @@ void main() {
     });
 
     test('conjugate verbSuru', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '電話']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '電話')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbSuru]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbSuru],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -867,13 +1029,17 @@ void main() {
       expect(list[15].negative, '電話しなさるな');
     });
 
-    test('conjugate verbSuru short', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '噂']
-        ]
+    test('conjugate verbSuru - short', () {
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '噂')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbSuru]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbSuru],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -913,12 +1079,16 @@ void main() {
     });
 
     test('conjugate verbSuruSpecial', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()..kanjiWritings = [VocabKanji()..kanji = '愛する']
-        ]
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '愛する')]
         ..definitions = [
-          VocabDefinition()..pos = [PartOfSpeech.verbSuruSpecial]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbSuruSpecial],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);
@@ -958,16 +1128,25 @@ void main() {
     });
 
     test('conjugate verbSuruIncluded', () {
-      Vocab vocab = Vocab()
-        ..kanjiReadingPairs = [
-          KanjiReadingPair()
-            ..kanjiWritings = [VocabKanji()..kanji = '為る']
-            ..readings = [VocabReading()..reading = 'する']
+      final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
+        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '為る')]
+        ..readings = [
+          const VocabReading(
+            id: 0,
+            vocabId: 0,
+            reading: 'する',
+            readingRomaji: 'suru',
+          )
         ]
         ..definitions = [
-          VocabDefinition()
-            ..pos = [PartOfSpeech.verbSuruIncluded]
-            ..miscInfo = [MiscellaneousInfo.usuallyKanaAlone]
+          const VocabDefinition(
+            id: 0,
+            vocabId: 0,
+            definition: '',
+            waseieigo: false,
+            pos: [PartOfSpeech.verbSuruIncluded],
+            miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+          ),
         ];
 
       final list = conjugationUtils.getConjugations(vocab);

@@ -1,7 +1,7 @@
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/firebase_service.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
@@ -27,13 +27,13 @@ import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_vi
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_list/kanji_list_view.dart';
-import 'package:sagase/ui/views/kanji_radical/kanji_radical_view.dart';
+import 'package:sagase/ui/views/radical/radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kana/kana_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
 import 'package:sagase/ui/views/kanji_compounds/kanji_compounds_view.dart';
-import 'package:sagase/ui/views/kanji_radicals/kanji_radicals_view.dart';
+import 'package:sagase/ui/views/radicals/radicals_view.dart';
 import 'package:sagase/ui/views/learning/learning_view.dart';
 import 'package:sagase/ui/views/onboarding/onboarding_view.dart';
 import 'package:sagase/ui/views/search/search_view.dart';
@@ -64,8 +64,8 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: KanjiView),
     MaterialRoute(page: KanjiCompoundsView),
     MaterialRoute(page: DictionaryListView),
-    MaterialRoute(page: KanjiRadicalsView),
-    MaterialRoute(page: KanjiRadicalView),
+    MaterialRoute(page: RadicalsView),
+    MaterialRoute(page: RadicalView),
     MaterialRoute(page: KanjiListView),
     MaterialRoute(page: KanaView),
     MaterialRoute(page: FlashcardSetSettingsView),
@@ -87,7 +87,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     LazySingleton(classType: SnackbarService),
     InitializableSingleton(classType: FirebaseService),
     InitializableSingleton(classType: SharedPreferencesService),
-    LazySingleton(classType: IsarService),
+    LazySingleton(classType: DictionaryService),
     LazySingleton(classType: DigitalInkService),
     LazySingleton(classType: MecabService),
     LazySingleton(

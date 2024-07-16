@@ -19,8 +19,8 @@ class DownloadService {
     try {
       // Option to get assets locally
       if (useLocal) {
-        await downloadBaseDictionary(useLocal: true);
-        await downloadMecabDictionary(useLocal: true);
+        await downloadDictionary(useLocal: true);
+        await downloadMecab(useLocal: true);
 
         return true;
       }
@@ -54,20 +54,20 @@ class DownloadService {
     }
   }
 
-  Future<bool> downloadBaseDictionary({bool useLocal = false}) async {
+  Future<bool> downloadDictionary({bool useLocal = false}) async {
     try {
       // Option to get asset locally
       if (useLocal) {
         // Get zip data
         final byteData =
-            await rootBundle.load('assets/dictionary/base_dictionary.zip');
+            await rootBundle.load('assets/dictionary/dictionary.zip');
 
         // Copy zip to temporary directory file
         final bytes = byteData.buffer
             .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
         final file = File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.baseDictionaryZip,
+          constants.dictionaryZip,
         ));
         await file.writeAsBytes(bytes);
 
@@ -81,7 +81,7 @@ class DownloadService {
         DownloadOptions.getBaseDictionaryUrl(),
         path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.baseDictionaryZip,
+          constants.dictionaryZip,
         ),
       );
     } catch (_) {
@@ -89,13 +89,12 @@ class DownloadService {
     }
   }
 
-  Future<bool> downloadMecabDictionary({bool useLocal = false}) async {
+  Future<bool> downloadMecab({bool useLocal = false}) async {
     try {
       // Option to get asset locally
       if (useLocal) {
         // Get zip data
-        final byteData =
-            await rootBundle.load('assets/mecab/mecab_dictionary.zip');
+        final byteData = await rootBundle.load('assets/mecab/mecab.zip');
 
         // Copy zip to temporary directory file
         final bytes = byteData.buffer
@@ -103,7 +102,7 @@ class DownloadService {
 
         final file = File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.mecabDictionaryZip,
+          constants.mecabZip,
         ));
         await file.writeAsBytes(bytes);
 
@@ -117,7 +116,7 @@ class DownloadService {
         DownloadOptions.getMecabDictionaryUrl(),
         path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.mecabDictionaryZip,
+          constants.mecabZip,
         ),
       );
     } catch (_) {

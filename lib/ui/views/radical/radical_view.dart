@@ -3,23 +3,24 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase/ui/widgets/list_item_loading.dart';
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
-import 'package:sagase/ui/widgets/kanji_radical_position.dart';
+import 'package:sagase/ui/widgets/radical_position_image.dart';
 import 'package:sagase/ui/widgets/stroke_order_diagram.dart';
 import 'package:stacked/stacked.dart';
 
-import 'kanji_radical_viewmodel.dart';
+import 'radical_viewmodel.dart';
 
-class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
-  final KanjiRadical kanjiRadical;
+class RadicalView extends StackedView<RadicalViewModel> {
+  final Radical radical;
 
-  const KanjiRadicalView(this.kanjiRadical, {super.key});
+  const RadicalView(this.radical, {super.key});
 
   @override
-  KanjiRadicalViewModel viewModelBuilder(BuildContext context) =>
-      KanjiRadicalViewModel(kanjiRadical);
+  RadicalViewModel viewModelBuilder(BuildContext context) =>
+      RadicalViewModel(radical);
 
   @override
   Widget builder(context, viewModel, child) {
@@ -39,9 +40,9 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                         child: Center(
                           child: GestureDetector(
                             onLongPress: () =>
-                                viewModel.copyToClipboard(kanjiRadical.radical),
+                                viewModel.copyToClipboard(radical.radical),
                             child: Text(
-                              kanjiRadical.radical,
+                              radical.radical,
                               style: const TextStyle(fontSize: 80),
                             ),
                           ),
@@ -56,7 +57,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: kanjiRadical.kangxiId.toString(),
+                                      text: radical.kangxiId.toString(),
                                     ),
                                     const TextSpan(
                                       text: '\nRadical #',
@@ -73,7 +74,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: kanjiRadical.strokeCount.toString(),
+                                      text: radical.strokeCount.toString(),
                                     ),
                                     const TextSpan(
                                       text: '\nStrokes',
@@ -99,7 +100,8 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: _getImportanceString(),
+                                      text: radical.importance?.displayTitle ??
+                                          '—',
                                     ),
                                     const TextSpan(
                                       text: '\nImportance',
@@ -115,12 +117,11 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                               Text.rich(
                                 TextSpan(
                                   children: [
-                                    kanjiRadical.position ==
-                                            KanjiRadicalPosition.none
+                                    radical.position == null
                                         ? const TextSpan(text: '—')
                                         : WidgetSpan(
-                                            child: KanjiRadicalPositionImage(
-                                              kanjiRadical.position,
+                                            child: RadicalPositionImage(
+                                              radical.position!,
                                             ),
                                           ),
                                     const TextSpan(
@@ -142,8 +143,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                   ),
                 ),
               ),
-              if (kanjiRadical.strokes != null &&
-                  kanjiRadical.strokes!.isNotEmpty)
+              if (radical.strokes != null && radical.strokes!.isNotEmpty)
                 CardWithTitleExpandable(
                   title: 'Radical stroke order',
                   startExpanded: viewModel.strokeDiagramStartExpanded,
@@ -151,7 +151,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(10),
-                    child: StrokeOrderDiagram(kanjiRadical.strokes!),
+                    child: StrokeOrderDiagram(radical.strokes!),
                   ),
                 ),
               CardWithTitleSection(
@@ -171,7 +171,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                             'Meaning: ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(kanjiRadical.meaning),
+                          Text(radical.meaning),
                         ],
                       ),
                       TableRow(
@@ -180,7 +180,7 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                             'Reading: ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(kanjiRadical.reading),
+                          Text(radical.reading),
                         ],
                       ),
                     ],
@@ -241,13 +241,12 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
                                     TextSpan(
                                       children: [
                                         viewModel.variants![index].position ==
-                                                KanjiRadicalPosition.none
+                                                null
                                             ? const TextSpan(text: '—')
                                             : WidgetSpan(
-                                                child:
-                                                    KanjiRadicalPositionImage(
+                                                child: RadicalPositionImage(
                                                   viewModel.variants![index]
-                                                      .position,
+                                                      .position!,
                                                 ),
                                               ),
                                         const TextSpan(
@@ -278,26 +277,13 @@ class KanjiRadicalView extends StackedView<KanjiRadicalViewModel> {
       ),
     );
   }
-
-  String _getImportanceString() {
-    switch (kanjiRadical.importance) {
-      case KanjiRadicalImportance.top25:
-        return 'Top 25%';
-      case KanjiRadicalImportance.top50:
-        return 'Top 50%';
-      case KanjiRadicalImportance.top75:
-        return 'Top 75%';
-      case KanjiRadicalImportance.none:
-        return '—';
-    }
-  }
 }
 
-class _KanjiUsage extends ViewModelWidget<KanjiRadicalViewModel> {
+class _KanjiUsage extends ViewModelWidget<RadicalViewModel> {
   const _KanjiUsage();
 
   @override
-  Widget build(BuildContext context, KanjiRadicalViewModel viewModel) {
+  Widget build(BuildContext context, RadicalViewModel viewModel) {
     late List<Widget> children;
     if (viewModel.kanjiWithRadical == null) {
       children = [const ListItemLoading(showLeading: true)];

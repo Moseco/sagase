@@ -22,10 +22,6 @@ class DevView extends StatelessWidget {
                         onPressed: viewModel.importDatabase,
                         child: const Text('Import database'),
                       ),
-                      ElevatedButton(
-                        onPressed: viewModel.runPerformanceTest,
-                        child: const Text('Run performance test'),
-                      ),
                     ],
                   ),
                 ),

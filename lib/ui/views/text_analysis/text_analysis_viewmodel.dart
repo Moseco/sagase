@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
@@ -10,7 +10,7 @@ import 'package:stacked_services/stacked_services.dart';
 
 class TextAnalysisViewModel extends BaseViewModel {
   final _mecabService = locator<MecabService>();
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _snackbarService = locator<SnackbarService>();
@@ -42,7 +42,7 @@ class TextAnalysisViewModel extends BaseViewModel {
     // Look up vocab for each token
     for (var token in tokens!) {
       token.associatedVocab =
-          await _isarService.getVocabByJapaneseTextToken(token);
+          await _dictionaryService.getVocabByJapaneseTextToken(token);
     }
 
     _state = TextAnalysisState.viewing;

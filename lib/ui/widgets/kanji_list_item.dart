@@ -32,12 +32,14 @@ class KanjiListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    kanji.meanings?.join(', ') ?? '(no meaning)',
+                    kanji.meaning ?? '(no meaning)',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   kanji.kunReadings != null
-                      ? KanjiKunReadings(kanji.kunReadings!)
+                      ? KanjiKunReadings(
+                          kanji.kunReadings!.map((e) => e.reading).toList(),
+                        )
                       : Text(
                           _getReadingString(),
                           overflow: TextOverflow.ellipsis,

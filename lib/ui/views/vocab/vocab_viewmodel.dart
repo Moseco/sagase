@@ -6,8 +6,9 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/conjugation_result.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
+import 'package:sagase/datamodels/writing_reading_pair.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/utils/conjugation_utils.dart';
@@ -16,43 +17,43 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class VocabViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _mecabService = locator<MecabService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
+  final _conjugationUtils = const ConjugationUtils();
 
   final Vocab vocab;
 
-  bool _inMyLists = false;
-  bool get inMyLists => _inMyLists;
-  StreamSubscription<void>? _myListsWatcher;
-  bool _myListsChanged = false;
+  late final List<WritingReadingPair> writingReadingPairs;
+  late final List<String> kanjiStringList;
+  late final List<Kanji> kanjiList;
 
-  final List<Kanji> kanjiList = [];
-  bool _kanjiLoaded = false;
-  bool get kanjiLoaded => _kanjiLoaded;
+  List<int> _myDictionaryListsContainingVocab = [];
+  bool get inMyDictionaryList => _myDictionaryListsContainingVocab.isNotEmpty;
+  StreamSubscription<void>? _myDictionaryListsWatcher;
 
-  final _conjugationUtils = const ConjugationUtils();
   List<ConjugationResult>? conjugations;
 
   bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
 
   VocabViewModel(this.vocab) {
+    // Create writing reading pairs
+    writingReadingPairs = WritingReadingPair.fromVocab(vocab);
+
     // Get list of kanji to be loaded during initialize function
-    List<String> kanjiStrings = [];
-    for (var pair in vocab.kanjiReadingPairs) {
-      if (pair.kanjiWritings == null) continue;
-      for (var kanjiWriting in pair.kanjiWritings!) {
-        final foundKanjiList = kanjiRegExp.allMatches(kanjiWriting.kanji);
+    Set<String> kanjiStringSet = {};
+    if (vocab.writings != null) {
+      for (var writing in vocab.writings!) {
+        final foundKanjiList = kanjiRegExp.allMatches(writing.writing);
         for (var foundKanji in foundKanjiList) {
-          if (kanjiStrings.contains(foundKanji[0]!)) continue;
-          kanjiStrings.add(foundKanji[0]!);
-          kanjiList.add(Kanji()..kanji = foundKanji[0]!);
+          kanjiStringSet.add(foundKanji[0]!);
         }
       }
     }
+    kanjiStringList = kanjiStringSet.toList();
 
     // Get conjugations
     conjugations = _conjugationUtils.getConjugations(vocab);
@@ -69,36 +70,22 @@ class VocabViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    _inMyLists = await _isarService.isVocabInMyDictionaryLists(vocab);
+    _myDictionaryListsContainingVocab = await _dictionaryService
+        .getMyDictionaryListsContainingDictionaryItem(vocab);
     rebuildUi();
-    // Load kanji from database that were found during class constructor
-    for (int i = 0; i < kanjiList.length; i++) {
-      final kanji = await _isarService.getKanji(kanjiList[i].kanji);
-      if (kanji != null) {
-        kanjiList[i] = kanji;
-      } else {
-        kanjiList.removeAt(i);
-        i--;
-      }
-    }
 
-    _kanjiLoaded = true;
-    rebuildUi();
+    // Load kanji from database that were found during class constructor
+    kanjiList = await _dictionaryService
+        .getKanjiList(kanjiStringList.map((e) => e.kanjiCodePoint()).toList());
   }
 
   void _startWatcher() {
-    _myListsWatcher ??= _isarService.watchMyDictionaryLists().listen((event) {
-      _myListsChanged = true;
+    _myDictionaryListsWatcher ??= _dictionaryService
+        .watchMyDictionaryListsContainingDictionaryItem(vocab)
+        .listen((event) {
+      _myDictionaryListsContainingVocab = event;
+      rebuildUi();
     });
-  }
-
-  Future<void> _refreshInMyLists() async {
-    if (!_myListsChanged) return;
-
-    _inMyLists = await _isarService.isVocabInMyDictionaryLists(vocab);
-    _myListsChanged = false;
-
-    rebuildUi();
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
@@ -107,20 +94,27 @@ class VocabViewModel extends FutureViewModel {
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
-    await _refreshInMyLists();
   }
 
   Future<void> openMyDictionaryListsSheet() async {
-    final myDictionaryLists = await _isarService.getAllMyDictionaryLists();
+    // Make sure my dictionary lists containing vocab has been loaded
+    if (isBusy) {
+      _myDictionaryListsContainingVocab = await _dictionaryService
+          .getMyDictionaryListsContainingDictionaryItem(vocab);
+    }
+
+    final myDictionaryLists =
+        await _dictionaryService.getAllMyDictionaryLists();
 
     // Create list for bottom sheet
     List<MyListsBottomSheetItem> bottomSheetItems = [];
-    for (var myList in myDictionaryLists) {
-      bottomSheetItems.add(MyListsBottomSheetItem(myList, false));
+    for (var myDictionaryList in myDictionaryLists) {
+      bottomSheetItems.add(MyListsBottomSheetItem(myDictionaryList, false));
     }
     // Mark lists that the vocab are in and move them to the top
     for (int i = 0; i < bottomSheetItems.length; i++) {
-      if (bottomSheetItems[i].list.vocab.contains(vocab.id)) {
+      if (_myDictionaryListsContainingVocab
+          .contains(bottomSheetItems[i].list.id)) {
         bottomSheetItems[i].enabled = true;
         bottomSheetItems.insert(0, bottomSheetItems.removeAt(i));
       }
@@ -131,15 +125,17 @@ class VocabViewModel extends FutureViewModel {
       data: bottomSheetItems,
     );
 
-    _inMyLists = false;
+    _myDictionaryListsContainingVocab.clear();
     for (int i = 0; i < bottomSheetItems.length; i++) {
-      if (bottomSheetItems[i].enabled) _inMyLists = true;
+      if (bottomSheetItems[i].enabled) {
+        _myDictionaryListsContainingVocab.add(bottomSheetItems[i].list.id);
+      }
       if (!bottomSheetItems[i].changed) continue;
       if (bottomSheetItems[i].enabled) {
-        await _isarService.addVocabToMyDictionaryList(
+        await _dictionaryService.addToMyDictionaryList(
             bottomSheetItems[i].list, vocab);
       } else {
-        await _isarService.removeVocabFromMyDictionaryList(
+        await _dictionaryService.removeFromMyDictionaryList(
             bottomSheetItems[i].list, vocab);
       }
     }
@@ -166,23 +162,21 @@ class VocabViewModel extends FutureViewModel {
       Routes.textAnalysisView,
       arguments: TextAnalysisViewArguments(initialText: example.japanese),
     );
-    await _refreshInMyLists();
   }
 
   Future<void> openVocabReference(VocabReference reference) async {
     if (reference.ids != null) {
       _startWatcher();
       if (reference.ids!.length == 1) {
-        final vocab = await _isarService.getVocab(reference.ids![0]);
-        await _navigationService.navigateToVocabView(vocab: vocab!);
+        final vocab = await _dictionaryService.getVocab(reference.ids![0]);
+        await _navigationService.navigateToVocabView(vocab: vocab);
       } else {
-        final vocabList = await _isarService.getVocabList(reference.ids!);
+        final vocabList = await _dictionaryService.getVocabList(reference.ids!);
         await _bottomSheetService.showCustomSheet(
           variant: BottomSheetType.selectVocabBottom,
           data: vocabList,
         );
       }
-      await _refreshInMyLists();
     } else {
       Clipboard.setData(ClipboardData(text: reference.text));
       _snackbarService.showSnackbar(
@@ -192,7 +186,7 @@ class VocabViewModel extends FutureViewModel {
   }
 
   bool shouldShowTutorial() {
-    if (vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null) {
+    if (vocab.readings[0].pitchAccents != null) {
       return _sharedPreferencesService.getAndSetTutorialVocab();
     } else {
       return false;
@@ -201,7 +195,7 @@ class VocabViewModel extends FutureViewModel {
 
   @override
   void dispose() {
-    _myListsWatcher?.cancel();
+    _myDictionaryListsWatcher?.cancel();
     super.dispose();
   }
 }

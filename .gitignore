@@ -51,7 +51,7 @@ lib/app/app.locator.dart
 lib/app/app.router.dart
 lib/app/app.dialogs.dart
 lib/app/app.bottomsheets.dart
-test/helpers/test_helpers.mocks.dart
+test/helpers/mocks.mocks.dart
 *.g.dart
 
 # Local dictionary and mecab files

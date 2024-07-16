@@ -6,8 +6,9 @@ import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-import '../../../common.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../helpers/common/kanji_data.dart';
+import '../../../helpers/common/vocab_data.dart';
+import '../../../helpers/mocks.dart';
 
 void main() {
   group('DictionaryListViewTest', () {
@@ -15,11 +16,18 @@ void main() {
     tearDown(() => unregisterServices());
 
     testWidgets('Empty predefined dictionary list', (tester) async {
-      getAndRegisterIsarService(getVocabList: [], getKanjiList: []);
+      getAndRegisterDictionaryService(getVocabList: [], getKanjiList: []);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: DictionaryListView(PredefinedDictionaryList()..name = 'Name'),
+          home: DictionaryListView(
+            PredefinedDictionaryList(
+              id: 0,
+              name: 'Name',
+              vocab: [],
+              kanji: [],
+            ),
+          ),
         ),
       );
 
@@ -33,16 +41,28 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
     });
 
-    testWidgets('Empty dictionary list', (tester) async {
-      getAndRegisterIsarService(getVocabList: [], getKanjiList: []);
+    testWidgets('Empty my dictionary list', (tester) async {
+      getAndRegisterDictionaryService(
+        getVocabList: [],
+        getKanjiList: [],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(vocabIds: [], kanjiIds: []),
+        ],
+      );
 
       await tester.pumpWidget(
         MaterialApp(
-          home: DictionaryListView(MyDictionaryList()..name = 'My name'),
+          home: DictionaryListView(
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+            ),
+          ),
         ),
       );
 
-      expect(find.text('My name'), findsOneWidget);
+      expect(find.text('Name'), findsOneWidget);
       expect(find.byType(PopupMenuButton<PopupMenuItemType>), findsOne);
       expect(find.byType(CircularProgressIndicator), findsOne);
 
@@ -52,18 +72,24 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
     });
 
-    testWidgets('Dictionary list with vocab', (tester) async {
-      getAndRegisterIsarService(
-        getVocabList: [vocabReadingOnly, vocabBasic],
+    testWidgets('My dictionary list with vocab', (tester) async {
+      getAndRegisterDictionaryService(
+        getVocabList: [getVocab1(), getVocab2()],
         getKanjiList: [],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(vocabIds: [0, 1], kanjiIds: []),
+        ],
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: DictionaryListView(
-            MyDictionaryList()
-              ..name = 'Name'
-              ..vocab = [0, 1],
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+              vocab: [0, 1],
+            ),
           ),
         ),
       );
@@ -76,18 +102,24 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
     });
 
-    testWidgets('Dictionary list with kanji', (tester) async {
-      getAndRegisterIsarService(
+    testWidgets('My dictionary list with kanji', (tester) async {
+      getAndRegisterDictionaryService(
         getVocabList: [],
-        getKanjiList: [kanjiBasic],
+        getKanjiList: [getKanji1()],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(vocabIds: [], kanjiIds: [2]),
+        ],
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: DictionaryListView(
-            MyDictionaryList()
-              ..name = 'Name'
-              ..kanji = [2],
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+              kanji: [2],
+            ),
           ),
         ),
       );
@@ -100,29 +132,36 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
     });
 
-    testWidgets('Dictionary list with vocab and kanji', (tester) async {
-      getAndRegisterIsarService(
-        getVocabList: [vocabReadingOnly, vocabBasic],
-        getKanjiList: [kanjiBasic],
+    testWidgets('My dictionary list with vocab and kanji', (tester) async {
+      getAndRegisterDictionaryService(
+        getVocabList: [getVocab1(), getVocab2()],
+        getKanjiList: [getKanji1()],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(vocabIds: [0, 1], kanjiIds: [2]),
+        ],
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: DictionaryListView(
-            MyDictionaryList()
-              ..name = 'Name'
-              ..vocab = [0, 1]
-              ..kanji = [2],
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+              vocab: [0, 1],
+              kanji: [2],
+            ),
           ),
         ),
       );
 
-      expect(find.byType(TabBar), findsOne);
+      expect(find.byType(TabBar), findsNothing);
       expect(find.byType(VocabListItem), findsNothing);
       expect(find.byType(KanjiListItem), findsNothing);
 
       await tester.pumpAndSettle();
 
+      expect(find.byType(TabBar), findsOne);
       expect(find.byType(VocabListItem), findsExactly(2));
       expect(find.byType(KanjiListItem), findsNothing);
 

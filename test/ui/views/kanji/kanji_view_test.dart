@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-import '../../../common.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../helpers/common/kanji_data.dart';
+import '../../../helpers/mocks.dart';
 
 void main() {
   group('KanjiViewTest', () {
@@ -12,23 +12,35 @@ void main() {
     tearDown(() => unregisterServices());
 
     testWidgets('Low information kanji', (tester) async {
-      getAndRegisterIsarService(
-        isKanjiInMyDictionaryLists: false,
-        getKanjiRadical: KanjiRadical()
-          ..radical = '龜'
-          ..kangxiId = 213
-          ..meaning = 'turtle'
-          ..reading = 'かめ'
-          ..variants = ['亀'],
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+        getRadical: const Radical(
+          id: 0,
+          radical: '龜',
+          kangxiId: 213,
+          strokeCount: 18,
+          meaning: 'turtle',
+          reading: 'かめ',
+          variants: ['亀'],
+        ),
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: KanjiView(
-            Kanji()
-              ..kanji = '𪚲'
-              ..radical = '龜'
-              ..strokeCount = 21,
+            Kanji(
+              id: '𪚲'.kanjiCodePoint(),
+              kanji: '𪚲',
+              meaning: null,
+              radical: '龜',
+              components: null,
+              grade: null,
+              strokeCount: 21,
+              frequency: null,
+              jlpt: null,
+              strokes: null,
+              compounds: null,
+            ),
           ),
         ),
       );
@@ -54,32 +66,80 @@ void main() {
     });
 
     testWidgets('Basic kanji', (tester) async {
-      getAndRegisterIsarService(
-        isKanjiInMyDictionaryLists: false,
-        getKanjiRadical: KanjiRadical()
-          ..radical = '手'
-          ..kangxiId = 64
-          ..strokeCount = 4
-          ..meaning = 'hand'
-          ..reading = 'て, てへん'
-          ..importance = KanjiRadicalImportance.top25
-          ..strokeCount = 4
-          ..variants = ['扌'],
-        getKanjiList: [Kanji()..kanji = '㓁', Kanji()..kanji = '木'],
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+        getRadical: const Radical(
+          id: 0,
+          radical: '手',
+          kangxiId: 64,
+          strokeCount: 4,
+          meaning: 'hand',
+          reading: 'て, てへん',
+          importance: RadicalImportance.top25,
+          variants: ['扌'],
+        ),
+        getKanjiList: [
+          Kanji(
+            id: '㓁'.kanjiCodePoint(),
+            kanji: '㓁',
+            meaning: null,
+            radical: '',
+            components: null,
+            grade: null,
+            strokeCount: 3,
+            frequency: null,
+            jlpt: null,
+            strokes: null,
+            compounds: null,
+          ),
+          Kanji(
+            id: '木'.kanjiCodePoint(),
+            kanji: '木',
+            meaning: null,
+            radical: '',
+            components: null,
+            grade: null,
+            strokeCount: 3,
+            frequency: null,
+            jlpt: null,
+            strokes: null,
+            compounds: null,
+          ),
+        ],
         getVocabList: [
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [VocabKanji()..kanji = '探偵']
-                ..readings = [VocabReading()..reading = 'たんてい']
+          Vocab(
+            id: 0,
+            pos: null,
+            common: true,
+            frequencyScore: 0,
+          )
+            ..writings = [
+              const VocabWriting(
+                id: 0,
+                vocabId: 0,
+                writing: '探偵',
+              ),
+            ]
+            ..readings = [
+              const VocabReading(
+                id: 0,
+                vocabId: 0,
+                reading: 'たんてい',
+                readingRomaji: 'tantei',
+              ),
             ]
             ..definitions = [
-              VocabDefinition()..definition = 'detective; investigator; sleuth'
-            ]
+              const VocabDefinition(
+                id: 0,
+                vocabId: 0,
+                definition: 'detective; investigator; sleuth',
+                waseieigo: false,
+              ),
+            ],
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(home: KanjiView(kanjiBasic)));
+      await tester.pumpWidget(MaterialApp(home: KanjiView(getKanjiBasic())));
       await tester.pumpAndSettle();
 
       expect(find.text('探'), findsOne);
@@ -90,7 +150,7 @@ void main() {
 
       expect(find.text('Kanji stroke order'), findsOne);
 
-      expect(find.text('grope, search, look for'), findsOne);
+      expect(find.text('grope; search; look for'), findsOne);
       expect(find.text('さぐる, さがす'), findsOne);
       expect(find.text('タン'), findsOne);
       expect(find.textContaining('Nanori'), findsNothing);
@@ -106,23 +166,34 @@ void main() {
     });
 
     testWidgets('7-9 grade kanji', (tester) async {
-      getAndRegisterIsarService(
-        isKanjiInMyDictionaryLists: false,
-        getKanjiRadical: KanjiRadical()
-          ..radical = '二'
-          ..kangxiId = 7
-          ..meaning = 'two'
-          ..reading = 'ニ',
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+        getRadical: const Radical(
+          id: 0,
+          radical: '二',
+          kangxiId: 7,
+          strokeCount: 2,
+          meaning: 'two',
+          reading: 'ニ',
+        ),
       );
 
       await tester.pumpWidget(
         MaterialApp(
           home: KanjiView(
-            Kanji()
-              ..kanji = '亜'
-              ..radical = '二'
-              ..strokeCount = 7
-              ..grade = 8,
+            Kanji(
+              id: '亜'.kanjiCodePoint(),
+              kanji: '亜',
+              meaning: null,
+              radical: '二',
+              components: null,
+              grade: KanjiGrade.middleSchool,
+              strokeCount: 7,
+              frequency: null,
+              jlpt: null,
+              strokes: null,
+              compounds: null,
+            ),
           ),
         ),
       );

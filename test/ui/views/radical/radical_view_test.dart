@@ -1,29 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sagase/ui/views/kanji_radical/kanji_radical_view.dart';
+import 'package:sagase/ui/views/radical/radical_view.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-import '../../../helpers/test_helpers.dart';
+import '../../../helpers/mocks.dart';
 
 void main() {
-  group('KanjiRadicalViewTest', () {
+  group('RadicalViewTest', () {
     setUp(() => registerServices());
     tearDown(() => unregisterServices());
 
     testWidgets('Basic radical', (tester) async {
-      getAndRegisterIsarService(getKanjiWithRadical: [Kanji()..kanji = '丩']);
+      getAndRegisterDictionaryService(
+        getKanjiWithRadical: [
+          Kanji(
+            id: '丩'.kanjiCodePoint(),
+            kanji: '丩',
+            meaning: null,
+            radical: '丩',
+            components: null,
+            grade: null,
+            strokeCount: 21,
+            frequency: null,
+            jlpt: null,
+            strokes: null,
+            compounds: null,
+          ),
+        ],
+      );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: KanjiRadicalView(
-            KanjiRadical()
-              ..radical = '丨'
-              ..kangxiId = 2
-              ..strokeCount = 1
-              ..meaning = 'line'
-              ..reading = 'ぼう, たてぼう'
-              ..position = KanjiRadicalPosition.none
-              ..importance = KanjiRadicalImportance.none,
+        const MaterialApp(
+          home: RadicalView(
+            Radical(
+              id: 0,
+              radical: '丨',
+              kangxiId: 2,
+              strokeCount: 1,
+              meaning: 'line',
+              reading: 'ぼう, たてぼう',
+            ),
           ),
         ),
       );
@@ -45,26 +61,46 @@ void main() {
     });
 
     testWidgets('Radical with variants', (tester) async {
-      getAndRegisterIsarService(
-        getKanjiRadical: KanjiRadical()
-          ..radical = '攵'
-          ..strokeCount = 4
-          ..position = KanjiRadicalPosition.right,
-        getKanjiWithRadical: [Kanji()..kanji = '收'],
+      getAndRegisterDictionaryService(
+        getRadical: const Radical(
+          id: 0,
+          radical: '攵',
+          kangxiId: 0,
+          strokeCount: 4,
+          meaning: '',
+          reading: '',
+        ),
+        getKanjiWithRadical: [
+          Kanji(
+            id: '收'.kanjiCodePoint(),
+            kanji: '收',
+            meaning: null,
+            radical: '收',
+            components: null,
+            grade: null,
+            strokeCount: 21,
+            frequency: null,
+            jlpt: null,
+            strokes: null,
+            compounds: null,
+          ),
+        ],
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: KanjiRadicalView(
-            KanjiRadical()
-              ..radical = '攴'
-              ..kangxiId = 66
-              ..strokeCount = 4
-              ..meaning = 'strike'
-              ..reading = 'ぼくづくり、ぼくにょう、のぶん、しぶん、とまた'
-              ..position = KanjiRadicalPosition.right
-              ..importance = KanjiRadicalImportance.top75
-              ..variants = ['攵'],
+        const MaterialApp(
+          home: RadicalView(
+            Radical(
+              id: 0,
+              radical: '攴',
+              kangxiId: 66,
+              strokeCount: 4,
+              meaning: 'strike',
+              reading: 'ぼくづくり、ぼくにょう、のぶん、しぶん、とまた',
+              position: RadicalPosition.right,
+              importance: RadicalImportance.top75,
+              variants: ['攵'],
+            ),
           ),
         ),
       );

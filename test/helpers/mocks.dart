@@ -1,40 +1,35 @@
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:math';
-
-import 'package:isar/isar.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.locator.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
+import 'package:sagase/services/digital_ink_service.dart';
+import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:path/path.dart' as path;
 import 'package:sagase/utils/constants.dart' as constants;
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-import 'fake_path_provider_platform.dart';
-import 'test_helpers.mocks.dart';
+import 'dictionary_service_helper.dart';
+import 'mocks.mocks.dart';
 
 @GenerateMocks([], customMocks: [
-  MockSpec<NavigationService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<NavigationService>(onMissingStub: OnMissingStub.returnDefault),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<BottomSheetService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<SnackbarService>(onMissingStub: OnMissingStub.throwException),
-  MockSpec<IsarService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<DictionaryService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<SharedPreferencesService>(
       onMissingStub: OnMissingStub.throwException),
   MockSpec<MecabService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<DigitalInkService>(onMissingStub: OnMissingStub.throwException),
+  MockSpec<DownloadService>(onMissingStub: OnMissingStub.throwException),
 ])
 MockNavigationService getAndRegisterNavigationService() {
   _removeRegistrationIfExists<NavigationService>();
   final service = MockNavigationService();
 
   when(service.back()).thenReturn(false);
-  when(service.navigateTo(any, arguments: anyNamed('arguments')))
-      .thenAnswer((_) async => null);
 
   locator.registerSingleton<NavigationService>(service);
   return service;
@@ -76,50 +71,42 @@ MockSnackbarService getAndRegisterSnackbarService() {
   return service;
 }
 
-MockIsarService getAndRegisterIsarService({
+MockDictionaryService getAndRegisterDictionaryService({
+  DictionaryStatus? open,
+  ImportResult? importDatabase,
   List<Vocab>? getVocabList,
   List<Kanji>? getKanjiList,
-  Stream<void>? watchMyDictionaryList,
-  MyDictionaryList? getMyDictionaryList,
-  bool? isKanjiInMyDictionaryLists,
-  KanjiRadical? getKanjiRadical,
+  List<DictionaryItemIdsResult>? watchMyDictionaryListItems,
+  List<int>? getMyDictionaryListsContainingDictionaryItem,
+  Radical? getRadical,
   List<Kanji>? getKanjiWithRadical,
   Kanji? getKanji,
-  bool? isVocabInMyDictionaryLists,
-  List<PredefinedDictionaryList>? getPredefinedDictionaryLists,
-  List<MyDictionaryList>? getMyDictionaryLists,
+  List<DictionaryItem>? getFlashcardSetFlashcards,
 }) {
-  _removeRegistrationIfExists<IsarService>();
-  final service = MockIsarService();
+  _removeRegistrationIfExists<DictionaryService>();
+  final service = MockDictionaryService();
 
+  when(service.initialize()).thenAnswer((_) async {});
+  when(service.open(
+    validate: anyNamed('validate'),
+    transferCheck: anyNamed('transferCheck'),
+  )).thenAnswer((_) async => open!);
+  when(service.importDatabase(any)).thenAnswer((_) async => importDatabase!);
+  when(service.close()).thenAnswer((_) async {});
   when(service.getVocabList(any)).thenAnswer((_) async => getVocabList!);
   when(service.getKanjiList(any)).thenAnswer((_) async => getKanjiList!);
-  when(service.watchMyDictionaryList(any))
-      .thenAnswer((_) => watchMyDictionaryList!);
-  when(service.getMyDictionaryList(any))
-      .thenAnswer((_) async => getMyDictionaryList);
-  when(service.isKanjiInMyDictionaryLists(any))
-      .thenAnswer((_) async => isKanjiInMyDictionaryLists!);
-  when(service.getKanjiRadical(any)).thenAnswer((_) async => getKanjiRadical!);
+  when(service.watchMyDictionaryListItems(any))
+      .thenAnswer((_) => Stream.fromIterable(watchMyDictionaryListItems!));
+  when(service.getMyDictionaryListsContainingDictionaryItem(any))
+      .thenAnswer((_) async => getMyDictionaryListsContainingDictionaryItem!);
+  when(service.getRadical(any)).thenAnswer((_) async => getRadical!);
   when(service.getKanjiWithRadical(any))
       .thenAnswer((_) async => getKanjiWithRadical!);
   when(service.getKanji(any)).thenAnswer((_) async => getKanji!);
-  when(service.isVocabInMyDictionaryLists(any))
-      .thenAnswer((_) async => isVocabInMyDictionaryLists!);
-  when(service.getPredefinedDictionaryLists(any))
-      .thenAnswer((_) async => getPredefinedDictionaryLists!);
-  when(service.getMyDictionaryLists(any))
-      .thenAnswer((_) async => getMyDictionaryLists!);
   when(service.updateFlashcardSet(any)).thenAnswer((_) async {});
-
-  locator.registerSingleton<IsarService>(service);
-  return service;
-}
-
-Future<IsarService> getAndRegisterRealIsarService(Isar isar) async {
-  _removeRegistrationIfExists<IsarService>();
-  final service = IsarService(isar: isar);
-  locator.registerSingleton<IsarService>(service);
+  when(service.getFlashcardSetFlashcards(any))
+      .thenAnswer((_) async => getFlashcardSetFlashcards!);
+  locator.registerSingleton<DictionaryService>(service);
   return service;
 }
 
@@ -140,6 +127,7 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   bool getShowPitchAccent = constants.defaultShowPitchAccent,
   bool getShowNewInterval = constants.defaultShowNewInterval,
   bool getShowDetailedProgress = constants.defaultShowDetailedProgress,
+  bool getOnboardingFinished = false,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -162,18 +150,23 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getShowPitchAccent()).thenReturn(getShowPitchAccent);
   when(service.getShowNewInterval()).thenReturn(getShowNewInterval);
   when(service.getShowDetailedProgress()).thenReturn(getShowDetailedProgress);
+  when(service.getOnboardingFinished()).thenReturn(getOnboardingFinished);
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;
 }
 
 MockMecabService getAndRegisterMecabService({
+  bool? initialize,
+  bool? extractFiles,
   List<List<JapaneseTextToken>>? parseTextList,
   List<List<RubyTextPair>>? createRubyTextPairs,
 }) {
   _removeRegistrationIfExists<MecabService>();
   final service = MockMecabService();
 
+  when(service.initialize()).thenAnswer((_) async => initialize!);
+  when(service.extractFiles()).thenAnswer((_) async => extractFiles!);
   when(service.parseText(any)).thenAnswer((_) => parseTextList!.removeAt(0));
   when(service.createRubyTextPairs(any, any))
       .thenAnswer((_) => createRubyTextPairs!.removeAt(0));
@@ -182,14 +175,48 @@ MockMecabService getAndRegisterMecabService({
   return service;
 }
 
+MockDigitalInkService getAndRegisterDigitalInkService({
+  bool? initialize,
+}) {
+  _removeRegistrationIfExists<DigitalInkService>();
+  final service = MockDigitalInkService();
+
+  when(service.initialize()).thenAnswer((_) async => initialize!);
+
+  locator.registerSingleton<DigitalInkService>(service);
+  return service;
+}
+
+MockDownloadService getAndRegisterDownloadService({
+  bool? hasSufficientFreeSpace,
+  bool? downloadRequiredAssets,
+  bool? downloadDictionary,
+}) {
+  _removeRegistrationIfExists<DownloadService>();
+  final service = MockDownloadService();
+
+  when(service.hasSufficientFreeSpace())
+      .thenAnswer((_) async => hasSufficientFreeSpace!);
+  when(service.downloadRequiredAssets(useLocal: anyNamed('useLocal')))
+      .thenAnswer((_) async => downloadRequiredAssets!);
+  when(service.downloadDictionary(useLocal: anyNamed('useLocal')))
+      .thenAnswer((_) async => downloadDictionary!);
+  when(service.progressStream).thenAnswer((_) => Stream.fromIterable([1]));
+
+  locator.registerSingleton<DownloadService>(service);
+  return service;
+}
+
 void registerServices() {
   getAndRegisterNavigationService();
   getAndRegisterDialogService();
   getAndRegisterBottomSheetService();
   getAndRegisterSnackbarService();
-  getAndRegisterIsarService();
+  getAndRegisterDictionaryService();
   getAndRegisterSharedPreferencesService();
   getAndRegisterMecabService();
+  getAndRegisterDigitalInkService();
+  getAndRegisterDownloadService();
 }
 
 void unregisterServices() {
@@ -197,9 +224,11 @@ void unregisterServices() {
   locator.unregister<DialogService>();
   locator.unregister<BottomSheetService>();
   locator.unregister<SnackbarService>();
-  locator.unregister<IsarService>();
+  locator.unregister<DictionaryService>();
   locator.unregister<SharedPreferencesService>();
   locator.unregister<MecabService>();
+  locator.unregister<DigitalInkService>();
+  locator.unregister<DownloadService>();
 }
 
 void _removeRegistrationIfExists<T extends Object>() {
@@ -208,49 +237,9 @@ void _removeRegistrationIfExists<T extends Object>() {
   }
 }
 
-Future<Isar> setUpIsar() async {
-  // Create directory .dart_tool/isar_test/tmp/
-  final dartToolDir = path.join(Directory.current.path, '.dart_tool');
-  String testTempPath = path.join(dartToolDir, 'isar_test', 'tmp');
-  String downloadPath = path.join(dartToolDir, 'isar_test');
-  await Directory(testTempPath).create(recursive: true);
-
-  // Get name of isar binary based on platform
-  late String binaryName;
-  switch (Abi.current()) {
-    case Abi.macosX64:
-      binaryName = 'libisar.dylib';
-      break;
-    case Abi.linuxX64:
-      binaryName = 'libisar.so';
-      break;
-    case Abi.windowsX64:
-      binaryName = 'isar.dll';
-      break;
-    default:
-      throw Exception('Unsupported platform for testing');
-  }
-
-  // Downloads Isar binary file
-  await Isar.initializeIsarCore(
-    libraries: {
-      Abi.current(): '$downloadPath${Platform.pathSeparator}$binaryName'
-    },
-    download: true,
-  );
-
-  // Open Isar instance with random name
-  return Isar.open(
-    IsarService.schemas,
-    directory: testTempPath,
-    name: Random().nextInt(pow(2, 32) as int).toString(),
-    inspector: false,
-  );
-}
-
-Future<void> setUpFakePathProvider() async {
-  final dartToolDir = path.join(Directory.current.path, '.dart_tool');
-  String pathProviderPath = path.join(dartToolDir, 'path_provider_test');
-  await Directory(pathProviderPath).create(recursive: true);
-  PathProviderPlatform.instance = FakePathProviderPlatform(pathProviderPath);
+Future<DictionaryService> getAndRegisterRealDictionaryService() async {
+  _removeRegistrationIfExists<DictionaryService>();
+  final service = await setUpDictionaryData();
+  locator.registerSingleton<DictionaryService>(service);
+  return service;
 }

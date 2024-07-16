@@ -8,6 +8,8 @@ version: 1.1.0+14
 environment:
   sdk: '>=3.0.5 <4.0.0'
 
+isar_version: &isar_version 3.1.7
+
 dependencies:
   flutter:
     sdk: flutter
@@ -45,8 +47,15 @@ dependencies:
   flutter_markdown: ^0.6.19
 
   # Other
-  isar: ^3.1.0+1
-  isar_flutter_libs: any
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.0
+  sqlite3: ^2.0.0
+  isar:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
+  isar_flutter_libs:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
   path_provider: ^2.0.15
   kana_kit: # TODO change to main one after merge
     git:
@@ -62,7 +71,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: 'c461044'
+      ref: '89582cc'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
@@ -80,7 +89,9 @@ dev_dependencies:
 
   build_runner: any
   stacked_generator: ^1.4.0
-  isar_generator: any
+  isar_generator:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
   mockito: ^5.4.2
   plugin_platform_interface: ^2.1.4
   path_provider_platform_interface: ^2.0.6
@@ -101,10 +112,10 @@ flutter:
 
   assets:
     # Dictionary and mecab files for debug
-    # - assets/dictionary/base_dictionary.zip
-    # - assets/mecab/mecab_dictionary.zip
-    # Kanji radical positions images
-    - assets/images/kanji_radical_positions/
+    # - assets/dictionary/dictionary.zip
+    # - assets/mecab/mecab.zip
+    # Radical positions images
+    - assets/images/radical_positions/
     # App Icon
     - assets/images/icon.png
     

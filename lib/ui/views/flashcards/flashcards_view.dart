@@ -2,7 +2,6 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/ui/widgets/pitch_accent_text.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -502,18 +501,18 @@ class _VocabFlashcardFront extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> children = [];
 
-    if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
+    if (vocab.writings != null) {
       if (flashcardSet.vocabShowReadingIfRareKanji &&
           vocab.isUsuallyKanaAlone()) {
         // Usually written with kana alone, add faded kanji writing and reading
         children.addAll([
           Text(
-            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
+            vocab.writings![0].writing,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 54, color: Colors.grey),
           ),
           Text(
-            vocab.kanjiReadingPairs[0].readings[0].reading,
+            vocab.readings[0].reading,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 40),
           ),
@@ -522,7 +521,7 @@ class _VocabFlashcardFront extends StatelessWidget {
         // Show kanji writing normally
         children.add(
           Text(
-            vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji,
+            vocab.writings![0].writing,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 54),
           ),
@@ -532,7 +531,7 @@ class _VocabFlashcardFront extends StatelessWidget {
           // Add reading to be shown with kanji writing
           children.add(
             Text(
-              vocab.kanjiReadingPairs[0].readings[0].reading,
+              vocab.readings[0].reading,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 40),
             ),
@@ -543,7 +542,7 @@ class _VocabFlashcardFront extends StatelessWidget {
       // Show only reading normally
       children.add(
         Text(
-          vocab.kanjiReadingPairs[0].readings[0].reading,
+          vocab.readings[0].reading,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 54),
         ),
@@ -670,7 +669,7 @@ class _KanjiFlashcardFront extends StatelessWidget {
       if (kanji.kunReadings != null) {
         children.add(
           KanjiKunReadings(
-            kanji.kunReadings!,
+            kanji.kunReadings!.map((e) => e.reading).toList(),
             leading: const TextSpan(
               text: 'Kun readings: ',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -717,7 +716,7 @@ class _KanjiFlashcardFrontEnglish extends StatelessWidget {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
         child: Text(
-          kanji.meanings?.join(', ') ?? '(no meaning)',
+          kanji.meaning ?? '(no meaning)',
           textAlign: TextAlign.center,
         ),
       ),
@@ -739,25 +738,24 @@ class _VocabFlashcardBack extends StatelessWidget {
     List<Widget> children = [];
 
     // Add kanji writing
-    if (vocab.kanjiReadingPairs[0].kanjiWritings != null) {
-      late String kanjiWriting;
+    if (vocab.writings != null) {
+      late String writingText;
       if (flashcardSet.vocabShowAlternatives) {
-        List<String> kanjiWritings = [];
-        for (var pairs in vocab.kanjiReadingPairs) {
-          for (var kanjiWriting in pairs.kanjiWritings ?? []) {
-            if (!kanjiWritings.contains(kanjiWriting.kanji)) {
-              kanjiWritings.add(kanjiWriting.kanji);
-            }
+        List<String> writings = [];
+        for (var writing in vocab.writings!) {
+          if (writing.info == null ||
+              !writing.info!.contains(WritingInfo.searchOnlyForm)) {
+            writings.add(writing.writing);
           }
         }
-        kanjiWriting = kanjiWritings.join(', ');
+        writingText = writings.join(', ');
       } else {
-        kanjiWriting = vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji;
+        writingText = vocab.writings![0].writing;
       }
 
       children.add(
         Text(
-          kanjiWriting,
+          writingText,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 32,
@@ -770,13 +768,13 @@ class _VocabFlashcardBack extends StatelessWidget {
     // Add reading
     List<InlineSpan> readingSpans = [];
     if (flashcardSet.vocabShowPitchAccent &&
-        vocab.kanjiReadingPairs[0].readings[0].pitchAccents != null) {
+        vocab.readings[0].pitchAccents != null) {
       readingSpans.add(
         WidgetSpan(
           child: PitchAccentText(
-            text: vocab.kanjiReadingPairs[0].readings[0].reading,
+            text: vocab.readings[0].reading,
             pitchAccents: [
-              vocab.kanjiReadingPairs[0].readings[0].pitchAccents![0],
+              vocab.readings[0].pitchAccents![0],
             ],
             fontSize: children.isEmpty ? 32 : 24,
           ),
@@ -785,22 +783,11 @@ class _VocabFlashcardBack extends StatelessWidget {
 
       if (flashcardSet.vocabShowAlternatives) {
         List<String> readings = [];
-        // Remaining readings from first pair
-        for (var reading in vocab.kanjiReadingPairs[0].readings) {
-          if (!readings.contains(reading.reading) &&
-              reading.reading !=
-                  vocab.kanjiReadingPairs[0].readings[0].reading) {
+        // Remaining readings
+        for (var reading in vocab.readings) {
+          if (reading.info == null ||
+              !reading.info!.contains(ReadingInfo.searchOnlyForm)) {
             readings.add(reading.reading);
-          }
-        }
-        // Remaining pairs
-        for (int i = 1; i < vocab.kanjiReadingPairs.length; i++) {
-          for (var reading in vocab.kanjiReadingPairs[i].readings) {
-            if (!readings.contains(reading.reading) &&
-                reading.reading !=
-                    vocab.kanjiReadingPairs[0].readings[0].reading) {
-              readings.add(reading.reading);
-            }
           }
         }
         // Add to spans
@@ -812,18 +799,15 @@ class _VocabFlashcardBack extends StatelessWidget {
     } else {
       if (flashcardSet.vocabShowAlternatives) {
         List<String> readings = [];
-        for (var pairs in vocab.kanjiReadingPairs) {
-          for (var reading in pairs.readings) {
-            if (!readings.contains(reading.reading)) {
-              readings.add(reading.reading);
-            }
+        for (var reading in vocab.readings) {
+          if (reading.info == null ||
+              !reading.info!.contains(ReadingInfo.searchOnlyForm)) {
+            readings.add(reading.reading);
           }
         }
         readingSpans.add(TextSpan(text: readings.join(', ')));
       } else {
-        readingSpans.add(
-          TextSpan(text: vocab.kanjiReadingPairs[0].readings[0].reading),
-        );
+        readingSpans.add(TextSpan(text: vocab.readings[0].reading));
       }
     }
 
@@ -917,7 +901,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
       ),
       const SizedBox(height: 16),
       Text(
-        kanji.meanings?.join(', ') ?? '(no meaning)',
+        kanji.meaning ?? '(no meaning)',
         textAlign: TextAlign.center,
       ),
       const SizedBox(height: 16),
@@ -928,7 +912,7 @@ class _KanjiFlashcardBack extends StatelessWidget {
         ),
       if (kanji.kunReadings != null)
         KanjiKunReadings(
-          kanji.kunReadings!,
+          kanji.kunReadings!.map((e) => e.reading).toList(),
           leading: const TextSpan(
             text: 'Kun readings: ',
             style: TextStyle(fontWeight: FontWeight.bold),

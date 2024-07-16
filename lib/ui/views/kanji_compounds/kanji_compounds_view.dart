@@ -20,7 +20,7 @@ class KanjiCompoundsView extends StackedView<KanjiCompoundsViewModel> {
       appBar: AppBar(title: Text('${kanji.kanji} Compounds')),
       body: SafeArea(
         bottom: false,
-        child: viewModel.vocabList == null
+        child: viewModel.isBusy
             ? const Center(child: CircularProgressIndicator())
             : ListView.separated(
                 separatorBuilder: (_, __) => const Divider(
@@ -28,11 +28,11 @@ class KanjiCompoundsView extends StackedView<KanjiCompoundsViewModel> {
                   indent: 8,
                   endIndent: 8,
                 ),
-                itemCount: viewModel.vocabList!.length,
+                itemCount: viewModel.vocabList.length,
                 itemBuilder: (context, index) => VocabListItem(
-                  vocab: viewModel.vocabList![index],
+                  vocab: viewModel.vocabList[index],
                   onPressed: () =>
-                      viewModel.navigateToVocab(viewModel.vocabList![index]),
+                      viewModel.navigateToVocab(viewModel.vocabList[index]),
                 ),
               ),
       ),

@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sagase/ui/views/vocab/vocab_view.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
-import '../../../common.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../helpers/common/vocab_data.dart';
+import '../../../helpers/mocks.dart';
 
 void main() {
   group('VocabViewTest', () {
@@ -12,11 +12,23 @@ void main() {
     tearDown(() => unregisterServices());
 
     testWidgets('Basic vocab', (tester) async {
-      getAndRegisterIsarService(
-        isVocabInMyDictionaryLists: false,
-        getKanji: Kanji()
-          ..kanji = '秋'
-          ..meanings = ['autumn'],
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+        getKanjiList: [
+          Kanji(
+            id: '秋'.kanjiCodePoint(),
+            kanji: '秋',
+            meaning: 'autumn',
+            radical: '秋',
+            components: null,
+            grade: null,
+            strokeCount: 21,
+            frequency: null,
+            jlpt: null,
+            strokes: null,
+            compounds: null,
+          ),
+        ],
       );
       getAndRegisterMecabService(
         parseTextList: [
@@ -35,18 +47,17 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(home: VocabView(vocabBasic)));
+      await tester.pumpWidget(MaterialApp(home: VocabView(getVocabFall())));
 
       // Check temporary kanji information before it is loaded
-      // Finds two, one for vocab and one for kanji
-      expect(find.text('秋'), findsExactly(2));
-      expect(find.text('autumn'), findsNothing);
+      // Finds three, one for vocab, one for temporary kanji, and example
+      expect(find.textContaining('秋'), findsExactly(3));
+      expect(find.textContaining('autumn'), findsExactly(2));
 
       await tester.pumpAndSettle();
 
       expect(find.text('あき'), findsOne);
-      // Finds two, one for vocab and one for kanji
-      expect(find.text('秋'), findsExactly(2));
+      expect(find.textContaining('秋'), findsExactly(3));
 
       expect(find.text('Common'), findsOne);
 
@@ -63,7 +74,9 @@ void main() {
     });
 
     testWidgets('Vocab with only reading', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         parseTextList: [
           [
@@ -93,7 +106,7 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(home: VocabView(vocabReadingOnly)));
+      await tester.pumpWidget(MaterialApp(home: VocabView(getVocabYes())));
 
       expect(find.text('はい'), findsOne);
 
@@ -119,7 +132,9 @@ void main() {
     });
 
     testWidgets('Vocab with multiple kanji and one reading', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [const RubyTextPair(writing: '岩', reading: 'いわ')],
@@ -128,22 +143,52 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [
-                  VocabKanji()..kanji = '岩',
-                  VocabKanji()..kanji = '巌',
-                  VocabKanji()..kanji = '磐',
-                ]
-                ..readings = [VocabReading()..reading = 'いわ'],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [VocabDefinition()..definition = 'rock; boulder'],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '岩',
+                ),
+                const VocabWriting(
+                  id: 1,
+                  vocabId: 0,
+                  writing: '巌',
+                ),
+                const VocabWriting(
+                  id: 2,
+                  vocabId: 0,
+                  writing: '磐',
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'いわ',
+                  readingRomaji: 'iwa',
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'rock; boulder',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.text('いわ'), findsExactly(3));
       // Each of these finds two, one for writing/reading the other from kanji
@@ -153,39 +198,67 @@ void main() {
     });
 
     testWidgets('Vocab with one kanji and multiple readings', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [const RubyTextPair(writing: 'いつでも')],
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [VocabKanji()..kanji = '何時でも']
-                ..readings = [
-                  VocabReading()..reading = 'いつでも',
-                  VocabReading()..reading = 'なんどきでも',
-                ],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [
-              VocabDefinition()
-                ..definition = 'always; all the time; at all times'
-                ..miscInfo = [MiscellaneousInfo.usuallyKanaAlone],
-            ],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 140148,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '何時でも',
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'いつでも',
+                  readingRomaji: 'itsudemo',
+                ),
+                const VocabReading(
+                  id: 1,
+                  vocabId: 0,
+                  reading: 'なんどきでも',
+                  readingRomaji: 'nandekidemo',
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'always; all the time; at all times',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                  miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.text('いつでも'), findsOne);
       expect(find.text('何時でも【いつでも, なんどきでも】'), findsOne);
     });
 
     testWidgets('Vocab with multiple kanji and readings', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [const RubyTextPair(writing: '有様', reading: 'ありさま')],
@@ -196,32 +269,69 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [
-                  VocabKanji()..kanji = '有様',
-                  VocabKanji()..kanji = '有り様',
-                  VocabKanji()..kanji = 'あり様',
-                ]
-                ..readings = [
-                  VocabReading()..reading = 'ありさま',
-                  VocabReading()..reading = 'ありよう',
-                ],
-              KanjiReadingPair()
-                ..kanjiWritings = [VocabKanji()..kanji = '有りさま']
-                ..readings = [VocabReading()..reading = 'ありさま'],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [
-              VocabDefinition()
-                ..definition =
-                    'state; condition; circumstances; sight; spectacle',
-            ],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '有様',
+                ),
+                const VocabWriting(
+                  id: 1,
+                  vocabId: 0,
+                  writing: '有り様',
+                ),
+                const VocabWriting(
+                  id: 2,
+                  vocabId: 0,
+                  writing: 'あり様',
+                ),
+                const VocabWriting(
+                  id: 3,
+                  vocabId: 0,
+                  writing: '有りさま',
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'ありさま',
+                  readingRomaji: 'arisama',
+                ),
+                const VocabReading(
+                  id: 1,
+                  vocabId: 0,
+                  reading: 'ありよう',
+                  readingRomaji: 'ariyou',
+                  associatedWritings: [
+                    '有様',
+                    '有り様',
+                    'あり様',
+                  ],
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition:
+                      'state; condition; circumstances; sight; spectacle',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.text('有様'), findsOne);
       expect(find.text('有様, 有り様, あり様【ありさま, ありよう】'), findsOne);
@@ -231,7 +341,9 @@ void main() {
     });
 
     testWidgets('Vocab with kanji/reading info', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [
@@ -246,29 +358,54 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [
-                  VocabKanji()..kanji = '機嫌',
-                  VocabKanji()
-                    ..kanji = '譏嫌'
-                    ..info = [KanjiInfo.outdatedKanji],
-                  VocabKanji()
-                    ..kanji = '気嫌'
-                    ..info = [KanjiInfo.irregularKanji],
-                ]
-                ..readings = [VocabReading()..reading = 'きげん'],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [
-              VocabDefinition()
-                ..definition = 'humour; humor; temper; mood; spirits',
-            ],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '機嫌',
+                ),
+                const VocabWriting(
+                  id: 1,
+                  vocabId: 0,
+                  writing: '譏嫌',
+                  info: [WritingInfo.outdatedKanji],
+                ),
+                const VocabWriting(
+                  id: 2,
+                  vocabId: 0,
+                  writing: '気嫌',
+                  info: [WritingInfo.irregularKanji],
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'きげん',
+                  readingRomaji: 'kigen',
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'humour; humor; temper; mood; spirits',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.text('機嫌'), findsOne);
       expect(find.text('譏嫌'), findsOne);
@@ -281,7 +418,9 @@ void main() {
     });
 
     testWidgets('Vocab with antonym', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [
@@ -291,62 +430,105 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()
-                ..kanjiWritings = [VocabKanji()..kanji = '暑い']
-                ..readings = [VocabReading()..reading = 'あつい'],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [
-              VocabDefinition()
-                ..definition = 'hot; warm; sultry; heated'
-                ..antonyms = [
-                  VocabReference()
-                    ..ids = [0]
-                    ..text = '寒い',
-                ],
-            ],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '暑い',
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'あつい',
+                  readingRomaji: 'atsui',
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'hot; warm; sultry; heated',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                  antonyms: [
+                    VocabReference(
+                      ids: [0],
+                      text: '寒い',
+                    ),
+                  ],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.textContaining('antonym: 寒い'), findsOne);
     });
 
     testWidgets('Vocab with cross references', (tester) async {
-      getAndRegisterIsarService(isVocabInMyDictionaryLists: false);
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [const RubyTextPair(writing: 'ここ')],
         ],
       );
 
-      await tester.pumpWidget(MaterialApp(
-        home: VocabView(
-          Vocab()
-            ..kanjiReadingPairs = [
-              KanjiReadingPair()..readings = [VocabReading()..reading = 'ここ'],
-            ]
-            ..pos = [PartOfSpeech.noun]
-            ..definitions = [
-              VocabDefinition()
-                ..definition = 'here; this place'
-                ..crossReferences = [
-                  VocabReference()
-                    ..ids = [0]
-                    ..text = 'そこ',
-                  VocabReference()
-                    ..ids = [1]
-                    ..text = 'あそこ',
-                  VocabReference()
-                    ..ids = [2]
-                    ..text = 'どこ',
-                ],
-            ],
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'ここ',
+                  readingRomaji: 'koko',
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'here; this place',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                  crossReferences: [
+                    VocabReference(
+                      ids: [0],
+                      text: 'そこ',
+                    ),
+                    VocabReference(
+                      ids: [1],
+                      text: 'あそこ',
+                    ),
+                    VocabReference(
+                      ids: [2],
+                      text: 'どこ',
+                    ),
+                  ],
+                ),
+              ],
+          ),
         ),
-      ));
+      );
 
       expect(find.textContaining('see also: そこ, あそこ, どこ'), findsOne);
     });

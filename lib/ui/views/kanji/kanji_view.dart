@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
@@ -26,7 +27,9 @@ class KanjiView extends StackedView<KanjiViewModel> {
         actions: [
           IconButton(
             onPressed: viewModel.openMyDictionaryListsSheet,
-            icon: Icon(viewModel.inMyLists ? Icons.star : Icons.star_border),
+            icon: Icon(
+              viewModel.inMyDictionaryList ? Icons.star : Icons.star_border,
+            ),
           ),
         ],
       ),
@@ -63,11 +66,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: switch (kanji.grade) {
-                                        255 => '—',
-                                        8 => '7-9',
-                                        _ => kanji.grade.toString(),
-                                      },
+                                      text: kanji.grade?.displayTitle ?? '—',
                                     ),
                                     const TextSpan(
                                       text: '\nGrade',
@@ -129,9 +128,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: kanji.jlpt != 255
-                                          ? 'N${kanji.jlpt}'
-                                          : '—',
+                                      text: kanji.jlpt?.displayTitle ?? '—',
                                     ),
                                     const TextSpan(
                                       text: '\nJLPT',
@@ -183,7 +180,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
-                          Text(kanji.meanings?.join(', ') ?? '(no meaning)'),
+                          Text(kanji.meaning ?? '(no meaning)'),
                         ],
                       ),
                       if (kanji.kunReadings != null)
@@ -197,7 +194,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                               ),
                             ),
                             KanjiKunReadings(
-                              kanji.kunReadings!,
+                              kanji.kunReadings!.map((e) => e.reading).toList(),
                               maxLines: 99,
                             ),
                           ],
@@ -237,10 +234,10 @@ class KanjiView extends StackedView<KanjiViewModel> {
                   title: 'Radical',
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: viewModel.kanjiRadical != null
-                        ? _KanjiRadicalItem(
-                            radical: viewModel.kanjiRadical!,
-                            onPressed: viewModel.navigateToKanjiRadical,
+                    child: viewModel.radical != null
+                        ? _RadicalItem(
+                            radical: viewModel.radical!,
+                            onPressed: viewModel.navigateToRadical,
                           )
                         : const ListItemLoading(showLeading: true),
                   ),
@@ -278,11 +275,11 @@ class KanjiView extends StackedView<KanjiViewModel> {
   }
 }
 
-class _KanjiRadicalItem extends StatelessWidget {
-  final KanjiRadical radical;
+class _RadicalItem extends StatelessWidget {
+  final Radical radical;
   final void Function() onPressed;
 
-  const _KanjiRadicalItem({
+  const _RadicalItem({
     required this.radical,
     required this.onPressed,
   });
@@ -379,10 +376,10 @@ class _Compounds extends ViewModelWidget<KanjiViewModel> {
               child: Column(children: children),
             ),
             if (viewModel.compoundPreviewList != null &&
-                viewModel.kanji.compounds!.length > 10)
+                viewModel.kanji.compounds!.length == 10)
               TextButton(
                 onPressed: viewModel.showAllCompounds,
-                child: Text('Show all ${viewModel.kanji.compounds!.length}'),
+                child: const Text('Show all'),
               ),
           ],
         ),

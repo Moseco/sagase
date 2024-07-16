@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
+import 'package:sagase/datamodels/isar/flashcard_set.dart';
 
 void main() {
   group('FlashcardSetTest', () {
-    test('Backup', () async {
+    test('toBackupJson and fromBackupJson', () async {
       final now = DateTime.now();
       final flashcardSet = FlashcardSet()
         ..id = 1

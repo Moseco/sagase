@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/services/isar_service.dart' show SearchFilter;
+import 'package:sagase/services/dictionary_service.dart' show SearchFilter;
 import 'package:stacked_services/stacked_services.dart';
 
 class SearchFilterDialog extends StatelessWidget {

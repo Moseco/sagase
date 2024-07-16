@@ -88,8 +88,8 @@ The download urls for the required assets are not included in the repo. You can 
     - [x] Kanji
     - [x] Hand writing character recognition
 - [x] Text analysis
-- [x] Kanji radicals
-    - [x] 214 classic kanji radicals
+- [x] Radicals
+    - [x] 214 classic radicals
     - [x] Meaning
     - [x] Variants
     - [x] Kanji using the radical

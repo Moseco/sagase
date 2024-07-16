@@ -2,17 +2,16 @@ import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
-import 'package:sagase/datamodels/flashcard_set.dart';
 import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class FlashcardSetSettingsViewModel extends FutureViewModel {
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
@@ -27,13 +26,13 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    predefinedDictionaryLists = await _isarService.getPredefinedDictionaryLists(
+    predefinedDictionaryLists =
+        await _dictionaryService.getPredefinedDictionaryListsWithoutItems(
       flashcardSet.predefinedDictionaryLists,
     );
-    myDictionaryLists = await _isarService.getMyDictionaryLists(
+    myDictionaryLists = await _dictionaryService.getMyDictionaryLists(
       flashcardSet.myDictionaryLists,
     );
-    rebuildUi();
   }
 
   void handlePopupMenuButton(PopupMenuItemType type) {
@@ -63,11 +62,12 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
       barrierDismissible: true,
     );
 
-    String? name = response?.data?.trim();
-    if (name == null || name.isEmpty) return;
+    if (response?.data == null) return;
+    final name = (response!.data as String).sanitizeName();
+    if (name.isEmpty || flashcardSet.name == name) return;
 
     flashcardSet.name = name;
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
     notifyListeners();
   }
 
@@ -81,7 +81,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
-      _isarService.deleteFlashcardSet(flashcardSet);
+      _dictionaryService.deleteFlashcardSet(flashcardSet);
       // Send true as result when deleting
       _navigationService.back(result: true);
     }
@@ -99,7 +99,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
-      _isarService.resetFlashcardSetSpacedRepetitionData(flashcardSet);
+      _dictionaryService.resetFlashcardSetSpacedRepetitionData(flashcardSet);
     }
   }
 
@@ -119,7 +119,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
 
     // Create list for my lists
     List<MyListsBottomSheetItem> myLists = [];
-    for (var myList in await _isarService.getAllMyDictionaryLists()) {
+    for (var myList in await _dictionaryService.getAllMyDictionaryLists()) {
       myLists.add(MyListsBottomSheetItem(myList, false));
     }
     // Mark lists that the flashcard set uses and move them to the top
@@ -136,16 +136,13 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     );
 
     // Add and remove predefined dictionary lists from the flashcard set
-    flashcardSet.predefinedDictionaryLists =
-        flashcardSet.predefinedDictionaryLists.toList();
-    predefinedDictionaryLists = predefinedDictionaryLists.toList();
     for (var entry in predefinedLists.entries) {
       if (!entry.value.changed) continue;
       if (entry.value.enabled) {
         if (!flashcardSet.predefinedDictionaryLists.contains(entry.key)) {
           flashcardSet.predefinedDictionaryLists.add(entry.key);
-          predefinedDictionaryLists.add(
-              (await _isarService.getPredefinedDictionaryList(entry.key))!);
+          predefinedDictionaryLists.add((await _dictionaryService
+              .getPredefinedDictionaryList(entry.key)));
         }
       } else {
         flashcardSet.predefinedDictionaryLists.remove(entry.key);
@@ -154,8 +151,6 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
       }
     }
     // Add and remove my dictionary lists from the flashcard set
-    flashcardSet.myDictionaryLists = flashcardSet.myDictionaryLists.toList();
-    myDictionaryLists = myDictionaryLists.toList();
     for (var myList in myLists) {
       if (!myList.changed) continue;
       if (myList.enabled) {
@@ -170,14 +165,14 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
       }
     }
 
-    await _isarService.updateFlashcardSet(flashcardSet);
+    await _dictionaryService.updateFlashcardSet(flashcardSet);
     notifyListeners();
   }
 
   void setOrderType(bool value) {
     flashcardSet.usingSpacedRepetition = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setFrontType(FrontType frontType) {
@@ -186,43 +181,43 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     flashcardSet.flashcardsCompletedToday = 0;
     flashcardSet.newFlashcardsCompletedToday = 0;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setVocabShowReading(bool value) {
     flashcardSet.vocabShowReading = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setVocabShowReadingIfRareKanji(bool value) {
     flashcardSet.vocabShowReadingIfRareKanji = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setVocabShowAlternatives(bool value) {
     flashcardSet.vocabShowAlternatives = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setVocabShowPitchAccent(bool value) {
     flashcardSet.vocabShowPitchAccent = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setKanjiShowReading(bool value) {
     flashcardSet.kanjiShowReading = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void setVocabShowPartsOfSpeech(bool value) {
     flashcardSet.vocabShowPartsOfSpeech = value;
     notifyListeners();
-    _isarService.updateFlashcardSet(flashcardSet);
+    _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
   void openFlashcardSet() {

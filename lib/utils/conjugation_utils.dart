@@ -221,11 +221,10 @@ class ConjugationUtils {
   ) {
     // Get base of the vocab
     late String base;
-    if (vocab.kanjiReadingPairs[0].kanjiWritings == null ||
-        vocab.isUsuallyKanaAlone()) {
-      base = vocab.kanjiReadingPairs[0].readings[0].reading;
+    if (vocab.writings == null || vocab.isUsuallyKanaAlone()) {
+      base = vocab.readings[0].reading;
     } else {
-      base = vocab.kanjiReadingPairs[0].kanjiWritings![0].kanji;
+      base = vocab.writings![0].writing;
     }
 
     // na-adjectives and suru verbs can have a base length of 1, so ignore length rule for them

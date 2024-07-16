@@ -5,7 +5,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
-import 'package:sagase/services/isar_service.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:share_plus/share_plus.dart';
@@ -15,67 +15,53 @@ import 'package:sanitize_filename/sanitize_filename.dart' as sanitize_filename;
 
 class DictionaryListViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
-  final _isarService = locator<IsarService>();
+  final _dictionaryService = locator<DictionaryService>();
   final _dialogService = locator<DialogService>();
 
   DictionaryList dictionaryList;
 
-  late List<Vocab> vocab;
-  late List<Kanji> kanji;
+  List<Vocab>? vocabList;
+  List<Kanji>? kanjiList;
+  bool get loaded => vocabList != null && kanjiList != null;
 
-  StreamSubscription<void>? _myListWatcher;
-  bool _myListChanged = false;
+  StreamSubscription<DictionaryItemIdsResult>? _myDictionaryListWatcher;
 
   DictionaryListViewModel(this.dictionaryList);
 
   @override
   Future<void> futureToRun() async {
-    vocab = await _isarService.getVocabList(dictionaryList.getVocab());
-    kanji = await _isarService.getKanjiList(dictionaryList.getKanji());
-    rebuildUi();
-  }
+    if (dictionaryList is PredefinedDictionaryList) {
+      // Get vocab and kanji
+      vocabList = await _dictionaryService.getVocabList(dictionaryList.vocab);
+      kanjiList = await _dictionaryService.getKanjiList(dictionaryList.kanji);
+    } else {
+      // Start watching vocab and kanji
+      final stream = _dictionaryService
+          .watchMyDictionaryListItems(dictionaryList as MyDictionaryList);
+      _myDictionaryListWatcher = stream.listen((event) async {
+        // If first load, just get everything
+        vocabList = await _dictionaryService.getVocabList(event.vocabIds);
+        kanjiList = await _dictionaryService.getKanjiList(event.kanjiIds);
 
-  void _startWatcher() {
-    // If MyDictionaryList start watching for changes
-    if (dictionaryList is MyDictionaryList) {
-      _myListWatcher ??=
-          _isarService.watchMyDictionaryList(dictionaryList.id).listen((event) {
-        _myListChanged = true;
+        rebuildUi();
+
+        // TODO improve efficiency by loading differences after first load
       });
     }
   }
 
-  Future<void> _refreshMyList() async {
-    if (!_myListChanged) return;
-
-    final newList = await _isarService.getMyDictionaryList(dictionaryList.id);
-    if (newList == null) return;
-    dictionaryList = newList;
-    // Reload vocab and kanji
-    vocab = await _isarService.getVocabList(dictionaryList.getVocab());
-    kanji = await _isarService.getKanjiList(dictionaryList.getKanji());
-
-    _myListChanged = false;
-
-    rebuildUi();
-  }
-
   Future<void> navigateToVocab(Vocab vocab) async {
-    _startWatcher();
     await _navigationService.navigateTo(
       Routes.vocabView,
       arguments: VocabViewArguments(vocab: vocab),
     );
-    await _refreshMyList();
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
-    _startWatcher();
     await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
-    await _refreshMyList();
   }
 
   void handlePopupMenuButton(PopupMenuItemType type) {
@@ -93,6 +79,8 @@ class DictionaryListViewModel extends FutureViewModel {
   }
 
   Future<void> _renameMyList() async {
+    if (dictionaryList is! MyDictionaryList) return;
+
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.textField,
       title: 'Rename list',
@@ -102,15 +90,24 @@ class DictionaryListViewModel extends FutureViewModel {
       barrierDismissible: true,
     );
 
-    String? name = response?.data?.trim();
-    if (name == null || name.isEmpty || dictionaryList.name == name) return;
+    if (response?.data == null) return;
+    final name = (response!.data as String).sanitizeName();
+    if (name.isEmpty || dictionaryList.name == name) return;
 
-    dictionaryList.name = name;
-    _isarService.updateMyDictionaryList(dictionaryList as MyDictionaryList);
+    dictionaryList = (dictionaryList as MyDictionaryList).copyWith(
+      name: name,
+      timestamp: DateTime.now(),
+    );
     rebuildUi();
+    await _dictionaryService.renameMyDictionaryList(
+      dictionaryList as MyDictionaryList,
+      name,
+    );
   }
 
   Future<void> _deleteMyList() async {
+    if (dictionaryList is! MyDictionaryList) return;
+
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
       title: 'Delete list?',
@@ -120,13 +117,18 @@ class DictionaryListViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
-      await _isarService
-          .deleteMyDictionaryList(dictionaryList as MyDictionaryList);
+      // Stop watcher first to avoid unnecessary updates
+      _myDictionaryListWatcher?.cancel();
+      await _dictionaryService.deleteMyDictionaryList(
+        dictionaryList as MyDictionaryList,
+      );
       _navigationService.back();
     }
   }
 
   Future<void> _shareMyList() async {
+    if (dictionaryList is! MyDictionaryList) return;
+
     // Show confirmation dialog
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
@@ -160,7 +162,7 @@ class DictionaryListViewModel extends FutureViewModel {
 
   @override
   void dispose() {
-    _myListWatcher?.cancel();
+    _myDictionaryListWatcher?.cancel();
     super.dispose();
   }
 }
