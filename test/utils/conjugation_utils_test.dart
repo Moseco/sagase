@@ -934,6 +934,14 @@ void main() {
     test('conjugate verbKuru', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
         ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '来る')]
+        ..readings = [
+          const VocabReading(
+            id: 0,
+            vocabId: 0,
+            reading: 'くる',
+            readingRomaji: 'kuru',
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -946,38 +954,38 @@ void main() {
 
       final list = conjugationUtils.getConjugations(vocab);
 
-      expect(list![0].positive, '来る');
-      expect(list[0].negative, '来ない');
-      expect(list[1].positive, '来ます');
-      expect(list[1].negative, '来ません');
-      expect(list[2].positive, '来た');
-      expect(list[2].negative, '来なかった');
-      expect(list[3].positive, '来ました');
-      expect(list[3].negative, '来ませんでした');
-      expect(list[4].positive, '来て');
-      expect(list[4].negative, '来なくて');
-      expect(list[5].positive, '来よう');
-      expect(list[5].negative, '来まい');
-      expect(list[6].positive, '来ましょう');
-      expect(list[6].negative, '来ますまい');
-      expect(list[7].positive, '来られる');
-      expect(list[7].negative, '来られない');
-      expect(list[8].positive, '来られます');
-      expect(list[8].negative, '来られません');
-      expect(list[9].positive, '来られる');
-      expect(list[9].negative, '来られない');
-      expect(list[10].positive, '来られます');
-      expect(list[10].negative, '来られません');
-      expect(list[11].positive, '来させる');
-      expect(list[11].negative, '来させない');
-      expect(list[12].positive, '来させます');
-      expect(list[12].negative, '来させません');
-      expect(list[13].positive, '来させられる');
-      expect(list[13].negative, '来させられない');
-      expect(list[14].positive, '来い');
-      expect(list[14].negative, '来るな');
-      expect(list[15].positive, '来なさい');
-      expect(list[15].negative, '来なさるな');
+      expect(list![0].positive, 'くる');
+      expect(list[0].negative, 'こない');
+      expect(list[1].positive, 'きます');
+      expect(list[1].negative, 'きません');
+      expect(list[2].positive, 'きた');
+      expect(list[2].negative, 'こなかった');
+      expect(list[3].positive, 'きました');
+      expect(list[3].negative, 'きませんでした');
+      expect(list[4].positive, 'きて');
+      expect(list[4].negative, 'こなくて');
+      expect(list[5].positive, 'こよう');
+      expect(list[5].negative, 'こまい');
+      expect(list[6].positive, 'きましょう');
+      expect(list[6].negative, 'きますまい');
+      expect(list[7].positive, 'こられる');
+      expect(list[7].negative, 'こられない');
+      expect(list[8].positive, 'こられます');
+      expect(list[8].negative, 'こられません');
+      expect(list[9].positive, 'こられる');
+      expect(list[9].negative, 'こられない');
+      expect(list[10].positive, 'こられます');
+      expect(list[10].negative, 'こられません');
+      expect(list[11].positive, 'こさせる');
+      expect(list[11].negative, 'こさせない');
+      expect(list[12].positive, 'こさせます');
+      expect(list[12].negative, 'こさせません');
+      expect(list[13].positive, 'こさせられる');
+      expect(list[13].negative, 'こさせられない');
+      expect(list[14].positive, 'こい');
+      expect(list[14].negative, 'くるな');
+      expect(list[15].positive, 'こなさい');
+      expect(list[15].negative, 'こなさるな');
     });
 
     test('conjugate verbSuru', () {

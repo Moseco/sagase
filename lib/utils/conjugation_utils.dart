@@ -219,9 +219,11 @@ class ConjugationUtils {
     bool formal,
     int onum,
   ) {
-    // Get base of the vocab
+    // Get base of the vocab (special exception for 来る to ensure shown in kana)
     late String base;
-    if (vocab.writings == null || vocab.isUsuallyKanaAlone()) {
+    if (vocab.writings == null ||
+        vocab.isUsuallyKanaAlone() ||
+        vocab.writings?[0].writing == '来る') {
       base = vocab.readings[0].reading;
     } else {
       base = vocab.writings![0].writing;
