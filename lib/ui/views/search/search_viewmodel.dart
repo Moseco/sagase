@@ -38,6 +38,7 @@ class SearchViewModel extends FutureViewModel {
   SearchHistoryItem? _currentSearchHistoryItem;
 
   SearchFilter _searchFilter = SearchFilter.vocab;
+  SearchFilter get searchFilter => _searchFilter;
 
   bool _promptAnalysis = false;
   bool get promptAnalysis => _promptAnalysis;

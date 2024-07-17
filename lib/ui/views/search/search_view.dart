@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/hand_writing_canvas.dart';
@@ -259,7 +260,9 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                           ),
                         ],
                         decoration: InputDecoration(
-                          hintText: 'Search',
+                          hintText: viewModel.searchFilter == SearchFilter.vocab
+                              ? 'Search vocab'
+                              : 'Search kanji',
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 24,
                           ),
@@ -318,7 +321,9 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                           ),
                         ],
                         decoration: InputDecoration(
-                          hintText: 'Search',
+                          hintText: viewModel.searchFilter == SearchFilter.vocab
+                              ? 'Search vocab'
+                              : 'Search kanji',
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 24,
                           ),
