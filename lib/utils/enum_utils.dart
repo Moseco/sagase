@@ -416,7 +416,7 @@ extension MiscellaneousInfoExtension on MiscellaneousInfo {
       case MiscellaneousInfo.honorificOrRespectful:
         return 'honorific or respectful (sonkeigo) language';
       case MiscellaneousInfo.humbleLanguage:
-        return 'humble  (kenjougo) language';
+        return 'humble (kenjougo) language';
       case MiscellaneousInfo.idiomaticExpression:
         return 'idiomatic expression';
       case MiscellaneousInfo.humorousTerm:
