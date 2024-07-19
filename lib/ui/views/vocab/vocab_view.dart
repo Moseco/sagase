@@ -171,6 +171,7 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
             pairs[0].readings[0].reading,
           ),
           fontSize: 32,
+          textAlign: TextAlign.center,
         );
       }
     }
@@ -397,10 +398,12 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
 class _RubyTextWrapper extends StatelessWidget {
   final List<RubyTextPair> pairs;
   final double? fontSize;
+  final TextAlign? textAlign;
 
   const _RubyTextWrapper({
     required this.pairs,
     this.fontSize,
+    this.textAlign,
   });
 
   @override
@@ -416,7 +419,7 @@ class _RubyTextWrapper extends StatelessWidget {
     }
     return RubyText(
       rubyTextData,
-      textAlign: TextAlign.center,
+      textAlign: textAlign,
       style: TextStyle(letterSpacing: 0, height: 1.1, fontSize: fontSize),
     );
   }
