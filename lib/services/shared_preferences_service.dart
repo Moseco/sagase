@@ -228,4 +228,13 @@ class SharedPreferencesService implements InitializableDependency {
       constants.currentChangelogVersion,
     );
   }
+
+  bool getProperNounsEnabled() {
+    return _sharedPreferences.getBool(constants.keyProperNounsEnabled) ??
+        constants.defaultProperNounsEnabled;
+  }
+
+  Future<void> setProperNounsEnabled(bool value) async {
+    await _sharedPreferences.setBool(constants.keyProperNounsEnabled, value);
+  }
 }

@@ -72,6 +72,27 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
                   title: 'Download Failed',
                   subtitle: 'Not enough free space to set up the dictionary.',
                 ),
+              SplashScreenStatus.downloadingProperNounDictionary => _Body(
+                  title: 'Downloading Proper Noun Dictionary',
+                  widget: CircularPercentIndicator(
+                    radius: 40,
+                    lineWidth: 8,
+                    animation: true,
+                    animateFromLastPercent: true,
+                    percent: viewModel.downloadStatus,
+                    center: Text(
+                      "${(viewModel.downloadStatus * 100).toInt()}%",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: Colors.deepPurple,
+                  ),
+                ),
+              SplashScreenStatus.importingProperNounDictionary => const _Body(
+                  title: 'Importing Proper Noun Dictionary',
+                  subtitle: 'Please wait. This should be quick.',
+                  widget: CircularProgressIndicator(),
+                ),
               _ => _Body(
                   title: 'Finishing Setup',
                   subtitle:

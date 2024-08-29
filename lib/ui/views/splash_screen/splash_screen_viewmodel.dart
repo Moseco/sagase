@@ -7,11 +7,11 @@ import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:sagase/utils/constants.dart' as constants;
 
 class SplashScreenViewModel extends FutureViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
@@ -140,7 +140,13 @@ class SplashScreenViewModel extends FutureViewModel {
     }
 
     // Wait for onboarding before initializing digital ink service (to avoid ui lag)
-    if (onboardingNavigation != null) await onboardingNavigation;
+    if (onboardingNavigation != null) {
+      await onboardingNavigation;
+      // If proper nouns were enabled during onboarding add them now
+      if (_sharedPreferencesService.getProperNounsEnabled()) {
+        await _addProperNounDictionary();
+      }
+    }
 
     // Initialize digital ink service
     if (!await _digitalInkService.initialize()) {
@@ -161,6 +167,48 @@ class SplashScreenViewModel extends FutureViewModel {
     _navigationService.replaceWith(Routes.homeView);
   }
 
+  Future<void> _addProperNounDictionary() async {
+    _status = SplashScreenStatus.downloadingProperNounDictionary;
+    _downloadStatus = 0;
+    rebuildUi();
+
+    final downloadResult = _downloadService.downloadProperNounDictionary();
+
+    _downloadService.progressStream?.listen((event) {
+      double newStatus = (event * 100).floorToDouble() / 100;
+      if (newStatus != _downloadStatus) {
+        _downloadStatus = newStatus;
+        rebuildUi();
+      }
+    });
+
+    // If download failed, disable proper nouns and
+    // ask user to try again later in settings
+    if (!await downloadResult) {
+      _sharedPreferencesService.setProperNounsEnabled(false);
+      locator<SnackbarService>().showSnackbar(
+        message:
+            'Failed to download proper noun dictionary. Please try again later in the settings.',
+      );
+      return;
+    }
+
+    _status = SplashScreenStatus.importingProperNounDictionary;
+    rebuildUi();
+
+    final importResult = await _dictionaryService.importProperNouns();
+
+    // If import failed, disable proper nouns and
+    // ask user to try again later in settings
+    if (!importResult) {
+      _sharedPreferencesService.setProperNounsEnabled(false);
+      locator<SnackbarService>().showSnackbar(
+        message:
+            'Failed to import proper noun dictionary. Please try again later in the settings.',
+      );
+    }
+  }
+
   Future<void> _cleanCache() async {
     try {
       final dir =
@@ -169,11 +217,11 @@ class SplashScreenViewModel extends FutureViewModel {
       // Matches files ending in .sagase or related to initial setup
       final filesToDeleteRegExp = RegExp(
         r'(.+\.sagase$)|(^' +
-            RegExp.escape(constants.requiredAssetsTar) +
+            RegExp.escape(SagaseDictionaryConstants.requiredAssetsTar) +
             r'$)|(^' +
-            RegExp.escape(constants.dictionaryZip) +
+            RegExp.escape(SagaseDictionaryConstants.dictionaryZip) +
             r'$)|(^' +
-            RegExp.escape(constants.mecabZip) +
+            RegExp.escape(SagaseDictionaryConstants.mecabZip) +
             r'$)',
       );
 
@@ -208,4 +256,6 @@ enum SplashScreenStatus {
   downloadRequest,
   dictionaryUpgradeError,
   downloadFreeSpaceError,
+  downloadingProperNounDictionary,
+  importingProperNounDictionary,
 }

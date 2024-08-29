@@ -1,3 +1,4 @@
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 extension PartOfSpeechExtension on PartOfSpeech {
@@ -746,6 +747,78 @@ extension RadicalImportanceExtension on RadicalImportance {
         return 'Top 50%';
       case RadicalImportance.top75:
         return 'Top 75%';
+    }
+  }
+}
+
+extension ProperNounTypeExtension on ProperNounType {
+  String get displayTitle {
+    switch (this) {
+      case ProperNounType.surname:
+        return 'Surname';
+      case ProperNounType.placeName:
+        return 'Place';
+      case ProperNounType.personName:
+        return 'Person';
+      case ProperNounType.givenName:
+        return 'First name';
+      case ProperNounType.femaleName:
+        return 'Female name';
+      case ProperNounType.maleName:
+        return 'Male name';
+      case ProperNounType.fullName:
+        return 'Full name';
+      case ProperNounType.product:
+        return 'Product';
+      case ProperNounType.company:
+        return 'Company';
+      case ProperNounType.organization:
+        return 'Organization';
+      case ProperNounType.station:
+        return 'Station';
+      case ProperNounType.workOfArt:
+        return 'Work of art';
+      case ProperNounType.group:
+        return 'Group';
+      case ProperNounType.object:
+        return 'Object';
+      case ProperNounType.service:
+        return 'Service';
+      case ProperNounType.character:
+        return 'Character';
+      case ProperNounType.legend:
+        return 'Legend';
+      case ProperNounType.creature:
+        return 'Creature';
+      case ProperNounType.event:
+        return 'Event';
+      case ProperNounType.myth:
+        return 'Myth';
+      case ProperNounType.fiction:
+        return 'Fiction';
+      case ProperNounType.deity:
+        return 'Deity';
+      case ProperNounType.ship:
+        return 'Ship';
+      case ProperNounType.document:
+        return 'Document';
+      case ProperNounType.religion:
+        return 'Religion';
+      case ProperNounType.unknown:
+        return 'Unknown';
+    }
+  }
+}
+
+extension SearchFilterExtension on SearchFilter {
+  String get displayTitle {
+    switch (this) {
+      case SearchFilter.vocab:
+        return 'Search vocab';
+      case SearchFilter.kanji:
+        return 'Search kanji';
+      case SearchFilter.properNouns:
+        return 'Search proper nouns';
     }
   }
 }

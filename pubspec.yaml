@@ -60,6 +60,7 @@ dependencies:
   kana_kit: # TODO change to main one after merge
     git:
       url: https://github.com/Moseco/kana_kit
+      ref: 'f79e782'
   async: ^2.11.0
   archive: ^3.4.9
   google_mlkit_digital_ink_recognition: ^0.10.0
@@ -71,7 +72,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '89582cc'
+      ref: 'f36c064'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
@@ -114,6 +115,7 @@ flutter:
     # Dictionary and mecab files for debug
     # - assets/dictionary/dictionary.zip
     # - assets/mecab/mecab.zip
+    # - assets/dictionary/proper_noun_dictionary.zip
     # Radical positions images
     - assets/images/radical_positions/
     # App Icon

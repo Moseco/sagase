@@ -185,4 +185,11 @@ class SearchViewModel extends FutureViewModel {
       arguments: TextAnalysisViewArguments(initialText: text),
     );
   }
+
+  void navigateToProperNoun(ProperNoun properNoun) {
+    _navigationService.navigateTo(
+      Routes.properNounView,
+      arguments: ProperNounViewArguments(properNoun: properNoun),
+    );
+  }
 }

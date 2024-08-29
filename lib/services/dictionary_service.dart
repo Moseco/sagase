@@ -55,7 +55,7 @@ class DictionaryService {
       // Check if database file exists
       String dbPath = path.join(
         appSupportDir.path,
-        constants.dictionaryDatabaseFile,
+        SagaseDictionaryConstants.dictionaryDatabaseFile,
       );
 
       if (!await File(dbPath).exists()) {
@@ -105,24 +105,28 @@ class DictionaryService {
     String text,
     SearchFilter filter,
   ) async {
-    if (filter == SearchFilter.vocab) {
-      // First check if searching single kanji
-      Kanji? kanji;
-      if (text.characters.length == 1 && text.contains(constants.kanjiRegExp)) {
-        kanji = await _database.kanjisDao.getKanji(text);
-      }
+    switch (filter) {
+      case SearchFilter.vocab:
+        // First check if searching single kanji
+        Kanji? kanji;
+        if (text.characters.length == 1 &&
+            text.contains(constants.kanjiRegExp)) {
+          kanji = await _database.kanjisDao.getKanji(text);
+        }
 
-      // Search vocab
-      final vocabList = await _database.vocabsDao.search(text);
+        // Search vocab
+        final vocabList = await _database.vocabsDao.search(text);
 
-      // Add kanji to the start of results if found
-      if (kanji != null) {
-        return <DictionaryItem>[kanji] + vocabList;
-      } else {
-        return vocabList;
-      }
-    } else {
-      return _database.kanjisDao.search(text);
+        // Add kanji to the start of results if found
+        if (kanji != null) {
+          return <DictionaryItem>[kanji] + vocabList;
+        } else {
+          return vocabList;
+        }
+      case SearchFilter.kanji:
+        return _database.kanjisDao.search(text);
+      case SearchFilter.properNouns:
+        return _database.properNounsDao.search(text);
     }
   }
 
@@ -145,9 +149,6 @@ class DictionaryService {
   Future<List<Vocab>> getVocabByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
-    // If proper noun skip search
-    if (token.pos == PartOfSpeech.nounProper) return [];
-
     late List<Vocab> results;
     if (token.base.contains(constants.kanjiRegExp)) {
       // Search by writing and reading
@@ -465,6 +466,25 @@ class DictionaryService {
     return _database.searchHistoryItemsDao.deleteAll();
   }
 
+  Future<List<ProperNoun>> getProperNounByJapaneseTextToken(
+    JapaneseTextToken token,
+  ) async {
+    if (token.base.contains(constants.kanjiRegExp)) {
+      final results = await _database.properNounsDao.getByWritingAndReading(
+        token.base,
+        _kanaKit.toHiragana(token.baseReading),
+      );
+      // If nothing was found, try again with only writing
+      if (results.isEmpty) {
+        return _database.properNounsDao.getByWriting(token.base);
+      } else {
+        return results;
+      }
+    } else {
+      return _database.properNounsDao.getByReading(token.base);
+    }
+  }
+
   Future<String?> exportUserData() async {
     try {
       // My dictionary lists
@@ -653,8 +673,10 @@ class DictionaryService {
 
         // Remove old database file
         await close();
-        final oldDbFile = File(
-            path.join(appSupportDir.path, constants.dictionaryDatabaseFile));
+        final oldDbFile = File(path.join(
+          appSupportDir.path,
+          SagaseDictionaryConstants.dictionaryDatabaseFile,
+        ));
         if (await oldDbFile.exists()) await oldDbFile.delete();
       }
 
@@ -665,7 +687,7 @@ class DictionaryService {
         // Extract zip to application support directory
         final zipFile = File(path.join(
           appCacheDir.path,
-          constants.dictionaryZip,
+          SagaseDictionaryConstants.dictionaryZip,
         ));
         await archive.extractFileToDisk(zipFile.path, appSupportDir.path);
 
@@ -694,6 +716,45 @@ class DictionaryService {
       return ImportResult.failed;
     }
   }
+
+  Future<bool> importProperNouns() async {
+    try {
+      final appCacheDir = await path_provider.getApplicationCacheDirectory();
+
+      // Start isolate to handle zip file extraction
+      final rootIsolateToken = RootIsolateToken.instance!;
+      await Isolate.run(() async {
+        BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+        // Extract zip to application support directory
+        final zipFile = File(path.join(
+          appCacheDir.path,
+          SagaseDictionaryConstants.properNounDictionaryZip,
+        ));
+        await archive.extractFileToDisk(zipFile.path, appCacheDir.path);
+
+        // Delete zip file
+        await zipFile.delete();
+      });
+
+      final properNounDictionaryFile = File(path.join(
+        appCacheDir.path,
+        SagaseDictionaryConstants.properNounDictionaryDatabaseFile,
+      ));
+
+      await _database.properNounsDao
+          .importProperNouns(properNounDictionaryFile.path);
+
+      await properNounDictionaryFile.delete();
+
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> clearProperNouns() async {
+    await _database.properNounsDao.deleteProperNouns();
+  }
 }
 
 enum DictionaryStatus {
@@ -708,6 +769,7 @@ enum DictionaryStatus {
 enum SearchFilter {
   vocab,
   kanji,
+  properNouns,
 }
 
 enum ImportResult {

@@ -4,29 +4,33 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class TextAnalysisViewModel extends BaseViewModel {
+class TextAnalysisViewModel extends FutureViewModel {
   final _mecabService = locator<MecabService>();
   final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _snackbarService = locator<SnackbarService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   TextAnalysisState _state = TextAnalysisState.editing;
   TextAnalysisState get state => _state;
 
+  final String? _initialText;
   String _text = '';
   String get text => _text;
 
   List<JapaneseTextToken>? tokens;
 
-  TextAnalysisViewModel(String? initialText) {
-    if (initialText != null) {
-      analyzeText(initialText);
-    }
+  TextAnalysisViewModel(this._initialText);
+
+  @override
+  Future<void> futureToRun() async {
+    if (_initialText != null) await analyzeText(_initialText!);
   }
 
   Future<void> analyzeText(String text) async {
@@ -41,8 +45,16 @@ class TextAnalysisViewModel extends BaseViewModel {
 
     // Look up vocab for each token
     for (var token in tokens!) {
-      token.associatedVocab =
-          await _dictionaryService.getVocabByJapaneseTextToken(token);
+      // If proper noun and enabled look up in proper noun dictionary
+      if (token.pos == PartOfSpeech.nounProper) {
+        if (_sharedPreferencesService.getProperNounsEnabled()) {
+          token.associatedDictionaryItems =
+              await _dictionaryService.getProperNounByJapaneseTextToken(token);
+        }
+      } else {
+        token.associatedDictionaryItems =
+            await _dictionaryService.getVocabByJapaneseTextToken(token);
+      }
     }
 
     _state = TextAnalysisState.viewing;
@@ -58,18 +70,28 @@ class TextAnalysisViewModel extends BaseViewModel {
     Clipboard.setData(ClipboardData(text: _text));
   }
 
-  void openTokenVocab(JapaneseTextToken token) {
-    if (token.associatedVocab!.isEmpty) return;
-    if (token.associatedVocab!.length == 1) {
-      _navigationService.navigateTo(
-        Routes.vocabView,
-        arguments: VocabViewArguments(vocab: token.associatedVocab![0]),
-      );
-      return;
+  void openAssociatedDictionaryItem(JapaneseTextToken token) {
+    if (token.associatedDictionaryItems!.isEmpty) return;
+    if (token.associatedDictionaryItems!.length == 1) {
+      if (token.associatedDictionaryItems![0] is Vocab) {
+        _navigationService.navigateTo(
+          Routes.vocabView,
+          arguments: VocabViewArguments(
+            vocab: token.associatedDictionaryItems![0] as Vocab,
+          ),
+        );
+      } else {
+        _navigationService.navigateTo(
+          Routes.properNounView,
+          arguments: ProperNounViewArguments(
+            properNoun: token.associatedDictionaryItems![0] as ProperNoun,
+          ),
+        );
+      }
     } else {
       _bottomSheetService.showCustomSheet(
-        variant: BottomSheetType.selectVocabBottom,
-        data: token.associatedVocab,
+        variant: BottomSheetType.dictionaryItemsBottom,
+        data: token.associatedDictionaryItems,
       );
     }
   }

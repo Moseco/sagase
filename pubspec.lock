@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  diacritic:
+    dependency: transitive
+    description:
+      name: diacritic
+      sha256: "96db5db6149cbe4aa3cfcbfd170aca9b7648639be7e48025f9d458517f807fe4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   dio:
     dependency: "direct main"
     description:
@@ -661,8 +669,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "74433b403654f234c69158afe8cb0fa584c7edbf"
+      ref: f79e782
+      resolved-ref: f79e782b9c3ce10c3e069b0fa3b9fc778480de88
       url: "https://github.com/Moseco/kana_kit"
     source: git
     version: "2.0.0"
@@ -950,8 +958,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "89582cc"
-      resolved-ref: "89582cc9e58cd82b8e415b764bddfe234eadbf74"
+      ref: f36c064
+      resolved-ref: f36c064d2be1dfa4bacd15fba379231de71de7f7
       url: "https://github.com/Moseco/sagase_dictionary"
     source: git
     version: "1.0.0"

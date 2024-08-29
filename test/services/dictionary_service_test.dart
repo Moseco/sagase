@@ -485,19 +485,22 @@ void main() {
         final dbFile = File(
           path.join(
             (await path_provider.getApplicationSupportDirectory()).path,
-            constants.dictionaryDatabaseFile,
+            SagaseDictionaryConstants.dictionaryDatabaseFile,
           ),
         );
         final bytes = dbFile.readAsBytesSync();
-        final archiveFile =
-            ArchiveFile(constants.dictionaryDatabaseFile, bytes.length, bytes);
+        final archiveFile = ArchiveFile(
+          SagaseDictionaryConstants.dictionaryDatabaseFile,
+          bytes.length,
+          bytes,
+        );
         final archive = Archive();
         archive.addFile(archiveFile);
         final encodedArchive =
             ZipEncoder().encode(archive, level: Deflate.BEST_COMPRESSION);
         File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.dictionaryZip,
+          SagaseDictionaryConstants.dictionaryZip,
         )).writeAsBytesSync(encodedArchive!);
         // Delete original file
         dbFile.deleteSync();

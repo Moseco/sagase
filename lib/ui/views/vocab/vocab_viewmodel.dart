@@ -173,7 +173,7 @@ class VocabViewModel extends FutureViewModel {
       } else {
         final vocabList = await _dictionaryService.getVocabList(reference.ids!);
         await _bottomSheetService.showCustomSheet(
-          variant: BottomSheetType.selectVocabBottom,
+          variant: BottomSheetType.dictionaryItemsBottom,
           data: vocabList,
         );
       }

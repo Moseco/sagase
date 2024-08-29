@@ -6,10 +6,12 @@ import 'package:archive/archive_io.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/utils/download_options.dart';
 import 'package:disk_space_plus/disk_space_plus.dart';
 import 'package:path/path.dart' as path;
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class DownloadService {
   StreamController<double>? _streamController;
@@ -30,7 +32,10 @@ class DownloadService {
 
       final cachePath =
           (await path_provider.getApplicationCacheDirectory()).path;
-      final tarPath = path.join(cachePath, constants.requiredAssetsTar);
+      final tarPath = path.join(
+        cachePath,
+        SagaseDictionaryConstants.requiredAssetsTar,
+      );
 
       final result = await _downloadFile(
         DownloadOptions.getRequiredAssetsUrl(),
@@ -67,7 +72,7 @@ class DownloadService {
             .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
         final file = File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.dictionaryZip,
+          SagaseDictionaryConstants.dictionaryZip,
         ));
         await file.writeAsBytes(bytes);
 
@@ -78,10 +83,12 @@ class DownloadService {
       _streamController = StreamController<double>();
 
       return _downloadFile(
-        DownloadOptions.getBaseDictionaryUrl(),
+        locator<SharedPreferencesService>().getProperNounsEnabled()
+            ? DownloadOptions.getDictionaryWithProperNounsUrl()
+            : DownloadOptions.getDictionaryUrl(),
         path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.dictionaryZip,
+          SagaseDictionaryConstants.dictionaryZip,
         ),
       );
     } catch (_) {
@@ -102,7 +109,7 @@ class DownloadService {
 
         final file = File(path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.mecabZip,
+          SagaseDictionaryConstants.mecabZip,
         ));
         await file.writeAsBytes(bytes);
 
@@ -113,10 +120,46 @@ class DownloadService {
       _streamController = StreamController<double>();
 
       return _downloadFile(
-        DownloadOptions.getMecabDictionaryUrl(),
+        DownloadOptions.getMecabUrl(),
         path.join(
           (await path_provider.getApplicationCacheDirectory()).path,
-          constants.mecabZip,
+          SagaseDictionaryConstants.mecabZip,
+        ),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> downloadProperNounDictionary({bool useLocal = false}) async {
+    try {
+      // Option to get asset locally
+      if (useLocal) {
+        // Get zip data
+        final byteData = await rootBundle
+            .load('assets/dictionary/proper_noun_dictionary.zip');
+
+        // Copy zip to temporary directory file
+        final bytes = byteData.buffer
+            .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+        final file = File(path.join(
+          (await path_provider.getApplicationCacheDirectory()).path,
+          SagaseDictionaryConstants.properNounDictionaryZip,
+        ));
+        await file.writeAsBytes(bytes);
+
+        return true;
+      }
+
+      _streamController?.close();
+      _streamController = StreamController<double>();
+
+      return _downloadFile(
+        DownloadOptions.getProperNounDictionaryUrl(),
+        path.join(
+          (await path_provider.getApplicationCacheDirectory()).path,
+          SagaseDictionaryConstants.properNounDictionaryZip,
         ),
       );
     } catch (_) {

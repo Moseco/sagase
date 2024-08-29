@@ -24,6 +24,7 @@ const keyTutorialFlashcards = 'tutorial_flashcards';
 const keyTutorialVocab = 'tutorial_vocab';
 const keyShowDetailedProgress = 'show_detailed_progress';
 const keyChangelogVersionShown = 'changelog_version_shown';
+const keyProperNounsEnabled = 'proper_nouns_enabled';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -38,14 +39,10 @@ const defaultAnalyticsEnabled = true;
 const defaultStartOnLearningView = false;
 const defaultStrokeDiagramStartExpanded = true;
 const defaultShowDetailedProgress = false;
+const defaultProperNounsEnabled = false;
 
 const searchQueryLimit = 1000;
 
-const requiredAssetsTar = 'required_assets.tar';
-const dictionaryZip = 'dictionary.zip';
-const mecabZip = 'mecab.zip';
-
-const dictionaryDatabaseFile = 'dictionary.sqlite';
 const userDataTransferFile = 'user_data_transfer.sagase';
 const isarDatabaseFile = 'default.isar';
 const isarDatabaseLockFile = 'default.isar.lock';

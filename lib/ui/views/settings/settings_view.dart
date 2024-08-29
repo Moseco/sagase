@@ -64,6 +64,13 @@ class SettingsView extends StatelessWidget {
                     activeSwitchColor: Theme.of(context).colorScheme.primary,
                     title: const Text('Start on learning screen'),
                   ),
+                  SettingsTile.switchTile(
+                    initialValue: viewModel.properNounsEnabled,
+                    onToggle: viewModel.setProperNounsEnabled,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    title: const Text('Include proper nouns'),
+                    description: const Text('Increases app size by ~100mb'),
+                  ),
                 ],
               ),
               SettingsSection(

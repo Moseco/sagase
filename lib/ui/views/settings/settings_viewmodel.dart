@@ -5,6 +5,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
@@ -39,6 +40,8 @@ class SettingsViewModel extends BaseViewModel {
   bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
   bool get showDetailedProgress =>
       _sharedPreferencesService.getShowDetailedProgress();
+  bool get properNounsEnabled =>
+      _sharedPreferencesService.getProperNounsEnabled();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -347,5 +350,92 @@ class SettingsViewModel extends BaseViewModel {
 
   void openChangelog() {
     _navigationService.navigateToChangelogView();
+  }
+
+  Future<void> setProperNounsEnabled(bool value) async {
+    if (value) {
+      // Download and import proper noun dictionary
+      final response = await _dialogService.showCustomDialog(
+        variant: DialogType.confirmation,
+        title: 'Download proper noun dictionary?',
+        mainButtonTitle: 'Download',
+        secondaryButtonTitle: 'Cancel',
+        barrierDismissible: true,
+      );
+
+      if (response != null && response.confirmed) {
+        final downloadService = locator<DownloadService>();
+        if (!await downloadService.hasSufficientFreeSpace()) {
+          _snackbarService.showSnackbar(
+            message: 'Not enough free space to download dictionary',
+          );
+          return;
+        }
+
+        final downloadResult = downloadService.downloadProperNounDictionary();
+
+        // Show percent indicator dialog
+        _dialogService.showCustomDialog(
+          variant: DialogType.percentIndicator,
+          title: 'Downloading proper noun dictionary',
+          data: downloadService.progressStream,
+          barrierDismissible: false,
+        );
+
+        if (!await downloadResult) {
+          _dialogService.completeDialog(DialogResponse());
+          _snackbarService.showSnackbar(
+            message: 'Failed to download proper noun dictionary',
+          );
+          return;
+        }
+
+        // Show progress indicator dialog
+        _dialogService.completeDialog(DialogResponse());
+        _dialogService.showCustomDialog(
+          variant: DialogType.progressIndicator,
+          title: 'Importing proper noun dictionary',
+          barrierDismissible: false,
+        );
+
+        final importResult = await _dictionaryService.importProperNouns();
+
+        _dialogService.completeDialog(DialogResponse());
+
+        if (importResult) {
+          _sharedPreferencesService.setProperNounsEnabled(value);
+          notifyListeners();
+        } else {
+          _snackbarService.showSnackbar(
+            message: 'Failed to import proper noun dictionary',
+          );
+        }
+      }
+    } else {
+      // Remove proper nouns from dictionary
+      final response = await _dialogService.showCustomDialog(
+        variant: DialogType.confirmation,
+        title: 'Remove proper noun dictionary?',
+        mainButtonTitle: 'Remove',
+        secondaryButtonTitle: 'Cancel',
+        barrierDismissible: true,
+      );
+
+      if (response != null && response.confirmed) {
+        // Show progress indicator dialog
+        _dialogService.showCustomDialog(
+          variant: DialogType.progressIndicator,
+          title: 'Removing proper noun dictionary',
+          barrierDismissible: false,
+        );
+
+        await _dictionaryService.clearProperNouns();
+
+        _dialogService.completeDialog(DialogResponse());
+
+        _sharedPreferencesService.setProperNounsEnabled(value);
+        notifyListeners();
+      }
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/dictionary_service.dart' show SearchFilter;
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class SearchFilterDialog extends StatelessWidget {
@@ -51,6 +53,22 @@ class SearchFilterDialog extends StatelessWidget {
               onChanged: (_) => completer(
                 DialogResponse(data: SearchFilter.kanji),
               ),
+            ),
+            RadioListTile<SearchFilter>(
+              toggleable: true,
+              title: const Text('Proper nouns'),
+              groupValue: SearchFilter.properNouns,
+              value: request.data,
+              onChanged: (_) {
+                if (locator<SharedPreferencesService>()
+                    .getProperNounsEnabled()) {
+                  completer(DialogResponse(data: SearchFilter.properNouns));
+                } else {
+                  locator<SnackbarService>().showSnackbar(
+                    message: 'Enable proper noun dictionary in settings',
+                  );
+                }
+              },
             ),
           ],
         ),

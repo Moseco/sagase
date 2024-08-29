@@ -6,7 +6,7 @@ import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
-import 'package:sagase/ui/bottom_sheets/select_vocab_bottom_sheet.dart';
+import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
@@ -14,6 +14,7 @@ import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/info_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
+import 'package:sagase/ui/dialogs/percent_indicator_dialog.dart';
 import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
 import 'package:sagase/ui/dialogs/search_filter_dialog.dart';
 import 'package:sagase/ui/dialogs/text_field_dialog.dart';
@@ -27,6 +28,7 @@ import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_vi
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_list/kanji_list_view.dart';
+import 'package:sagase/ui/views/proper_noun/proper_noun_view.dart';
 import 'package:sagase/ui/views/radical/radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
@@ -78,6 +80,7 @@ import 'package:stacked_themes/stacked_themes.dart';
       page: ChangelogView,
       transitionsBuilder: TransitionsBuilders.slideBottom,
     ),
+    MaterialRoute(page: ProperNounView),
     MaterialRoute(page: DevView),
   ],
   dependencies: [
@@ -102,7 +105,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedBottomsheet(classType: AssignMyListsBottomSheet),
     StackedBottomsheet(classType: AssignListsBottomSheet),
     StackedBottomsheet(classType: StrokeOrderBottomSheet),
-    StackedBottomsheet(classType: SelectVocabBottomSheet),
+    StackedBottomsheet(classType: DictionaryItemsBottomSheet),
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),
@@ -115,6 +118,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: SearchFilterDialog),
     StackedDialog(classType: ThemeSelectionDialog),
     StackedDialog(classType: InfoDialog),
+    StackedDialog(classType: PercentIndicatorDialog),
   ],
 )
 class AppSetup {

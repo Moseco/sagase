@@ -10,6 +10,12 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
   @override
   OnboardingViewModel viewModelBuilder(context) => OnboardingViewModel();
 
+  static const _pageDecoration = PageDecoration(
+    pageMargin: EdgeInsets.zero,
+    imageFlex: 7,
+    bodyFlex: 8,
+  );
+
   @override
   Widget builder(context, viewModel, child) {
     return PopScope(
@@ -33,33 +39,38 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               title: 'Sagase',
               body:
                   'Welcome to Sagase, a Japanese-English dictionary and learning app.',
+              decoration: _pageDecoration,
             ),
             PageViewModel(
               image: const Text('辞書', style: TextStyle(fontSize: 80)),
               title: 'Dictionary',
               body:
                   'Intuitively search using romaji, kana, and kanji. Don\'t worry about not knowing how to type a character, simply sketch it out and let the hand writing recognition do the rest.',
+              decoration: _pageDecoration,
             ),
             PageViewModel(
               image: const Text('練習', style: TextStyle(fontSize: 80)),
               title: 'Practice',
               body:
                   'Master the language with learning optimized flashcards using the built in lists, such as JLPT and Kanji Kentei, or create your own.',
+              decoration: _pageDecoration,
             ),
             PageViewModel(
               image: const Text('設定', style: TextStyle(fontSize: 80)),
               title: 'Settings',
+              decoration: _pageDecoration,
               bodyWidget: Column(
                 children: [
-                  const Text(
-                    'This app can collect basic usage analytics and crash reports. No personally identifying information is collected. You can always update your choice in the settings.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
+                  SwitchListTile(
+                    title: const Text(
+                      'Include proper nouns',
+                      style: TextStyle(fontSize: 18),
                     ),
+                    subtitle: const Text('Increases app size by ~100mb'),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    value: viewModel.properNounsEnabled,
+                    onChanged: viewModel.setProperNounsEnabled,
                   ),
-                  const SizedBox(height: 16),
                   SwitchListTile(
                     title: const Text(
                       'Analytics',
@@ -79,10 +90,18 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     onChanged: viewModel.setCrashlyticsEnabled,
                   ),
                   const SizedBox(height: 16),
+                  const Text(
+                    'This app can collect basic usage analytics and crash reports. No personally identifying information is collected. You can always update your choice in the settings.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                   TextButton(
                     onPressed: viewModel.openPrivacyPolicy,
                     child: const Text(
-                      'View privacy policy',
+                      'Open privacy policy',
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -93,6 +112,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               image: const Text('頑張って', style: TextStyle(fontSize: 80)),
               title: 'Let\'s get started',
               body: 'Good luck with your Japanese learning journey!',
+              decoration: _pageDecoration,
             ),
           ],
         ),

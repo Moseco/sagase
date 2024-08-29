@@ -128,6 +128,7 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   bool getShowNewInterval = constants.defaultShowNewInterval,
   bool getShowDetailedProgress = constants.defaultShowDetailedProgress,
   bool getOnboardingFinished = false,
+  bool getProperNounsEnabled = constants.defaultProperNounsEnabled,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -151,6 +152,7 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getShowNewInterval()).thenReturn(getShowNewInterval);
   when(service.getShowDetailedProgress()).thenReturn(getShowDetailedProgress);
   when(service.getOnboardingFinished()).thenReturn(getOnboardingFinished);
+  when(service.getProperNounsEnabled()).thenReturn(getProperNounsEnabled);
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

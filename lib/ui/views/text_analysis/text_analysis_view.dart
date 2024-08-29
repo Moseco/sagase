@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:ruby_text/ruby_text.dart';
 import 'package:sagase/ui/views/text_analysis/text_analysis_viewmodel.dart';
+import 'package:sagase/ui/widgets/proper_noun_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
@@ -168,11 +170,11 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
 
       textChildren.add(
         GestureDetector(
-          onTap: () => viewModel.openTokenVocab(token),
+          onTap: () => viewModel.openAssociatedDictionaryItem(token),
           onLongPress: () => viewModel.copyToken(token),
           child: Container(
             decoration: BoxDecoration(
-              border: token.associatedVocab!.isNotEmpty
+              border: token.associatedDictionaryItems!.isNotEmpty
                   ? Border(
                       bottom: BorderSide(
                         color: Theme.of(context).textTheme.bodyMedium!.color!,
@@ -193,20 +195,29 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
         ),
       );
 
-      if (token.associatedVocab != null && token.associatedVocab!.isNotEmpty) {
-        if (token.associatedVocab!.length == 1) {
-          // Single vocab list item
-          associatedVocabChildren.add(
-            VocabListItem(
-              vocab: token.associatedVocab![0],
-              onPressed: () => viewModel.openTokenVocab(token),
-            ),
-          );
+      if (token.associatedDictionaryItems != null &&
+          token.associatedDictionaryItems!.isNotEmpty) {
+        if (token.associatedDictionaryItems!.length == 1) {
+          if (token.associatedDictionaryItems![0] is Vocab) {
+            associatedVocabChildren.add(
+              VocabListItem(
+                vocab: token.associatedDictionaryItems![0] as Vocab,
+                onPressed: () => viewModel.openAssociatedDictionaryItem(token),
+              ),
+            );
+          } else {
+            associatedVocabChildren.add(
+              ProperNounListItem(
+                properNoun: token.associatedDictionaryItems![0] as ProperNoun,
+                onPressed: () => viewModel.openAssociatedDictionaryItem(token),
+              ),
+            );
+          }
         } else {
-          // Multiple vocab list item
+          // Multiple dictionary item
           associatedVocabChildren.add(
             InkWell(
-              onTap: () => viewModel.openTokenVocab(token),
+              onTap: () => viewModel.openAssociatedDictionaryItem(token),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Column(

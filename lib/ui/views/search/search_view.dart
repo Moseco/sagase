@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:sagase/app/app.locator.dart';
-import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
+import 'package:sagase/ui/widgets/proper_noun_list_item.dart';
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/hand_writing_canvas.dart';
 import 'package:sagase/ui/widgets/home_header.dart';
@@ -260,9 +261,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                           ),
                         ],
                         decoration: InputDecoration(
-                          hintText: viewModel.searchFilter == SearchFilter.vocab
-                              ? 'Search vocab'
-                              : 'Search kanji',
+                          hintText: viewModel.searchFilter.displayTitle,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 24,
                           ),
@@ -321,9 +320,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                           ),
                         ],
                         decoration: InputDecoration(
-                          hintText: viewModel.searchFilter == SearchFilter.vocab
-                              ? 'Search vocab'
-                              : 'Search kanji',
+                          hintText: viewModel.searchFilter.displayTitle,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 24,
                           ),
@@ -439,10 +436,15 @@ class _SearchResults extends ViewModelWidget<SearchViewModel> {
               vocab: current,
               onPressed: () => viewModel.navigateToVocab(current),
             );
-          } else {
+          } else if (current is Kanji) {
             return KanjiListItemLarge(
-              kanji: current as Kanji,
+              kanji: current,
               onPressed: () => viewModel.navigateToKanji(current),
+            );
+          } else {
+            return ProperNounListItem(
+              properNoun: current as ProperNoun,
+              onPressed: () => viewModel.navigateToProperNoun(current),
             );
           }
         },

@@ -11,12 +11,19 @@ class OnboardingViewModel extends BaseViewModel {
   final _firebaseService = locator<FirebaseService>();
   final _snackbarService = locator<SnackbarService>();
 
+  bool get properNounsEnabled =>
+      _sharedPreferencesService.getProperNounsEnabled();
   bool get analyticsEnabled => _sharedPreferencesService.getAnalyticsEnabled();
   bool get crashlyticsEnabled => _firebaseService.crashlyticsEnabled;
 
   void finishOnboarding() {
     _sharedPreferencesService.setOnboardingFinished();
     _navigationService.back();
+  }
+
+  void setProperNounsEnabled(bool value) {
+    _sharedPreferencesService.setProperNounsEnabled(value);
+    rebuildUi();
   }
 
   void setAnalyticsEnabled(bool value) {
