@@ -180,6 +180,12 @@ class SearchViewModel extends FutureViewModel {
   }
 
   void navigateToTextAnalysis({String? text}) {
+    if (text != null) {
+      searchHistory.removeAt(0);
+      _dictionaryService.deleteSearchHistoryItem(_currentSearchHistoryItem!);
+      _currentSearchHistoryItem = null;
+    }
+
     _navigationService.navigateTo(
       Routes.textAnalysisView,
       arguments: TextAnalysisViewArguments(initialText: text),

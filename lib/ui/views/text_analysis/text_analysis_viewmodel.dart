@@ -26,6 +26,9 @@ class TextAnalysisViewModel extends FutureViewModel {
 
   List<JapaneseTextToken>? tokens;
 
+  bool _analysisFailed = true;
+  bool get analysisFailed => _analysisFailed;
+
   TextAnalysisViewModel(this._initialText);
 
   @override
@@ -41,6 +44,8 @@ class TextAnalysisViewModel extends FutureViewModel {
     _state = TextAnalysisState.loading;
     rebuildUi();
 
+    _analysisFailed = true;
+
     tokens = _mecabService.parseText(_text);
 
     // Look up vocab for each token
@@ -54,6 +59,9 @@ class TextAnalysisViewModel extends FutureViewModel {
       } else {
         token.associatedDictionaryItems =
             await _dictionaryService.getVocabByJapaneseTextToken(token);
+      }
+      if (token.associatedDictionaryItems!.isNotEmpty) {
+        _analysisFailed = false;
       }
     }
 

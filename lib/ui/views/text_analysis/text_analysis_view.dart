@@ -35,19 +35,29 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
         actions: switch (viewModel.state) {
           TextAnalysisState.editing => [
               IconButton(
+                onPressed: controller.clear,
+                icon: const Icon(Icons.clear),
+              ),
+              IconButton(
                 onPressed: () async {
                   final cdata = await Clipboard.getData(Clipboard.kTextPlain);
                   if (cdata?.text != null) {
                     controller.text = cdata!.text!;
-                    controller.selection = TextSelection.fromPosition(
-                        TextPosition(offset: cdata.text!.length));
+                    viewModel.analyzeText(cdata.text!);
                   }
                 },
-                icon: const Icon(Icons.paste),
+                icon: const Icon(Icons.content_paste_go),
               ),
             ],
           TextAnalysisState.loading => null,
           TextAnalysisState.viewing => [
+              IconButton(
+                onPressed: () {
+                  controller.clear();
+                  viewModel.editText();
+                },
+                icon: const Icon(Icons.note_add_outlined),
+              ),
               IconButton(
                 onPressed: viewModel.editText,
                 icon: const Icon(Icons.edit),
@@ -121,12 +131,12 @@ class _Analysis extends ViewModelWidget<TextAnalysisViewModel> {
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
-    if (viewModel.tokens == null || viewModel.tokens!.isEmpty) {
+    if (viewModel.analysisFailed) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('No recognizable Japanese text found.'),
+            const Text('No Japanese text found.'),
             TextButton(
               onPressed: viewModel.editText,
               child: const Text('Edit text'),
