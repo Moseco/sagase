@@ -444,10 +444,11 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
           posBuffer.toString(),
           style: const TextStyle(color: Colors.grey),
         ),
-        const Text(
-          'Applies to all',
-          style: TextStyle(fontSize: 10, color: Colors.grey),
-        ),
+        if (viewModel.vocab.definitions.length > 1)
+          const Text(
+            'Applies to all',
+            style: TextStyle(fontSize: 10, color: Colors.grey),
+          ),
         const Divider(),
       ]);
     }
