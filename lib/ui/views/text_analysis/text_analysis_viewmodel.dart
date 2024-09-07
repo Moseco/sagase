@@ -24,16 +24,28 @@ class TextAnalysisViewModel extends FutureViewModel {
   String _text = '';
   String get text => _text;
 
+  bool _addToHistory;
+
   List<JapaneseTextToken>? tokens;
 
   bool _analysisFailed = true;
   bool get analysisFailed => _analysisFailed;
 
-  TextAnalysisViewModel(this._initialText);
+  List<TextAnalysisHistoryItem>? history;
+
+  TextAnalysisViewModel(this._initialText, this._addToHistory);
 
   @override
   Future<void> futureToRun() async {
     if (_initialText != null) await analyzeText(_initialText!);
+
+    history = await _dictionaryService.getTextAnalysisHistory();
+  }
+
+  void textChanged(String value) {
+    if (_text.isEmpty && value.isNotEmpty) rebuildUi();
+    if (_text.isNotEmpty && value.isEmpty) rebuildUi();
+    _text = value;
   }
 
   Future<void> analyzeText(String text) async {
@@ -67,6 +79,17 @@ class TextAnalysisViewModel extends FutureViewModel {
 
     _state = TextAnalysisState.viewing;
     rebuildUi();
+
+    if (_addToHistory) {
+      final item = await _dictionaryService.createTextAnalysisHistoryItem(text);
+      history ??= [];
+      // If current text starts with next history item delete old one
+      if (history!.isNotEmpty && text.startsWith(history![0].analysisText)) {
+        _dictionaryService.deleteTextAnalysisHistoryItem(history!.removeAt(0));
+      }
+      history!.insert(0, item);
+    }
+    _addToHistory = true;
   }
 
   void editText() {
@@ -125,6 +148,23 @@ class TextAnalysisViewModel extends FutureViewModel {
       message: '$buffer copied to clipboard',
       duration: const Duration(seconds: 1),
     );
+  }
+
+  void textAnalysisHistoryItemSelected(TextAnalysisHistoryItem item) {
+    // Remove the selected one form the list
+    history!.remove(item);
+    // Update in database
+    _dictionaryService.deleteTextAnalysisHistoryItem(item);
+    // Do the actual search
+    analyzeText(item.analysisText);
+  }
+
+  void textAnalysisHistoryItemDeleted(TextAnalysisHistoryItem item) {
+    // Remove the selected one form the list
+    history!.remove(item);
+    // Update in database
+    _dictionaryService.deleteTextAnalysisHistoryItem(item);
+    rebuildUi();
   }
 }
 

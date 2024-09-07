@@ -160,7 +160,10 @@ class VocabViewModel extends FutureViewModel {
     _startWatcher();
     await _navigationService.navigateTo(
       Routes.textAnalysisView,
-      arguments: TextAnalysisViewArguments(initialText: example.japanese),
+      arguments: TextAnalysisViewArguments(
+        initialText: example.japanese,
+        addToHistory: false,
+      ),
     );
   }
 

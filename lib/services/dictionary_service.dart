@@ -463,7 +463,27 @@ class DictionaryService {
   }
 
   Future<void> deleteSearchHistory() async {
-    return _database.searchHistoryItemsDao.deleteAll();
+    await _database.searchHistoryItemsDao.deleteAll();
+    await _database.textAnalysisHistoryItemsDao.deleteAll();
+  }
+
+  Future<List<TextAnalysisHistoryItem>> getTextAnalysisHistory() async {
+    return _database.textAnalysisHistoryItemsDao.getAll();
+  }
+
+  Future<TextAnalysisHistoryItem> createTextAnalysisHistoryItem(
+      String text) async {
+    return _database.textAnalysisHistoryItemsDao.create(text);
+  }
+
+  Future<void> setTextAnalysisHistoryItem(TextAnalysisHistoryItem item) async {
+    return _database.textAnalysisHistoryItemsDao.set(item);
+  }
+
+  Future<void> deleteTextAnalysisHistoryItem(
+    TextAnalysisHistoryItem item,
+  ) async {
+    return _database.textAnalysisHistoryItemsDao.deleteItem(item);
   }
 
   Future<List<ProperNoun>> getProperNounByJapaneseTextToken(

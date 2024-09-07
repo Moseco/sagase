@@ -11,12 +11,17 @@ import 'package:stacked_hooks/stacked_hooks.dart';
 
 class TextAnalysisView extends StackedView<TextAnalysisViewModel> {
   final String? initialText;
+  final bool addToHistory;
 
-  const TextAnalysisView({this.initialText, super.key});
+  const TextAnalysisView({
+    this.initialText,
+    this.addToHistory = true,
+    super.key,
+  });
 
   @override
   TextAnalysisViewModel viewModelBuilder(BuildContext context) =>
-      TextAnalysisViewModel(initialText);
+      TextAnalysisViewModel(initialText, addToHistory);
 
   @override
   Widget builder(context, viewModel, child) => const _Body();
@@ -35,7 +40,10 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
         actions: switch (viewModel.state) {
           TextAnalysisState.editing => [
               IconButton(
-                onPressed: controller.clear,
+                onPressed: () {
+                  controller.clear();
+                  viewModel.textChanged('');
+                },
                 icon: const Icon(Icons.clear),
               ),
               IconButton(
@@ -97,15 +105,22 @@ class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
                 controller: controller,
                 autofocus: true,
                 maxLines: null,
+                style: const TextStyle(fontSize: 24),
                 decoration: const InputDecoration.collapsed(
                   hintText: 'Enter Japanese text to analyze...',
                 ),
                 maxLength: 1000,
                 inputFormatters: [LengthLimitingTextInputFormatter(1000)],
+                onChanged: viewModel.textChanged,
               ),
             ),
           ),
         ),
+        if (controller.text.isEmpty)
+          Expanded(
+            flex: 2,
+            child: _History(controller),
+          ),
         Container(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).padding.bottom,
@@ -122,6 +137,84 @@ class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _History extends ViewModelWidget<TextAnalysisViewModel> {
+  final TextEditingController controller;
+
+  const _History(this.controller);
+
+  @override
+  Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
+    return Container(
+      padding: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(24),
+          topLeft: Radius.circular(24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              'History',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ),
+          const Divider(),
+          viewModel.history == null || viewModel.history!.isEmpty
+              ? const Text('No history')
+              : Expanded(
+                  child: ListView.separated(
+                    separatorBuilder: (_, __) => const Divider(
+                      height: 1,
+                      indent: 8,
+                      endIndent: 8,
+                    ),
+                    padding: EdgeInsets.zero,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    itemCount: viewModel.history!.length,
+                    itemBuilder: (context, index) {
+                      final current = viewModel.history![index];
+                      return Dismissible(
+                        key: ObjectKey(current),
+                        background: Container(color: Colors.red),
+                        onDismissed: (DismissDirection direction) {
+                          viewModel.textAnalysisHistoryItemDeleted(current);
+                        },
+                        child: ListTile(
+                          leading: const Icon(Icons.history),
+                          title: Text(
+                            current.analysisText,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          onTap: () {
+                            controller.text = current.analysisText;
+                            viewModel.textAnalysisHistoryItemSelected(current);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+        ],
+      ),
     );
   }
 }

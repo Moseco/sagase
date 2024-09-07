@@ -529,7 +529,11 @@ class _SearchHistory extends ViewModelWidget<SearchViewModel> {
                         },
                         child: ListTile(
                           leading: const Icon(Icons.search),
-                          title: Text(current.searchText),
+                          title: Text(
+                            current.searchText,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                           onTap: () {
                             searchController.text = current.searchText;
                             searchController.selection =

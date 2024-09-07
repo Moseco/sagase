@@ -104,7 +104,6 @@ class SearchViewModel extends FutureViewModel {
         _currentSearchHistoryItem = SearchHistoryItem(
           id: searchHistory.isEmpty ? 0 : searchHistory[0].id + 1,
           searchText: _searchString,
-          timestamp: DateTime.now(),
         );
         searchHistory.insert(0, _currentSearchHistoryItem!);
         _dictionaryService.setSearchHistoryItem(_currentSearchHistoryItem!);
