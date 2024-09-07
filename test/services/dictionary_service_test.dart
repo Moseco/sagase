@@ -256,6 +256,14 @@ void main() {
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish],
         isEmpty,
       );
+      expect(
+        map[SagaseDictionaryConstants.backupSearchHistory],
+        isEmpty,
+      );
+      expect(
+        map[SagaseDictionaryConstants.backupTextAnalysisHistory],
+        isEmpty,
+      );
 
       // Import the backup
       await service.importUserData(path);
@@ -266,6 +274,14 @@ void main() {
       );
       expect(
         await service.getFlashcardSets(),
+        isEmpty,
+      );
+      expect(
+        await service.getSearchHistory(),
+        isEmpty,
+      );
+      expect(
+        await service.getTextAnalysisHistory(),
         isEmpty,
       );
 
@@ -331,6 +347,22 @@ void main() {
           dictionaryItem: await service.getKanji('三'),
           frontType: FrontType.english,
         ).copyWith(interval: 4),
+      );
+
+      // Create search history
+      await service.setSearchHistoryItem(
+        const SearchHistoryItem(id: 0, searchText: 'older'),
+      );
+      await service.setSearchHistoryItem(
+        const SearchHistoryItem(id: 1, searchText: 'newer'),
+      );
+
+      // Create text analysis history
+      await service.setTextAnalysisHistoryItem(
+        const TextAnalysisHistoryItem(id: 0, analysisText: 'older!'),
+      );
+      await service.setTextAnalysisHistoryItem(
+        const TextAnalysisHistoryItem(id: 1, analysisText: 'newer!'),
       );
 
       // Export data and validate contents
@@ -422,6 +454,12 @@ void main() {
       );
       expect(spaced5.interval, 4);
 
+      // Search history
+      expect(userBackup.searchHistory, ['newer', 'older']);
+
+      // Text analysis history
+      expect(userBackup.textAnalysisHistory, ['newer!', 'older!']);
+
       // Close original service
       await service.close();
 
@@ -471,6 +509,18 @@ void main() {
       );
       expect(kanjiList[0].spacedRepetitionData, null);
       expect(kanjiList[1].spacedRepetitionData!.interval, 4);
+
+      // Search history
+      final searchHistory = await newService.getSearchHistory();
+      expect(searchHistory.length, 2);
+      expect(searchHistory[0].searchText, 'newer');
+      expect(searchHistory[1].searchText, 'older');
+
+      // Text analysis history
+      final textAnalysisHistory = await newService.getTextAnalysisHistory();
+      expect(textAnalysisHistory.length, 2);
+      expect(textAnalysisHistory[0].analysisText, 'newer!');
+      expect(textAnalysisHistory[1].analysisText, 'older!');
 
       // Cleanup
       await newService.close();

@@ -106,6 +106,16 @@ class IsarService {
             kanji.spacedRepetitionDataEnglish!.toBackupJson();
       }
 
+      // Search history
+      final List<String> searchHistoryBackups = [];
+      final searchHistoryItems = await _isar.searchHistoryItems
+          .where()
+          .sortByTimestampDesc()
+          .findAll();
+      for (final item in searchHistoryItems) {
+        searchHistoryBackups.add(item.searchQuery);
+      }
+
       // Create instance
       DateTime now = DateTime.now();
       final backup = UserBackup(
@@ -119,6 +129,8 @@ class IsarService {
         kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
         kanjiSpacedRepetitionDataEnglish:
             kanjiSpacedRepetitionDataEnglishBackups,
+        searchHistory: searchHistoryBackups,
+        textAnalysisHistory: [],
       );
 
       // Create file and write to it

@@ -6,6 +6,7 @@ import 'package:isar/isar.dart';
 import 'package:sagase/datamodels/isar/flashcard_set.dart';
 import 'package:sagase/datamodels/isar/kanji.dart';
 import 'package:sagase/datamodels/isar/my_dictionary_list.dart';
+import 'package:sagase/datamodels/isar/search_history_item.dart';
 import 'package:sagase/datamodels/isar/spaced_repetition_data.dart';
 import 'package:sagase/datamodels/isar/vocab.dart';
 import 'package:sagase/datamodels/user_backup.dart';
@@ -76,6 +77,14 @@ void main() {
       );
       expect(
         map[SagaseDictionaryConstants.backupKanjiSpacedRepetitionDataEnglish],
+        isEmpty,
+      );
+      expect(
+        map[SagaseDictionaryConstants.backupSearchHistory],
+        isEmpty,
+      );
+      expect(
+        map[SagaseDictionaryConstants.backupTextAnalysisHistory],
         isEmpty,
       );
     });
@@ -168,6 +177,17 @@ void main() {
             ..vocabShowReading = true
             ..myDictionaryLists = [myDictionaryListId],
         );
+        // Add search history
+        await isar.searchHistoryItems.put(
+          SearchHistoryItem()
+            ..searchQuery = 'older'
+            ..timestamp = DateTime.now().subtract(const Duration(seconds: 5)),
+        );
+        await isar.searchHistoryItems.put(
+          SearchHistoryItem()
+            ..searchQuery = 'newer'
+            ..timestamp = DateTime.now(),
+        );
       });
 
       final service = IsarService(isar: isar);
@@ -253,6 +273,16 @@ void main() {
           .kanjiSpacedRepetitionDataEnglish['c'.kanjiCodePoint().toString()]));
 
       expect(spaced5.interval, 6);
+
+      expect(
+        userBackup.searchHistory,
+        ['newer', 'older'],
+      );
+
+      expect(
+        userBackup.textAnalysisHistory,
+        isEmpty,
+      );
     });
   });
 }

@@ -553,6 +553,20 @@ class DictionaryService {
         }
       }
 
+      // Search history
+      final List<String> searchHistoryBackups = [];
+      final searchHistoryItems = await getSearchHistory();
+      for (final item in searchHistoryItems) {
+        searchHistoryBackups.add(item.searchText);
+      }
+
+      // Text analysis history
+      final List<String> textAnalysisHistoryBackups = [];
+      final textAnalysisHistoryItems = await getTextAnalysisHistory();
+      for (final item in textAnalysisHistoryItems) {
+        textAnalysisHistoryBackups.add(item.analysisText);
+      }
+
       // Create instance
       DateTime now = DateTime.now();
       final backup = UserBackup(
@@ -566,6 +580,8 @@ class DictionaryService {
         kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
         kanjiSpacedRepetitionDataEnglish:
             kanjiSpacedRepetitionDataEnglishBackups,
+        searchHistory: searchHistoryBackups,
+        textAnalysisHistory: textAnalysisHistoryBackups,
       );
 
       // Create file and write to it
@@ -645,6 +661,26 @@ class DictionaryService {
           );
 
           await _database.spacedRepetitionDatasDao.set(spacedRepetitionData);
+        }
+
+        // Search history
+        for (int i = 0; i < userBackup.searchHistory.length; i++) {
+          await setSearchHistoryItem(
+            SearchHistoryItem(
+              id: userBackup.searchHistory.length - i,
+              searchText: userBackup.searchHistory[i],
+            ),
+          );
+        }
+
+        // Text analysis history
+        for (int i = 0; i < userBackup.textAnalysisHistory.length; i++) {
+          await setTextAnalysisHistoryItem(
+            TextAnalysisHistoryItem(
+              id: userBackup.textAnalysisHistory.length - i,
+              analysisText: userBackup.textAnalysisHistory[i],
+            ),
+          );
         }
       });
 
