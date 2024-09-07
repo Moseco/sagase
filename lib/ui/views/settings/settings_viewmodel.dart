@@ -161,7 +161,7 @@ class SettingsViewModel extends BaseViewModel {
 
     if (response != null && response.confirmed) {
       _dictionaryService.deleteSearchHistory();
-      locator<SearchViewModel>().clearSearchHistory();
+      locator<SearchViewModel>().loadSearchHistory();
     }
   }
 
@@ -200,36 +200,49 @@ class SettingsViewModel extends BaseViewModel {
     await File(path).delete();
   }
 
-  Future<void> importData() async {
-    // Ask user for the file they want to import
-    String? filePath;
-    try {
-      filePath = await FlutterFileDialog.pickFile(
-        params: const OpenFileDialogParams(fileExtensionsFilter: ['sagase']),
-      );
-    } catch (_) {
-      filePath = null;
-    }
+  Future<void> restoreFromBackup() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Restore from backup?',
+      description:
+          'This will delete all user data and then import new user data from the selected backup file.',
+      mainButtonTitle: 'Confirm',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
 
-    if (filePath != null) {
-      // Show progress indicator dialog
-      _dialogService.showCustomDialog(
-        variant: DialogType.progressIndicator,
-        title: 'Importing data',
-        barrierDismissible: false,
-      );
-
-      bool result = await _dictionaryService.importUserData(filePath);
-
-      _dialogService.completeDialog(DialogResponse());
-
-      if (result) {
-        _snackbarService.showSnackbar(message: 'Import successful');
-      } else {
-        _snackbarService.showSnackbar(message: 'Import failed');
+    if (response != null && response.confirmed) {
+      // Ask user for the file they want to import
+      String? filePath;
+      try {
+        filePath = await FlutterFileDialog.pickFile(
+          params: const OpenFileDialogParams(fileExtensionsFilter: ['sagase']),
+        );
+      } catch (_) {
+        filePath = null;
       }
-    } else {
-      _snackbarService.showSnackbar(message: 'Import cancelled');
+
+      if (filePath != null) {
+        // Show progress indicator dialog
+        _dialogService.showCustomDialog(
+          variant: DialogType.progressIndicator,
+          title: 'Importing data',
+          barrierDismissible: false,
+        );
+
+        bool result = await _dictionaryService.restoreFromBackup(filePath);
+
+        _dialogService.completeDialog(DialogResponse());
+
+        if (result) {
+          locator<SearchViewModel>().loadSearchHistory();
+          _snackbarService.showSnackbar(message: 'Import successful');
+        } else {
+          _snackbarService.showSnackbar(message: 'Import failed');
+        }
+      } else {
+        _snackbarService.showSnackbar(message: 'Import cancelled');
+      }
     }
   }
 

@@ -505,6 +505,23 @@ class DictionaryService {
     }
   }
 
+  Future<bool> restoreFromBackup(String backupFilePath) async {
+    bool result = false;
+
+    await _database.transaction(() async {
+      // Delete existing user data
+      await _database.flashcardSetsDao.deleteAll();
+      await _database.myDictionaryListsDao.deleteAll();
+      await _database.spacedRepetitionDatasDao.deleteAll();
+      await deleteSearchHistory();
+
+      // Import user data from backup
+      result = await importUserData(backupFilePath);
+    });
+
+    return result;
+  }
+
   Future<String?> exportUserData() async {
     try {
       // My dictionary lists

@@ -45,8 +45,7 @@ class SearchViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    searchHistory = await _dictionaryService.getSearchHistory();
-    notifyListeners();
+    await loadSearchHistory();
   }
 
   void navigateToVocab(Vocab vocab) {
@@ -157,8 +156,8 @@ class SearchViewModel extends FutureViewModel {
     notifyListeners();
   }
 
-  void clearSearchHistory() {
-    searchHistory.clear();
+  Future<void> loadSearchHistory() async {
+    searchHistory = await _dictionaryService.getSearchHistory();
     _currentSearchHistoryItem = null;
     notifyListeners();
   }

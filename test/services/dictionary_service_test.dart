@@ -208,6 +208,129 @@ void main() {
       });
     });
 
+    test('restoreFromBackup', () async {
+      final service = await setUpDictionaryData();
+
+      // Create initial data
+      // Create my dictionary list
+      final dictionaryList = await service.createMyDictionaryList('list1');
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        await service.getVocab(2),
+      );
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        await service.getKanji('二'),
+      );
+
+      // Create flashcard set
+      final flashcardSet = await service.createFlashcardSet('set1');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await service.updateFlashcardSet(flashcardSet);
+
+      // Create spaced repetition data
+      await service.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await service.getVocab(2),
+          frontType: FrontType.japanese,
+        ),
+      );
+
+      // Create search history
+      await service.setSearchHistoryItem(
+        const SearchHistoryItem(id: 0, searchText: 'search'),
+      );
+
+      // Create text analysis history
+      await service.setTextAnalysisHistoryItem(
+        const TextAnalysisHistoryItem(id: 0, analysisText: 'analysis!'),
+      );
+
+      // Export data
+      String path = (await service.exportUserData())!;
+      final file = File(path);
+
+      // Create/modify existing data that will be overwritten
+      // My dictionary list
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        await service.getVocab(3),
+      );
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        await service.getKanji('三'),
+      );
+      await service.renameMyDictionaryList(dictionaryList, 'new name');
+
+      // Flashcard set
+      flashcardSet.name = 'set name change';
+      await service.updateFlashcardSet(flashcardSet);
+
+      // Create spaced repetition data
+      await service.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await service.getVocab(3),
+          frontType: FrontType.japanese,
+        ).copyWith(interval: 1),
+      );
+      await service.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await service.getKanji('二'),
+          frontType: FrontType.japanese,
+        ).copyWith(interval: 4),
+      );
+      await service.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await service.getKanji('三'),
+          frontType: FrontType.english,
+        ).copyWith(interval: 4),
+      );
+
+      // Create search history
+      await service.setSearchHistoryItem(
+        const SearchHistoryItem(id: 1, searchText: 'newer'),
+      );
+
+      // Create text analysis history
+      await service.setTextAnalysisHistoryItem(
+        const TextAnalysisHistoryItem(id: 1, analysisText: 'newer!'),
+      );
+
+      // Restore from backup
+      await service.restoreFromBackup(file.path);
+
+      // Verify contents
+      final myDictionaryLists = await service.getAllMyDictionaryLists();
+      expect(myDictionaryLists.length, 1);
+      expect(myDictionaryLists[0].name, 'list1');
+      final myDictionaryListItems =
+          await service.getMyDictionaryListItems(myDictionaryLists[0]);
+      expect(myDictionaryListItems.vocabIds, [2]);
+      expect(myDictionaryListItems.kanjiIds, ['二'.kanjiCodePoint()]);
+
+      final flashcardSets = await service.getFlashcardSets();
+      expect(flashcardSets.length, 1);
+      expect(flashcardSets[0].name, 'set1');
+      final flashcards =
+          await service.getFlashcardSetFlashcards(flashcardSets[0]);
+      expect(flashcards.length, 2);
+      expect(flashcards[0].id, 2);
+      expect(flashcards[0].spacedRepetitionData, isNotNull);
+      expect(flashcards[1].id, '二'.kanjiCodePoint());
+      expect(flashcards[1].spacedRepetitionData, null);
+
+      final searchHistory = await service.getSearchHistory();
+      expect(searchHistory.length, 1);
+      expect(searchHistory[0].searchText, 'search');
+
+      final textAnalysisHistory = await service.getTextAnalysisHistory();
+      expect(textAnalysisHistory.length, 1);
+      expect(textAnalysisHistory[0].analysisText, 'analysis!');
+
+      // Cleanup
+      await service.close();
+    });
+
     test('exportUserData/importUserData - empty', () async {
       final service = await setUpDictionaryData();
 

@@ -168,11 +168,11 @@ class SettingsView extends StatelessWidget {
                     onPressed: (_) => viewModel.backupData(),
                   ),
                   SettingsTile.navigation(
-                    title: const Text('Import backup'),
+                    title: const Text('Restore from backup'),
                     description: const Text(
-                      'This will merge the current app data with the data from the backup file. Conflicting data will be overwritten by the backup data.',
+                      'This will delete all user data and then import new user data from the selected backup file.',
                     ),
-                    onPressed: (_) => viewModel.importData(),
+                    onPressed: (_) => viewModel.restoreFromBackup(),
                   ),
                 ],
               ),
