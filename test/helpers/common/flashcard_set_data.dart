@@ -13,9 +13,8 @@ FlashcardSet createDefaultFlashcardSet({int id = 0, String name = 'Set'}) {
     kanjiShowReading: false,
     vocabShowPartsOfSpeech: false,
     timestamp: DateTime.now(),
-    flashcardsCompletedToday: 0,
-    newFlashcardsCompletedToday: 0,
     predefinedDictionaryLists: [],
     myDictionaryLists: [],
+    streak: 0,
   );
 }

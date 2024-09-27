@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -19,6 +20,8 @@ class FlashcardsViewModel extends FutureViewModel {
 
   final FlashcardSet flashcardSet;
   FlashcardStartMode? startMode;
+
+  late final FlashcardSetReport flashcardSetReport;
 
   late final Random _random;
 
@@ -54,6 +57,8 @@ class FlashcardsViewModel extends FutureViewModel {
     return _showDetailedProgress!;
   }
 
+  bool _reportDialogShown = false;
+
   FlashcardsViewModel(
     this.flashcardSet,
     this.startMode, {
@@ -63,10 +68,22 @@ class FlashcardsViewModel extends FutureViewModel {
   @override
   Future<void> futureToRun() async {
     sessionDateTime = DateTime.now();
-    // If flashcard set timestamp is previous day, reset flashcards completed counts
-    if (flashcardSet.timestamp.isDifferentDay(sessionDateTime)) {
-      flashcardSet.flashcardsCompletedToday = 0;
-      flashcardSet.newFlashcardsCompletedToday = 0;
+    // Get or create flashcard set report for today and set streak accordingly
+    final recentFlashcardSetReport =
+        await _dictionaryService.getRecentFlashcardSetReport(flashcardSet);
+    if (recentFlashcardSetReport == null) {
+      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+          flashcardSet, sessionDateTime.toInt());
+    } else if (sessionDateTime.subtract(const Duration(days: 1)).toInt() ==
+        recentFlashcardSetReport.date) {
+      flashcardSet.streak++;
+      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+          flashcardSet, sessionDateTime.toInt());
+    } else if (sessionDateTime.toInt() != recentFlashcardSetReport.date) {
+      flashcardSet.streak = 0;
+      flashcardSetReport = recentFlashcardSetReport;
+    } else {
+      flashcardSetReport = recentFlashcardSetReport;
     }
     // Update flashcard set to also update timestamp
     _dictionaryService.updateFlashcardSet(flashcardSet);
@@ -148,9 +165,11 @@ class FlashcardsViewModel extends FutureViewModel {
         }
       }
       // Set initial due flashcard count and add flashcards completed today
-      _initialDueFlashcardCount =
-          dueFlashcards.length + flashcardSet.flashcardsCompletedToday;
-      _initialNewFlashcardsCompleted = flashcardSet.newFlashcardsCompletedToday;
+      _initialDueFlashcardCount = dueFlashcards.length +
+          flashcardSetReport.dueFlashcardsCompleted +
+          flashcardSetReport.newFlashcardsCompleted;
+      _initialNewFlashcardsCompleted =
+          flashcardSetReport.newFlashcardsCompleted;
       _answeringDueFlashcards = true;
     }
 
@@ -190,6 +209,13 @@ class FlashcardsViewModel extends FutureViewModel {
         notifyListeners();
         // Only modify spaced repetition data if flashcard has previous data
         if (currentFlashcard.spacedRepetitionData != null) {
+          // First add to report wrong count if first wrong answer for not new flashcard
+          if (currentFlashcard.spacedRepetitionData!.dueDate != null &&
+              currentFlashcard.spacedRepetitionData!.interval != 0) {
+            flashcardSetReport.dueFlashcardsGotWrong++;
+            _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+          }
+          // Get new spaced repetition data
           currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
             answer,
             currentFlashcard.spacedRepetitionData!,
@@ -213,11 +239,13 @@ class FlashcardsViewModel extends FutureViewModel {
         );
 
         if (currentFlashcard.spacedRepetitionData!.dueDate != null) {
-          // If completing a new card, increase new flashcard count
-          if (isNewFlashcard) flashcardSet.newFlashcardsCompletedToday++;
-          // Increase flashcards completed today and update in database
-          flashcardSet.flashcardsCompletedToday++;
-          _dictionaryService.updateFlashcardSet(flashcardSet);
+          // Increase appropriate flashcards completed count
+          if (isNewFlashcard) {
+            flashcardSetReport.newFlashcardsCompleted++;
+          } else {
+            flashcardSetReport.dueFlashcardsCompleted++;
+          }
+          _dictionaryService.setFlashcardSetReport(flashcardSetReport);
         } else {
           // New flashcard is not completed, reinsert current flashcard
           activeFlashcards.insert(
@@ -235,13 +263,13 @@ class FlashcardsViewModel extends FutureViewModel {
             .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
       } else {
         // Very correct answer
-        // If completing a new card, increase new flashcard count
+        // Increase appropriate flashcards completed count
         if (currentFlashcard.spacedRepetitionData?.dueDate == null) {
-          flashcardSet.newFlashcardsCompletedToday++;
+          flashcardSetReport.newFlashcardsCompleted++;
+        } else {
+          flashcardSetReport.dueFlashcardsCompleted++;
         }
-        // Increase flashcards completed today and update in database
-        flashcardSet.flashcardsCompletedToday++;
-        _dictionaryService.updateFlashcardSet(flashcardSet);
+        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
         // Get new spaced repetition date and use enum index as argument
 
         currentFlashcard.spacedRepetitionData = _calculateSpacedRepetition(
@@ -293,6 +321,7 @@ class FlashcardsViewModel extends FutureViewModel {
       dueFlashcards.clear();
 
       // If active flashcards is still empty then try to add new flashcards
+      Future<DialogResponse<dynamic>?>? reportDialogResponse;
       if (activeFlashcards.isEmpty) {
         activeFlashcards.addAll(newFlashcards);
         newFlashcards.clear();
@@ -302,11 +331,22 @@ class FlashcardsViewModel extends FutureViewModel {
         // Add any started flashcards
         activeFlashcards.insertAll(0, startedFlashcards..shuffle(_random));
         startedFlashcards.clear();
+        // If finished due flashcards show report report
+        if (!_reportDialogShown &&
+            !initial &&
+            flashcardSetReport.dueFlashcardsCompleted != 0) {
+          _reportDialogShown = true;
+          reportDialogResponse = _dialogService.showCustomDialog(
+            variant: DialogType.flashcardSetReport,
+            data: (flashcardSetReport, flashcardSet.streak),
+            barrierDismissible: true,
+          );
+        }
       } else if (startMode == FlashcardStartMode.learning) {
         // If active list was not empty and in learning mode, add new cards with the due cards
         _newFlashcardsAdded = min(
           _sharedPreferencesService.getNewFlashcardsPerDay() -
-              flashcardSet.newFlashcardsCompletedToday -
+              flashcardSetReport.newFlashcardsCompleted -
               startedFlashcards.length,
           newFlashcards.length,
         );
@@ -333,6 +373,12 @@ class FlashcardsViewModel extends FutureViewModel {
       // If active flashcards is still empty then the user is finished with today's spaced repetition
       // Ask if they want to continue using random order
       if (activeFlashcards.isEmpty) {
+        // Wait for report dialog to finish if being shown
+        if (reportDialogResponse != null) {
+          await reportDialogResponse;
+          _navigationService.back();
+          return;
+        }
         final response = await _dialogService.showDialog(
           title: 'Finished!',
           description:
@@ -404,19 +450,25 @@ class FlashcardsViewModel extends FutureViewModel {
       }
     }
 
-    // If undoing a newly completed card, decrease flashcards completed counts
+    // If undoing a newly completed card, decrease new flashcards completed
     if (current.previousData?.dueDate == null &&
         current.flashcard.spacedRepetitionData?.dueDate != null) {
-      flashcardSet.flashcardsCompletedToday--;
-      flashcardSet.newFlashcardsCompletedToday--;
-      _dictionaryService.updateFlashcardSet(flashcardSet);
+      flashcardSetReport.newFlashcardsCompleted--;
+      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
     }
     // If undoing a not new card and previous answer was correct, decrease count
     if (current.previousData?.dueDate != null &&
         current.previousData!.interval <
             current.flashcard.spacedRepetitionData!.interval) {
-      flashcardSet.flashcardsCompletedToday--;
-      _dictionaryService.updateFlashcardSet(flashcardSet);
+      flashcardSetReport.dueFlashcardsCompleted--;
+      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+    }
+    // If undoing a not new card and previous answer was the first wrong answer, decrease count
+    if (current.previousData?.dueDate != null &&
+        current.previousData!.interval != 0 &&
+        current.flashcard.spacedRepetitionData!.interval == 0) {
+      flashcardSetReport.dueFlashcardsGotWrong--;
+      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
     }
 
     // Put flashcard at the front of active list with the previous data

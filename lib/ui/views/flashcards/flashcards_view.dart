@@ -1023,10 +1023,10 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
         if (viewModel.showDetailedProgress &&
             viewModel.newFlashcardsAdded != 0) {
           bottomLeftString =
-              '${completedBar - viewModel.flashcardSet.newFlashcardsCompletedToday} (${viewModel.flashcardSet.newFlashcardsCompletedToday}) completed';
+              '${completedBar - viewModel.flashcardSetReport.newFlashcardsCompleted} (${viewModel.flashcardSetReport.newFlashcardsCompleted}) completed';
           int newFlashcardRemaining = viewModel.initialNewFlashcardsCompleted +
               viewModel.newFlashcardsAdded -
-              viewModel.flashcardSet.newFlashcardsCompletedToday;
+              viewModel.flashcardSetReport.newFlashcardsCompleted;
           bottomRightString =
               '${emptyBar - newFlashcardRemaining} ($newFlashcardRemaining) due cards left';
         } else {
@@ -1039,7 +1039,7 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
             viewModel.allFlashcards!.length - viewModel.activeFlashcards.length;
         emptyBar = viewModel.activeFlashcards.length;
         bottomLeftString =
-            '${viewModel.flashcardSet.newFlashcardsCompletedToday} new cards completed';
+            '${viewModel.flashcardSetReport.newFlashcardsCompleted} new cards completed';
         bottomRightString = '$emptyBar new cards left';
       }
     } else {

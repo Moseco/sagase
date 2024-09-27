@@ -50,10 +50,6 @@ class FlashcardSet {
             vocabShowPartsOfSpeech,
         SagaseDictionaryConstants.backupFlashcardSetTimestamp:
             timestamp.millisecondsSinceEpoch,
-        SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday:
-            flashcardsCompletedToday,
-        SagaseDictionaryConstants.backupFlashcardSetNewFlashcardsCompletedToday:
-            newFlashcardsCompletedToday,
         SagaseDictionaryConstants.backupFlashcardSetPredefinedDictionaryLists:
             predefinedDictionaryLists,
         SagaseDictionaryConstants.backupFlashcardSetMyDictionaryLists:
@@ -85,10 +81,6 @@ class FlashcardSet {
           SagaseDictionaryConstants.backupFlashcardSetVocabShowPartsOfSpeech]
       ..timestamp = DateTime.fromMillisecondsSinceEpoch(
           map[SagaseDictionaryConstants.backupFlashcardSetTimestamp])
-      ..flashcardsCompletedToday = map[
-          SagaseDictionaryConstants.backupFlashcardSetFlashcardsCompletedToday]
-      ..newFlashcardsCompletedToday = map[SagaseDictionaryConstants
-          .backupFlashcardSetNewFlashcardsCompletedToday]
       ..predefinedDictionaryLists = map[SagaseDictionaryConstants
               .backupFlashcardSetPredefinedDictionaryLists]
           .cast<int>()

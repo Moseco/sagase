@@ -38,8 +38,6 @@ void main() {
       expect(newFlashcardSet.vocabShowPartsOfSpeech, true);
       expect(newFlashcardSet.timestamp.millisecondsSinceEpoch,
           now.millisecondsSinceEpoch);
-      expect(newFlashcardSet.flashcardsCompletedToday, 1);
-      expect(newFlashcardSet.newFlashcardsCompletedToday, 2);
       expect(newFlashcardSet.predefinedDictionaryLists.length, 2);
       expect(newFlashcardSet.predefinedDictionaryLists.contains(0), true);
       expect(newFlashcardSet.predefinedDictionaryLists.contains(1), true);

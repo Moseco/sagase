@@ -402,7 +402,7 @@ class DictionaryService {
         );
   }
 
-  Future<FlashcardSet> resetFlashcardSetSpacedRepetitionData(
+  Future<void> resetFlashcardSetSpacedRepetitionData(
     FlashcardSet flashcardSet,
   ) async {
     // Get dictionary items for the flashcard set
@@ -414,12 +414,50 @@ class DictionaryService {
           .deleteSpacedRepetitionData(item, flashcardSet.frontType);
     }
 
-    // Finally set flashcard counters to 0
-    flashcardSet.flashcardsCompletedToday = 0;
-    flashcardSet.newFlashcardsCompletedToday = 0;
+    // Delete flashcard set reports
+    await _database.flashcardSetsDao.deleteFlashcardSetReports(flashcardSet);
 
+    flashcardSet.streak = 0;
     await updateFlashcardSet(flashcardSet);
-    return flashcardSet;
+  }
+
+  Future<FlashcardSetReport> createFlashcardSetReport(
+    FlashcardSet flashcardSet,
+    int date,
+  ) async {
+    return _database.flashcardSetsDao
+        .createFlashcardSetReport(flashcardSet, date);
+  }
+
+  Future<void> setFlashcardSetReport(
+    FlashcardSetReport flashcardSetReport,
+  ) async {
+    return _database.flashcardSetsDao.setFlashcardSetReport(flashcardSetReport);
+  }
+
+  Future<FlashcardSetReport?> getFlashcardSetReport(
+    FlashcardSet flashcardSet,
+    int date,
+  ) async {
+    return _database.flashcardSetsDao.getFlashcardSetReport(flashcardSet, date);
+  }
+
+  Future<FlashcardSetReport?> getRecentFlashcardSetReport(
+    FlashcardSet flashcardSet,
+  ) async {
+    return _database.flashcardSetsDao.getRecentFlashcardSetReport(flashcardSet);
+  }
+
+  Future<List<FlashcardSetReport>> getFlashcardSetReportRange(
+    FlashcardSet flashcardSet,
+    int startDate,
+    int endDate,
+  ) async {
+    return _database.flashcardSetsDao.getFlashcardSetReportRange(
+      flashcardSet,
+      startDate,
+      endDate,
+    );
   }
 
   Future<void> setSpacedRepetitionData(SpacedRepetitionData data) async {
@@ -543,6 +581,14 @@ class DictionaryService {
         flashcardSetBackups.add(flashcardSet.toBackupJson());
       }
 
+      // Flashcard set reports
+      List<String> flashcardSetReportBackups = [];
+      final flashcardSetReports =
+          await _database.flashcardSetsDao.getAllFlashcardSetReports();
+      for (final flashcardSetReport in flashcardSetReports) {
+        flashcardSetReportBackups.add(flashcardSetReport.toBackupJson());
+      }
+
       // Spaced repetition data
       Map<String, String> vocabSpacedRepetitionDataBackups = {};
       Map<String, String> vocabSpacedRepetitionDataEnglishBackups = {};
@@ -591,6 +637,7 @@ class DictionaryService {
         timestamp: now,
         myDictionaryLists: myDictionaryListBackups,
         flashcardSets: flashcardSetBackups,
+        flashcardSetReports: flashcardSetReportBackups,
         vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
         vocabSpacedRepetitionDataEnglish:
             vocabSpacedRepetitionDataEnglishBackups,
@@ -634,6 +681,12 @@ class DictionaryService {
         // Flashcard sets
         for (final flashcardSetJson in userBackup.flashcardSets) {
           await _database.flashcardSetsDao.importBackup(flashcardSetJson);
+        }
+
+        // Flashcard set reports
+        for (final flashcardSetReportJson in userBackup.flashcardSetReports) {
+          await _database.flashcardSetsDao.setFlashcardSetReport(
+              FlashcardSetReport.fromBackupJson(flashcardSetReportJson));
         }
 
         // Vocab spaced repetition data

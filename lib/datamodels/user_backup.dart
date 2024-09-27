@@ -7,6 +7,7 @@ class UserBackup {
   final DateTime timestamp;
   final List<String> myDictionaryLists;
   final List<String> flashcardSets;
+  final List<String> flashcardSetReports;
   final Map<String, dynamic> vocabSpacedRepetitionData;
   final Map<String, dynamic> vocabSpacedRepetitionDataEnglish;
   final Map<String, dynamic> kanjiSpacedRepetitionData;
@@ -19,6 +20,7 @@ class UserBackup {
     required this.timestamp,
     required this.myDictionaryLists,
     required this.flashcardSets,
+    required this.flashcardSetReports,
     required this.vocabSpacedRepetitionData,
     required this.vocabSpacedRepetitionDataEnglish,
     required this.kanjiSpacedRepetitionData,
@@ -37,6 +39,8 @@ class UserBackup {
             timestamp.millisecondsSinceEpoch,
         SagaseDictionaryConstants.backupMyDictionaryLists: myDictionaryLists,
         SagaseDictionaryConstants.backupFlashcardSets: flashcardSets,
+        SagaseDictionaryConstants.backupFlashcardSetReports:
+            flashcardSetReports,
         SagaseDictionaryConstants.backupVocabSpacedRepetitionData:
             vocabSpacedRepetitionData,
         SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish:
@@ -69,6 +73,9 @@ class UserBackup {
           map[SagaseDictionaryConstants.backupMyDictionaryLists].cast<String>(),
       flashcardSets:
           map[SagaseDictionaryConstants.backupFlashcardSets].cast<String>(),
+      flashcardSetReports:
+          map[SagaseDictionaryConstants.backupFlashcardSetReports]
+              .cast<String>(),
       vocabSpacedRepetitionData:
           map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData]
               .cast<String, dynamic>(),

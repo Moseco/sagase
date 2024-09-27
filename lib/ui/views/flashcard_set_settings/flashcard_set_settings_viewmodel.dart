@@ -177,9 +177,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
 
   void setFrontType(FrontType frontType) {
     flashcardSet.frontType = frontType;
-    // Not great solution, but just reset flashcards completed
-    flashcardSet.flashcardsCompletedToday = 0;
-    flashcardSet.newFlashcardsCompletedToday = 0;
+    // Changed to not deleting non-spaced repetition data history. Might change back.
     notifyListeners();
     _dictionaryService.updateFlashcardSet(flashcardSet);
   }

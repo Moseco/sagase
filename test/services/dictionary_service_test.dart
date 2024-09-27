@@ -364,6 +364,10 @@ void main() {
         isEmpty,
       );
       expect(
+        map[SagaseDictionaryConstants.backupFlashcardSetReports],
+        isEmpty,
+      );
+      expect(
         map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData],
         isEmpty,
       );
@@ -439,6 +443,9 @@ void main() {
       flashcardSet.myDictionaryLists.add(dictionaryList.id);
       flashcardSet.vocabShowReading = true;
       await service.updateFlashcardSet(flashcardSet);
+
+      // Create flashcard set reports
+      await service.createFlashcardSetReport(flashcardSet, 20240920);
 
       // Create spaced repetition data
       await service.setSpacedRepetitionData(
@@ -520,6 +527,14 @@ void main() {
       expect(set.frontType, FrontType.japanese);
       expect(set.vocabShowReading, true);
 
+      // Flashcard set reports
+      expect(userBackup.flashcardSetReports.length, 1);
+      final report = FlashcardSetReport.fromBackupJson(
+        userBackup.flashcardSetReports[0],
+      );
+      expect(report.flashcardSetId, set.id);
+      expect(report.date, 20240920);
+
       // Vocab spaced repetition data Japanese front
       expect(userBackup.vocabSpacedRepetitionData.length, 2);
       expect(userBackup.vocabSpacedRepetitionData['2'], isNotNull);
@@ -592,6 +607,7 @@ void main() {
 
       expect(result, true);
 
+      // My dictionary lists
       final dictionaryLists = await newService.getAllMyDictionaryLists();
       expect(dictionaryLists.length, 1);
       expect(dictionaryLists[0].name, 'list1');
@@ -601,6 +617,7 @@ void main() {
       expect(dictionaryListItems.kanjiIds,
           ['三'.kanjiCodePoint(), '二'.kanjiCodePoint()]);
 
+      // Flashcard sets
       final flashcardSets = await newService.getFlashcardSets();
       expect(flashcardSets.length, 1);
       expect(flashcardSets[0].name, 'set1');
@@ -608,6 +625,12 @@ void main() {
       expect(flashcardSets[0].vocabShowReading, true);
       expect(flashcardSets[0].predefinedDictionaryLists.length, 0);
       expect(flashcardSets[0].myDictionaryLists.length, 1);
+
+      // Flashcard set reports
+      final flashcardSetReport =
+          await newService.getFlashcardSetReport(flashcardSet, 20240920);
+      expect(flashcardSetReport!.flashcardSetId, flashcardSets[0].id);
+      expect(flashcardSetReport.date, 20240920);
 
       // Spaced repetition data
       var vocabList = await newService

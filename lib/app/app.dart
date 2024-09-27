@@ -9,6 +9,7 @@ import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
+import 'package:sagase/ui/dialogs/flashcard_set_report_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/info_dialog.dart';
@@ -109,6 +110,7 @@ import 'package:stacked_themes/stacked_themes.dart';
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),
+    StackedDialog(classType: FlashcardSetReportDialog),
     StackedDialog(classType: InitialIntervalDialog),
     StackedDialog(classType: FlashcardStartDialog),
     StackedDialog(classType: NumberTextFieldDialog),

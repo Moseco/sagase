@@ -53,6 +53,27 @@ MockDialogService getAndRegisterDialogService({
   )).thenAnswer(
       (_) async => DialogResponse(confirmed: dialogResponseConfirmed));
 
+  when(service.showCustomDialog(
+    variant: anyNamed('variant'),
+    title: anyNamed('title'),
+    description: anyNamed('description'),
+    hasImage: anyNamed('hasImage'),
+    imageUrl: anyNamed('imageUrl'),
+    showIconInMainButton: anyNamed('showIconInMainButton'),
+    mainButtonTitle: anyNamed('mainButtonTitle'),
+    showIconInSecondaryButton: anyNamed('showIconInSecondaryButton'),
+    secondaryButtonTitle: anyNamed('secondaryButtonTitle'),
+    showIconInAdditionalButton: anyNamed('showIconInAdditionalButton'),
+    additionalButtonTitle: anyNamed('additionalButtonTitle'),
+    takesInput: anyNamed('takesInput'),
+    barrierColor: anyNamed('barrierColor'),
+    barrierDismissible: anyNamed('barrierDismissible'),
+    barrierLabel: anyNamed('barrierLabel'),
+    useSafeArea: anyNamed('useSafeArea'),
+    customData: anyNamed('customData'),
+    data: anyNamed('data'),
+  )).thenAnswer((_) async => DialogResponse());
+
   locator.registerSingleton<DialogService>(service);
   return service;
 }
@@ -82,6 +103,9 @@ MockDictionaryService getAndRegisterDictionaryService({
   List<Kanji>? getKanjiWithRadical,
   Kanji? getKanji,
   List<DictionaryItem>? getFlashcardSetFlashcards,
+  FlashcardSetReport? createFlashcardSetReport,
+  FlashcardSetReport? getFlashcardSetReport,
+  FlashcardSetReport? getRecentFlashcardSetReport,
 }) {
   _removeRegistrationIfExists<DictionaryService>();
   final service = MockDictionaryService();
@@ -106,6 +130,14 @@ MockDictionaryService getAndRegisterDictionaryService({
   when(service.updateFlashcardSet(any)).thenAnswer((_) async {});
   when(service.getFlashcardSetFlashcards(any))
       .thenAnswer((_) async => getFlashcardSetFlashcards!);
+  when(service.createFlashcardSetReport(any, any))
+      .thenAnswer((_) async => createFlashcardSetReport!);
+  when(service.setFlashcardSetReport(any)).thenAnswer((_) async {});
+  when(service.getFlashcardSetReport(any, any))
+      .thenAnswer((_) async => getFlashcardSetReport);
+  when(service.getRecentFlashcardSetReport(any))
+      .thenAnswer((_) async => getRecentFlashcardSetReport);
+
   locator.registerSingleton<DictionaryService>(service);
   return service;
 }

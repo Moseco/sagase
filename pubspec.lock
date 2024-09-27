@@ -629,7 +629,7 @@ packages:
     dependency: "direct main"
     description:
       name: isar
-      sha256: e7135ff16ae4e4624bce608757b2d22aeeeb09225d9f16ec3e3a5c9f3d05e66a
+      sha256: "976d98bc42f58ef7dd460c9d1f081e55e0deca4f2259bc98fe85721a3139bf34"
       url: "https://pub.isar-community.dev"
     source: hosted
     version: "3.1.7"
@@ -645,7 +645,7 @@ packages:
     dependency: "direct dev"
     description:
       name: isar_generator
-      sha256: "9409d8c95abc67953165dea302f75d957cd40965fcbcd0134ab2b2e4c5e35042"
+      sha256: "842f0d3109e4b7165d7fe9ab926ffe4445b46b93d9270342a161afe71fe73292"
       url: "https://pub.isar-community.dev"
     source: hosted
     version: "3.1.7"
@@ -958,8 +958,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4638c14"
-      resolved-ref: "4638c143437ed1e78f8d4c630aea3890e869bdf5"
+      ref: "3b08e48"
+      resolved-ref: "3b08e48b0ce99d74ecf0596531aaff9491bfc0cd"
       url: "https://github.com/Moseco/sagase_dictionary"
     source: git
     version: "1.0.0"

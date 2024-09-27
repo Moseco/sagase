@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
@@ -627,8 +628,9 @@ void main() {
       expect(viewModel.activeFlashcards.length, 20);
       expect(viewModel.dueFlashcards.length, 0);
       expect(viewModel.newFlashcards.length, 0);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Answer flashcard and then undo
       DictionaryItem firstFlashcard = viewModel.activeFlashcards[0];
@@ -637,16 +639,18 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(firstFlashcard.spacedRepetitionData != null, true);
       expect(secondFlashcard.spacedRepetitionData != null, true);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 2);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 2);
       await viewModel.undo();
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
       await viewModel.undo();
       expect(viewModel.activeFlashcards[0] == firstFlashcard, true);
       expect(firstFlashcard.spacedRepetitionData == null, true);
       expect(secondFlashcard.spacedRepetitionData == null, true);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Answer 10 flashcards and undo to check undo length limit
       expect(viewModel.activeFlashcards.length, 20);
@@ -677,30 +681,37 @@ void main() {
       expect(viewModel.activeFlashcards[0] == secondFlashcard, true);
 
       // Answer wrong and undo
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
       await viewModel.answerFlashcard(FlashcardAnswer.wrong);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
       await viewModel.undo();
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Answer repeat and undo
       await viewModel.answerFlashcard(FlashcardAnswer.repeat);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
       await viewModel.undo();
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Answer correct and undo
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
       await viewModel.undo();
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Answer all flashcards and check that undo does not work after starting random
       for (int i = 0; i < 19; i++) {
@@ -760,12 +771,14 @@ void main() {
       // Answer correct
       DictionaryItem flashcard = viewModel.activeFlashcards[0];
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.repetitions, 2);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Verify database has new spaced repetition data
       var fetchedVocab =
@@ -775,8 +788,9 @@ void main() {
       // Undo
       await viewModel.undo();
       expect(flashcard.spacedRepetitionData!.repetitions, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Verify database has old spaced repetition data
       fetchedVocab =
@@ -785,19 +799,23 @@ void main() {
 
       // Answer wrong and undo
       await viewModel.answerFlashcard(FlashcardAnswer.wrong);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.undo();
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Answer repeat and undo
       await viewModel.answerFlashcard(FlashcardAnswer.repeat);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.undo();
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
     });
 
     test('Undo with new card initial correct requirement', () async {
@@ -829,12 +847,14 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(flashcard.spacedRepetitionData!.dueDate, null);
       expect(flashcard.spacedRepetitionData!.initialCorrectCount, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.undo();
       expect(flashcard.spacedRepetitionData, null);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Answer the flashcard so spaced repetition data gets set in database
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
@@ -846,8 +866,9 @@ void main() {
       expect(flashcard.spacedRepetitionData!.easeFactor, 2.5);
       expect(flashcard.spacedRepetitionData!.dueDate,
           DateTime.now().add(const Duration(days: 1)).toInt());
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Verify database has spaced repetition data
       var fetchedVocab =
@@ -859,8 +880,9 @@ void main() {
       await viewModel.undo();
       expect(flashcard.spacedRepetitionData!.dueDate, null);
       expect(flashcard.spacedRepetitionData!.initialCorrectCount, 2);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Verify database has set spaced repetition data due date to null
       fetchedVocab =
@@ -1001,40 +1023,47 @@ void main() {
       // Flashcard contents
       expect(viewModel.allFlashcards!.length, 2);
       expect(viewModel.activeFlashcards.length, 2);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 0);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
       // Complete the due card (not a new card with current seed)
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       // Complete the new card with correct
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       await viewModel.answerFlashcard(FlashcardAnswer.correct);
       expect(viewModel.activeFlashcards.length, 0);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 2);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Undo and complete with very correct instead
       await viewModel.undo();
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 0);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 2);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Undo again to check count
       await viewModel.undo();
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
     });
 
     test('Flashcard start in learning mode', () async {
@@ -1170,8 +1199,9 @@ void main() {
       expect(viewModel.activeFlashcards[0].id != 0, true);
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 4);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
 
       // Recreate viewModel (simulate leaving and coming back)
       viewModel = FlashcardsViewModel(
@@ -1182,8 +1212,9 @@ void main() {
       await viewModel.futureToRun();
 
       // Flashcard contents
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 1);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 1);
       expect(viewModel.allFlashcards!.length, 10);
       expect(viewModel.activeFlashcards.length, 4);
       expect(viewModel.newFlashcards.length, 5);
@@ -1194,11 +1225,13 @@ void main() {
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
       expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 4);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 3);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 3);
       await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
-      expect(viewModel.flashcardSet.flashcardsCompletedToday, 5);
-      expect(viewModel.flashcardSet.newFlashcardsCompletedToday, 4);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 4);
 
       // Rest of the new cards should be in the list now
       expect(viewModel.activeFlashcards.length, 5);
@@ -1545,6 +1578,303 @@ void main() {
         true,
       );
       expect(viewModel.activeFlashcards[5].spacedRepetitionData == null, true);
+    });
+
+    test('Flashcard set report basic values', () async {
+      // Set spaced repetition data for vocab
+      await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+                  dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+              .copyWith(
+                  interval: 1,
+                  repetitions: 1,
+                  dueDate: DateTime.now().toInt(),
+                  totalAnswers: 1));
+
+      // Create dictionary lists to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab2());
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Using spaced repetition
+      expect(viewModel.usingSpacedRepetition, true);
+
+      // Flashcard contents
+      expect(viewModel.allFlashcards!.length, 2);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.newFlashcards.length, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+
+      // Answer flashcards
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      // Need to undo twice to get to original wrong answer that marked report
+      await viewModel.undo();
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      await viewModel.undo();
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      await viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+    });
+
+    group('Flashcard set streak', () {
+      test('No flashcard set report exists', () async {
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        expect(viewModel.flashcardSet.streak, 0);
+      });
+
+      test('Two day old flashcard set report exists', () async {
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        flashcardSet.streak = 1;
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(flashcardSet,
+            DateTime.now().subtract(const Duration(days: 2)).toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        expect(viewModel.flashcardSet.streak, 0);
+      });
+
+      test('Flashcard set report exists from yesterday', () async {
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        flashcardSet.streak = 1;
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(flashcardSet,
+            DateTime.now().subtract(const Duration(days: 1)).toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        expect(viewModel.flashcardSet.streak, 2);
+      });
+
+      test('Flashcard set report exists for today', () async {
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        flashcardSet.streak = 1;
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(
+            flashcardSet, DateTime.now().toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        expect(viewModel.flashcardSet.streak, 1);
+      });
+    });
+
+    group('Flashcard set report dialog', () {
+      test('Dialog not shown because only new flashcards finished', () async {
+        final navigationService = getAndRegisterNavigationService();
+        final dialogService = getAndRegisterDialogService();
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(
+            flashcardSet, DateTime.now().toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+        await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+
+        // Verify dialog
+        verifyNever(dialogService.showCustomDialog(
+          variant: DialogType.flashcardSetReport,
+          data: anyNamed('data'),
+          barrierDismissible: true,
+        ));
+        verify(navigationService.back());
+      });
+
+      test('Dialog shown because due flashcards finished', () async {
+        final navigationService = getAndRegisterNavigationService();
+        final dialogService = getAndRegisterDialogService();
+        // Set spaced repetition data for vocab
+        await dictionaryService.setSpacedRepetitionData(
+            SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+                .copyWith(
+                    interval: 1,
+                    repetitions: 1,
+                    dueDate: DateTime.now().toInt(),
+                    totalAnswers: 1));
+
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(
+            flashcardSet, DateTime.now().toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+
+        verify(dialogService.showCustomDialog(
+          variant: DialogType.flashcardSetReport,
+          data: anyNamed('data'),
+          barrierDismissible: true,
+        )).called(1);
+        verifyNever(navigationService.back());
+
+        await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+
+        verifyNever(dialogService.showCustomDialog(
+          variant: DialogType.flashcardSetReport,
+          data: anyNamed('data'),
+          barrierDismissible: true,
+        ));
+        verify(navigationService.back());
+      });
+
+      test('Dialog not shown because no due or new flashcards', () async {
+        final navigationService = getAndRegisterNavigationService();
+        final dialogService = getAndRegisterDialogService();
+
+        // Set spaced repetition data for vocab
+        await dictionaryService.setSpacedRepetitionData(
+            SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+                .copyWith(
+                    interval: 1,
+                    repetitions: 1,
+                    dueDate:
+                        DateTime.now().add(const Duration(days: 1)).toInt(),
+                    totalAnswers: 1));
+
+        // Create dictionary lists to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+        await dictionaryService.createFlashcardSetReport(
+            flashcardSet, DateTime.now().toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        // Verify dialog
+        verifyNever(dialogService.showCustomDialog(
+          variant: DialogType.flashcardSetReport,
+          data: anyNamed('data'),
+          barrierDismissible: true,
+        ));
+        verify(navigationService.back());
+      });
     });
   });
 }

@@ -123,6 +123,7 @@ class IsarService {
         timestamp: now,
         myDictionaryLists: myDictionaryListBackups,
         flashcardSets: flashcardSetBackups,
+        flashcardSetReports: [],
         vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
         vocabSpacedRepetitionDataEnglish:
             vocabSpacedRepetitionDataEnglishBackups,

@@ -19,6 +19,14 @@ void main() {
         testWidgets('New cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -65,6 +73,14 @@ void main() {
         testWidgets('New cards and completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -91,9 +107,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
               ),
             ),
           );
@@ -112,6 +126,14 @@ void main() {
         testWidgets('Due cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -179,6 +201,14 @@ void main() {
         testWidgets('Due cards and completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -227,9 +257,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
               ),
             ),
           );
@@ -248,6 +276,14 @@ void main() {
         testWidgets('Finish due cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -321,6 +357,14 @@ void main() {
         testWidgets('Finish due cards with completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -369,9 +413,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
               ),
             ),
           );
@@ -398,6 +440,14 @@ void main() {
         testWidgets('New cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -444,6 +494,14 @@ void main() {
         testWidgets('New cards and completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -470,9 +528,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
                 startMode: FlashcardStartMode.learning,
               ),
             ),
@@ -492,6 +548,14 @@ void main() {
         testWidgets('Due cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // Due today
               getVocabNo1()
@@ -552,6 +616,14 @@ void main() {
         testWidgets('Due cards only and completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // Due today
               getVocabNo1()
@@ -592,9 +664,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
                 startMode: FlashcardStartMode.learning,
               ),
             ),
@@ -614,6 +684,14 @@ void main() {
         testWidgets('Due and new cards', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -695,6 +773,14 @@ void main() {
         testWidgets('Due and new cards and completed', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 1,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 2,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -743,9 +829,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 3
-                  ..newFlashcardsCompletedToday = 2,
+                createDefaultFlashcardSet(),
                 startMode: FlashcardStartMode.learning,
                 randomSeed: 123,
               ),
@@ -778,6 +862,14 @@ void main() {
         testWidgets('Due card with no new cards added', (tester) async {
           getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 3,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 10,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -809,9 +901,7 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               home: FlashcardsView(
-                createDefaultFlashcardSet()
-                  ..flashcardsCompletedToday = 13
-                  ..newFlashcardsCompletedToday = 10,
+                createDefaultFlashcardSet(),
                 startMode: FlashcardStartMode.learning,
               ),
             ),
@@ -830,6 +920,14 @@ void main() {
 
         testWidgets('Due and new cards and details disabled', (tester) async {
           getAndRegisterDictionaryService(
+            getRecentFlashcardSetReport: FlashcardSetReport(
+              id: 0,
+              flashcardSetId: 0,
+              date: 20240920,
+              dueFlashcardsCompleted: 0,
+              dueFlashcardsGotWrong: 0,
+              newFlashcardsCompleted: 0,
+            ),
             getFlashcardSetFlashcards: [
               // New
               getVocabYes(),
@@ -900,6 +998,14 @@ void main() {
       testWidgets('Progress bar skip mode', (tester) async {
         getAndRegisterSharedPreferencesService(getShowDetailedProgress: true);
         getAndRegisterDictionaryService(
+          getRecentFlashcardSetReport: FlashcardSetReport(
+            id: 0,
+            flashcardSetId: 0,
+            date: 20240920,
+            dueFlashcardsCompleted: 0,
+            dueFlashcardsGotWrong: 0,
+            newFlashcardsCompleted: 0,
+          ),
           getFlashcardSetFlashcards: [
             // New
             getVocabYes(),
