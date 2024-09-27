@@ -47,7 +47,7 @@ class FlashcardsView extends HookWidget {
           if (animation != null) {
             void handler(status) {
               if (status == AnimationStatus.completed) {
-                _showTutorial(context);
+                _showTutorial(context, flipCardController);
                 animation.removeStatusListener(handler);
               }
             }
@@ -57,7 +57,7 @@ class FlashcardsView extends HookWidget {
             // Animation was not available, show tutorial after short delay
             Future.delayed(
               const Duration(milliseconds: 150),
-              () => _showTutorial(context),
+              () => _showTutorial(context, flipCardController),
             );
           }
         }
@@ -194,9 +194,19 @@ class FlashcardsView extends HookWidget {
     );
   }
 
-  void _showTutorial(BuildContext context) {
+  void _showTutorial(
+    BuildContext context,
+    FlipCardController flipCardController,
+  ) {
     TutorialCoachMark(
       pulseEnable: false,
+      onSkip: () => false,
+      onFinish: () async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        flipCardController.flip();
+        await Future.delayed(const Duration(milliseconds: 350));
+        flipCardController.flip();
+      },
       targets: [
         TargetFocus(
           identify: 'answersKey',
