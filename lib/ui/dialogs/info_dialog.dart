@@ -39,7 +39,7 @@ class InfoDialog extends StatelessWidget {
             const SizedBox(height: 20),
             TextButton(
               onPressed: () => completer(DialogResponse()),
-              child: const Text('Close'),
+              child: Text(request.mainButtonTitle!),
             ),
           ],
         ),

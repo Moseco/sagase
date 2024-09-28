@@ -286,6 +286,16 @@ class FlashcardsViewModel extends FutureViewModel {
         await _dictionaryService
             .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
       }
+
+      // Reload session if different day and past 3am
+      // Could happen if flashcards kept open until the next day
+      // 3am rule allows for finishing flashcards last minute
+      final now = DateTime.now();
+      if (sessionDateTime.isDifferentDay(now) &&
+          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
+        _reloadSession();
+        return;
+      }
     } else {
       if (answer == FlashcardAnswer.wrong) {
         // Put current flashcard at a set amount or end of the active flashcard list
@@ -586,15 +596,6 @@ class FlashcardsViewModel extends FutureViewModel {
       }
     }
 
-    // Change session DateTime if different day and past 4am
-    // Could happen if flashcards kept open until the next day
-    // 4am rule allows for finishing flashcards last minute
-    final now = DateTime.now();
-    if ((sessionDateTime.isDifferentDay(now) && now.hour > 3) ||
-        now.difference(sessionDateTime).inDays > 0) {
-      sessionDateTime = now;
-    }
-
     return currentData.copyWith(
       interval: interval,
       repetitions: repetitions,
@@ -604,10 +605,6 @@ class FlashcardsViewModel extends FutureViewModel {
       totalWrongAnswers: currentData.totalWrongAnswers +
           (answer.index == FlashcardAnswer.wrong.index ? 1 : 0),
     );
-  }
-
-  void back() {
-    _navigationService.back();
   }
 
   void openFlashcardItem() async {
@@ -660,6 +657,22 @@ class FlashcardsViewModel extends FutureViewModel {
     } else {
       return false;
     }
+  }
+
+  Future<void> _reloadSession() async {
+    await _dialogService.showCustomDialog(
+      variant: DialogType.info,
+      title: 'Reload Flashcards',
+      description:
+          'This session was started on a previous day so the flashcards need to be reloaded.',
+      mainButtonTitle: 'Continue',
+      barrierDismissible: true,
+    );
+
+    _navigationService.replaceWith(
+      Routes.flashcardsView,
+      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
+    );
   }
 }
 

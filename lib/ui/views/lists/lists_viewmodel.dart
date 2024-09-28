@@ -154,6 +154,7 @@ class ListsViewModel extends FutureViewModel {
       variant: DialogType.info,
       title: title,
       description: description,
+      mainButtonTitle: 'Close',
       barrierDismissible: true,
     );
   }
