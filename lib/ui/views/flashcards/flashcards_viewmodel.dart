@@ -706,6 +706,7 @@ class FlashcardsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
+      dueFlashcards.shuffle(_random);
       int flashcardsPerDay = (dueFlashcards.length - 150) ~/ 12;
       for (int i = 1; i < 14; i++) {
         int dueDate = sessionDateTime.add(Duration(days: i)).toInt();
