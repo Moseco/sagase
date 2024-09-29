@@ -76,16 +76,17 @@ class FlashcardsViewModel extends FutureViewModel {
     if (recentFlashcardSetReport == null) {
       flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
           flashcardSet, sessionDateTime.toInt());
+    } else if (sessionDateTime.toInt() == recentFlashcardSetReport.date) {
+      flashcardSetReport = recentFlashcardSetReport;
     } else if (sessionDateTime.subtract(const Duration(days: 1)).toInt() ==
         recentFlashcardSetReport.date) {
       flashcardSet.streak++;
       flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
           flashcardSet, sessionDateTime.toInt());
-    } else if (sessionDateTime.toInt() != recentFlashcardSetReport.date) {
-      flashcardSet.streak = 0;
-      flashcardSetReport = recentFlashcardSetReport;
     } else {
-      flashcardSetReport = recentFlashcardSetReport;
+      flashcardSet.streak = 0;
+      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+          flashcardSet, sessionDateTime.toInt());
     }
     // Update flashcard set to also update timestamp
     _dictionaryService.updateFlashcardSet(flashcardSet);

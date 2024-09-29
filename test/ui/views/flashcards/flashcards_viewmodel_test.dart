@@ -1668,6 +1668,7 @@ void main() {
         await viewModel.futureToRun();
 
         expect(viewModel.flashcardSet.streak, 0);
+        expect(viewModel.flashcardSetReport.date, DateTime.now().toInt());
       });
 
       test('Two day old flashcard set report exists', () async {
@@ -1693,6 +1694,7 @@ void main() {
         await viewModel.futureToRun();
 
         expect(viewModel.flashcardSet.streak, 0);
+        expect(viewModel.flashcardSetReport.date, DateTime.now().toInt());
       });
 
       test('Flashcard set report exists from yesterday', () async {
@@ -1718,6 +1720,7 @@ void main() {
         await viewModel.futureToRun();
 
         expect(viewModel.flashcardSet.streak, 2);
+        expect(viewModel.flashcardSetReport.date, DateTime.now().toInt());
       });
 
       test('Flashcard set report exists for today', () async {
@@ -1743,6 +1746,7 @@ void main() {
         await viewModel.futureToRun();
 
         expect(viewModel.flashcardSet.streak, 1);
+        expect(viewModel.flashcardSetReport.date, DateTime.now().toInt());
       });
     });
 

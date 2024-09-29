@@ -22,7 +22,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -76,7 +76,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -129,7 +129,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -204,7 +204,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -279,7 +279,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -360,7 +360,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -443,7 +443,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -497,7 +497,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -551,7 +551,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -619,7 +619,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -687,7 +687,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -776,7 +776,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 1,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 2,
@@ -865,7 +865,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 3,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 10,
@@ -923,7 +923,7 @@ void main() {
             getRecentFlashcardSetReport: FlashcardSetReport(
               id: 0,
               flashcardSetId: 0,
-              date: 20240920,
+              date: DateTime.now().toInt(),
               dueFlashcardsCompleted: 0,
               dueFlashcardsGotWrong: 0,
               newFlashcardsCompleted: 0,
@@ -1001,7 +1001,7 @@ void main() {
           getRecentFlashcardSetReport: FlashcardSetReport(
             id: 0,
             flashcardSetId: 0,
-            date: 20240920,
+            date: DateTime.now().toInt(),
             dueFlashcardsCompleted: 0,
             dueFlashcardsGotWrong: 0,
             newFlashcardsCompleted: 0,
