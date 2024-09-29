@@ -107,6 +107,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   FlashcardSetReport? createFlashcardSetReport,
   FlashcardSetReport? getFlashcardSetReport,
   FlashcardSetReport? getRecentFlashcardSetReport,
+  List<FlashcardSetReport>? getFlashcardSetReportRange,
 }) {
   _removeRegistrationIfExists<DictionaryService>();
   final service = MockDictionaryService();
@@ -138,6 +139,8 @@ MockDictionaryService getAndRegisterDictionaryService({
       .thenAnswer((_) async => getFlashcardSetReport);
   when(service.getRecentFlashcardSetReport(any))
       .thenAnswer((_) async => getRecentFlashcardSetReport);
+  when(service.getFlashcardSetReportRange(any, any, any))
+      .thenAnswer((_) async => getFlashcardSetReportRange!);
 
   locator.registerSingleton<DictionaryService>(service);
   return service;

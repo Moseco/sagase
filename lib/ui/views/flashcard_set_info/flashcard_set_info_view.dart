@@ -102,6 +102,11 @@ class FlashcardSetInfoView extends StackedView<FlashcardSetInfoViewModel> {
                       flashcardCount: viewModel.flashcardCount,
                     ),
                   ),
+                  if (viewModel.maxDueFlashcardsCompleted != 0)
+                    _HistoricalPerformance(
+                      viewModel.flashcardSetReports,
+                      viewModel.maxDueFlashcardsCompleted,
+                    ),
                   if (viewModel.challengingFlashcards.isNotEmpty)
                     const _Challenging(),
                 ],
@@ -280,6 +285,157 @@ class _Indicator extends StatelessWidget {
         const SizedBox(width: 4),
         Text(text)
       ],
+    );
+  }
+}
+
+class _HistoricalPerformance extends StatelessWidget {
+  final int maxFlashcardsCompleted;
+  final List<FlashcardSetReport?> flashcardSetReports;
+
+  const _HistoricalPerformance(
+    this.flashcardSetReports,
+    this.maxFlashcardsCompleted,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    const double barsWidth = 8;
+
+    return CardWithTitleSection(
+      title: 'Recent performance',
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 16,
+          top: 24,
+          right: 16,
+          bottom: 8,
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceEvenly,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        getTitlesWidget: (number, __) => Text(
+                          DateFormat.Md().format(DateTime.now()
+                              .subtract(Duration(days: 6 - number.toInt()))),
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 24,
+                        interval: (maxFlashcardsCompleted / 2).ceilToDouble(),
+                        getTitlesWidget: (number, __) => Text(
+                          '${number.toInt()}',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  gridData: const FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  barGroups: List.generate(
+                    flashcardSetReports.length,
+                    (index) {
+                      final current = flashcardSetReports[index];
+                      if (current == null) {
+                        return BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(
+                              toY: 0,
+                              rodStackItems: [
+                                BarChartRodStackItem(0, 0, Colors.transparent),
+                              ],
+                              width: barsWidth,
+                            ),
+                            BarChartRodData(
+                              toY: 0,
+                              rodStackItems: [
+                                BarChartRodStackItem(0, 0, Colors.transparent),
+                              ],
+                              width: barsWidth,
+                            ),
+                          ],
+                        );
+                      } else {
+                        return BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(
+                              toY: current.dueFlashcardsCompleted.toDouble(),
+                              rodStackItems: [
+                                BarChartRodStackItem(
+                                  0,
+                                  current.dueFlashcardsCompleted.toDouble(),
+                                  Colors.green,
+                                ),
+                              ],
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                              width: barsWidth,
+                            ),
+                            BarChartRodData(
+                              toY: current.dueFlashcardsGotWrong.toDouble(),
+                              rodStackItems: [
+                                BarChartRodStackItem(
+                                  0,
+                                  current.dueFlashcardsGotWrong.toDouble(),
+                                  Colors.red,
+                                ),
+                              ],
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                              width: barsWidth,
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              alignment: WrapAlignment.center,
+              children: [
+                _Indicator(
+                  color: Colors.green,
+                  text: 'Due flashcards completed',
+                ),
+                _Indicator(
+                  color: Colors.red,
+                  text: 'Due flashcards got wrong',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

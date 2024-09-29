@@ -28,6 +28,10 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
   List<double> flashcardIntervalCounts = [0, 0, 0, 0, 0];
   // Top challenging flashcards
   List<DictionaryItem> challengingFlashcards = [];
+  // Historical performance
+  int _maxDueFlashcardsCompleted = 0;
+  int get maxDueFlashcardsCompleted => _maxDueFlashcardsCompleted;
+  late List<FlashcardSetReport?> flashcardSetReports;
 
   bool _showIntervalAsPercent = false;
   bool get showIntervalAsPercent => _showIntervalAsPercent;
@@ -101,6 +105,34 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
         }
       } else {
         flashcardIntervalCounts[0]++;
+      }
+    }
+
+    await _getFlashcardSetReports(today);
+  }
+
+  Future<void> _getFlashcardSetReports(DateTime endDateTime) async {
+    // Get one week flashcard set reports and space out nulls in list
+    final startDateTime = endDateTime.subtract(const Duration(days: 6));
+
+    var flashcardSetReportMap = {
+      for (var v in await _dictionaryService.getFlashcardSetReportRange(
+        flashcardSet,
+        startDateTime.toInt(),
+        endDateTime.toInt(),
+      ))
+        v.date: v
+    };
+
+    flashcardSetReports = [];
+    for (int i = 0; i < 7; i++) {
+      final dateTime = startDateTime.add(Duration(days: i));
+      flashcardSetReports.add(flashcardSetReportMap[dateTime.toInt()]);
+      if (flashcardSetReports.last != null &&
+          flashcardSetReports.last!.dueFlashcardsCompleted >
+              _maxDueFlashcardsCompleted) {
+        _maxDueFlashcardsCompleted =
+            flashcardSetReports.last!.dueFlashcardsCompleted;
       }
     }
   }

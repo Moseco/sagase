@@ -46,6 +46,7 @@ void main() {
                 ),
               getVocab10(),
             ],
+        getFlashcardSetReportRange: [],
       );
 
       final navigationService = getAndRegisterNavigationService();
@@ -101,6 +102,7 @@ void main() {
             ),
           getVocab6(),
         ],
+        getFlashcardSetReportRange: [],
       );
 
       final navigationService = getAndRegisterNavigationService();
@@ -120,7 +122,65 @@ void main() {
       expect(viewModel.flashcardIntervalCounts[4], 1);
     });
 
-    test('Flashcard challenging flashcards', () async {
+    test('Historical performance', () async {
+      getAndRegisterDictionaryService(
+        getFlashcardSetFlashcards: [getVocab1()],
+        getFlashcardSetReportRange: [
+          FlashcardSetReport(
+            id: 0,
+            flashcardSetId: 1,
+            date: DateTime.now().subtract(const Duration(days: 5)).toInt(),
+            dueFlashcardsCompleted: 1,
+            dueFlashcardsGotWrong: 2,
+            newFlashcardsCompleted: 3,
+          ),
+          FlashcardSetReport(
+            id: 1,
+            flashcardSetId: 1,
+            date: DateTime.now().subtract(const Duration(days: 3)).toInt(),
+            dueFlashcardsCompleted: 3,
+            dueFlashcardsGotWrong: 2,
+            newFlashcardsCompleted: 1,
+          ),
+          FlashcardSetReport(
+            id: 2,
+            flashcardSetId: 1,
+            date: DateTime.now().toInt(),
+            dueFlashcardsCompleted: 20,
+            dueFlashcardsGotWrong: 0,
+            newFlashcardsCompleted: 0,
+          ),
+        ],
+      );
+
+      final navigationService = getAndRegisterNavigationService();
+
+      // Initialize viewmodel
+      var viewModel = FlashcardSetInfoViewModel(createDefaultFlashcardSet());
+      await viewModel.futureToRun();
+
+      // Verify that back was not called
+      verifyNever(navigationService.back());
+
+      // Check contents
+      expect(viewModel.maxDueFlashcardsCompleted, 20);
+      expect(viewModel.flashcardSetReports.length, 7);
+      expect(viewModel.flashcardSetReports[0], null);
+      expect(
+        viewModel.flashcardSetReports[1]!.date,
+        DateTime.now().subtract(const Duration(days: 5)).toInt(),
+      );
+      expect(viewModel.flashcardSetReports[2], null);
+      expect(
+        viewModel.flashcardSetReports[3]!.date,
+        DateTime.now().subtract(const Duration(days: 3)).toInt(),
+      );
+      expect(viewModel.flashcardSetReports[4], null);
+      expect(viewModel.flashcardSetReports[5], null);
+      expect(viewModel.flashcardSetReports[6]!.date, DateTime.now().toInt());
+    });
+
+    test('Top challenging flashcards', () async {
       // Flashcards that fall within and outside of challenging flashcards limit
       getAndRegisterDictionaryService(
         getFlashcardSetFlashcards: List.generate(
@@ -173,6 +233,7 @@ void main() {
                   dueDate: DateTime.now().toInt(),
                 ),
             ],
+        getFlashcardSetReportRange: [],
       );
 
       // Initialize viewmodel

@@ -43,6 +43,7 @@ void main() {
                     },
                   ),
                 ).expand((element) => element).toList(),
+        getFlashcardSetReportRange: [],
       );
 
       await tester.pumpWidget(
@@ -102,6 +103,7 @@ void main() {
               totalWrongAnswers: 8,
             ),
         ],
+        getFlashcardSetReportRange: [],
       );
 
       await tester.pumpWidget(
