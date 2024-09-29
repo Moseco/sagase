@@ -44,7 +44,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
         _deleteFlashcardSet();
         break;
       case PopupMenuItemType.reset:
-        _resetSpacedRepetitionData();
+        _resetFlashcardSet();
         break;
       case PopupMenuItemType.statistics:
         _openFlashcardSetInfo();
@@ -87,12 +87,12 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     }
   }
 
-  Future<void> _resetSpacedRepetitionData() async {
+  Future<void> _resetFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
-      title: 'Reset spaced repetition data?',
+      title: 'Reset Flashcard Set?',
       description:
-          'This will effect all items that are part of this flashcard set and the same items that are part of other flashcard sets. This action cannot be undone.',
+          'Resetting a flashcard set will delete the spaced repetition data for all items in the flashcard set based on the current settings. Be careful that the same items shared by other flashcard sets will also be effected. Related performance data will also be removed. This action cannot be undone.',
       mainButtonTitle: 'Reset',
       secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,

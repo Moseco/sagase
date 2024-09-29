@@ -66,7 +66,7 @@ class FlashcardSetSettingsView
               if (flashcardSet.usingSpacedRepetition)
                 const PopupMenuItem(
                   value: PopupMenuItemType.reset,
-                  child: Text('Reset progress'),
+                  child: Text('Reset'),
                 ),
               if (flashcardSet.usingSpacedRepetition)
                 const PopupMenuItem(
