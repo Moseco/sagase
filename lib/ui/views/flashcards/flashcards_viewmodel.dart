@@ -68,6 +68,8 @@ class FlashcardsViewModel extends FutureViewModel {
   @override
   Future<void> futureToRun() async {
     sessionDateTime = DateTime.now();
+    int daysSincePreviousSession =
+        sessionDateTime.difference(flashcardSet.timestamp).inDays;
     // Get or create flashcard set report for today and set streak accordingly
     final recentFlashcardSetReport =
         await _dictionaryService.getRecentFlashcardSetReport(flashcardSet);
@@ -164,6 +166,13 @@ class FlashcardsViewModel extends FutureViewModel {
           dueFlashcards.add(item);
         }
       }
+
+      // If user has not done flashcards for several days and has a large
+      // amount due offer to spread them out over next 2 weeks
+      if (daysSincePreviousSession > 4 && dueFlashcards.length > 300) {
+        await _spreadOutDueFlashcards();
+      }
+
       // Set initial due flashcard count and add flashcards completed today
       _initialDueFlashcardCount = dueFlashcards.length +
           flashcardSetReport.dueFlashcardsCompleted +
@@ -630,6 +639,13 @@ class FlashcardsViewModel extends FutureViewModel {
     );
   }
 
+  void openKanji(Kanji kanji) async {
+    _navigationService.navigateTo(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(kanji: kanji),
+    );
+  }
+
   Future<void> _loadVocabFlashcardKanji(Vocab vocab) async {
     // Don't load included kanji again
     if (vocab.includedKanji != null) return;
@@ -671,8 +687,40 @@ class FlashcardsViewModel extends FutureViewModel {
 
     _navigationService.replaceWith(
       Routes.flashcardsView,
-      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
+      arguments: FlashcardsViewArguments(
+        flashcardSet: flashcardSet,
+        startMode: startMode,
+      ),
     );
+  }
+
+  Future<void> _spreadOutDueFlashcards() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Reduce Due Flashcards?',
+      description:
+          'It has been several days since you last opened this flashcard set and a lot of due flashcards have pilled up. To help you return to studying some due flashcards can be delayed. Pressing confirm will leave 150 due flashcards for today and spread the rest out over the next 2 weeks.',
+      mainButtonTitle: 'Confirm',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      int flashcardsPerDay = (dueFlashcards.length - 150) ~/ 12;
+      for (int i = 1; i < 14; i++) {
+        int dueDate = sessionDateTime.add(Duration(days: i)).toInt();
+        for (int j = 0;
+            j < flashcardsPerDay && dueFlashcards.length > 150;
+            j++) {
+          await _dictionaryService.setSpacedRepetitionData(
+            dueFlashcards
+                .removeLast()
+                .spacedRepetitionData!
+                .copyWith(dueDate: dueDate),
+          );
+        }
+      }
+    }
   }
 }
 

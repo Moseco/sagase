@@ -72,7 +72,8 @@ MockDialogService getAndRegisterDialogService({
     useSafeArea: anyNamed('useSafeArea'),
     customData: anyNamed('customData'),
     data: anyNamed('data'),
-  )).thenAnswer((_) async => DialogResponse());
+  )).thenAnswer(
+      (_) async => DialogResponse(confirmed: dialogResponseConfirmed));
 
   locator.registerSingleton<DialogService>(service);
   return service;
@@ -271,9 +272,11 @@ void _removeRegistrationIfExists<T extends Object>() {
   }
 }
 
-Future<DictionaryService> getAndRegisterRealDictionaryService() async {
+Future<DictionaryService> getAndRegisterRealDictionaryService({
+  int vocabToCreate = 50,
+}) async {
   _removeRegistrationIfExists<DictionaryService>();
-  final service = await setUpDictionaryData();
+  final service = await setUpDictionaryData(vocabToCreate: vocabToCreate);
   locator.registerSingleton<DictionaryService>(service);
   return service;
 }

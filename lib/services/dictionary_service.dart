@@ -353,8 +353,11 @@ class DictionaryService {
     return _database.flashcardSetsDao.create(name);
   }
 
-  Future<void> updateFlashcardSet(FlashcardSet flashcardSet) async {
-    flashcardSet.timestamp = DateTime.now();
+  Future<void> updateFlashcardSet(
+    FlashcardSet flashcardSet, {
+    bool updateTimestamp = true,
+  }) async {
+    if (updateTimestamp) flashcardSet.timestamp = DateTime.now();
     return _database.flashcardSetsDao.setFlashcardSet(flashcardSet);
   }
 

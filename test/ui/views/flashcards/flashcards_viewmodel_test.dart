@@ -1876,5 +1876,80 @@ void main() {
         verify(navigationService.back());
       });
     });
+
+    test('Spread out due flashcards', () async {
+      await dictionaryService.close();
+      dictionaryService =
+          await getAndRegisterRealDictionaryService(vocabToCreate: 305);
+      final dialogService =
+          getAndRegisterDialogService(dialogResponseConfirmed: true);
+
+      // Set spaced repetition data for vocab
+      for (int i = 1; i <= 305; i++) {
+        await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+            dictionaryItem: await dictionaryService.getVocab(i),
+            frontType: FrontType.japanese,
+          ).copyWith(
+            interval: 1,
+            repetitions: 1,
+            dueDate: DateTime.now().toInt(),
+            totalAnswers: 1,
+          ),
+        );
+      }
+
+      // Create dictionary list to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      for (int i = 1; i <= 305; i++) {
+        await dictionaryService.addToMyDictionaryList(
+          dictionaryList,
+          await dictionaryService.getVocab(i),
+        );
+      }
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.timestamp = DateTime.now().subtract(const Duration(days: 7));
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet,
+          updateTimestamp: false);
+      await dictionaryService.createFlashcardSetReport(
+          flashcardSet, flashcardSet.timestamp.toInt());
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Verify active flashcards
+      expect(viewModel.activeFlashcards.length, 150);
+
+      // Verify dialog
+      verify(dialogService.showCustomDialog(
+        variant: DialogType.confirmation,
+        title: anyNamed('title'),
+        description: anyNamed('description'),
+        mainButtonTitle: anyNamed('mainButtonTitle'),
+        secondaryButtonTitle: anyNamed('secondaryButtonTitle'),
+        barrierDismissible: true,
+      )).called(1);
+
+      // Load flashcards and verify due dates
+      final flashcards =
+          await dictionaryService.getFlashcardSetFlashcards(flashcardSet);
+      List<int> dueDateCounts = List.filled(14, 0);
+      final now = DateTime.parse(DateTime.now().toInt().toString());
+      for (final flashcard in flashcards) {
+        int difference =
+            DateTime.parse(flashcard.spacedRepetitionData!.dueDate.toString())
+                .difference(now)
+                .inDays;
+        dueDateCounts[difference]++;
+      }
+      expect(dueDateCounts[0], 150);
+      expect(dueDateCounts[1], 12);
+      expect(dueDateCounts.last, 11);
+    });
   });
 }

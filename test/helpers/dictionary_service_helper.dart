@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 Future<DictionaryService> setUpDictionaryData({
   bool inMemory = true,
   int dictionaryVersion = SagaseDictionaryConstants.dictionaryVersion,
+  vocabToCreate = 50,
 }) async {
   // Create the database either in memory or at the expected location by the rest of the app
   final database = AppDatabase(
@@ -37,7 +38,7 @@ Future<DictionaryService> setUpDictionaryData({
     batch.insertAll(
       database.vocabs,
       List.generate(
-        50,
+        vocabToCreate,
         (index) => VocabsCompanion(id: drift.Value(index + 1)),
       ),
     );
@@ -166,7 +167,7 @@ Future<DictionaryService> setUpDictionaryData({
     batch.insertAll(
       database.vocabReadings,
       List.generate(
-        40,
+        vocabToCreate - 10,
         (i) => VocabReadingsCompanion(
           id: drift.Value(i + 11),
           vocabId: drift.Value(i + 11),
@@ -244,7 +245,7 @@ Future<DictionaryService> setUpDictionaryData({
     batch.insertAll(
       database.vocabDefinitions,
       List.generate(
-        40,
+        vocabToCreate - 10,
         (i) => VocabDefinitionsCompanion(
           id: drift.Value(i + 11),
           vocabId: drift.Value(i + 11),
