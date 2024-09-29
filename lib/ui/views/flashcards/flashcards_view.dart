@@ -734,7 +734,7 @@ class _KanjiFlashcardFrontEnglish extends StatelessWidget {
   }
 }
 
-class _VocabFlashcardBack extends StatelessWidget {
+class _VocabFlashcardBack extends ViewModelWidget<FlashcardsViewModel> {
   final FlashcardSet flashcardSet;
   final Vocab vocab;
 
@@ -744,7 +744,7 @@ class _VocabFlashcardBack extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, FlashcardsViewModel viewModel) {
     List<Widget> children = [];
 
     // Add kanji writing
@@ -844,7 +844,10 @@ class _VocabFlashcardBack extends StatelessWidget {
     if (vocab.includedKanji != null) {
       children.add(const SizedBox(height: 16));
       for (var kanji in vocab.includedKanji!) {
-        children.add(KanjiListItemLarge(kanji: kanji));
+        children.add(GestureDetector(
+          onLongPress: () => viewModel.openKanji(kanji),
+          child: KanjiListItemLarge(kanji: kanji),
+        ));
       }
     }
 
