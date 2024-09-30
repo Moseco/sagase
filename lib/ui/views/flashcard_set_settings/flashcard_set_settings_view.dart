@@ -231,8 +231,8 @@ class FlashcardSetSettingsView
                         children: switch (flashcardSet.frontType) {
                           FrontType.japanese => [
                               ListTile(
-                                title: const Text('Show reading'),
-                                subtitle: const Text('Vocab flashcards'),
+                                title: const Text('Always show reading'),
+                                subtitle: const Text('Vocab flashcard front'),
                                 trailing: Switch(
                                   activeColor: Colors.deepPurple,
                                   value: flashcardSet.vocabShowReading,
@@ -243,7 +243,7 @@ class FlashcardSetSettingsView
                                 title: const Text(
                                   'Show reading if kanji rarely used',
                                 ),
-                                subtitle: const Text('Vocab flashcards'),
+                                subtitle: const Text('Vocab flashcard front'),
                                 trailing: Switch(
                                   activeColor: Colors.deepPurple,
                                   value:
@@ -256,7 +256,7 @@ class FlashcardSetSettingsView
                                 title: const Text(
                                   'Show alternative kanji and reading',
                                 ),
-                                subtitle: const Text('Vocab flashcards'),
+                                subtitle: const Text('Vocab flashcard back'),
                                 trailing: Switch(
                                   activeColor: Colors.deepPurple,
                                   value: flashcardSet.vocabShowAlternatives,
@@ -265,7 +265,7 @@ class FlashcardSetSettingsView
                               ),
                               ListTile(
                                 title: const Text('Show pitch accent'),
-                                subtitle: const Text('Vocab flashcards'),
+                                subtitle: const Text('Vocab flashcard back'),
                                 trailing: Switch(
                                   activeColor: Colors.deepPurple,
                                   value: flashcardSet.vocabShowPitchAccent,
@@ -273,8 +273,8 @@ class FlashcardSetSettingsView
                                 ),
                               ),
                               ListTile(
-                                title: const Text('Show reading'),
-                                subtitle: const Text('Kanji flashcards'),
+                                title: const Text('Show readings'),
+                                subtitle: const Text('Kanji flashcard front'),
                                 trailing: Switch(
                                   activeColor: Colors.deepPurple,
                                   value: flashcardSet.kanjiShowReading,
@@ -421,7 +421,7 @@ class FlashcardSetSettingsView
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Customize what is shown on the front of flashcards.',
+                    'Customize what is shown on the flashcards.',
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
