@@ -116,6 +116,7 @@ class MecabService {
       // If non-standard feature length, punctuation, or arabic number, add with only writing
       if (tokens[i].features.length != 9 ||
           tokens[i].features[0] == featurePunctuation ||
+          tokens[i].surface == '％' ||
           (tokens[i].surface.codeUnitAt(0) >= '０'.codeUnitAt(0) &&
               tokens[i].surface.codeUnitAt(0) <= '９'.codeUnitAt(0))) {
         list.add(JapaneseTextToken(
