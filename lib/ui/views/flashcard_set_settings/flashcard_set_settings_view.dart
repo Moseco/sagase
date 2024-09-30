@@ -12,8 +12,6 @@ class FlashcardSetSettingsView
   final FlashcardSet flashcardSet;
 
   final orderTypeKey = GlobalKey();
-  final spacedRepetitionKey = GlobalKey();
-  final randomKey = GlobalKey();
   final appearanceKey = GlobalKey();
 
   FlashcardSetSettingsView(this.flashcardSet, {super.key});
@@ -185,13 +183,11 @@ class FlashcardSetSettingsView
                           child: Row(
                             children: [
                               _ToggleOption(
-                                key: spacedRepetitionKey,
                                 text: 'Spaced repetition',
                                 enabled: flashcardSet.usingSpacedRepetition,
                                 onTap: () => viewModel.setOrderType(true),
                               ),
                               _ToggleOption(
-                                key: randomKey,
                                 text: 'Random',
                                 enabled: !flashcardSet.usingSpacedRepetition,
                                 onTap: () => viewModel.setOrderType(false),
@@ -360,7 +356,7 @@ class FlashcardSetSettingsView
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Practice using flashcards in two different ways.',
+                    'Flashcard behavior',
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
@@ -369,52 +365,37 @@ class FlashcardSetSettingsView
                 ],
               ),
             ),
-          ],
-        ),
-        TargetFocus(
-          identify: 'spacedRepetitionKey',
-          keyTarget: spacedRepetitionKey,
-          alignSkip: Alignment.topRight,
-          enableOverlayTab: true,
-          shape: ShapeLightFocus.RRect,
-          paddingFocus: 16,
-          radius: 8,
-          contents: [
             TargetContent(
-              align: ContentAlign.top,
+              align: ContentAlign.bottom,
               builder: (context, controller) => const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Spaced repetition is a proven way of learning information. New and difficult flashcards are shown frequently while old and easy flashcards are shown less often.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Spaced repetition',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' is a proven way of learning information. New and difficult flashcards are shown frequently while old and easy flashcards are shown less often.\n\n',
+                        ),
+                        TextSpan(
+                          text: 'Random',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' order simply shuffles all the flashcards without saving progress between sessions.',
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        TargetFocus(
-          identify: 'randomKey',
-          keyTarget: randomKey,
-          alignSkip: Alignment.topRight,
-          enableOverlayTab: true,
-          shape: ShapeLightFocus.RRect,
-          paddingFocus: 16,
-          radius: 8,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) => const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Random order simply shuffles all the flashcards without saving progress between sessions.',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -447,7 +428,7 @@ class FlashcardSetSettingsView
                     ),
                   ),
                   Text(
-                    'The behavior of flashcards can also be customized in the app settings.',
+                    'The behavior of flashcards can also be customized from the in-app settings.',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
