@@ -149,8 +149,18 @@ class DictionaryService {
   Future<List<Vocab>> getVocabByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
+    // Skip looking up numbers
+    if (token.base.length == 1 &&
+        token.base.codeUnitAt(0) >= '０'.codeUnitAt(0) &&
+        token.base.codeUnitAt(0) <= '９'.codeUnitAt(0)) {
+      return [];
+    }
+
     late List<Vocab> results;
-    if (token.base.contains(constants.kanjiRegExp)) {
+    if (_kanaKit.isKana(token.base)) {
+      // Search by reading only
+      results = await _database.vocabsDao.getByReading(token.base);
+    } else {
       // Search by writing and reading
       results = await _database.vocabsDao.getByWritingAndReading(
         token.base,
@@ -160,9 +170,6 @@ class DictionaryService {
       if (results.isEmpty) {
         results = await _database.vocabsDao.getByWriting(token.base);
       }
-    } else {
-      // Search by reading only
-      results = await _database.vocabsDao.getByReading(token.base);
     }
 
     if (results.length <= 1) return results;
