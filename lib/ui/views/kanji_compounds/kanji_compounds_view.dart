@@ -31,8 +31,8 @@ class KanjiCompoundsView extends StackedView<KanjiCompoundsViewModel> {
                 itemCount: viewModel.vocabList.length,
                 itemBuilder: (context, index) => VocabListItem(
                   vocab: viewModel.vocabList[index],
-                  onPressed: () =>
-                      viewModel.navigateToVocab(viewModel.vocabList[index]),
+                  onPressed: () => viewModel.navigateToVocab(
+                      viewModel.vocabList[index], index),
                 ),
               ),
       ),

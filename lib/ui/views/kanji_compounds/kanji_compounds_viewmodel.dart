@@ -37,10 +37,14 @@ class KanjiCompoundsViewModel extends FutureViewModel {
     vocabList = onlyKanji + inPrimaryWriting + other;
   }
 
-  void navigateToVocab(Vocab vocab) {
+  void navigateToVocab(Vocab vocab, int index) {
     _navigationService.navigateTo(
       Routes.vocabView,
-      arguments: VocabViewArguments(vocab: vocab),
+      arguments: VocabViewArguments(
+        vocab: vocab,
+        vocabListIndex: index,
+        vocabList: vocabList,
+      ),
     );
   }
 }

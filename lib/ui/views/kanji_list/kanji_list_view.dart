@@ -35,7 +35,7 @@ class KanjiListView extends StackedView<KanjiListViewModel> {
             final current = kanjiList[index];
             return KanjiListItem(
               kanji: current,
-              onPressed: () => viewModel.navigateToKanji(current),
+              onPressed: () => viewModel.navigateToKanji(current, index),
             );
           },
         ),

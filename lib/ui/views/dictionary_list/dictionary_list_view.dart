@@ -88,7 +88,7 @@ class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
 
         return VocabListItem(
           vocab: current,
-          onPressed: () => viewModel.navigateToVocab(current),
+          onPressed: () => viewModel.navigateToVocab(current, index),
         );
       },
     );
@@ -112,7 +112,7 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
 
         return KanjiListItem(
           kanji: current,
-          onPressed: () => viewModel.navigateToKanji(current),
+          onPressed: () => viewModel.navigateToKanji(current, index),
         );
       },
     );

@@ -26,6 +26,8 @@ class VocabViewModel extends FutureViewModel {
   final _conjugationUtils = const ConjugationUtils();
 
   final Vocab vocab;
+  final int? vocabListIndex;
+  final List<Vocab>? vocabList;
 
   late final List<WritingReadingPair> writingReadingPairs;
   List<dynamic> get kanjiList => isBusy ? _kanjiStringList : _kanjiList;
@@ -40,7 +42,7 @@ class VocabViewModel extends FutureViewModel {
 
   bool get showPitchAccent => _sharedPreferencesService.getShowPitchAccent();
 
-  VocabViewModel(this.vocab) {
+  VocabViewModel(this.vocab, this.vocabListIndex, this.vocabList) {
     // Create writing reading pairs
     writingReadingPairs = WritingReadingPair.fromVocab(vocab);
 
@@ -195,6 +197,28 @@ class VocabViewModel extends FutureViewModel {
     } else {
       return false;
     }
+  }
+
+  void navigateToPreviousVocab() {
+    _navigationService.replaceWith(
+      Routes.vocabView,
+      arguments: VocabViewArguments(
+        vocab: vocabList![vocabListIndex! - 1],
+        vocabListIndex: vocabListIndex! - 1,
+        vocabList: vocabList,
+      ),
+    );
+  }
+
+  void navigateToNextVocab() {
+    _navigationService.replaceWith(
+      Routes.vocabView,
+      arguments: VocabViewArguments(
+        vocab: vocabList![vocabListIndex! + 1],
+        vocabListIndex: vocabListIndex! + 1,
+        vocabList: vocabList,
+      ),
+    );
   }
 
   @override

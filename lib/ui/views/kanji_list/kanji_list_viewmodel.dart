@@ -11,10 +11,14 @@ class KanjiListViewModel extends BaseViewModel {
 
   KanjiListViewModel(this.kanjiList);
 
-  void navigateToKanji(Kanji kanji) {
+  void navigateToKanji(Kanji kanji, int index) {
     _navigationService.navigateTo(
       Routes.kanjiView,
-      arguments: KanjiViewArguments(kanji: kanji),
+      arguments: KanjiViewArguments(
+        kanji: kanji,
+        kanjiListIndex: index,
+        kanjiList: kanjiList,
+      ),
     );
   }
 }

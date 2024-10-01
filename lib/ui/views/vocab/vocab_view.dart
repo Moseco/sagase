@@ -15,14 +15,16 @@ import 'vocab_viewmodel.dart';
 
 class VocabView extends StackedView<VocabViewModel> {
   final Vocab vocab;
+  final int? vocabListIndex;
+  final List<Vocab>? vocabList;
 
   final pitchAccentKey = GlobalKey();
 
-  VocabView(this.vocab, {super.key});
+  VocabView(this.vocab, {this.vocabListIndex, this.vocabList, super.key});
 
   @override
   VocabViewModel viewModelBuilder(context) {
-    final viewModel = VocabViewModel(vocab);
+    final viewModel = VocabViewModel(vocab, vocabListIndex, vocabList);
 
     if (viewModel.shouldShowTutorial()) {
       // Try to show tutorial after transition animation ends
@@ -53,6 +55,20 @@ class VocabView extends StackedView<VocabViewModel> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          if (vocabList != null)
+            IconButton(
+              onPressed: vocabListIndex == 0
+                  ? null
+                  : viewModel.navigateToPreviousVocab,
+              icon: const Icon(Icons.chevron_left),
+            ),
+          if (vocabList != null)
+            IconButton(
+              onPressed: vocabListIndex! == vocabList!.length - 1
+                  ? null
+                  : viewModel.navigateToNextVocab,
+              icon: const Icon(Icons.chevron_right),
+            ),
           IconButton(
             key: pitchAccentKey,
             onPressed: vocab.readings[0].pitchAccents != null

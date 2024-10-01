@@ -14,17 +14,34 @@ import 'kanji_viewmodel.dart';
 
 class KanjiView extends StackedView<KanjiViewModel> {
   final Kanji kanji;
+  final int? kanjiListIndex;
+  final List<Kanji>? kanjiList;
 
-  const KanjiView(this.kanji, {super.key});
+  const KanjiView(this.kanji, {this.kanjiListIndex, this.kanjiList, super.key});
 
   @override
-  KanjiViewModel viewModelBuilder(context) => KanjiViewModel(kanji);
+  KanjiViewModel viewModelBuilder(context) =>
+      KanjiViewModel(kanji, kanjiListIndex, kanjiList);
 
   @override
   Widget builder(context, viewModel, child) {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          if (kanjiList != null)
+            IconButton(
+              onPressed: kanjiListIndex == 0
+                  ? null
+                  : viewModel.navigateToPreviousKanji,
+              icon: const Icon(Icons.chevron_left),
+            ),
+          if (kanjiList != null)
+            IconButton(
+              onPressed: kanjiListIndex! == kanjiList!.length - 1
+                  ? null
+                  : viewModel.navigateToNextKanji,
+              icon: const Icon(Icons.chevron_right),
+            ),
           IconButton(
             onPressed: viewModel.openMyDictionaryListsSheet,
             icon: Icon(

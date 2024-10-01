@@ -50,17 +50,25 @@ class DictionaryListViewModel extends FutureViewModel {
     }
   }
 
-  Future<void> navigateToVocab(Vocab vocab) async {
+  Future<void> navigateToVocab(Vocab vocab, int index) async {
     await _navigationService.navigateTo(
       Routes.vocabView,
-      arguments: VocabViewArguments(vocab: vocab),
+      arguments: VocabViewArguments(
+        vocab: vocab,
+        vocabListIndex: index,
+        vocabList: vocabList,
+      ),
     );
   }
 
-  Future<void> navigateToKanji(Kanji kanji) async {
+  Future<void> navigateToKanji(Kanji kanji, int index) async {
     await _navigationService.navigateTo(
       Routes.kanjiView,
-      arguments: KanjiViewArguments(kanji: kanji),
+      arguments: KanjiViewArguments(
+        kanji: kanji,
+        kanjiListIndex: index,
+        kanjiList: kanjiList,
+      ),
     );
   }
 

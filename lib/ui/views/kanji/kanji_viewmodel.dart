@@ -19,6 +19,8 @@ class KanjiViewModel extends FutureViewModel {
   final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final Kanji kanji;
+  final int? kanjiListIndex;
+  final List<Kanji>? kanjiList;
 
   Radical? radical;
   List<Kanji>? components;
@@ -31,7 +33,7 @@ class KanjiViewModel extends FutureViewModel {
   bool get strokeDiagramStartExpanded =>
       _sharedPreferencesService.getStrokeDiagramStartExpanded();
 
-  KanjiViewModel(this.kanji);
+  KanjiViewModel(this.kanji, this.kanjiListIndex, this.kanjiList);
 
   @override
   Future<void> futureToRun() async {
@@ -153,6 +155,28 @@ class KanjiViewModel extends FutureViewModel {
 
   void setStrokeDiagramStartExpanded(bool value) {
     _sharedPreferencesService.setStrokeDiagramStartExpanded(value);
+  }
+
+  void navigateToPreviousKanji() {
+    _navigationService.replaceWith(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(
+        kanji: kanjiList![kanjiListIndex! - 1],
+        kanjiListIndex: kanjiListIndex! - 1,
+        kanjiList: kanjiList,
+      ),
+    );
+  }
+
+  void navigateToNextKanji() {
+    _navigationService.replaceWith(
+      Routes.kanjiView,
+      arguments: KanjiViewArguments(
+        kanji: kanjiList![kanjiListIndex! + 1],
+        kanjiListIndex: kanjiListIndex! + 1,
+        kanjiList: kanjiList,
+      ),
+    );
   }
 
   @override
