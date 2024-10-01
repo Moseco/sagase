@@ -707,6 +707,13 @@ class FlashcardsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
+      // Show progress indicator dialog
+      _dialogService.showCustomDialog(
+        variant: DialogType.progressIndicator,
+        title: 'Updating Flashcards',
+        barrierDismissible: false,
+      );
+
       dueFlashcards.shuffle(_random);
       int flashcardsPerDay = (dueFlashcards.length - 150) ~/ 12;
       for (int i = 1; i < 14; i++) {
@@ -722,6 +729,8 @@ class FlashcardsViewModel extends FutureViewModel {
           );
         }
       }
+
+      _dialogService.completeDialog(DialogResponse());
     }
   }
 }
