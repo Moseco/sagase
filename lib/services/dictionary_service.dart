@@ -241,7 +241,7 @@ class DictionaryService {
         (a.common ? 1 : 0);
   }
 
-  Future<Kanji> getKanji(String kanji) async {
+  Future<Kanji?> getKanji(String kanji) async {
     return _database.kanjisDao.getKanji(kanji);
   }
 

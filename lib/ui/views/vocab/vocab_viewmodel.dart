@@ -28,8 +28,9 @@ class VocabViewModel extends FutureViewModel {
   final Vocab vocab;
 
   late final List<WritingReadingPair> writingReadingPairs;
-  late final List<String> kanjiStringList;
-  late final List<Kanji> kanjiList;
+  List<dynamic> get kanjiList => isBusy ? _kanjiStringList : _kanjiList;
+  late final List<String> _kanjiStringList;
+  late final List<Kanji> _kanjiList;
 
   List<int> _myDictionaryListsContainingVocab = [];
   bool get inMyDictionaryList => _myDictionaryListsContainingVocab.isNotEmpty;
@@ -53,7 +54,7 @@ class VocabViewModel extends FutureViewModel {
         }
       }
     }
-    kanjiStringList = kanjiStringSet.toList();
+    _kanjiStringList = kanjiStringSet.toList();
 
     // Get conjugations
     conjugations = _conjugationUtils.getConjugations(vocab);
@@ -75,8 +76,8 @@ class VocabViewModel extends FutureViewModel {
     rebuildUi();
 
     // Load kanji from database that were found during class constructor
-    kanjiList = await _dictionaryService
-        .getKanjiList(kanjiStringList.map((e) => e.kanjiCodePoint()).toList());
+    _kanjiList = await _dictionaryService
+        .getKanjiList(_kanjiStringList.map((e) => e.kanjiCodePoint()).toList());
   }
 
   void _startWatcher() {

@@ -585,25 +585,25 @@ void main() {
         );
       }
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('一'));
+          dictionaryList, (await dictionaryService.getKanji('一'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('二'));
+          dictionaryList, (await dictionaryService.getKanji('二'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('三'));
+          dictionaryList, (await dictionaryService.getKanji('三'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('四'));
+          dictionaryList, (await dictionaryService.getKanji('四'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('五'));
+          dictionaryList, (await dictionaryService.getKanji('五'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('六'));
+          dictionaryList, (await dictionaryService.getKanji('六'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('七'));
+          dictionaryList, (await dictionaryService.getKanji('七'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('八'));
+          dictionaryList, (await dictionaryService.getKanji('八'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('九'));
+          dictionaryList, (await dictionaryService.getKanji('九'))!);
       await dictionaryService.addToMyDictionaryList(
-          dictionaryList, await dictionaryService.getKanji('十'));
+          dictionaryList, (await dictionaryService.getKanji('十'))!);
 
       // Create flashcard set and assign lists
       final flashcardSet = await dictionaryService.createFlashcardSet('name');

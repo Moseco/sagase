@@ -220,7 +220,7 @@ void main() {
       );
       await service.addToMyDictionaryList(
         dictionaryList,
-        await service.getKanji('二'),
+        (await service.getKanji('二'))!,
       );
 
       // Create flashcard set
@@ -258,7 +258,7 @@ void main() {
       );
       await service.addToMyDictionaryList(
         dictionaryList,
-        await service.getKanji('三'),
+        (await service.getKanji('三'))!,
       );
       await service.renameMyDictionaryList(dictionaryList, 'new name');
 
@@ -275,13 +275,13 @@ void main() {
       );
       await service.setSpacedRepetitionData(
         SpacedRepetitionData.initial(
-          dictionaryItem: await service.getKanji('二'),
+          dictionaryItem: (await service.getKanji('二'))!,
           frontType: FrontType.japanese,
         ).copyWith(interval: 4),
       );
       await service.setSpacedRepetitionData(
         SpacedRepetitionData.initial(
-          dictionaryItem: await service.getKanji('三'),
+          dictionaryItem: (await service.getKanji('三'))!,
           frontType: FrontType.english,
         ).copyWith(interval: 4),
       );
@@ -431,11 +431,11 @@ void main() {
       );
       await service.addToMyDictionaryList(
         dictionaryList,
-        await service.getKanji('二'),
+        (await service.getKanji('二'))!,
       );
       await service.addToMyDictionaryList(
         dictionaryList,
-        await service.getKanji('三'),
+        (await service.getKanji('三'))!,
       );
 
       // Create flashcard set
@@ -468,13 +468,13 @@ void main() {
       );
       await service.setSpacedRepetitionData(
         SpacedRepetitionData.initial(
-          dictionaryItem: await service.getKanji('三'),
+          dictionaryItem: (await service.getKanji('三'))!,
           frontType: FrontType.japanese,
         ).copyWith(interval: 3),
       );
       await service.setSpacedRepetitionData(
         SpacedRepetitionData.initial(
-          dictionaryItem: await service.getKanji('三'),
+          dictionaryItem: (await service.getKanji('三'))!,
           frontType: FrontType.english,
         ).copyWith(interval: 4),
       );

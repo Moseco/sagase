@@ -83,7 +83,7 @@ class VocabView extends StackedView<VocabViewModel> {
             children: [
               _KanjiReadingPairs(viewModel.writingReadingPairs),
               const _Definitions(),
-              if (viewModel.kanjiStringList.isNotEmpty) const _KanjiList(),
+              if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               const _Examples(),
               if (viewModel.conjugations != null) const _Conjugations(),
               SizedBox(height: MediaQuery.of(context).padding.bottom),
@@ -655,7 +655,7 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
           child: Column(
             children: viewModel.isBusy
                 ? List.generate(
-                    viewModel.kanjiStringList.length,
+                    viewModel.kanjiList.length,
                     (index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
@@ -671,7 +671,7 @@ class _KanjiList extends ViewModelWidget<VocabViewModel> {
                                 right: 12,
                               ),
                               child: Text(
-                                viewModel.kanjiStringList[index],
+                                viewModel.kanjiList[index],
                                 style: const TextStyle(fontSize: 24),
                               ),
                             ),

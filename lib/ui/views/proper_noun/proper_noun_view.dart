@@ -32,7 +32,7 @@ class ProperNounView extends StackedView<ProperNounViewModel> {
             children: [
               const _WritingReading(),
               const _RomajiAndType(),
-              if (viewModel.kanjiStringList.isNotEmpty) const _KanjiList(),
+              if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               SizedBox(height: MediaQuery.of(context).padding.bottom),
             ],
           ),
@@ -135,7 +135,7 @@ class _KanjiList extends ViewModelWidget<ProperNounViewModel> {
           child: Column(
             children: viewModel.isBusy
                 ? List.generate(
-                    viewModel.kanjiStringList.length,
+                    viewModel.kanjiList.length,
                     (index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
@@ -151,7 +151,7 @@ class _KanjiList extends ViewModelWidget<ProperNounViewModel> {
                                 right: 12,
                               ),
                               child: Text(
-                                viewModel.kanjiStringList[index],
+                                viewModel.kanjiList[index],
                                 style: const TextStyle(fontSize: 24),
                               ),
                             ),

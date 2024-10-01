@@ -660,8 +660,8 @@ class FlashcardsViewModel extends FutureViewModel {
         if (kanjiStrings.contains(foundKanji[0]!)) continue;
         kanjiStrings.add(foundKanji[0]!);
         // Load from database
-        vocab.includedKanji!
-            .add(await _dictionaryService.getKanji(foundKanji[0]!));
+        final kanji = await _dictionaryService.getKanji(foundKanji[0]!);
+        if (kanji != null) vocab.includedKanji!.add(kanji);
       }
     }
 

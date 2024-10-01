@@ -14,8 +14,9 @@ class ProperNounViewModel extends FutureViewModel {
 
   final ProperNoun properNoun;
 
-  late final List<String> kanjiStringList;
-  late final List<Kanji> kanjiList;
+  List<dynamic> get kanjiList => isBusy ? _kanjiStringList : _kanjiList;
+  late final List<String> _kanjiStringList;
+  late final List<Kanji> _kanjiList;
 
   ProperNounViewModel(this.properNoun) {
     // Get list of kanji to be loaded during initialize function
@@ -26,14 +27,14 @@ class ProperNounViewModel extends FutureViewModel {
         kanjiStringSet.add(foundKanji[0]!);
       }
     }
-    kanjiStringList = kanjiStringSet.toList();
+    _kanjiStringList = kanjiStringSet.toList();
   }
 
   @override
   Future<void> futureToRun() async {
     // Load kanji from database that were found during class constructor
-    kanjiList = await _dictionaryService
-        .getKanjiList(kanjiStringList.map((e) => e.kanjiCodePoint()).toList());
+    _kanjiList = await _dictionaryService
+        .getKanjiList(_kanjiStringList.map((e) => e.kanjiCodePoint()).toList());
   }
 
   Future<void> navigateToKanji(Kanji kanji) async {
