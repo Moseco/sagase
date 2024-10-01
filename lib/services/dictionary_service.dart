@@ -537,7 +537,9 @@ class DictionaryService {
   Future<List<ProperNoun>> getProperNounByJapaneseTextToken(
     JapaneseTextToken token,
   ) async {
-    if (token.base.contains(constants.kanjiRegExp)) {
+    if (_kanaKit.isKana(token.base)) {
+      return _database.properNounsDao.getByReading(token.base);
+    } else {
       final results = await _database.properNounsDao.getByWritingAndReading(
         token.base,
         _kanaKit.toHiragana(token.baseReading),
@@ -548,8 +550,6 @@ class DictionaryService {
       } else {
         return results;
       }
-    } else {
-      return _database.properNounsDao.getByReading(token.base);
     }
   }
 

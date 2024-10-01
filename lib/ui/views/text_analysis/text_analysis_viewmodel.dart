@@ -67,6 +67,8 @@ class TextAnalysisViewModel extends FutureViewModel {
         if (_sharedPreferencesService.getProperNounsEnabled()) {
           token.associatedDictionaryItems =
               await _dictionaryService.getProperNounByJapaneseTextToken(token);
+        } else {
+          token.associatedDictionaryItems = [];
         }
       } else {
         token.associatedDictionaryItems =
