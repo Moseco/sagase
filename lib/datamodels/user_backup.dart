@@ -74,7 +74,7 @@ class UserBackup {
       flashcardSets:
           map[SagaseDictionaryConstants.backupFlashcardSets].cast<String>(),
       flashcardSetReports:
-          map[SagaseDictionaryConstants.backupFlashcardSetReports]
+          (map[SagaseDictionaryConstants.backupFlashcardSetReports] ?? [])
               .cast<String>(),
       vocabSpacedRepetitionData:
           map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData]
