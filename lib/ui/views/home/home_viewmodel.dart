@@ -167,10 +167,10 @@ class HomeViewModel extends IndexTrackingViewModel {
         // Show confirmation
         final response = await _dialogService.showCustomDialog(
           variant: DialogType.confirmation,
-          title: 'Import from backup?',
+          title: 'Restore from backup?',
           description:
-              'This will merge the current app data with the data from the backup file. Conflicting data will be overwritten by the backup data.',
-          mainButtonTitle: 'Import',
+              'This will delete all user data and then import new user data from the selected backup file.',
+          mainButtonTitle: 'Confirm',
           secondaryButtonTitle: 'Cancel',
           barrierDismissible: true,
         );
@@ -183,7 +183,7 @@ class HomeViewModel extends IndexTrackingViewModel {
             barrierDismissible: false,
           );
 
-          bool result = await _dictionaryService.importUserData(file.path);
+          bool result = await _dictionaryService.restoreFromBackup(file.path);
 
           _dialogService.completeDialog(DialogResponse());
 
