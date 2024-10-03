@@ -14,7 +14,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase/utils/constants.dart'
     show nestedNavigationKey, currentChangelogVersion;
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 import 'package:uri_to_file/uri_to_file.dart' as uri_to_file;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as path;
@@ -32,7 +32,7 @@ class HomeViewModel extends IndexTrackingViewModel {
   bool get startOnLearningView =>
       _sharedPreferencesService.getStartOnLearningView();
 
-  late StreamSubscription<String?> _fileSubscription;
+  late StreamSubscription<String> _fileSubscription;
 
   HomeViewModel() {
     if (startOnLearningView) setIndex(2);
@@ -79,15 +79,7 @@ class HomeViewModel extends IndexTrackingViewModel {
   }
 
   void _listenForFiles() async {
-    // Get file that was opened while the app was closed
-    try {
-      _handleFiles(await getInitialLink());
-    } catch (_) {
-      _snackbarService.showSnackbar(message: 'Failed to get import file');
-    }
-
-    // Listen for files that are opened while the app is in memory
-    _fileSubscription = linkStream.listen(
+    _fileSubscription = AppLinks().stringLinkStream.listen(
       _handleFiles,
       onError: (_) {
         _snackbarService.showSnackbar(message: 'Failed to get import file');
@@ -95,9 +87,7 @@ class HomeViewModel extends IndexTrackingViewModel {
     );
   }
 
-  Future<void> _handleFiles(String? link) async {
-    if (link == null) return;
-
+  Future<void> _handleFiles(String link) async {
     late File file;
     try {
       file = await uri_to_file.toFile(link);

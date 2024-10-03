@@ -8,7 +8,7 @@ version: 1.1.0+14
 environment:
   sdk: '>=3.0.5 <4.0.0'
 
-isar_version: &isar_version 3.1.7
+isar_version: &isar_version 3.1.8
 
 dependencies:
   flutter:
@@ -20,14 +20,12 @@ dependencies:
   stacked_services: ^1.1.1
   stacked_hooks: ^0.2.3
   flutter_hooks: any
-  stacked_themes: # TODO change to main one after merge
-    git:
-      url: https://github.com/Moseco/themes
+  stacked_themes: ^0.3.13
 
   # Firebase
-  firebase_core: ^2.25.4
-  firebase_analytics: ^10.8.6
-  firebase_crashlytics: ^3.4.15
+  firebase_core: 3.1.0
+  firebase_analytics: 11.0.1
+  firebase_crashlytics: 4.0.1
 
   # UI
   google_nav_bar: ^5.0.6
@@ -36,7 +34,7 @@ dependencies:
     git:
       url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.2.0
-  fl_chart: ^0.66.2
+  fl_chart: ^0.69.0
   flutter_svg: ^2.0.7
   flutter_sticky_header: ^0.6.5
   shimmer: ^3.0.0
@@ -44,7 +42,7 @@ dependencies:
   introduction_screen: ^3.1.11
   percent_indicator: ^4.2.3
   tutorial_coach_mark: ^1.2.11
-  flutter_markdown: ^0.6.19
+  flutter_markdown: ^0.7.3+2
 
   # Other
   drift: ^2.18.0
@@ -63,7 +61,7 @@ dependencies:
       ref: 'f79e782'
   async: ^2.11.0
   archive: ^3.4.9
-  google_mlkit_digital_ink_recognition: ^0.10.0
+  google_mlkit_digital_ink_recognition: ^0.12.1
   intl: ^0.19.0
   shared_preferences: ^2.2.0
   mecab_dart: ^0.1.6
@@ -72,13 +70,13 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '428d744'
+      ref: '9e1afa2'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
   disk_space_plus: ^0.2.3
   share_plus: ^7.2.2
-  uni_links: ^0.5.1
+  app_links: ^6.3.2
   uri_to_file: ^1.0.0
   security_scoped_resource: ^0.0.2
   sanitize_filename: ^1.0.5
@@ -86,7 +84,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^5.0.0
 
   build_runner: any
   stacked_generator: ^1.4.0
