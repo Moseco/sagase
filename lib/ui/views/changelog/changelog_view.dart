@@ -72,27 +72,36 @@ class _CurrentChangelog extends StatelessWidget {
             ),
           ),
           Text(
-            'What\'s new',
+            'What\'s new in 1.2',
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.share),
-            title: Text('Share lists'),
+            leading: Icon(Icons.storage),
+            title: Text('All new internals'),
             subtitle: Text(
-              'Export your lists and share them with other Sagase users',
+              'New database that takes up half the space',
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Proper nouns'),
+            subtitle: Text(
+              'Search through nearly 1 million proper nouns with the optional proper noun dictionary add-on',
             ),
           ),
           ListTile(
             leading: Icon(Icons.school),
             title: Text('Flashcard improvements'),
-            subtitle: Text('See more detailed progress information'),
+            subtitle: Text(
+              'Get a better view of your current and past performance',
+            ),
           ),
           ListTile(
-            leading: Icon(Icons.bug_report),
-            title: Text('Bug fixes'),
+            leading: Icon(Icons.text_snippet),
+            title: Text('Text analysis'),
             subtitle: Text(
-              'Improvements to landscape mode, flashcards UI, visual consistency, and more',
+              'UI and functionality rework making it more useful and easier to use',
             ),
           ),
         ],
@@ -108,7 +117,19 @@ class _ChangelogHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: double.infinity,
-      child: Markdown(data: '''# [1.1.0]
+      child: Markdown(data: '''# [1.2.0]
+- Migrated from a custom database to SQLite reducing the install size by about half
+- Added proper noun dictionary as an optional add-on
+- Improved the text analysis UI and word detection 
+- Added text analysis history
+- Added flashcard performance reports that are shown when all due flashcards are finished
+- Added recent flashcard performance to the flashcard set stats screen
+- Added option to space out flashcards if a large amount of due flashcards pile up
+- Changed "import from backup" to "restore from backup" which now deletes existing data before importing from the backup
+- Added ability to scroll through lists from inside vocab and kanji screens
+- Improved searching using special characters or those with accents
+- Fixed various small UI bugs throughout the app
+# [1.1.0]
 - Updated how backups are handled. Backup files created before version 1.1 will not work anymore. Contact the developer if you need to recover an old backup
 - Added ability to export and import user generated lists
 - Added option to show more detailed progress information during learning mode flashcards
