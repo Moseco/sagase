@@ -10,6 +10,7 @@ class LearningViewModel extends FutureViewModel {
   final _dictionaryService = locator<DictionaryService>();
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
+  final _snackbarService = locator<SnackbarService>();
 
   List<FlashcardSet>? _flashcardSets;
   List<FlashcardSet>? get flashcardSets => _flashcardSets;
@@ -41,6 +42,14 @@ class LearningViewModel extends FutureViewModel {
   }
 
   void openFlashcardSet(FlashcardSet flashcardSet) {
+    if (flashcardSet.myDictionaryLists.isEmpty &&
+        flashcardSet.predefinedDictionaryLists.isEmpty) {
+      _snackbarService.showSnackbar(
+        message: 'Add lists to your flashcard set to open flashcards',
+      );
+      return;
+    }
+
     _navigationService.navigateTo(
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
@@ -53,6 +62,14 @@ class LearningViewModel extends FutureViewModel {
 
   Future<void> selectFlashcardStartMode(FlashcardSet flashcardSet) async {
     if (!flashcardSet.usingSpacedRepetition) return;
+
+    if (flashcardSet.myDictionaryLists.isEmpty &&
+        flashcardSet.predefinedDictionaryLists.isEmpty) {
+      _snackbarService.showSnackbar(
+        message: 'Add lists to your flashcard set to open flashcards',
+      );
+      return;
+    }
 
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.flashcardStart,

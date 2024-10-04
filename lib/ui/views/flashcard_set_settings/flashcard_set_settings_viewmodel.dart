@@ -16,6 +16,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final FlashcardSet flashcardSet;
 
@@ -219,6 +220,14 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   }
 
   void openFlashcardSet() {
+    if (flashcardSet.myDictionaryLists.isEmpty &&
+        flashcardSet.predefinedDictionaryLists.isEmpty) {
+      _snackbarService.showSnackbar(
+        message: 'Add lists to your flashcard set to open flashcards',
+      );
+      return;
+    }
+
     _navigationService.navigateTo(
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
