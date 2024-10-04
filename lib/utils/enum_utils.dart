@@ -221,6 +221,8 @@ extension FieldExtension on Field {
         return 'biology';
       case Field.botany:
         return 'botany';
+      case Field.boxing:
+        return 'boxing';
       case Field.buddhism:
         return 'Buddhism';
       case Field.business:
@@ -229,8 +231,12 @@ extension FieldExtension on Field {
         return 'card games';
       case Field.chemistry:
         return 'chemistry';
+      case Field.chineseMythology:
+        return 'Chinese Mythology';
       case Field.christianity:
         return 'Christianity';
+      case Field.civilEngineering:
+        return 'civil engineering';
       case Field.clothing:
         return 'clothing';
       case Field.computing:
@@ -253,6 +259,8 @@ extension FieldExtension on Field {
         return 'engineering';
       case Field.entomology:
         return 'entomology';
+      case Field.figureSkating:
+        return 'figure skating';
       case Field.film:
         return 'film';
       case Field.finance:
@@ -283,6 +291,10 @@ extension FieldExtension on Field {
         return 'hanafuda';
       case Field.horseRacing:
         return 'horse racing';
+      case Field.internet:
+        return 'internet';
+      case Field.japaneseMythology:
+        return 'Japanese mythology';
       case Field.kabuki:
         return 'kabuki';
       case Field.law:
@@ -307,8 +319,12 @@ extension FieldExtension on Field {
         return 'meteorology';
       case Field.military:
         return 'military';
+      case Field.mineralogy:
+        return 'mineralogy';
       case Field.mining:
         return 'mining';
+      case Field.motorsport:
+        return 'motorsport';
       case Field.music:
         return 'music';
       case Field.noh:
@@ -333,6 +349,8 @@ extension FieldExtension on Field {
         return 'politics';
       case Field.printing:
         return 'printing';
+      case Field.professionalWrestling:
+        return 'professional wrestling';
       case Field.psychiatry:
         return 'psychiatry';
       case Field.psychoanalysis:
@@ -357,12 +375,16 @@ extension FieldExtension on Field {
         return 'stock market';
       case Field.sumo:
         return 'sumo';
+      case Field.surgery:
+        return 'surgery';
       case Field.telecommunications:
         return 'telecommunications';
       case Field.trademark:
         return 'trademark';
       case Field.television:
         return 'television';
+      case Field.veterinaryTerms:
+        return 'veterinary terms';
       case Field.videoGames:
         return 'video games';
       case Field.zoology:
@@ -654,6 +676,8 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Ukrainian';
       case LanguageSource.urd:
         return 'Urdu';
+      case LanguageSource.uzb:
+        return 'Uzbek';
       case LanguageSource.vie:
         return 'Vietnamese';
       case LanguageSource.yid:
@@ -692,6 +716,8 @@ extension ReadingInfoExtension on ReadingInfo {
         return 'irregular kana';
       case ReadingInfo.outdatedKana:
         return 'outdated kana';
+      case ReadingInfo.rareKanaForm:
+        return 'rare kana form';
       case ReadingInfo.searchOnlyForm:
         return 'search only form';
     }
