@@ -781,57 +781,57 @@ extension ProperNounTypeExtension on ProperNounType {
   String get displayTitle {
     switch (this) {
       case ProperNounType.surname:
-        return 'Surname';
+        return 'surname';
       case ProperNounType.placeName:
-        return 'Place';
+        return 'place';
       case ProperNounType.personName:
-        return 'Person';
+        return 'person';
       case ProperNounType.givenName:
-        return 'First name';
+        return 'first name';
       case ProperNounType.femaleName:
-        return 'Female name';
+        return 'female name';
       case ProperNounType.maleName:
-        return 'Male name';
+        return 'male name';
       case ProperNounType.fullName:
-        return 'Full name';
+        return 'full name';
       case ProperNounType.product:
-        return 'Product';
+        return 'product';
       case ProperNounType.company:
-        return 'Company';
+        return 'company';
       case ProperNounType.organization:
-        return 'Organization';
+        return 'organization';
       case ProperNounType.station:
-        return 'Station';
+        return 'station';
       case ProperNounType.workOfArt:
-        return 'Work of art';
+        return 'work of art';
       case ProperNounType.group:
-        return 'Group';
+        return 'group';
       case ProperNounType.object:
-        return 'Object';
+        return 'object';
       case ProperNounType.service:
-        return 'Service';
+        return 'service';
       case ProperNounType.character:
-        return 'Character';
+        return 'character';
       case ProperNounType.legend:
-        return 'Legend';
+        return 'legend';
       case ProperNounType.creature:
-        return 'Creature';
+        return 'creature';
       case ProperNounType.event:
-        return 'Event';
+        return 'event';
       case ProperNounType.myth:
-        return 'Myth';
+        return 'myth';
       case ProperNounType.fiction:
-        return 'Fiction';
+        return 'fiction';
       case ProperNounType.deity:
-        return 'Deity';
+        return 'deity';
       case ProperNounType.ship:
-        return 'Ship';
+        return 'ship';
       case ProperNounType.document:
-        return 'Document';
+        return 'document';
       case ProperNounType.religion:
-        return 'Religion';
+        return 'religion';
       case ProperNounType.unknown:
-        return 'Unknown';
+        return 'unknown';
     }
   }
 }
