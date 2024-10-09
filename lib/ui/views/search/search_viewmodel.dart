@@ -178,7 +178,7 @@ class SearchViewModel extends FutureViewModel {
   }
 
   void navigateToTextAnalysis({String? text}) {
-    if (text != null) {
+    if (text != null && _currentSearchHistoryItem != null) {
       searchHistory.removeAt(0);
       _dictionaryService.deleteSearchHistoryItem(_currentSearchHistoryItem!);
       _currentSearchHistoryItem = null;
