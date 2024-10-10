@@ -24,7 +24,7 @@ class ChangelogView extends StackedView<ChangelogViewModel> {
             TextButton(
               onPressed: viewModel.toggleShowCurrentChangelog,
               child: Text(
-                viewModel.showCurrentChangelog ? 'Show history' : 'Back',
+                viewModel.showCurrentChangelog ? 'Show full changelog' : 'Back',
               ),
             ),
             Container(
