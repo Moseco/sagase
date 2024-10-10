@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
@@ -154,5 +156,18 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
   void toggleIntervalDisplay() {
     _showIntervalAsPercent = !_showIntervalAsPercent;
     rebuildUi();
+  }
+
+  void showFlashcardSetReport(int index) {
+    if (flashcardSetReports[index] != null) {
+      _dialogService.showCustomDialog(
+        variant: DialogType.flashcardSetReport,
+        data: (flashcardSetReports[index], null),
+        title: DateFormat.MEd()
+            .format(DateTime.now().subtract(Duration(days: 6 - index))),
+        mainButtonTitle: 'Close',
+        barrierDismissible: true,
+      );
+    }
   }
 }

@@ -289,7 +289,8 @@ class _Indicator extends StatelessWidget {
   }
 }
 
-class _HistoricalPerformance extends StatelessWidget {
+class _HistoricalPerformance
+    extends ViewModelWidget<FlashcardSetInfoViewModel> {
   final int maxFlashcardsCompleted;
   final List<FlashcardSetReport?> flashcardSetReports;
 
@@ -299,7 +300,7 @@ class _HistoricalPerformance extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, FlashcardSetInfoViewModel viewModel) {
     const double barsWidth = 8;
 
     return CardWithTitleSection(
@@ -318,7 +319,16 @@ class _HistoricalPerformance extends StatelessWidget {
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceEvenly,
-                  barTouchData: BarTouchData(enabled: false),
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    handleBuiltInTouches: false,
+                    touchCallback: (p0, p1) {
+                      if (p0 is FlTapUpEvent && p1?.spot != null) {
+                        viewModel.showFlashcardSetReport(
+                            p1!.spot!.touchedBarGroupIndex);
+                      }
+                    },
+                  ),
                   titlesData: FlTitlesData(
                     show: true,
                     bottomTitles: AxisTitles(
