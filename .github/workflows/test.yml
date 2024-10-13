@@ -15,6 +15,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Install sqlite3
+        run: sudo apt-get install -y sqlite3 libsqlite3-dev
+        
       - uses: actions/checkout@v4
 
       - name: Create files from secrets
