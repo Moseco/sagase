@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
@@ -15,6 +16,8 @@ import 'package:sagase/utils/conjugation_utils.dart';
 import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+
+import 'vocab_view.dart';
 
 class VocabViewModel extends FutureViewModel {
   final _dictionaryService = locator<DictionaryService>();
@@ -200,24 +203,26 @@ class VocabViewModel extends FutureViewModel {
   }
 
   void navigateToPreviousVocab() {
-    _navigationService.replaceWith(
-      Routes.vocabView,
-      arguments: VocabViewArguments(
-        vocab: vocabList![vocabListIndex! - 1],
+    _navigationService.replaceWithTransition(
+      VocabView(
+        vocabList![vocabListIndex! - 1],
         vocabListIndex: vocabListIndex! - 1,
         vocabList: vocabList,
       ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
     );
   }
 
   void navigateToNextVocab() {
-    _navigationService.replaceWith(
-      Routes.vocabView,
-      arguments: VocabViewArguments(
-        vocab: vocabList![vocabListIndex! + 1],
+    _navigationService.replaceWithTransition(
+      VocabView(
+        vocabList![vocabListIndex! + 1],
         vocabListIndex: vocabListIndex! + 1,
         vocabList: vocabList,
       ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
     );
   }
 

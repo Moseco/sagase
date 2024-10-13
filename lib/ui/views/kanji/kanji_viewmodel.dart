@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
@@ -10,6 +11,8 @@ import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+
+import 'kanji_view.dart';
 
 class KanjiViewModel extends FutureViewModel {
   final _dictionaryService = locator<DictionaryService>();
@@ -158,24 +161,26 @@ class KanjiViewModel extends FutureViewModel {
   }
 
   void navigateToPreviousKanji() {
-    _navigationService.replaceWith(
-      Routes.kanjiView,
-      arguments: KanjiViewArguments(
-        kanji: kanjiList![kanjiListIndex! - 1],
+    _navigationService.replaceWithTransition(
+      KanjiView(
+        kanjiList![kanjiListIndex! - 1],
         kanjiListIndex: kanjiListIndex! - 1,
         kanjiList: kanjiList,
       ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
     );
   }
 
   void navigateToNextKanji() {
-    _navigationService.replaceWith(
-      Routes.kanjiView,
-      arguments: KanjiViewArguments(
-        kanji: kanjiList![kanjiListIndex! + 1],
+    _navigationService.replaceWithTransition(
+      KanjiView(
+        kanjiList![kanjiListIndex! + 1],
         kanjiListIndex: kanjiListIndex! + 1,
         kanjiList: kanjiList,
       ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
     );
   }
 
