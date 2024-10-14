@@ -159,7 +159,8 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
   }
 
   void showFlashcardSetReport(int index) {
-    if (flashcardSetReports[index] != null) {
+    if (flashcardSetReports[index] != null &&
+        flashcardSetReports[index]!.dueFlashcardsCompleted != 0) {
       _dialogService.showCustomDialog(
         variant: DialogType.flashcardSetReport,
         data: (flashcardSetReports[index], null),
