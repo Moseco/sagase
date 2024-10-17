@@ -197,6 +197,14 @@ class FlashcardsViewModel extends FutureViewModel {
     ));
 
     if (usingSpacedRepetition) {
+      // Reload session if survived into following day (allow for last minute completion)
+      final now = DateTime.now();
+      if (sessionDateTime.isDifferentDay(now) &&
+          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
+        _reloadSession();
+        return;
+      }
+
       if (answer == FlashcardAnswer.repeat) {
         // Reinsert current flashcard
         activeFlashcards.insert(
@@ -295,16 +303,6 @@ class FlashcardsViewModel extends FutureViewModel {
         // Update in database
         await _dictionaryService
             .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
-      }
-
-      // Reload session if different day and past 3am
-      // Could happen if flashcards kept open until the next day
-      // 3am rule allows for finishing flashcards last minute
-      final now = DateTime.now();
-      if (sessionDateTime.isDifferentDay(now) &&
-          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
-        _reloadSession();
-        return;
       }
     } else {
       if (answer == FlashcardAnswer.wrong) {

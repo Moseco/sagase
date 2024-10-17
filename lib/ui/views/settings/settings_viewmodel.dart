@@ -175,9 +175,8 @@ class SettingsViewModel extends BaseViewModel {
 
     String? path = await _dictionaryService.exportUserData();
 
-    _dialogService.completeDialog(DialogResponse());
-
     if (path == null) {
+      _dialogService.completeDialog(DialogResponse());
       _snackbarService.showSnackbar(message: 'Failed to export data');
       return;
     }
@@ -191,6 +190,8 @@ class SettingsViewModel extends BaseViewModel {
     } catch (_) {
       newPath = null;
     }
+
+    _dialogService.completeDialog(DialogResponse());
 
     _snackbarService.showSnackbar(
       message: newPath == null ? 'Failed to save file' : 'Export successful',

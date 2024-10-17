@@ -8,7 +8,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
   final Function(DialogResponse) completer;
 
   late final FlashcardSetReport flashcardSetReport;
-  late final int streak;
+  late final int? streak;
 
   FlashcardSetReportDialog({
     required this.request,
@@ -34,8 +34,8 @@ class FlashcardSetReportDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'お疲れ',
+            Text(
+              request.title ?? 'お疲れ',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -133,7 +133,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        streak.toString(),
+                        streak?.toString() ?? '—',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => completer(DialogResponse()),
-              child: const Text('Continue'),
+              child: Text(request.mainButtonTitle ?? 'Continue'),
             ),
           ],
         ),

@@ -47,4 +47,4 @@ const userDataTransferFile = 'user_data_transfer.sagase';
 const isarDatabaseFile = 'default.isar';
 const isarDatabaseLockFile = 'default.isar.lock';
 
-const currentChangelogVersion = 1;
+const currentChangelogVersion = 2;
