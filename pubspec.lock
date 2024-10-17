@@ -281,10 +281,11 @@ packages:
   disk_space_plus:
     dependency: "direct main"
     description:
-      name: disk_space_plus
-      sha256: "5158e9fab92426e1f1083531de9a48bbeb76168df9fa6d25c5c5d2d37c642216"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: ce64cfb
+      resolved-ref: ce64cfbe43227697e6bf94b5aabbe8b4076d8601
+      url: "https://github.com/Moseco/disk_space_plus"
+    source: git
     version: "0.2.3"
   dots_indicator:
     dependency: transitive

@@ -71,7 +71,10 @@ dependencies:
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
-  disk_space_plus: ^0.2.3
+  disk_space_plus: # TODO change after new version published
+    git:
+      url: https://github.com/Moseco/disk_space_plus
+      ref: 'ce64cfb'
   share_plus: ^7.2.2
   app_links: ^6.3.2
   uri_to_file: ^1.0.0
