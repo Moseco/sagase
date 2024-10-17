@@ -37,7 +37,9 @@ jobs:
       - run: flutter --version
 
       - name: Flutter get packages
-        run: flutter pub get
+        run: |
+          flutter pub get
+          flutter pub get
 
       - name: Flutter code generation
         run: dart run build_runner build --delete-conflicting-outputs
