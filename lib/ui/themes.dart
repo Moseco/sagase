@@ -9,10 +9,10 @@ ThemeData getDarkTheme(bool useJapaneseSerifFont) {
       cursorColor: Colors.white,
     ),
     checkboxTheme: CheckboxThemeData(
-      checkColor: MaterialStateProperty.all(Colors.white),
-      fillColor: MaterialStateProperty.resolveWith(
+      checkColor: WidgetStateProperty.all(Colors.white),
+      fillColor: WidgetStateProperty.resolveWith(
         (states) =>
-            states.contains(MaterialState.selected) ? Colors.deepPurple : null,
+            states.contains(WidgetState.selected) ? Colors.deepPurple : null,
       ),
     ),
     appBarTheme: const AppBarTheme(color: Colors.deepPurple),
@@ -30,10 +30,10 @@ ThemeData getLightTheme(bool useJapaneseSerifFont) {
       cursorColor: Colors.black,
     ),
     checkboxTheme: CheckboxThemeData(
-      checkColor: MaterialStateProperty.all(Colors.white),
-      fillColor: MaterialStateProperty.resolveWith(
+      checkColor: WidgetStateProperty.all(Colors.white),
+      fillColor: WidgetStateProperty.resolveWith(
         (states) =>
-            states.contains(MaterialState.selected) ? Colors.deepPurple : null,
+            states.contains(WidgetState.selected) ? Colors.deepPurple : null,
       ),
     ),
     appBarTheme: const AppBarTheme(color: Colors.deepPurple),
