@@ -48,10 +48,11 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
 
     // Exit if nothing available
     if (flashcards.isEmpty) {
-      await _dialogService.showDialog(
+      await _dialogService.showCustomDialog(
+        variant: DialogType.info,
         title: 'No flashcards',
         description: 'Add lists to the flashcard set to view performance.',
-        buttonTitle: 'Exit',
+        mainButtonTitle: 'Exit',
         barrierDismissible: true,
       );
 

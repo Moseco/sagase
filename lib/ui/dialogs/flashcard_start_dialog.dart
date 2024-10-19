@@ -27,7 +27,8 @@ class FlashcardStartDialog extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
-                'Start Flashcard With',
+                'Start flashcards in',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
