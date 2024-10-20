@@ -36,7 +36,7 @@ class InitialIntervalDialog extends HookWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
-                'Set initial spaced repetition interval',
+                'Initial spaced repetition interval',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,

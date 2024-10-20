@@ -62,6 +62,7 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
               IconButton(
                 onPressed: () {
                   controller.clear();
+                  viewModel.textChanged('');
                   viewModel.editText();
                 },
                 icon: const Icon(Icons.note_add_outlined),
@@ -159,7 +160,9 @@ class _History extends ViewModelWidget<TextAnalysisViewModel> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.grey.withOpacity(0.5)
+                : Colors.grey.shade800.withOpacity(0.5),
             spreadRadius: 5,
             blurRadius: 7,
             offset: const Offset(0, 2),

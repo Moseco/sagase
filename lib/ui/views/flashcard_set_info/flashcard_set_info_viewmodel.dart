@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
@@ -46,10 +48,11 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
 
     // Exit if nothing available
     if (flashcards.isEmpty) {
-      await _dialogService.showDialog(
+      await _dialogService.showCustomDialog(
+        variant: DialogType.info,
         title: 'No flashcards',
         description: 'Add lists to the flashcard set to view performance.',
-        buttonTitle: 'Exit',
+        mainButtonTitle: 'Exit',
         barrierDismissible: true,
       );
 
@@ -154,5 +157,19 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
   void toggleIntervalDisplay() {
     _showIntervalAsPercent = !_showIntervalAsPercent;
     rebuildUi();
+  }
+
+  void showFlashcardSetReport(int index) {
+    if (flashcardSetReports[index] != null &&
+        flashcardSetReports[index]!.dueFlashcardsCompleted != 0) {
+      _dialogService.showCustomDialog(
+        variant: DialogType.flashcardSetReport,
+        data: (flashcardSetReports[index], null),
+        title: DateFormat.MEd()
+            .format(DateTime.now().subtract(Duration(days: 6 - index))),
+        mainButtonTitle: 'Close',
+        barrierDismissible: true,
+      );
+    }
   }
 }

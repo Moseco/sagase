@@ -56,7 +56,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   Future<void> _renameFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.textField,
-      title: 'Rename flashcards',
+      title: 'Rename flashcard set',
       description: 'Name',
       mainButtonTitle: 'Update',
       data: flashcardSet.name,
@@ -75,7 +75,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   Future<void> _deleteFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
-      title: 'Delete flashcards?',
+      title: 'Delete flashcard set?',
       mainButtonTitle: 'Delete',
       secondaryButtonTitle: 'Cancel',
       barrierDismissible: true,
@@ -91,7 +91,7 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   Future<void> _resetFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
-      title: 'Reset Flashcard Set?',
+      title: 'Reset flashcard set?',
       description:
           'Resetting a flashcard set will delete the spaced repetition data for all items in the flashcard set based on the current settings. Be careful that the same items shared by other flashcard sets will also be effected. Related performance data will also be removed. This action cannot be undone.',
       mainButtonTitle: 'Reset',

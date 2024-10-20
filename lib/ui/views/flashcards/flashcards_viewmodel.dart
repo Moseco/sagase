@@ -103,10 +103,11 @@ class FlashcardsViewModel extends FutureViewModel {
 
     // If have no flashcards tell user and exit
     if (allFlashcards!.isEmpty) {
-      await _dialogService.showDialog(
+      await _dialogService.showCustomDialog(
+        variant: DialogType.info,
         title: 'No flashcards',
-        description: 'Add lists to the flashcard set to practice.',
-        buttonTitle: 'Exit',
+        description: 'Add lists to the flashcard set to study.',
+        mainButtonTitle: 'Exit',
         barrierDismissible: true,
       );
 
@@ -197,6 +198,14 @@ class FlashcardsViewModel extends FutureViewModel {
     ));
 
     if (usingSpacedRepetition) {
+      // Reload session if survived into following day (allow for last minute completion)
+      final now = DateTime.now();
+      if (sessionDateTime.isDifferentDay(now) &&
+          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
+        _reloadSession();
+        return;
+      }
+
       if (answer == FlashcardAnswer.repeat) {
         // Reinsert current flashcard
         activeFlashcards.insert(
@@ -296,16 +305,6 @@ class FlashcardsViewModel extends FutureViewModel {
         await _dictionaryService
             .setSpacedRepetitionData(currentFlashcard.spacedRepetitionData!);
       }
-
-      // Reload session if different day and past 3am
-      // Could happen if flashcards kept open until the next day
-      // 3am rule allows for finishing flashcards last minute
-      final now = DateTime.now();
-      if (sessionDateTime.isDifferentDay(now) &&
-          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
-        _reloadSession();
-        return;
-      }
     } else {
       if (answer == FlashcardAnswer.wrong) {
         // Put current flashcard at a set amount or end of the active flashcard list
@@ -399,16 +398,17 @@ class FlashcardsViewModel extends FutureViewModel {
           _navigationService.back();
           return;
         }
-        final response = await _dialogService.showDialog(
+        final response = await _dialogService.showCustomDialog(
+          variant: DialogType.confirmation,
           title: 'Finished!',
           description:
               'You have completed all flashcards due today. Would you like to continue using random order?',
-          buttonTitle: 'Continue',
-          cancelTitle: 'Exit',
+          mainButtonTitle: 'Continue',
+          secondaryButtonTitle: 'Exit',
           barrierDismissible: false,
         );
 
-        if (response!.confirmed) {
+        if (response != null && response.confirmed) {
           _usingSpacedRepetition = false;
           _prepareFlashcards(initial: true);
         } else {
@@ -426,16 +426,17 @@ class FlashcardsViewModel extends FutureViewModel {
 
       // If active flashcards is empty, ask user if they want to restart
       if (activeFlashcards.isEmpty) {
-        final response = await _dialogService.showDialog(
+        final response = await _dialogService.showCustomDialog(
+          variant: DialogType.confirmation,
           title: 'Finished!',
           description:
               'You have completed all flashcards. Would you like to restart?',
-          buttonTitle: 'Restart',
-          cancelTitle: 'Exit',
+          mainButtonTitle: 'Restart',
+          secondaryButtonTitle: 'Exit',
           barrierDismissible: false,
         );
 
-        if (response!.confirmed) {
+        if (response != null && response.confirmed) {
           _prepareFlashcards(initial: true);
         } else {
           _navigationService.back();
@@ -679,7 +680,7 @@ class FlashcardsViewModel extends FutureViewModel {
   Future<void> _reloadSession() async {
     await _dialogService.showCustomDialog(
       variant: DialogType.info,
-      title: 'Reload Flashcards',
+      title: 'Reload flashcards',
       description:
           'This session was started on a previous day so the flashcards need to be reloaded.',
       mainButtonTitle: 'Continue',
@@ -698,7 +699,7 @@ class FlashcardsViewModel extends FutureViewModel {
   Future<void> _spreadOutDueFlashcards() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
-      title: 'Reduce Due Flashcards?',
+      title: 'Reduce due flashcards?',
       description:
           'It has been several days since you last opened this flashcard set and a lot of due flashcards have pilled up. To help you return to studying some due flashcards can be delayed. Pressing confirm will leave 150 due flashcards for today and spread the rest out over the next 2 weeks.',
       mainButtonTitle: 'Confirm',
@@ -710,7 +711,7 @@ class FlashcardsViewModel extends FutureViewModel {
       // Show progress indicator dialog
       _dialogService.showCustomDialog(
         variant: DialogType.progressIndicator,
-        title: 'Updating Flashcards',
+        title: 'Updating flashcards',
         barrierDismissible: false,
       );
 

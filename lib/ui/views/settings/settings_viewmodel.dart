@@ -81,7 +81,7 @@ class SettingsViewModel extends BaseViewModel {
   Future<void> setNewFlashcardsPerDay() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.numberTextField,
-      title: 'New Flashcards Per Day',
+      title: 'New flashcards per day',
       description: 'Amount',
       mainButtonTitle: 'Set',
       data: newFlashcardsPerDay.toString(),
@@ -105,7 +105,7 @@ class SettingsViewModel extends BaseViewModel {
   Future<void> setFlashcardDistance() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.numberTextField,
-      title: 'Flashcard Distance',
+      title: 'Flashcard distance',
       description: 'Amount',
       mainButtonTitle: 'Set',
       data: flashcardDistance.toString(),
@@ -129,7 +129,7 @@ class SettingsViewModel extends BaseViewModel {
   Future<void> setFlashcardCorrectAnswersRequired() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.numberTextField,
-      title: 'Correct Answers Required',
+      title: 'Correct answers required',
       description: 'Amount',
       mainButtonTitle: 'Set',
       data: flashcardCorrectAnswersRequired.toString(),
@@ -175,9 +175,8 @@ class SettingsViewModel extends BaseViewModel {
 
     String? path = await _dictionaryService.exportUserData();
 
-    _dialogService.completeDialog(DialogResponse());
-
     if (path == null) {
+      _dialogService.completeDialog(DialogResponse());
       _snackbarService.showSnackbar(message: 'Failed to export data');
       return;
     }
@@ -191,6 +190,8 @@ class SettingsViewModel extends BaseViewModel {
     } catch (_) {
       newPath = null;
     }
+
+    _dialogService.completeDialog(DialogResponse());
 
     _snackbarService.showSnackbar(
       message: newPath == null ? 'Failed to save file' : 'Export successful',

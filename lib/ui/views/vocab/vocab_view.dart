@@ -42,7 +42,9 @@ class VocabView extends StackedView<VocabViewModel> {
         // Animation was not available, show tutorial after short delay
         Future.delayed(
           const Duration(milliseconds: 150),
-          () => _showTutorial(context),
+          () {
+            if (context.mounted) _showTutorial(context);
+          },
         );
       }
     }

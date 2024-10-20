@@ -26,7 +26,8 @@ class FontSelectionDialog extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 20),
               child: Text(
-                'Set Japanese Font',
+                'Japanese font',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

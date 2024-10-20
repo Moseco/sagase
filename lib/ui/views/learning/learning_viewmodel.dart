@@ -23,7 +23,7 @@ class LearningViewModel extends FutureViewModel {
   Future<void> createFlashcardSet() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.textField,
-      title: 'Create flashcards',
+      title: 'Create flashcard set',
       description: 'Name',
       mainButtonTitle: 'Create',
       barrierDismissible: true,

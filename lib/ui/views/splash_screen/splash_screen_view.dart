@@ -20,7 +20,7 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
             child: switch (viewModel.status) {
               SplashScreenStatus.waiting => Container(),
               SplashScreenStatus.downloadingAssets => _Body(
-                  title: 'Downloading Assets',
+                  title: 'Downloading Dictionary',
                   widget: CircularPercentIndicator(
                     radius: 40,
                     lineWidth: 8,

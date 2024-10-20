@@ -36,7 +36,9 @@ class FlashcardSetSettingsView
         // Animation was not available, show tutorial after short delay
         Future.delayed(
           const Duration(milliseconds: 150),
-          () => _showTutorial(context),
+          () {
+            if (context.mounted) _showTutorial(context);
+          },
         );
       }
     }
@@ -453,7 +455,6 @@ class _ToggleOption extends StatelessWidget {
     required this.text,
     required this.enabled,
     required this.onTap,
-    super.key,
   });
 
   @override

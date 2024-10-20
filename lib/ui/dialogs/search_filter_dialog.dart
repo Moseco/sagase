@@ -30,6 +30,7 @@ class SearchFilterDialog extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 10, left: 20, right: 20),
               child: Text(
                 'Search for',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

@@ -27,7 +27,8 @@ class ThemeSelectionDialog extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10, left: 20, right: 20),
               child: Text(
-                'Set app theme',
+                'App theme',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
