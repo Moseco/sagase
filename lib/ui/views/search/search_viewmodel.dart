@@ -5,6 +5,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/mecab_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
@@ -19,6 +20,7 @@ class SearchViewModel extends FutureViewModel {
   final _snackbarService = locator<SnackbarService>();
   final _dialogService = locator<DialogService>();
   final _mecabService = locator<MecabService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   final _kanaKit = const KanaKit();
 
@@ -165,7 +167,7 @@ class SearchViewModel extends FutureViewModel {
   Future<void> setSearchFilter() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.searchFilter,
-      data: _searchFilter,
+      data: (_searchFilter, _sharedPreferencesService.getProperNounsEnabled()),
       barrierDismissible: true,
     );
 

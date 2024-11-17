@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/services/dictionary_service.dart' show SearchFilter;
-import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class SearchFilterDialog extends StatelessWidget {
   final DialogRequest request;
   final Function(DialogResponse) completer;
 
-  const SearchFilterDialog({
+  final SearchFilter searchFilter;
+  final bool properNounsEnabled;
+
+  SearchFilterDialog({
     required this.request,
     required this.completer,
     super.key,
-  });
+  })  : searchFilter = request.data.$1,
+        properNounsEnabled = request.data.$2;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class SearchFilterDialog extends StatelessWidget {
               toggleable: true,
               title: const Text('Vocab'),
               groupValue: SearchFilter.vocab,
-              value: request.data,
+              value: searchFilter,
               onChanged: (_) => completer(
                 DialogResponse(data: SearchFilter.vocab),
               ),
@@ -50,7 +52,7 @@ class SearchFilterDialog extends StatelessWidget {
               toggleable: true,
               title: const Text('Kanji'),
               groupValue: SearchFilter.kanji,
-              value: request.data,
+              value: searchFilter,
               onChanged: (_) => completer(
                 DialogResponse(data: SearchFilter.kanji),
               ),
@@ -58,18 +60,14 @@ class SearchFilterDialog extends StatelessWidget {
             RadioListTile<SearchFilter>(
               toggleable: true,
               title: const Text('Proper nouns'),
+              subtitle:
+                  properNounsEnabled ? null : const Text('Enable in settings'),
               groupValue: SearchFilter.properNouns,
-              value: request.data,
-              onChanged: (_) {
-                if (locator<SharedPreferencesService>()
-                    .getProperNounsEnabled()) {
-                  completer(DialogResponse(data: SearchFilter.properNouns));
-                } else {
-                  locator<SnackbarService>().showSnackbar(
-                    message: 'Enable proper noun dictionary in settings',
-                  );
-                }
-              },
+              value: searchFilter,
+              onChanged: properNounsEnabled
+                  ? (_) =>
+                      completer(DialogResponse(data: SearchFilter.properNouns))
+                  : null,
             ),
           ],
         ),
