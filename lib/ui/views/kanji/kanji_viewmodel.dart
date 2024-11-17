@@ -150,10 +150,12 @@ class KanjiViewModel extends FutureViewModel {
 
   void copyKanji() {
     Clipboard.setData(ClipboardData(text: kanji.kanji));
-    _snackbarService.showSnackbar(
-      message: '${kanji.kanji} copied to clipboard',
-      duration: const Duration(seconds: 1),
-    );
+    if (!_snackbarService.isSnackbarOpen) {
+      _snackbarService.showSnackbar(
+        message: '${kanji.kanji} copied to clipboard',
+        duration: const Duration(seconds: 1),
+      );
+    }
   }
 
   void setStrokeDiagramStartExpanded(bool value) {

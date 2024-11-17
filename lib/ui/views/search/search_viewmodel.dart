@@ -124,10 +124,12 @@ class SearchViewModel extends FutureViewModel {
 
   void toggleHandWriting() {
     if (!_digitalInkService.ready) {
-      _snackbarService.showSnackbar(
-        message:
-            'Hand writing detection is setting up. Please try again later.',
-      );
+      if (!_snackbarService.isSnackbarOpen) {
+        _snackbarService.showSnackbar(
+          message:
+              'Hand writing detection is setting up. Please try again later.',
+        );
+      }
       return;
     }
     _showHandWriting = !showHandWriting;

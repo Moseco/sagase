@@ -222,9 +222,11 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   void openFlashcardSet() {
     if (flashcardSet.myDictionaryLists.isEmpty &&
         flashcardSet.predefinedDictionaryLists.isEmpty) {
-      _snackbarService.showSnackbar(
-        message: 'Add lists to your flashcard set to open flashcards',
-      );
+      if (!_snackbarService.isSnackbarOpen) {
+        _snackbarService.showSnackbar(
+          message: 'Add lists to your flashcard set to open flashcards',
+        );
+      }
       return;
     }
 

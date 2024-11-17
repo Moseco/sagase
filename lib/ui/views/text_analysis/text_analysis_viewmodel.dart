@@ -146,10 +146,12 @@ class TextAnalysisViewModel extends FutureViewModel {
     // Copy to clipboard
     Clipboard.setData(ClipboardData(text: buffer.toString()));
 
-    _snackbarService.showSnackbar(
-      message: '$buffer copied to clipboard',
-      duration: const Duration(seconds: 1),
-    );
+    if (!_snackbarService.isSnackbarOpen) {
+      _snackbarService.showSnackbar(
+        message: '$buffer copied to clipboard',
+        duration: const Duration(seconds: 1),
+      );
+    }
   }
 
   void textAnalysisHistoryItemSelected(TextAnalysisHistoryItem item) {

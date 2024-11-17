@@ -188,9 +188,12 @@ class VocabViewModel extends FutureViewModel {
       }
     } else {
       Clipboard.setData(ClipboardData(text: reference.text));
-      _snackbarService.showSnackbar(
-        message: 'Reference not found. ${reference.text} copied to clipboard.',
-      );
+      if (!_snackbarService.isSnackbarOpen) {
+        _snackbarService.showSnackbar(
+          message:
+              'Reference not found. ${reference.text} copied to clipboard.',
+        );
+      }
     }
   }
 

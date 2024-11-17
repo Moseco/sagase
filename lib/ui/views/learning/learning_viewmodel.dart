@@ -44,9 +44,11 @@ class LearningViewModel extends FutureViewModel {
   void openFlashcardSet(FlashcardSet flashcardSet) {
     if (flashcardSet.myDictionaryLists.isEmpty &&
         flashcardSet.predefinedDictionaryLists.isEmpty) {
-      _snackbarService.showSnackbar(
-        message: 'Add lists to your flashcard set to open flashcards',
-      );
+      if (!_snackbarService.isSnackbarOpen) {
+        _snackbarService.showSnackbar(
+          message: 'Add lists to your flashcard set to open flashcards',
+        );
+      }
       return;
     }
 
@@ -65,9 +67,11 @@ class LearningViewModel extends FutureViewModel {
 
     if (flashcardSet.myDictionaryLists.isEmpty &&
         flashcardSet.predefinedDictionaryLists.isEmpty) {
-      _snackbarService.showSnackbar(
-        message: 'Add lists to your flashcard set to open flashcards',
-      );
+      if (!_snackbarService.isSnackbarOpen) {
+        _snackbarService.showSnackbar(
+          message: 'Add lists to your flashcard set to open flashcards',
+        );
+      }
       return;
     }
 
