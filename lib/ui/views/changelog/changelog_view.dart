@@ -117,7 +117,12 @@ class _ChangelogHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: double.infinity,
-      child: Markdown(data: '''# [1.2.0]
+      child: Markdown(data: '''# [1.2.1]
+- Updated flashcard performance graph UI
+- Stopped creating unnecessary data when using random order flashcards
+- Fixed issue that caused crashes when searching for special symbols
+- Fixed rare issues with download status
+# [1.2.0]
 - Migrated from a custom database to SQLite reducing the install size by about half
 - Added proper noun dictionary as an optional add-on
 - Improved the text analysis UI and word detection 
