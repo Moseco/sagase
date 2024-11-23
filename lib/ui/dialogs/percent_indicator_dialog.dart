@@ -23,7 +23,7 @@ class _PercentIndicatorDialogState extends State<PercentIndicatorDialog> {
   initState() {
     super.initState();
 
-    widget.request.data.listen((event) {
+    widget.request.data.listen((double event) {
       double newStatus = (event * 100).floorToDouble() / 100;
       if (newStatus != _downloadStatus) {
         setState(() {

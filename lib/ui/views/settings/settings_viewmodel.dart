@@ -389,12 +389,20 @@ class SettingsViewModel extends BaseViewModel {
         final downloadResult = downloadService.downloadProperNounDictionary();
 
         // Show percent indicator dialog
-        _dialogService.showCustomDialog(
-          variant: DialogType.percentIndicator,
-          title: 'Downloading proper noun dictionary',
-          data: downloadService.progressStream,
-          barrierDismissible: false,
-        );
+        if (downloadService.progressStream != null) {
+          _dialogService.showCustomDialog(
+            variant: DialogType.percentIndicator,
+            title: 'Downloading proper noun dictionary',
+            data: downloadService.progressStream,
+            barrierDismissible: false,
+          );
+        } else {
+          _dialogService.showCustomDialog(
+            variant: DialogType.progressIndicator,
+            title: 'Downloading proper noun dictionary',
+            barrierDismissible: false,
+          );
+        }
 
         if (!await downloadResult) {
           _dialogService.completeDialog(DialogResponse());
