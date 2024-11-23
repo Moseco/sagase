@@ -70,28 +70,30 @@ class FlashcardsViewModel extends FutureViewModel {
     sessionDateTime = DateTime.now();
     int daysSincePreviousSession =
         sessionDateTime.difference(flashcardSet.timestamp).inDays;
+    // Need variable that can change during session
+    _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
     // Get or create flashcard set report for today and set streak accordingly
-    final recentFlashcardSetReport =
-        await _dictionaryService.getRecentFlashcardSetReport(flashcardSet);
-    if (recentFlashcardSetReport == null) {
-      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
-          flashcardSet, sessionDateTime.toInt());
-    } else if (sessionDateTime.toInt() == recentFlashcardSetReport.date) {
-      flashcardSetReport = recentFlashcardSetReport;
-    } else if (sessionDateTime.subtract(const Duration(days: 1)).toInt() ==
-        recentFlashcardSetReport.date) {
-      flashcardSet.streak++;
-      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
-          flashcardSet, sessionDateTime.toInt());
-    } else {
-      flashcardSet.streak = 0;
-      flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
-          flashcardSet, sessionDateTime.toInt());
+    if (_usingSpacedRepetition) {
+      final recentFlashcardSetReport =
+          await _dictionaryService.getRecentFlashcardSetReport(flashcardSet);
+      if (recentFlashcardSetReport == null) {
+        flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+            flashcardSet, sessionDateTime.toInt());
+      } else if (sessionDateTime.toInt() == recentFlashcardSetReport.date) {
+        flashcardSetReport = recentFlashcardSetReport;
+      } else if (sessionDateTime.subtract(const Duration(days: 1)).toInt() ==
+          recentFlashcardSetReport.date) {
+        flashcardSet.streak++;
+        flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+            flashcardSet, sessionDateTime.toInt());
+      } else {
+        flashcardSet.streak = 0;
+        flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
+            flashcardSet, sessionDateTime.toInt());
+      }
     }
     // Update flashcard set to also update timestamp
     _dictionaryService.updateFlashcardSet(flashcardSet);
-    // Set if using spaced repetition
-    _usingSpacedRepetition = flashcardSet.usingSpacedRepetition;
     // If not given start mode in constructor, get default start mode
     startMode ??= _sharedPreferencesService.getFlashcardLearningModeEnabled()
         ? FlashcardStartMode.learning
@@ -471,25 +473,27 @@ class FlashcardsViewModel extends FutureViewModel {
       }
     }
 
-    // If undoing a newly completed card, decrease new flashcards completed
-    if (current.previousData?.dueDate == null &&
-        current.flashcard.spacedRepetitionData?.dueDate != null) {
-      flashcardSetReport.newFlashcardsCompleted--;
-      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
-    }
-    // If undoing a not new card and previous answer was correct, decrease count
-    if (current.previousData?.dueDate != null &&
-        current.previousData!.interval <
-            current.flashcard.spacedRepetitionData!.interval) {
-      flashcardSetReport.dueFlashcardsCompleted--;
-      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
-    }
-    // If undoing a not new card and previous answer was the first wrong answer, decrease count
-    if (current.previousData?.dueDate != null &&
-        current.previousData!.interval != 0 &&
-        current.flashcard.spacedRepetitionData!.interval == 0) {
-      flashcardSetReport.dueFlashcardsGotWrong--;
-      _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+    if (_usingSpacedRepetition) {
+      // If undoing a newly completed card, decrease new flashcards completed
+      if (current.previousData?.dueDate == null &&
+          current.flashcard.spacedRepetitionData?.dueDate != null) {
+        flashcardSetReport.newFlashcardsCompleted--;
+        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+      }
+      // If undoing a not new card and previous answer was correct, decrease count
+      if (current.previousData?.dueDate != null &&
+          current.previousData!.interval <
+              current.flashcard.spacedRepetitionData!.interval) {
+        flashcardSetReport.dueFlashcardsCompleted--;
+        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+      }
+      // If undoing a not new card and previous answer was the first wrong answer, decrease count
+      if (current.previousData?.dueDate != null &&
+          current.previousData!.interval != 0 &&
+          current.flashcard.spacedRepetitionData!.interval == 0) {
+        flashcardSetReport.dueFlashcardsGotWrong--;
+        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+      }
     }
 
     // Put flashcard at the front of active list with the previous data
@@ -498,13 +502,15 @@ class FlashcardsViewModel extends FutureViewModel {
 
     notifyListeners();
 
-    // Update in database with old data
-    if (current.previousData == null) {
-      return _dictionaryService.deleteSpacedRepetitionData(
-          current.flashcard, flashcardSet.frontType);
-    } else {
-      return _dictionaryService
-          .setSpacedRepetitionData(current.flashcard.spacedRepetitionData!);
+    if (_usingSpacedRepetition) {
+      // Update in database with old data
+      if (current.previousData == null) {
+        return _dictionaryService.deleteSpacedRepetitionData(
+            current.flashcard, flashcardSet.frontType);
+      } else {
+        return _dictionaryService
+            .setSpacedRepetitionData(current.flashcard.spacedRepetitionData!);
+      }
     }
   }
 

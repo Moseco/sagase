@@ -1955,5 +1955,31 @@ void main() {
       expect(dueDateCounts[1], 12);
       expect(dueDateCounts.last, 11);
     });
+
+    test('Do not create flashcard set report if not using spaced repetition',
+        () async {
+      // Create dictionary lists to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab2());
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      flashcardSet.usingSpacedRepetition = false;
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Check results
+      final report =
+          await dictionaryService.getRecentFlashcardSetReport(flashcardSet);
+      expect(report, null);
+    });
   });
 }
