@@ -173,8 +173,10 @@ class DownloadService {
       await Dio().download(
         url,
         path,
-        onReceiveProgress: (count, total) =>
-            _streamController!.add(count / total),
+        onReceiveProgress: (received, total) {
+          if (total <= 0) return;
+          _streamController!.add(received / total);
+        },
       );
       result = true;
     } catch (_) {

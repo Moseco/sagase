@@ -27,7 +27,7 @@ class _PercentIndicatorDialogState extends State<PercentIndicatorDialog> {
       double newStatus = (event * 100).floorToDouble() / 100;
       if (newStatus != _downloadStatus) {
         setState(() {
-          _downloadStatus = _downloadStatus = newStatus;
+          _downloadStatus = newStatus;
         });
       }
     });
