@@ -165,7 +165,7 @@ class FlashcardSetInfoViewModel extends FutureViewModel {
       _dialogService.showCustomDialog(
         variant: DialogType.flashcardSetReport,
         data: (flashcardSetReports[index], null),
-        title: DateFormat.MEd()
+        title: DateFormat.MMMEd()
             .format(DateTime.now().subtract(Duration(days: 6 - index))),
         mainButtonTitle: 'Close',
         barrierDismissible: true,

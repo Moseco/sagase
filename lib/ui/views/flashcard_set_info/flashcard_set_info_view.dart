@@ -336,7 +336,7 @@ class _HistoricalPerformance
                         showTitles: true,
                         reservedSize: 32,
                         getTitlesWidget: (number, __) => Text(
-                          DateFormat.Md().format(DateTime.now()
+                          DateFormat.E().format(DateTime.now()
                               .subtract(Duration(days: 6 - number.toInt()))),
                           style: const TextStyle(color: Colors.grey),
                         ),
@@ -346,7 +346,7 @@ class _HistoricalPerformance
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 24,
-                        interval: (maxFlashcardsCompleted / 2).ceilToDouble(),
+                        interval: (maxFlashcardsCompleted / 3).ceilToDouble(),
                         getTitlesWidget: (number, __) => Text(
                           '${number.toInt()}',
                           style: const TextStyle(color: Colors.grey),
