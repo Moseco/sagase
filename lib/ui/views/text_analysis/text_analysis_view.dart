@@ -117,27 +117,95 @@ class _Editing extends ViewModelWidget<TextAnalysisViewModel> {
             ),
           ),
         ),
-        if (controller.text.isEmpty)
-          Expanded(
-            flex: 2,
-            child: _History(controller),
-          ),
-        Container(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).padding.bottom,
-          ),
-          width: double.infinity,
-          color: Colors.deepPurple,
-          child: TextButton.icon(
-            icon: const Icon(Icons.text_snippet, color: Colors.white),
-            label: const Text(
-              'Analyze',
-              style: TextStyle(color: Colors.white),
+        AnimatedCrossFade(
+          crossFadeState: controller.text.isEmpty
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 200),
+          firstChild: _EditingBottomBar(),
+          secondChild: Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom,
             ),
-            onPressed: () => viewModel.analyzeText(controller.text),
+            width: double.infinity,
+            color: Colors.deepPurple,
+            child: TextButton.icon(
+              icon: const Icon(Icons.text_snippet, color: Colors.white),
+              label: const Text(
+                'Analyze',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () => viewModel.analyzeText(controller.text),
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _EditingBottomBar extends ViewModelWidget<TextAnalysisViewModel> {
+  @override
+  Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const Spacer(),
+          _IconWithText(
+            icon: Icons.history,
+            text: 'History',
+            //TODO
+            onPressed: () {},
+          ),
+          _IconWithText(
+            icon: Icons.camera,
+            text: 'Camera',
+            onPressed: () => viewModel.navigateToOcr(true),
+          ),
+          _IconWithText(
+            icon: Icons.photo,
+            text: 'Photos',
+            onPressed: () => viewModel.navigateToOcr(false),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconWithText extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onPressed;
+
+  const _IconWithText({
+    required this.icon,
+    required this.text,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 4,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Icon(icon),
+              const SizedBox(height: 2),
+              Text(text),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

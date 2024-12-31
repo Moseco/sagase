@@ -170,6 +170,15 @@ class TextAnalysisViewModel extends FutureViewModel {
     _dictionaryService.deleteTextAnalysisHistoryItem(item);
     rebuildUi();
   }
+
+  Future<void> navigateToOcr(bool cameraStart) async {
+    final result =
+        await _navigationService.navigateToOcrView(cameraStart: cameraStart);
+
+    if (result == null) return;
+
+    analyzeText(result);
+  }
 }
 
 enum TextAnalysisState {
