@@ -1,8 +1,6 @@
 PODS:
   - app_links (0.0.2):
     - Flutter
-  - camera_avfoundation (0.0.1):
-    - Flutter
   - disk_space_plus (0.0.1):
     - Flutter
   - Firebase/Analytics (11.2.0):
@@ -161,6 +159,8 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
+  - image_picker_ios (0.0.1):
+    - Flutter
   - in_app_review (0.2.0):
     - Flutter
   - isar_flutter_libs (1.0.0):
@@ -240,7 +240,6 @@ PODS:
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
-  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - disk_space_plus (from `.symlinks/plugins/disk_space_plus/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -253,6 +252,7 @@ DEPENDENCIES:
   - google_mlkit_digital_ink_recognition (from `.symlinks/plugins/google_mlkit_digital_ink_recognition/ios`)
   - google_mlkit_text_recognition (from `.symlinks/plugins/google_mlkit_text_recognition/ios`)
   - GoogleMLKit/TextRecognitionJapanese (~> 7.0.0)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
   - mecab_dart (from `.symlinks/plugins/mecab_dart/ios`)
@@ -297,8 +297,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
-  camera_avfoundation:
-    :path: ".symlinks/plugins/camera_avfoundation/ios"
   disk_space_plus:
     :path: ".symlinks/plugins/disk_space_plus/ios"
   firebase_analytics:
@@ -321,6 +319,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mlkit_digital_ink_recognition/ios"
   google_mlkit_text_recognition:
     :path: ".symlinks/plugins/google_mlkit_text_recognition/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   in_app_review:
     :path: ".symlinks/plugins/in_app_review/ios"
   isar_flutter_libs:
@@ -342,7 +342,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_links: e7a6750a915a9e161c58d91bc610e8cd1d4d0ad0
-  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
   disk_space_plus: faa27633429bb392ecf7342395bf12040ca4ac9b
   Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
   firebase_analytics: fbc57838bdb94eef1e0ff504f127d974ff2981ad
@@ -369,6 +368,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   in_app_review: 318597b3a06c22bb46dc454d56828c85f444f99d
   isar_flutter_libs: fdf730ca925d05687f36d7f1d355e482529ed097
   mecab_dart: 7491d01a31ed6c39b99c7c1c086d5c84a839e593
