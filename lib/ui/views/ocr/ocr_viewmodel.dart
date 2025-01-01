@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -10,20 +9,19 @@ import 'package:stacked_services/stacked_services.dart';
 
 class OcrViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final ImagePicker _imagePicker = ImagePicker();
   final _textRecognizer =
       TextRecognizer(script: TextRecognitionScript.japanese);
-
-  bool _selectingImage = false;
-  bool get selectingImage => _selectingImage;
 
   Uint8List? _currentImageBytes;
   Uint8List? get currentImageBytes => _currentImageBytes;
   Size? _imageSize;
   Size? get imageSize => _imageSize;
 
-  List<RecognizedTextBlock>? recognizedTextBlocks;
+  List<RecognizedTextBlock>? _recognizedTextBlocks;
+  List<RecognizedTextBlock>? get recognizedTextBlocks => _recognizedTextBlocks;
 
   OcrViewModel(bool cameraStart) {
     if (cameraStart) {
@@ -42,8 +40,8 @@ class OcrViewModel extends BaseViewModel {
   }
 
   Future<void> _processImage(ImageSource imageSource) async {
-    _selectingImage = true;
-    recognizedTextBlocks = null;
+    _currentImageBytes = null;
+    _recognizedTextBlocks = null;
     rebuildUi();
 
     XFile? image;
@@ -51,19 +49,17 @@ class OcrViewModel extends BaseViewModel {
     try {
       image = await _imagePicker.pickImage(source: imageSource);
     } catch (_) {
-      _selectingImage = false;
-      rebuildUi();
-      return;
+      _snackbarService.showSnackbar(
+        message: 'Failed to open camera or image picker',
+      );
     }
-
-    _selectingImage = false;
 
     if (image == null) {
-      rebuildUi();
+      _navigationService.back();
       return;
     }
 
-    InputImage inputImage = InputImage.fromFilePath(image.path);
+    final inputImage = InputImage.fromFilePath(image.path);
 
     _currentImageBytes = await image.readAsBytes();
     rebuildUi();
@@ -80,9 +76,9 @@ class OcrViewModel extends BaseViewModel {
 
     final recognizedText = await _textRecognizer.processImage(inputImage);
 
-    recognizedTextBlocks = [];
+    _recognizedTextBlocks = [];
     for (final textBlock in recognizedText.blocks) {
-      recognizedTextBlocks!.add(
+      _recognizedTextBlocks!.add(
         RecognizedTextBlock(
           text: textBlock.text,
           points: textBlock.cornerPoints,
@@ -93,35 +89,31 @@ class OcrViewModel extends BaseViewModel {
     rebuildUi();
   }
 
-  void refresh() {
-    rebuildUi();
-  }
-
   void reorderList(int oldIndex, int newIndex) {
     if (oldIndex < newIndex) newIndex -= 1;
 
-    recognizedTextBlocks!.insert(
+    _recognizedTextBlocks!.insert(
       newIndex,
-      recognizedTextBlocks!.removeAt(oldIndex),
+      _recognizedTextBlocks!.removeAt(oldIndex),
     );
     rebuildUi();
   }
 
   void toggleCheckBox(int index, bool value) {
-    recognizedTextBlocks![index].selected = value;
+    _recognizedTextBlocks![index].selected = value;
     rebuildUi();
   }
 
   void analyzeSelectedText() {
-    if (recognizedTextBlocks == null) return;
-    if (recognizedTextBlocks!.length == 1) {
-      _navigationService.back(result: recognizedTextBlocks![0].text);
+    if (_recognizedTextBlocks == null) return;
+    if (_recognizedTextBlocks!.length == 1) {
+      _navigationService.back(result: _recognizedTextBlocks![0].text);
       return;
     }
 
     List<String> lines = [];
 
-    for (final textBlock in recognizedTextBlocks!) {
+    for (final textBlock in _recognizedTextBlocks!) {
       if (textBlock.selected) lines.add(textBlock.text);
     }
 

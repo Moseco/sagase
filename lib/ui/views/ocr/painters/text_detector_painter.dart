@@ -43,7 +43,7 @@ class TextRecognizerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(TextRecognizerPainter oldDelegate) {
-    //TODO figure out efficient way to detect change?
+    //TODO the painting isn't that intense so probably fine?
     return true;
     // return oldDelegate.recognizedTextBlocks != recognizedTextBlocks;
   }

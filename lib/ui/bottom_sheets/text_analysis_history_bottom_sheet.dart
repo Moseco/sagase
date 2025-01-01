@@ -90,7 +90,6 @@ class _Content extends StatelessWidget {
             background: Container(color: Colors.red),
             onDismissed: (_) => deletedCallback(current),
             child: ListTile(
-              leading: const Icon(Icons.history),
               title: Text(
                 current.analysisText,
                 overflow: TextOverflow.ellipsis,
