@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/bottom_sheets/base_bottom_sheet.dart';
 import 'package:sagase/ui/widgets/stroke_order_diagram_large.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -21,57 +22,47 @@ class StrokeOrderBottomSheetState extends State<StrokeOrderBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: StrokeOrderDiagramLarge(
-                      strokes: widget.request.data,
-                      page: page,
-                    ),
+    return BaseBottomSheet(
+      child: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: StrokeOrderDiagramLarge(
+                    strokes: widget.request.data,
+                    page: page,
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_left),
-                      onPressed: () => setState(() {
-                        page = (page - 1)
-                            .clamp(0, widget.request.data.length - 1)
-                            .toInt();
-                      }),
-                    ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_left),
+                    onPressed: () => setState(() {
+                      page = (page - 1)
+                          .clamp(0, widget.request.data.length - 1)
+                          .toInt();
+                    }),
                   ),
-                  Text('${page + 1}/${widget.request.data.length}'),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_right),
-                      onPressed: () => setState(() {
-                        page = (page + 1)
-                            .clamp(0, widget.request.data.length - 1)
-                            .toInt();
-                      }),
-                    ),
+                ),
+                Text('${page + 1}/${widget.request.data.length}'),
+                Expanded(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_right),
+                    onPressed: () => setState(() {
+                      page = (page + 1)
+                          .clamp(0, widget.request.data.length - 1)
+                          .toInt();
+                    }),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

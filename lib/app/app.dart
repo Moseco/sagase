@@ -8,6 +8,7 @@ import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
+import 'package:sagase/ui/bottom_sheets/text_analysis_history_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_set_report_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
@@ -109,6 +110,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedBottomsheet(classType: AssignListsBottomSheet),
     StackedBottomsheet(classType: StrokeOrderBottomSheet),
     StackedBottomsheet(classType: DictionaryItemsBottomSheet),
+    StackedBottomsheet(classType: TextAnalysisHistoryBottomSheet),
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),

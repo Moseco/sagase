@@ -31,15 +31,11 @@ class TextAnalysisViewModel extends FutureViewModel {
   bool _analysisFailed = true;
   bool get analysisFailed => _analysisFailed;
 
-  List<TextAnalysisHistoryItem>? history;
-
   TextAnalysisViewModel(this._initialText, this._addToHistory);
 
   @override
   Future<void> futureToRun() async {
     if (_initialText != null) await analyzeText(_initialText!);
-
-    history = await _dictionaryService.getTextAnalysisHistory();
   }
 
   void textChanged(String value) {
@@ -79,17 +75,11 @@ class TextAnalysisViewModel extends FutureViewModel {
       }
     }
 
-    _state = TextAnalysisState.viewing;
+    _state = TextAnalysisState.result;
     rebuildUi();
 
     if (_addToHistory) {
-      final item = await _dictionaryService.createTextAnalysisHistoryItem(text);
-      history ??= [];
-      // If current text starts with next history item delete old one
-      if (history!.isNotEmpty && text.startsWith(history![0].analysisText)) {
-        _dictionaryService.deleteTextAnalysisHistoryItem(history!.removeAt(0));
-      }
-      history!.insert(0, item);
+      await _dictionaryService.createTextAnalysisHistoryItem(text);
     }
     _addToHistory = true;
   }
@@ -154,23 +144,6 @@ class TextAnalysisViewModel extends FutureViewModel {
     }
   }
 
-  void textAnalysisHistoryItemSelected(TextAnalysisHistoryItem item) {
-    // Remove the selected one form the list
-    history!.remove(item);
-    // Update in database
-    _dictionaryService.deleteTextAnalysisHistoryItem(item);
-    // Do the actual search
-    analyzeText(item.analysisText);
-  }
-
-  void textAnalysisHistoryItemDeleted(TextAnalysisHistoryItem item) {
-    // Remove the selected one form the list
-    history!.remove(item);
-    // Update in database
-    _dictionaryService.deleteTextAnalysisHistoryItem(item);
-    rebuildUi();
-  }
-
   Future<void> navigateToOcr(bool cameraStart) async {
     final result =
         await _navigationService.navigateToOcrView(cameraStart: cameraStart);
@@ -179,10 +152,25 @@ class TextAnalysisViewModel extends FutureViewModel {
 
     analyzeText(result);
   }
+
+  Future<void> openHistory() async {
+    final response = await _bottomSheetService.showCustomSheet(
+      variant: BottomSheetType.textAnalysisHistoryBottom,
+      data: (
+        _dictionaryService.getTextAnalysisHistory(),
+        _dictionaryService.deleteTextAnalysisHistoryItem,
+      ),
+    );
+
+    if (response?.data == null) return;
+
+    _dictionaryService.deleteTextAnalysisHistoryItem(response!.data);
+    analyzeText(response.data.analysisText);
+  }
 }
 
 enum TextAnalysisState {
   editing,
   loading,
-  viewing,
+  result,
 }
