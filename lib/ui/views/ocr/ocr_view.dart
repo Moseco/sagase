@@ -35,7 +35,6 @@ class OcrView extends StackedView<OcrViewModel> {
       body: Column(
         children: [
           Expanded(
-            flex: 2,
             child: viewModel.currentImageBytes == null
                 ? _OcrImageLoading()
                 : _OcrImage(),
@@ -94,7 +93,7 @@ class _OcrImage extends ViewModelWidget<OcrViewModel> {
                 ? null
                 : TextRecognizerPainter(
                     viewModel.recognizedTextBlocks!,
-                    viewModel.imageSize!,
+                    viewModel.imageSize,
                   ),
             child: IgnorePointer(
               child: Image.memory(viewModel.currentImageBytes!),

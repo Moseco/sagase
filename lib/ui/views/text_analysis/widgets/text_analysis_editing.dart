@@ -73,7 +73,7 @@ class _MenuBar extends ViewModelWidget<TextAnalysisViewModel> {
       padding: EdgeInsets.only(
         left: padding.left,
         right: padding.right,
-        bottom: padding.bottom,
+        bottom: padding.bottom * 1.5,
       ),
       child: Card(
         elevation: 4,

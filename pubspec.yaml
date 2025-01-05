@@ -82,6 +82,10 @@ dependencies:
   security_scoped_resource: ^0.0.2
   sanitize_filename: ^1.0.5
   image_picker: ^1.1.2
+  flutter_exif_rotation:
+    git:
+      url: https://github.com/Moseco/flutter_exif_rotation
+      ref: '55b72de'
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/datamodels/recognized_text_block.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 
 class OcrViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
@@ -17,8 +23,8 @@ class OcrViewModel extends BaseViewModel {
 
   Uint8List? _currentImageBytes;
   Uint8List? get currentImageBytes => _currentImageBytes;
-  Size? _imageSize;
-  Size? get imageSize => _imageSize;
+  late Size _imageSize;
+  Size get imageSize => _imageSize;
 
   List<RecognizedTextBlock>? _recognizedTextBlocks;
   List<RecognizedTextBlock>? get recognizedTextBlocks => _recognizedTextBlocks;
@@ -50,7 +56,7 @@ class OcrViewModel extends BaseViewModel {
       image = await _imagePicker.pickImage(source: imageSource);
     } catch (_) {
       _snackbarService.showSnackbar(
-        message: 'Failed to open camera or image picker',
+        message: 'Failed to open camera or gallery',
       );
     }
 
@@ -59,15 +65,35 @@ class OcrViewModel extends BaseViewModel {
       return;
     }
 
-    final inputImage = InputImage.fromFilePath(image.path);
+    final ocrImageDir = path.join(
+      (await path_provider.getApplicationCacheDirectory()).path,
+      constants.ocrImageDir,
+    );
+    await Directory(ocrImageDir).create();
 
-    _currentImageBytes = await image.readAsBytes();
+    final imagePath = path.join(ocrImageDir, image.name);
+    try {
+      await File(image.path).rename(imagePath);
+    } catch (_) {
+      if (File(image.path).existsSync()) {
+        File(image.path).delete();
+      }
+      _snackbarService.showSnackbar(message: 'Failed to open image');
+      _navigationService.back();
+      return;
+    }
+
+    final rotatedImage = await FlutterExifRotation.rotateImage(path: imagePath);
+
+    final inputImage = InputImage.fromFilePath(rotatedImage.path);
+
+    _currentImageBytes = await rotatedImage.readAsBytes();
     rebuildUi();
 
-    if (inputImage.metadata?.size != null) {
+    if (inputImage.metadata != null) {
       _imageSize = inputImage.metadata!.size;
     } else {
-      final decodedImage = await decodeImageFromList(currentImageBytes!);
+      final decodedImage = await decodeImageFromList(_currentImageBytes!);
       _imageSize = Size(
         decodedImage.width.toDouble(),
         decodedImage.height.toDouble(),
@@ -87,6 +113,8 @@ class OcrViewModel extends BaseViewModel {
     }
 
     rebuildUi();
+
+    await rotatedImage.delete();
   }
 
   void reorderList(int oldIndex, int newIndex) {

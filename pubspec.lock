@@ -461,6 +461,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_exif_rotation:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "55b72de"
+      resolved-ref: "55b72de07ea335940d7d1de9a2d18d276839e9b1"
+      url: "https://github.com/Moseco/flutter_exif_rotation"
+    source: git
+    version: "0.6.0"
   flutter_file_dialog:
     dependency: "direct main"
     description:
