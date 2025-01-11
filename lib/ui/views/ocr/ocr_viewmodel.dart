@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kana_kit/kana_kit.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:sagase/app/app.locator.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 class OcrViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _snackbarService = locator<SnackbarService>();
+
+  final _kanaKit = const KanaKit();
 
   final ImagePicker _imagePicker = ImagePicker();
   final _textRecognizer =
@@ -104,6 +107,7 @@ class OcrViewModel extends BaseViewModel {
 
     _recognizedTextBlocks = [];
     for (final textBlock in recognizedText.blocks) {
+      if (_kanaKit.isRomaji(textBlock.text)) continue;
       _recognizedTextBlocks!.add(
         RecognizedTextBlock(
           text: textBlock.text,
