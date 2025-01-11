@@ -9,6 +9,7 @@ class ListItemLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Shimmer.fromColors(
       baseColor: isDark ? const Color(0xFF3a3a3a) : Colors.grey.shade300,
       highlightColor: isDark ? const Color(0xFF4a4a4a) : Colors.grey.shade100,
@@ -33,6 +34,7 @@ class ListItemLoading extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
+                    width: MediaQuery.sizeOf(context).width * 0.3,
                     height: 16,
                     color: Colors.white,
                   ),

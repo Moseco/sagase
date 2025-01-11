@@ -7,6 +7,7 @@ version: 1.2.1+17
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
+  flutter: 3.24.3
 
 isar_version: &isar_version 3.1.8
 
@@ -59,6 +60,7 @@ dependencies:
   async: ^2.11.0
   archive: ^3.4.9
   google_mlkit_digital_ink_recognition: ^0.13.0
+  google_mlkit_text_recognition: ^0.14.0
   intl: ^0.19.0
   shared_preferences: ^2.2.0
   mecab_dart: ^0.1.6
@@ -80,6 +82,11 @@ dependencies:
   uri_to_file: ^1.0.0
   security_scoped_resource: ^0.0.2
   sanitize_filename: ^1.0.5
+  image_picker: ^1.1.2
+  flutter_exif_rotation:
+    git:
+      url: https://github.com/Moseco/flutter_exif_rotation
+      ref: '55b72de'
 
 dev_dependencies:
   flutter_test:

@@ -46,5 +46,6 @@ const searchQueryLimit = 1000;
 const userDataTransferFile = 'user_data_transfer.sagase';
 const isarDatabaseFile = 'default.isar';
 const isarDatabaseLockFile = 'default.isar.lock';
+const ocrImagesDir = 'ocr_images';
 
 const currentChangelogVersion = 2;

@@ -8,6 +8,7 @@ import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
+import 'package:sagase/ui/bottom_sheets/text_analysis_history_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_set_report_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
@@ -29,6 +30,7 @@ import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_vi
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_list/kanji_list_view.dart';
+import 'package:sagase/ui/views/ocr/ocr_view.dart';
 import 'package:sagase/ui/views/proper_noun/proper_noun_view.dart';
 import 'package:sagase/ui/views/radical/radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
@@ -82,6 +84,7 @@ import 'package:stacked_themes/stacked_themes.dart';
       transitionsBuilder: TransitionsBuilders.slideBottom,
     ),
     MaterialRoute(page: ProperNounView),
+    MaterialRoute(page: OcrView),
     MaterialRoute(page: DevView),
   ],
   dependencies: [
@@ -107,6 +110,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedBottomsheet(classType: AssignListsBottomSheet),
     StackedBottomsheet(classType: StrokeOrderBottomSheet),
     StackedBottomsheet(classType: DictionaryItemsBottomSheet),
+    StackedBottomsheet(classType: TextAnalysisHistoryBottomSheet),
   ],
   dialogs: [
     StackedDialog(classType: TextFieldDialog),

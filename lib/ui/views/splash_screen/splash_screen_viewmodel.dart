@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/digital_ink_service.dart';
@@ -7,6 +8,7 @@ import 'package:sagase/services/download_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -214,29 +216,35 @@ class SplashScreenViewModel extends FutureViewModel {
       final dir =
           Directory((await path_provider.getApplicationCacheDirectory()).path);
 
-      // Matches files ending in .sagase or related to initial setup
-      final filesToDeleteRegExp = RegExp(
-        r'(.+\.sagase$)|(^' +
-            RegExp.escape(SagaseDictionaryConstants.requiredAssetsTar) +
-            r'$)|(^' +
-            RegExp.escape(SagaseDictionaryConstants.dictionaryZip) +
-            r'$)|(^' +
-            RegExp.escape(SagaseDictionaryConstants.mecabZip) +
-            r'$)',
-      );
-
       for (var entity in (await dir.list().toList())) {
         if (entity is Directory) {
           // Delete share_plus directory which temporarily stores files for sharing
           if (entity.path.endsWith('${Platform.pathSeparator}share_plus')) {
             entity.delete(recursive: true);
+          } else if (entity.path
+              .endsWith('${Platform.pathSeparator}${constants.ocrImagesDir}')) {
+            entity.delete(recursive: true);
           }
         } else if (entity is File) {
-          // Delete files that match the regex and are a day old
-          if (filesToDeleteRegExp.hasMatch(entity.uri.pathSegments.last) &&
+          final fileName = entity.uri.pathSegments.last;
+          if ((fileName.endsWith('.sagase') ||
+                  fileName == SagaseDictionaryConstants.requiredAssetsTar ||
+                  fileName == SagaseDictionaryConstants.dictionaryZip ||
+                  fileName == SagaseDictionaryConstants.mecabZip) &&
               DateTime.now().difference(await entity.lastModified()).inDays >
                   0) {
             entity.delete();
+          }
+        }
+      }
+
+      // Delete lost data from image picker
+      if (Platform.isAndroid) {
+        final LostDataResponse response =
+            await ImagePicker().retrieveLostData();
+        if (!response.isEmpty && response.files != null) {
+          for (final file in response.files!) {
+            File(file.path).delete();
           }
         }
       }

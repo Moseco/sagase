@@ -92,5 +92,11 @@
 	</array>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow selecting photo for optical character recognition</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow taking photo for optical character recognition</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow taking photo for optical character recognition</string>
 </dict>
 </plist>
