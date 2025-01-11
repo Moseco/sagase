@@ -75,7 +75,7 @@ class TextAnalysisViewModel extends FutureViewModel {
       }
     }
 
-    _state = TextAnalysisState.result;
+    _state = TextAnalysisState.viewing;
     rebuildUi();
 
     if (_addToHistory) {
@@ -172,5 +172,5 @@ class TextAnalysisViewModel extends FutureViewModel {
 enum TextAnalysisState {
   editing,
   loading,
-  result,
+  viewing,
 }

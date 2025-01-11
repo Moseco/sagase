@@ -222,7 +222,7 @@ class SplashScreenViewModel extends FutureViewModel {
           if (entity.path.endsWith('${Platform.pathSeparator}share_plus')) {
             entity.delete(recursive: true);
           } else if (entity.path
-              .endsWith('${Platform.pathSeparator}${constants.ocrImageDir}')) {
+              .endsWith('${Platform.pathSeparator}${constants.ocrImagesDir}')) {
             entity.delete(recursive: true);
           }
         } else if (entity is File) {

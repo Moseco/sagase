@@ -5,8 +5,8 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
 import 'text_analysis_viewmodel.dart';
-import 'widgets/text_analysis_result.dart';
 import 'widgets/text_analysis_editing.dart';
+import 'widgets/text_analysis_viewing.dart';
 
 class TextAnalysisView extends StackedView<TextAnalysisViewModel> {
   final String? initialText;
@@ -57,7 +57,7 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
               ),
             ],
           TextAnalysisState.loading => null,
-          TextAnalysisState.result => [
+          TextAnalysisState.viewing => [
               IconButton(
                 onPressed: () {
                   controller.clear();
@@ -81,7 +81,7 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
         TextAnalysisState.editing => TextAnalysisEditing(controller),
         TextAnalysisState.loading =>
           const Center(child: CircularProgressIndicator()),
-        TextAnalysisState.result => const TextAnalysisResult(),
+        TextAnalysisState.viewing => const TextAnalysisViewing(),
       },
     );
   }

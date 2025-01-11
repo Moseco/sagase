@@ -7,8 +7,8 @@ import 'package:stacked/stacked.dart';
 
 import '../text_analysis_viewmodel.dart';
 
-class TextAnalysisResult extends ViewModelWidget<TextAnalysisViewModel> {
-  const TextAnalysisResult({super.key});
+class TextAnalysisViewing extends ViewModelWidget<TextAnalysisViewModel> {
+  const TextAnalysisViewing({super.key});
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {

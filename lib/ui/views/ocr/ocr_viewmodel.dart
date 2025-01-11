@@ -70,7 +70,7 @@ class OcrViewModel extends BaseViewModel {
 
     final ocrImageDir = path.join(
       (await path_provider.getApplicationCacheDirectory()).path,
-      constants.ocrImageDir,
+      constants.ocrImagesDir,
     );
     await Directory(ocrImageDir).create();
 
