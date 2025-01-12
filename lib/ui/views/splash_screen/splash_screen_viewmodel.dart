@@ -35,8 +35,6 @@ class SplashScreenViewModel extends FutureViewModel {
 
   @override
   Future<void> futureToRun() async {
-    await _dictionaryService.initialize();
-
     // Navigate to onboarding if needed and keep track of the future
     if (!_sharedPreferencesService.getOnboardingFinished()) {
       // Need zero duration wait to avoid initial build conflict

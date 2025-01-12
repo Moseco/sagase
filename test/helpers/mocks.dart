@@ -112,7 +112,6 @@ MockDictionaryService getAndRegisterDictionaryService({
   _removeRegistrationIfExists<DictionaryService>();
   final service = MockDictionaryService();
 
-  when(service.initialize()).thenAnswer((_) async {});
   when(service.open(
     validate: anyNamed('validate'),
     transferCheck: anyNamed('transferCheck'),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:drift/native.dart' as native;
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart' show StringCharacters;
 import 'package:flutter/services.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -13,8 +13,6 @@ import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:path/path.dart' as path;
-import 'package:sqlite3/sqlite3.dart';
-import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 class DictionaryService {
   late AppDatabase _database;
@@ -23,14 +21,6 @@ class DictionaryService {
 
   DictionaryService({AppDatabase? database}) {
     if (database != null) _database = database;
-  }
-
-  Future<void> initialize() async {
-    if (Platform.isAndroid) {
-      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-    }
-    // Set temp directory
-    sqlite3.tempDirectory = (await path_provider.getTemporaryDirectory()).path;
   }
 
   Future<DictionaryStatus> open({
@@ -69,7 +59,12 @@ class DictionaryService {
 
       // Open the database
       _database = AppDatabase(
-        native.NativeDatabase.createInBackground(File(dbPath)),
+        driftDatabase(
+          name: SagaseDictionaryConstants.dictionaryDatabaseFile,
+          native: DriftNativeOptions(
+            databasePath: () async => dbPath,
+          ),
+        ),
       );
 
       if (validate) {

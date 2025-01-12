@@ -46,9 +46,8 @@ dependencies:
   flutter_markdown: ^0.7.3+2
 
   # Other
-  drift: ^2.18.0
-  sqlite3_flutter_libs: ^0.5.0
-  sqlite3: ^2.0.0
+  drift: any # Version defined by sagase_dictionary
+  drift_flutter: any
   isar:
     version: *isar_version
     hosted: https://pub.isar-community.dev/
@@ -69,7 +68,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '4b6fd05'
+      ref: 'eb3aa87'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8

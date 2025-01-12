@@ -299,10 +299,18 @@ packages:
     dependency: "direct main"
     description:
       name: drift
-      sha256: d6ff1ec6a0f3fa097dda6b776cf601f1f3d88b53b287288e09c1306f394fb1b3
+      sha256: af3941e4d544727b2eb80590eb64e9cb8d77cd68c7690265502ea6a2427aa621
       url: "https://pub.dev"
     source: hosted
-    version: "2.20.3"
+    version: "2.23.1"
+  drift_flutter:
+    dependency: "direct main"
+    description:
+      name: drift_flutter
+      sha256: c670c947fe17ad149678a43fdbbfdb69321f0c83d315043e34e8ad2729e11f49
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   equatable:
     dependency: transitive
     description:
@@ -1148,8 +1156,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4b6fd05"
-      resolved-ref: "4b6fd0529a7675b75e6bd8bea16290e836dc35e2"
+      ref: eb3aa87
+      resolved-ref: eb3aa8739337ce70dad68d41711fdfb20b36ca9b
       url: "https://github.com/Moseco/sagase_dictionary"
     source: git
     version: "1.0.0"
@@ -1303,7 +1311,7 @@ packages:
     source: hosted
     version: "7.0.0"
   sqlite3:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqlite3
       sha256: "45f168ae2213201b54e09429ed0c593dc2c88c924a1488d6f9c523a255d567cb"
@@ -1311,7 +1319,7 @@ packages:
     source: hosted
     version: "2.4.6"
   sqlite3_flutter_libs:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqlite3_flutter_libs
       sha256: "62bbb4073edbcdf53f40c80775f33eea01d301b7b81417e5b3fb7395416258c1"
