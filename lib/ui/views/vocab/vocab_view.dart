@@ -511,7 +511,7 @@ class _Definitions extends ViewModelWidget<VocabViewModel> {
       if (definition.appliesTo != null) {
         final buffer = StringBuffer();
         if (otherInfoTextSpans.isNotEmpty) buffer.write('; ');
-        buffer.write('only apples to: ${definition.appliesTo!.join(', ')}');
+        buffer.write('only applies to: ${definition.appliesTo!.join(', ')}');
         otherInfoTextSpans.add(TextSpan(text: buffer.toString()));
       }
       if (definition.fields != null) {
