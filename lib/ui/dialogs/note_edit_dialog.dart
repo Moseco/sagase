@@ -56,21 +56,13 @@ class NoteEditDialog extends HookWidget {
                   onPressed: () => completer(DialogResponse(data: '')),
                   child: Text(
                     'Delete',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
                 TextButton(
                   onPressed: () =>
                       completer(DialogResponse(data: controller.text)),
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Text('Save'),
                 ),
               ],
             ),
