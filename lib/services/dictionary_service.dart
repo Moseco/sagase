@@ -548,6 +548,22 @@ class DictionaryService {
     }
   }
 
+  Future<void> setVocabNote(int vocabId, String note) async {
+    await _database.vocabsDao.setNote(vocabId, note);
+  }
+
+  Future<void> deleteVocabNote(int vocabId) async {
+    await _database.vocabsDao.deleteNote(vocabId);
+  }
+
+  Future<void> setKanjiNote(int kanjiId, String note) async {
+    await _database.kanjisDao.setNote(kanjiId, note);
+  }
+
+  Future<void> deleteKanjiNote(int kanjiId) async {
+    await _database.kanjisDao.deleteNote(kanjiId);
+  }
+
   Future<bool> restoreFromBackup(String backupFilePath) async {
     bool result = false;
 
@@ -635,6 +651,20 @@ class DictionaryService {
         textAnalysisHistoryBackups.add(item.analysisText);
       }
 
+      // Vocab notes
+      final List<String> vocabNoteBackups = [];
+      final vocabNotes = await _database.vocabsDao.getAllNotes();
+      for (final note in vocabNotes) {
+        vocabNoteBackups.add(note.toBackupJson());
+      }
+
+      // Kanji notes
+      final List<String> kanjiNoteBackups = [];
+      final kanjiNotes = await _database.kanjisDao.getAllNotes();
+      for (final note in kanjiNotes) {
+        kanjiNoteBackups.add(note.toBackupJson());
+      }
+
       // Create instance
       DateTime now = DateTime.now();
       final backup = UserBackup(
@@ -651,6 +681,8 @@ class DictionaryService {
             kanjiSpacedRepetitionDataEnglishBackups,
         searchHistory: searchHistoryBackups,
         textAnalysisHistory: textAnalysisHistoryBackups,
+        vocabNotes: vocabNoteBackups,
+        kanjiNotes: kanjiNoteBackups,
       );
 
       // Create file and write to it
@@ -756,6 +788,18 @@ class DictionaryService {
               analysisText: userBackup.textAnalysisHistory[i],
             ),
           );
+        }
+
+        // Vocab notes
+        for (final vocabNoteJson in userBackup.vocabNotes) {
+          final vocabNote = VocabNote.fromBackupJson(jsonDecode(vocabNoteJson));
+          await setVocabNote(vocabNote.id, vocabNote.note);
+        }
+
+        // Kanji notes
+        for (final kanjiNoteJson in userBackup.kanjiNotes) {
+          final kanjiNote = KanjiNote.fromBackupJson(jsonDecode(kanjiNoteJson));
+          await setKanjiNote(kanjiNote.id, kanjiNote.note);
         }
       });
 

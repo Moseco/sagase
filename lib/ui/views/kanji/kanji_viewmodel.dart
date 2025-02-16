@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
@@ -20,6 +21,7 @@ class KanjiViewModel extends FutureViewModel {
   final _bottomSheetService = locator<BottomSheetService>();
   final _snackbarService = locator<SnackbarService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _dialogService = locator<DialogService>();
 
   final Kanji kanji;
   final int? kanjiListIndex;
@@ -184,6 +186,26 @@ class KanjiViewModel extends FutureViewModel {
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
     );
+  }
+
+  Future<void> editNote() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.noteEdit,
+      data: kanji.note,
+      barrierDismissible: true,
+    );
+
+    if (response?.data == null) return;
+
+    if (response!.data == '') {
+      kanji.note = null;
+      _dictionaryService.deleteKanjiNote(kanji.id);
+    } else {
+      kanji.note = response.data;
+      _dictionaryService.setKanjiNote(kanji.id, kanji.note!);
+    }
+
+    rebuildUi();
   }
 
   @override

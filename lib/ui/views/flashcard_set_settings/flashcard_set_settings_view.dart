@@ -283,6 +283,15 @@ class FlashcardSetSettingsView
                                   onChanged: viewModel.setKanjiShowReading,
                                 ),
                               ),
+                              ListTile(
+                                title: const Text('Show note'),
+                                subtitle: const Text('Flashcard back'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.showNote,
+                                  onChanged: viewModel.setShowNote,
+                                ),
+                              ),
                             ],
                           FrontType.english => [
                               ListTile(
@@ -302,6 +311,15 @@ class FlashcardSetSettingsView
                                   activeColor: Colors.deepPurple,
                                   value: flashcardSet.vocabShowPitchAccent,
                                   onChanged: viewModel.setVocabShowPitchAccent,
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text('Show note'),
+                                subtitle: const Text('Flashcard back'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.showNote,
+                                  onChanged: viewModel.setShowNote,
                                 ),
                               ),
                             ],

@@ -87,6 +87,14 @@ void main() {
         map[SagaseDictionaryConstants.backupTextAnalysisHistory],
         isEmpty,
       );
+      expect(
+        map[SagaseDictionaryConstants.backupVocabNotes],
+        isEmpty,
+      );
+      expect(
+        map[SagaseDictionaryConstants.backupKanjiNotes],
+        isEmpty,
+      );
     });
 
     test('exportUserData - with data', () async {
@@ -281,6 +289,14 @@ void main() {
 
       expect(
         userBackup.textAnalysisHistory,
+        isEmpty,
+      );
+      expect(
+        userBackup.vocabNotes,
+        isEmpty,
+      );
+      expect(
+        userBackup.kanjiNotes,
         isEmpty,
       );
     });

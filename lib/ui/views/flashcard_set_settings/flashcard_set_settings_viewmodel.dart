@@ -219,6 +219,12 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
+  void setShowNote(bool value) {
+    flashcardSet.showNote = value;
+    rebuildUi();
+    _dictionaryService.updateFlashcardSet(flashcardSet);
+  }
+
   void openFlashcardSet() {
     if (flashcardSet.myDictionaryLists.isEmpty &&
         flashcardSet.predefinedDictionaryLists.isEmpty) {
