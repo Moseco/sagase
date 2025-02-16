@@ -132,6 +132,8 @@ class IsarService {
             kanjiSpacedRepetitionDataEnglishBackups,
         searchHistory: searchHistoryBackups,
         textAnalysisHistory: [],
+        vocabNotes: [],
+        kanjiNotes: [],
       );
 
       // Create file and write to it

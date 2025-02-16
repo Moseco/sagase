@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:sagase/app/app.bottomsheets.dart';
+import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/conjugation_result.dart';
@@ -26,6 +27,7 @@ class VocabViewModel extends FutureViewModel {
   final _mecabService = locator<MecabService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
   final _snackbarService = locator<SnackbarService>();
+  final _dialogService = locator<DialogService>();
   final _conjugationUtils = const ConjugationUtils();
 
   final Vocab vocab;
@@ -227,6 +229,26 @@ class VocabViewModel extends FutureViewModel {
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
     );
+  }
+
+  Future<void> editNote() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.noteEdit,
+      data: vocab.note,
+      barrierDismissible: true,
+    );
+
+    if (response?.data == null) return;
+
+    if (response!.data == '') {
+      vocab.note = null;
+      _dictionaryService.deleteVocabNote(vocab.id);
+    } else {
+      vocab.note = response.data;
+      _dictionaryService.setVocabNote(vocab.id, vocab.note!);
+    }
+
+    rebuildUi();
   }
 
   @override

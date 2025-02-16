@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
+import 'package:sagase/ui/widgets/note_section.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
@@ -245,6 +246,10 @@ class KanjiView extends StackedView<KanjiViewModel> {
                     ],
                   ),
                 ),
+              ),
+              NoteSection(
+                note: viewModel.kanji.note,
+                editNote: viewModel.editNote,
               ),
               SelectionContainer.disabled(
                 child: CardWithTitleSection(

@@ -847,6 +847,17 @@ class _VocabFlashcardBack extends ViewModelWidget<FlashcardsViewModel> {
       );
     }
 
+    // Add note
+    if (flashcardSet.showNote && vocab.note != null) {
+      children.addAll([
+        const SizedBox(height: 16),
+        Text(
+          vocab.note!,
+          textAlign: TextAlign.center,
+        ),
+      ]);
+    }
+
     // Add included kanji
     if (vocab.includedKanji != null) {
       children.add(const SizedBox(height: 16));

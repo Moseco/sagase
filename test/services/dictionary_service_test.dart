@@ -391,6 +391,14 @@ void main() {
         map[SagaseDictionaryConstants.backupTextAnalysisHistory],
         isEmpty,
       );
+      expect(
+        map[SagaseDictionaryConstants.backupVocabNotes],
+        isEmpty,
+      );
+      expect(
+        map[SagaseDictionaryConstants.backupKanjiNotes],
+        isEmpty,
+      );
 
       // Import the backup
       await service.importUserData(path);
@@ -494,6 +502,10 @@ void main() {
       await service.setTextAnalysisHistoryItem(
         const TextAnalysisHistoryItem(id: 1, analysisText: 'newer!'),
       );
+
+      // Create vocab and kanji notes
+      await service.setVocabNote(1, 'This is a note');
+      await service.setKanjiNote('四'.kanjiCodePoint(), 'Important thing');
 
       // Export data and validate contents
       String path = (await service.exportUserData())!;
@@ -667,6 +679,12 @@ void main() {
       expect(textAnalysisHistory.length, 2);
       expect(textAnalysisHistory[0].analysisText, 'newer!');
       expect(textAnalysisHistory[1].analysisText, 'older!');
+
+      // Vocab and kanji notes
+      final vocabWithNote = await newService.getVocab(1);
+      expect(vocabWithNote.note, 'This is a note');
+      final kanjiWithNote = await newService.getKanji('四');
+      expect(kanjiWithNote!.note, 'Important thing');
 
       // Cleanup
       await newService.close();

@@ -14,6 +14,8 @@ class UserBackup {
   final Map<String, dynamic> kanjiSpacedRepetitionDataEnglish;
   final List<String> searchHistory;
   final List<String> textAnalysisHistory;
+  final List<String> vocabNotes;
+  final List<String> kanjiNotes;
 
   const UserBackup({
     required this.dictionaryVersion,
@@ -27,6 +29,8 @@ class UserBackup {
     required this.kanjiSpacedRepetitionDataEnglish,
     required this.searchHistory,
     required this.textAnalysisHistory,
+    required this.vocabNotes,
+    required this.kanjiNotes,
   });
 
   String toBackupJson() {
@@ -52,6 +56,8 @@ class UserBackup {
         SagaseDictionaryConstants.backupSearchHistory: searchHistory,
         SagaseDictionaryConstants.backupTextAnalysisHistory:
             textAnalysisHistory,
+        SagaseDictionaryConstants.backupVocabNotes: vocabNotes,
+        SagaseDictionaryConstants.backupKanjiNotes: kanjiNotes,
       },
     );
   }
@@ -93,6 +99,10 @@ class UserBackup {
       textAnalysisHistory:
           (map[SagaseDictionaryConstants.backupTextAnalysisHistory] ?? [])
               .cast<String>(),
+      vocabNotes: (map[SagaseDictionaryConstants.backupVocabNotes] ?? [])
+          .cast<String>(),
+      kanjiNotes: (map[SagaseDictionaryConstants.backupKanjiNotes] ?? [])
+          .cast<String>(),
     );
   }
 }

@@ -15,6 +15,7 @@ import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/info_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
+import 'package:sagase/ui/dialogs/note_edit_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/percent_indicator_dialog.dart';
 import 'package:sagase/ui/dialogs/progress_indicator_dialog.dart';
@@ -125,6 +126,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: ThemeSelectionDialog),
     StackedDialog(classType: InfoDialog),
     StackedDialog(classType: PercentIndicatorDialog),
+    StackedDialog(classType: NoteEditDialog),
   ],
 )
 class AppSetup {

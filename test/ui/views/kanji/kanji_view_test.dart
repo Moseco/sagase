@@ -155,12 +155,13 @@ void main() {
       expect(find.text('タン'), findsOne);
       expect(find.textContaining('Nanori'), findsNothing);
 
+      await tester.scrollUntilVisible(find.text('Compounds'), 100);
+
       expect(find.text('Radical #64 - hand'), findsOne);
       expect(find.text('Other components'), findsOne);
       expect(find.text('㓁'), findsOne);
       expect(find.text('木'), findsOne);
 
-      await tester.scrollUntilVisible(find.text('Compounds'), 100);
       expect(find.text('Compounds'), findsOne);
       expect(find.textContaining('探偵'), findsOne);
     });
