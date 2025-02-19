@@ -21,6 +21,8 @@ class WritingReadingPair {
         pairs.add(WritingReadingPair(writings: [writing], readings: []));
       }
 
+      if (pairs.isEmpty) return _readingOnlyPairs(vocab);
+
       // Sort readings into writings
       for (final reading in vocab.readings) {
         if (reading.info != null &&
@@ -74,16 +76,20 @@ class WritingReadingPair {
       return pairs;
     } else {
       // If have no writings return single pair with all non-search form readings
-      List<VocabReading> readings = [];
-      for (final reading in vocab.readings) {
-        if (reading.info != null &&
-            reading.info!.contains(ReadingInfo.searchOnlyForm)) {
-          continue;
-        }
-        readings.add(reading);
-      }
-
-      return [WritingReadingPair(writings: null, readings: readings)];
+      return _readingOnlyPairs(vocab);
     }
+  }
+
+  static List<WritingReadingPair> _readingOnlyPairs(Vocab vocab) {
+    List<VocabReading> readings = [];
+    for (final reading in vocab.readings) {
+      if (reading.info != null &&
+          reading.info!.contains(ReadingInfo.searchOnlyForm)) {
+        continue;
+      }
+      readings.add(reading);
+    }
+
+    return [WritingReadingPair(writings: null, readings: readings)];
   }
 }
