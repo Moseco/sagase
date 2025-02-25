@@ -16,7 +16,15 @@ class VocabListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Merge definitions
+    late final String title;
+    if (vocab.writings != null &&
+        (vocab.writings![0].info == null ||
+            !vocab.writings![0].info!.contains(WritingInfo.searchOnlyForm))) {
+      title = '${vocab.writings![0].writing}【${vocab.readings[0].reading}】';
+    } else {
+      title = vocab.readings[0].reading;
+    }
+
     final definitionBuffer = StringBuffer();
     definitionBuffer.write(vocab.definitions[0].definition);
     for (int i = 1; i < vocab.definitions.length; i++) {
@@ -35,9 +43,7 @@ class VocabListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    vocab.writings != null
-                        ? '${vocab.writings![0].writing}【${vocab.readings[0].reading}】'
-                        : vocab.readings[0].reading,
+                    title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
