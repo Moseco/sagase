@@ -55,9 +55,12 @@ class VocabViewModel extends FutureViewModel {
     Set<String> kanjiStringSet = {};
     if (vocab.writings != null) {
       for (var writing in vocab.writings!) {
-        final foundKanjiList = kanjiRegExp.allMatches(writing.writing);
-        for (var foundKanji in foundKanjiList) {
-          kanjiStringSet.add(foundKanji[0]!);
+        if (writing.info == null ||
+            !writing.info!.contains(WritingInfo.searchOnlyForm)) {
+          final foundKanjiList = kanjiRegExp.allMatches(writing.writing);
+          for (var foundKanji in foundKanjiList) {
+            kanjiStringSet.add(foundKanji[0]!);
+          }
         }
       }
     }
