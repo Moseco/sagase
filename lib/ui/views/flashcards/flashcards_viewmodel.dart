@@ -660,7 +660,9 @@ class FlashcardsViewModel extends FutureViewModel {
 
     vocab.includedKanji = [];
     List<String> kanjiStrings = [];
-    if (vocab.writings != null) {
+    if (vocab.writings != null &&
+        (vocab.writings![0].info == null ||
+            !vocab.writings![0].info!.contains(WritingInfo.searchOnlyForm))) {
       final foundKanjiList = kanjiRegExp.allMatches(vocab.writings![0].writing);
       for (var foundKanji in foundKanjiList) {
         // Prevent duplicate kanji

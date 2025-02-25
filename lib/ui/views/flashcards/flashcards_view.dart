@@ -518,7 +518,9 @@ class _VocabFlashcardFront extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> children = [];
 
-    if (vocab.writings != null) {
+    if (vocab.writings != null &&
+        (vocab.writings![0].info == null ||
+            !vocab.writings![0].info!.contains(WritingInfo.searchOnlyForm))) {
       if (flashcardSet.vocabShowReadingIfRareKanji &&
           vocab.isUsuallyKanaAlone()) {
         // Usually written with kana alone, add faded kanji writing and reading
@@ -755,7 +757,9 @@ class _VocabFlashcardBack extends ViewModelWidget<FlashcardsViewModel> {
     List<Widget> children = [];
 
     // Add kanji writing
-    if (vocab.writings != null) {
+    if (vocab.writings != null &&
+        (vocab.writings![0].info == null ||
+            !vocab.writings![0].info!.contains(WritingInfo.searchOnlyForm))) {
       late String writingText;
       if (flashcardSet.vocabShowAlternatives) {
         List<String> writings = [];
