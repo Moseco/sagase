@@ -56,17 +56,15 @@ class TextAnalysisViewModel extends FutureViewModel {
 
     tokens = _mecabService.parseText(_text);
 
-    // Look up vocab for each token
     for (var token in tokens!) {
-      // If proper noun and enabled look up in proper noun dictionary
-      if (token.pos == PartOfSpeech.nounProper) {
-        if (_sharedPreferencesService.getProperNounsEnabled()) {
-          token.associatedDictionaryItems =
-              await _dictionaryService.getProperNounByJapaneseTextToken(token);
-        } else {
-          token.associatedDictionaryItems = [];
-        }
-      } else {
+      if (token.pos == PartOfSpeech.nounProper &&
+          _sharedPreferencesService.getProperNounsEnabled()) {
+        token.associatedDictionaryItems =
+            await _dictionaryService.getProperNounByJapaneseTextToken(token);
+      }
+
+      if (token.associatedDictionaryItems == null ||
+          token.associatedDictionaryItems!.isEmpty) {
         token.associatedDictionaryItems =
             await _dictionaryService.getVocabByJapaneseTextToken(token);
       }
