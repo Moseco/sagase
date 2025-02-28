@@ -12,21 +12,6 @@ class TextAnalysisViewing extends ViewModelWidget<TextAnalysisViewModel> {
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
-    if (viewModel.analysisFailed) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('No Japanese text found.'),
-            TextButton(
-              onPressed: viewModel.editText,
-              child: const Text('Edit text'),
-            )
-          ],
-        ),
-      );
-    }
-
     List<Widget> textChildren = [];
     List<Widget> associatedVocabChildren = [];
     for (var token in viewModel.tokens!) {
@@ -170,21 +155,33 @@ class TextAnalysisViewing extends ViewModelWidget<TextAnalysisViewModel> {
           ),
         ),
         Expanded(
-          child: ListView.separated(
-            separatorBuilder: (_, __) => const Divider(
-              height: 1,
-              indent: 8,
-              endIndent: 8,
-            ),
-            primary: false,
-            padding: EdgeInsets.only(
-              left: padding.left,
-              right: padding.right,
-              bottom: padding.bottom,
-            ),
-            itemCount: associatedVocabChildren.length,
-            itemBuilder: (context, index) => associatedVocabChildren[index],
-          ),
+          child: viewModel.analysisFailed
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('No Japanese words found'),
+                    TextButton(
+                      onPressed: viewModel.editText,
+                      child: const Text('Edit text'),
+                    )
+                  ],
+                )
+              : ListView.separated(
+                  separatorBuilder: (_, __) => const Divider(
+                    height: 1,
+                    indent: 8,
+                    endIndent: 8,
+                  ),
+                  primary: false,
+                  padding: EdgeInsets.only(
+                    left: padding.left,
+                    right: padding.right,
+                    bottom: padding.bottom,
+                  ),
+                  itemCount: associatedVocabChildren.length,
+                  itemBuilder: (context, index) =>
+                      associatedVocabChildren[index],
+                ),
         ),
       ],
     );
