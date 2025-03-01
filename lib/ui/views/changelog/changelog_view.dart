@@ -72,36 +72,29 @@ class _CurrentChangelog extends StatelessWidget {
             ),
           ),
           Text(
-            'What\'s new in 1.2',
+            'What\'s new in 1.3',
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.storage),
-            title: Text('All new internals'),
+            leading: Icon(Icons.camera),
+            title: Text('OCR beta'),
             subtitle: Text(
-              'New database that takes up half the space',
+              'Detect and analyze Japanese text in photos',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Proper nouns'),
+            leading: Icon(Icons.edit_note),
+            title: Text('Notes'),
             subtitle: Text(
-              'Search through nearly 1 million proper nouns with the optional proper noun dictionary add-on',
+              'Add notes to vocab and kanji',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.school),
-            title: Text('Flashcard improvements'),
+            leading: Icon(Icons.bug_report),
+            title: Text('Bug fixes'),
             subtitle: Text(
-              'Get a better view of your current and past performance',
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.text_snippet),
-            title: Text('Text analysis'),
-            subtitle: Text(
-              'UI and functionality rework making it more useful and easier to use',
+              'Many bug fixes and improvements',
             ),
           ),
         ],
@@ -117,7 +110,15 @@ class _ChangelogHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: double.infinity,
-      child: Markdown(data: '''# [1.2.1]
+      child: Markdown(data: '''# [1.3.0]
+- Added OCR beta to allow finding Japanese text in photos, a complete version should come in the next release
+- Added user notes to vocab and kanji, these notes can also be shown in flashcards
+- Improved text analysis dictionary lookup
+- Stopped showing search only forms of vocab
+- Fixed a bug that caused some search results to appear twice
+- Fixed a bug that prevented some vocab from being displayed
+- Fixed some typos
+# [1.2.1]
 - Updated flashcard performance graph UI
 - Stopped creating unnecessary data when using random order flashcards
 - Fixed issue that caused crashes when searching for special symbols
