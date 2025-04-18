@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:kana_kit/kana_kit.dart';
-import 'package:mecab_dart/mecab_dart.dart';
+import 'package:mecab_for_flutter/mecab_for_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:archive/archive_io.dart' as archive;
@@ -51,7 +51,7 @@ class MecabService {
       }
 
       // Initialize mecab
-      _mecab.initWithIpadicDir(mecabDir, true);
+      _mecab.initFlutter(mecabDir, true);
 
       _ready = true;
       return _ready;

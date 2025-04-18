@@ -7,7 +7,7 @@ version: 1.3.0+18
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.24.3
+  flutter: 3.29.3
 
 isar_version: &isar_version 3.1.8
 
@@ -24,9 +24,9 @@ dependencies:
   stacked_themes: ^0.3.13
 
   # Firebase
-  firebase_core: 3.6.0
-  firebase_analytics: 11.3.3
-  firebase_crashlytics: 4.1.3
+  firebase_core: 3.13.0
+  firebase_analytics: 11.4.5
+  firebase_crashlytics: 4.3.5
 
   # UI
   google_nav_bar: ^5.0.6
@@ -35,9 +35,9 @@ dependencies:
     git:
       url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.2.0
-  fl_chart: ^0.69.0
+  fl_chart: ^0.71.0
   flutter_svg: ^2.0.7
-  flutter_sticky_header: ^0.6.5
+  flutter_sticky_header: ^0.7.0
   shimmer: ^3.0.0
   ruby_text: ^3.0.3
   introduction_screen: ^3.1.11
@@ -57,28 +57,31 @@ dependencies:
   path_provider: ^2.0.15
   kana_kit: ^2.1.1
   async: ^2.11.0
-  archive: ^3.4.9
-  google_mlkit_digital_ink_recognition: ^0.13.0
-  google_mlkit_text_recognition: ^0.14.0
-  intl: ^0.19.0
+  archive: ^4.0.5
+  google_mlkit_digital_ink_recognition: ^0.14.1
+  google_mlkit_text_recognition: ^0.15.0
+  intl: ^0.20.2
   shared_preferences: ^2.3.5
-  mecab_dart: ^0.1.6
+  mecab_for_flutter: ^1.0.5
   path: ^1.8.3
   flutter_file_dialog: ^3.0.1
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '1aa991e'
+      ref: 'af2f70f'
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
   disk_space_plus: # TODO change after new version published
     git:
       url: https://github.com/Moseco/disk_space_plus
-      ref: 'ce64cfb'
-  share_plus: ^7.2.2
+      ref: 'be02408'
+  share_plus: ^10.1.4
   app_links: ^6.3.2
-  uri_to_file: ^1.0.0
+  uri_to_file:
+    git:
+      url: https://github.com/chan150/uri-to-file
+      ref: 'ddb5dff'
   security_scoped_resource: ^0.0.2
   sanitize_filename: ^1.0.5
   image_picker: ^1.1.2
@@ -86,6 +89,12 @@ dependencies:
     git:
       url: https://github.com/Moseco/flutter_exif_rotation
       ref: '55b72de'
+
+dependency_overrides:
+  flutter_statusbarcolor_ns:
+    git:
+      url: https://github.com/uintdev/flutter_statusbarcolor/
+      ref: 'd870cb2'
 
 dev_dependencies:
   flutter_test:
