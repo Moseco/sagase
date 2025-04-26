@@ -17,6 +17,8 @@ class DownloadService {
   StreamController<double>? _streamController;
   Stream<double>? get progressStream => _streamController?.stream;
 
+  final _diskSpacePlus = DiskSpacePlus();
+
   Future<bool> downloadRequiredAssets({bool useLocal = false}) async {
     try {
       // Option to get assets locally
@@ -189,7 +191,7 @@ class DownloadService {
 
   Future<bool> hasSufficientFreeSpace() async {
     // Get free space in MB
-    final freeSpace = await DiskSpacePlus.getFreeDiskSpace ?? 0;
+    final freeSpace = await _diskSpacePlus.getFreeDiskSpace ?? 0;
 
     // If 0 return true
     // Can receive 0 (or null originally) if platform function fails
