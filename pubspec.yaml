@@ -62,7 +62,10 @@ dependencies:
   google_mlkit_text_recognition: ^0.15.0
   intl: ^0.20.2
   shared_preferences: ^2.3.5
-  mecab_for_flutter: ^1.0.5
+  mecab_dart:
+    git:
+      url: https://github.com/Moseco/mecab_dart
+      ref: '338acd9'
   path: ^1.8.3
   flutter_file_dialog: ^3.0.1
   sagase_dictionary:
