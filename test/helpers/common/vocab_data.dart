@@ -11,6 +11,7 @@ Vocab getVocab1() => Vocab(
           id: 1,
           vocabId: 1,
           writing: '一',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -19,6 +20,7 @@ Vocab getVocab1() => Vocab(
           vocabId: 1,
           reading: 'いち',
           readingRomaji: 'ichi',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -42,6 +44,7 @@ Vocab getVocab2() => Vocab(
           id: 2,
           vocabId: 2,
           writing: '二',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -50,6 +53,7 @@ Vocab getVocab2() => Vocab(
           vocabId: 2,
           reading: 'に',
           readingRomaji: 'ni',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -73,6 +77,7 @@ Vocab getVocab3() => Vocab(
           id: 3,
           vocabId: 3,
           writing: '三',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -81,6 +86,7 @@ Vocab getVocab3() => Vocab(
           vocabId: 3,
           reading: 'さん',
           readingRomaji: 'san',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -104,6 +110,7 @@ Vocab getVocab4() => Vocab(
           id: 4,
           vocabId: 4,
           writing: '四',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -112,6 +119,7 @@ Vocab getVocab4() => Vocab(
           vocabId: 4,
           reading: 'よん',
           readingRomaji: 'yon',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -135,6 +143,7 @@ Vocab getVocab5() => Vocab(
           id: 5,
           vocabId: 5,
           writing: '五',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -143,6 +152,7 @@ Vocab getVocab5() => Vocab(
           vocabId: 5,
           reading: 'ご',
           readingRomaji: 'go',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -166,6 +176,7 @@ Vocab getVocab6() => Vocab(
           id: 6,
           vocabId: 6,
           writing: '六',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -174,6 +185,7 @@ Vocab getVocab6() => Vocab(
           vocabId: 6,
           reading: 'ろく',
           readingRomaji: 'roku',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -197,6 +209,7 @@ Vocab getVocab7() => Vocab(
           id: 7,
           vocabId: 7,
           writing: '七',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -205,6 +218,7 @@ Vocab getVocab7() => Vocab(
           vocabId: 7,
           reading: 'なな',
           readingRomaji: 'nana',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -228,6 +242,7 @@ Vocab getVocab8() => Vocab(
           id: 8,
           vocabId: 8,
           writing: '八',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -236,6 +251,7 @@ Vocab getVocab8() => Vocab(
           vocabId: 8,
           reading: 'はち',
           readingRomaji: 'hachi',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -259,6 +275,7 @@ Vocab getVocab9() => Vocab(
           id: 9,
           vocabId: 9,
           writing: '九',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -267,6 +284,7 @@ Vocab getVocab9() => Vocab(
           vocabId: 9,
           reading: 'きゅう',
           readingRomaji: 'kyuu',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -290,6 +308,7 @@ Vocab getVocab10() => Vocab(
           id: 10,
           vocabId: 10,
           writing: '十',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -298,6 +317,7 @@ Vocab getVocab10() => Vocab(
           vocabId: 10,
           reading: 'じゅう',
           readingRomaji: 'jyuu',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -322,6 +342,7 @@ Vocab getVocabYes() => Vocab(
           vocabId: 11,
           reading: 'はい',
           readingRomaji: 'hai',
+          primaryPair: true,
           pitchAccents: [1],
         ),
       ]
@@ -395,6 +416,7 @@ Vocab getVocabMaybe() => Vocab(
           vocabId: 12,
           reading: 'かな',
           readingRomaji: 'kana',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -418,6 +440,7 @@ Vocab getVocabNo1() => Vocab(
           vocabId: 13,
           reading: 'いいえ',
           readingRomaji: 'iie',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -441,6 +464,7 @@ Vocab getVocabNo2() => Vocab(
           vocabId: 14,
           reading: 'うーん',
           readingRomaji: 'uun',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -464,6 +488,7 @@ Vocab getVocabNo3() => Vocab(
           vocabId: 15,
           reading: 'ううん',
           readingRomaji: 'uun',
+          primaryPair: true,
         ),
       ]
       ..definitions = [
@@ -486,6 +511,7 @@ Vocab getVocabFall() => Vocab(
           id: 0,
           vocabId: 1332650,
           writing: '秋',
+          primaryPair: true,
         ),
       ]
       ..readings = [
@@ -494,6 +520,7 @@ Vocab getVocabFall() => Vocab(
           vocabId: 1332650,
           reading: 'あき',
           readingRomaji: 'aki',
+          primaryPair: true,
           pitchAccents: [1],
         ),
       ]

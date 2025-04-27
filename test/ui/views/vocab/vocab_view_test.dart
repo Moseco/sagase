@@ -157,16 +157,19 @@ void main() {
                   id: 0,
                   vocabId: 0,
                   writing: '岩',
+                  primaryPair: true,
                 ),
                 const VocabWriting(
                   id: 1,
                   vocabId: 0,
                   writing: '巌',
+                  primaryPair: false,
                 ),
                 const VocabWriting(
                   id: 2,
                   vocabId: 0,
                   writing: '磐',
+                  primaryPair: false,
                 ),
               ]
               ..readings = [
@@ -175,6 +178,7 @@ void main() {
                   vocabId: 0,
                   reading: 'いわ',
                   readingRomaji: 'iwa',
+                  primaryPair: true,
                 ),
               ]
               ..definitions = [
@@ -221,6 +225,7 @@ void main() {
                   id: 0,
                   vocabId: 0,
                   writing: '何時でも',
+                  primaryPair: true,
                 ),
               ]
               ..readings = [
@@ -229,12 +234,14 @@ void main() {
                   vocabId: 0,
                   reading: 'いつでも',
                   readingRomaji: 'itsudemo',
+                  primaryPair: true,
                 ),
                 const VocabReading(
                   id: 1,
                   vocabId: 0,
                   reading: 'なんどきでも',
                   readingRomaji: 'nandekidemo',
+                  primaryPair: false,
                 ),
               ]
               ..definitions = [
@@ -283,21 +290,25 @@ void main() {
                   id: 0,
                   vocabId: 0,
                   writing: '有様',
+                  primaryPair: true,
                 ),
                 const VocabWriting(
                   id: 1,
                   vocabId: 0,
                   writing: '有り様',
+                  primaryPair: false,
                 ),
                 const VocabWriting(
                   id: 2,
                   vocabId: 0,
                   writing: 'あり様',
+                  primaryPair: false,
                 ),
                 const VocabWriting(
                   id: 3,
                   vocabId: 0,
                   writing: '有りさま',
+                  primaryPair: false,
                 ),
               ]
               ..readings = [
@@ -306,12 +317,14 @@ void main() {
                   vocabId: 0,
                   reading: 'ありさま',
                   readingRomaji: 'arisama',
+                  primaryPair: true,
                 ),
                 const VocabReading(
                   id: 1,
                   vocabId: 0,
                   reading: 'ありよう',
                   readingRomaji: 'ariyou',
+                  primaryPair: false,
                   associatedWritings: [
                     '有様',
                     '有り様',
@@ -372,17 +385,20 @@ void main() {
                   id: 0,
                   vocabId: 0,
                   writing: '機嫌',
+                  primaryPair: true,
                 ),
                 const VocabWriting(
                   id: 1,
                   vocabId: 0,
                   writing: '譏嫌',
+                  primaryPair: false,
                   info: [WritingInfo.outdatedKanji],
                 ),
                 const VocabWriting(
                   id: 2,
                   vocabId: 0,
                   writing: '気嫌',
+                  primaryPair: false,
                   info: [WritingInfo.irregularKanji],
                 ),
               ]
@@ -392,6 +408,7 @@ void main() {
                   vocabId: 0,
                   reading: 'きげん',
                   readingRomaji: 'kigen',
+                  primaryPair: true,
                 ),
               ]
               ..definitions = [
@@ -444,6 +461,7 @@ void main() {
                   id: 0,
                   vocabId: 0,
                   writing: '暑い',
+                  primaryPair: true,
                 ),
               ]
               ..readings = [
@@ -452,6 +470,7 @@ void main() {
                   vocabId: 0,
                   reading: 'あつい',
                   readingRomaji: 'atsui',
+                  primaryPair: true,
                 ),
               ]
               ..definitions = [
@@ -501,6 +520,7 @@ void main() {
                   vocabId: 0,
                   reading: 'ここ',
                   readingRomaji: 'koko',
+                  primaryPair: true,
                 ),
               ]
               ..definitions = [

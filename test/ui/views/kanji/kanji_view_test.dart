@@ -118,6 +118,7 @@ void main() {
                 id: 0,
                 vocabId: 0,
                 writing: '探偵',
+                primaryPair: true,
               ),
             ]
             ..readings = [
@@ -126,6 +127,7 @@ void main() {
                 vocabId: 0,
                 reading: 'たんてい',
                 readingRomaji: 'tantei',
+                primaryPair: true,
               ),
             ]
             ..definitions = [

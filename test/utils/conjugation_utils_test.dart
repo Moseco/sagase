@@ -8,7 +8,14 @@ void main() {
 
     test('conjugate adjectiveI', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '怖い')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '怖い',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -34,7 +41,14 @@ void main() {
         common: true,
         frequencyScore: 0,
       )
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '怖い')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '怖い',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -54,7 +68,14 @@ void main() {
 
     test('conjugate adjectiveNa', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '綺麗',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -81,7 +102,14 @@ void main() {
         common: true,
         frequencyScore: 0,
       )
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '綺麗',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -108,7 +136,14 @@ void main() {
         common: true,
         frequencyScore: 0,
       )
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '綺麗')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '綺麗',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -129,7 +164,14 @@ void main() {
 
     test('conjugate adjectiveNa - short', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '神')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '神',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -150,7 +192,14 @@ void main() {
 
     test('conjugate adjectiveIx', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '頭がいい')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '頭がいい',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -171,7 +220,14 @@ void main() {
 
     test('conjugate verbIchidan', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '上げる')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '上げる',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -220,13 +276,21 @@ void main() {
 
     test('conjugate verbIchidanS', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '呉れる')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '呉れる',
+            primaryPair: true,
+          )
+        ]
         ..readings = [
           const VocabReading(
             id: 0,
             vocabId: 0,
             reading: 'くれる',
             readingRomaji: 'kureru',
+            primaryPair: true,
           )
         ]
         ..definitions = [
@@ -278,13 +342,21 @@ void main() {
 
     test('conjugate verbGodanAru', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '為さる')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '為さる',
+            primaryPair: true,
+          )
+        ]
         ..readings = [
           const VocabReading(
             id: 0,
             vocabId: 0,
             reading: 'なさる',
             readingRomaji: 'nasaru',
+            primaryPair: true,
           )
         ]
         ..definitions = [
@@ -336,7 +408,14 @@ void main() {
 
     test('conjugate verbGodanB', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '呼ぶ')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '呼ぶ',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -385,7 +464,14 @@ void main() {
 
     test('conjugate verbGodanG', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '泳ぐ')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '泳ぐ',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -434,7 +520,14 @@ void main() {
 
     test('conjugate verbGodanK', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '書く')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '書く',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -483,7 +576,14 @@ void main() {
 
     test('conjugate verbGodanKS', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '行く')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '行く',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -532,7 +632,14 @@ void main() {
 
     test('conjugate verbGodanM', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '飲む')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '飲む',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -581,7 +688,14 @@ void main() {
 
     test('conjugate verbGodanN', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '死ぬ')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '死ぬ',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -630,7 +744,14 @@ void main() {
 
     test('conjugate verbGodanR', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '知る')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '知る',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -679,13 +800,21 @@ void main() {
 
     test('conjugate verbGodanRI', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '有る')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '有る',
+            primaryPair: true,
+          )
+        ]
         ..readings = [
           const VocabReading(
             id: 0,
             vocabId: 0,
             reading: 'ある',
             readingRomaji: 'aru',
+            primaryPair: true,
           )
         ]
         ..definitions = [
@@ -737,7 +866,14 @@ void main() {
 
     test('conjugate verbGodanS', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '話す')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '話す',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -786,7 +922,14 @@ void main() {
 
     test('conjugate verbGodanT', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '持つ')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '持つ',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -835,7 +978,14 @@ void main() {
 
     test('conjugate verbGodanU', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '言う')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '言う',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -884,7 +1034,14 @@ void main() {
 
     test('conjugate verbGodanUS', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '問う')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '問う',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -933,13 +1090,21 @@ void main() {
 
     test('conjugate verbKuru', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '来る')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '来る',
+            primaryPair: true,
+          )
+        ]
         ..readings = [
           const VocabReading(
             id: 0,
             vocabId: 0,
             reading: 'くる',
             readingRomaji: 'kuru',
+            primaryPair: true,
           )
         ]
         ..definitions = [
@@ -990,7 +1155,14 @@ void main() {
 
     test('conjugate verbSuru', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '電話')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '電話',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -1039,7 +1211,14 @@ void main() {
 
     test('conjugate verbSuru - short', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '噂')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '噂',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -1088,7 +1267,14 @@ void main() {
 
     test('conjugate verbSuruSpecial', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '愛する')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '愛する',
+            primaryPair: true,
+          )
+        ]
         ..definitions = [
           const VocabDefinition(
             id: 0,
@@ -1137,13 +1323,21 @@ void main() {
 
     test('conjugate verbSuruIncluded', () {
       final vocab = Vocab(id: 0, pos: null, common: true, frequencyScore: 0)
-        ..writings = [const VocabWriting(id: 0, vocabId: 0, writing: '為る')]
+        ..writings = [
+          const VocabWriting(
+            id: 0,
+            vocabId: 0,
+            writing: '為る',
+            primaryPair: true,
+          )
+        ]
         ..readings = [
           const VocabReading(
             id: 0,
             vocabId: 0,
             reading: 'する',
             readingRomaji: 'suru',
+            primaryPair: true,
           )
         ]
         ..definitions = [
