@@ -85,17 +85,19 @@ class SearchViewModel extends FutureViewModel {
         // If no results found for vocab search, try to analyze
         if (_searchFilter == SearchFilter.vocab &&
             searchResult!.isEmpty &&
-            (_kanaKit.isJapanese(stringToSearch) ||
-                _kanaKit.isMixed(stringToSearch))) {
-          final analysisResult = _mecabService.parseText(stringToSearch);
-          if (analysisResult.length == 1) {
-            // Try to search using the identified token (could be conjugated word)
-            searchResult = await _dictionaryService.searchDictionary(
-                analysisResult[0].base, _searchFilter);
-          } else if (analysisResult.isNotEmpty) {
-            // Search could be for sentence/phrase, offer to analyze
-            _promptAnalysis = true;
+            !_kanaKit.isRomaji(stringToSearch)) {
+          final tokens = _mecabService.parseText(stringToSearch);
+
+          for (final token in tokens) {
+            final results =
+                await _dictionaryService.getVocabByJapaneseTextToken(token);
+
+            if (results.isNotEmpty) {
+              searchResult!.add(results[0]);
+            }
           }
+
+          _promptAnalysis = searchResult!.isNotEmpty;
         }
 
         notifyListeners();
@@ -117,6 +119,7 @@ class SearchViewModel extends FutureViewModel {
       }
     } else {
       _currentSearchHistoryItem = null;
+      _promptAnalysis = false;
       searchResult = null;
       notifyListeners();
     }

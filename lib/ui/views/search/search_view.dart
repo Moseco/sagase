@@ -14,6 +14,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
 import 'search_viewmodel.dart';
+import 'widgets/analysis_prompt.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -46,6 +47,7 @@ class _Body extends StackedHookView<SearchViewModel> {
       ),
       child: Column(
         children: [
+          if (viewModel.promptAnalysis) AnalysisPrompt(),
           viewModel.searchResult == null
               ? _SearchHistory(searchController)
               : const _SearchResults(),
@@ -377,44 +379,18 @@ class _SearchResults extends ViewModelWidget<SearchViewModel> {
 
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
-    // If no results, show message
     if (viewModel.searchResult!.isEmpty) {
-      if (viewModel.promptAnalysis) {
-        return Expanded(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'No results found.\nLooks like your query may be a sentence or phrase.',
-                    textAlign: TextAlign.center,
-                  ),
-                  TextButton(
-                    onPressed: () => viewModel.navigateToTextAnalysis(
-                      text: viewModel.searchString,
-                    ),
-                    child: const Text('Analyze text instead'),
-                  ),
-                ],
-              ),
+      return const Expanded(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'No results found',
+              textAlign: TextAlign.center,
             ),
           ),
-        );
-      } else {
-        return const Expanded(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'No results found',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        );
-      }
+        ),
+      );
     }
 
     // Show results
