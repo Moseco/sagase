@@ -9,7 +9,9 @@ class AnalysisPrompt extends ViewModelWidget<SearchViewModel> {
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
     return ListTile(
-      title: Text('Multiple words found'),
+      title: viewModel.searchResult?.length == 1
+          ? Text('Partial match found')
+          : Text('Multiple words found'),
       subtitle: Text('Tap to view details'),
       trailing: Icon(
         Icons.chevron_right,
