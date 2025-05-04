@@ -87,7 +87,7 @@ class FlashcardsViewModel extends FutureViewModel {
         flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
             flashcardSet, sessionDateTime.toInt());
       } else {
-        flashcardSet.streak = 0;
+        flashcardSet.streak = 1;
         flashcardSetReport = await _dictionaryService.createFlashcardSetReport(
             flashcardSet, sessionDateTime.toInt());
       }
