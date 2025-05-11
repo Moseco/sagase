@@ -11,6 +11,7 @@ import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:path/path.dart' as path;
 
@@ -188,7 +189,7 @@ class DictionaryService {
 
       if (list.length == 1) {
         return list;
-      } else if (list.length > 1) {
+      } else if (list.isNotEmpty) {
         results = list;
       }
     }

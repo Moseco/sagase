@@ -133,8 +133,8 @@ class MecabService {
       PartOfSpeech? pos;
       if (tokens[i].features[0] == '助詞') {
         pos = PartOfSpeech.particle;
-      } else if (tokens[i].features[4] == 'サ変・スル') {
-        pos = PartOfSpeech.verbSuruIncluded;
+      } else if (tokens[i].features[0] == '動詞') {
+        pos = _identifyVerb(tokens[i].features);
       } else if (tokens[i].features[1] == '固有名詞' &&
           tokens[i].features[2] == '人名') {
         pos = PartOfSpeech.nounProper;
@@ -187,6 +187,49 @@ class MecabService {
     }
 
     return list;
+  }
+
+  PartOfSpeech? _identifyVerb(List<String> features) {
+    switch (features[4]) {
+      case 'サ変・スル':
+        return PartOfSpeech.verbSuruIncluded;
+      case '一段':
+        return PartOfSpeech.verbIchidan;
+      case '一段・クレル':
+        return PartOfSpeech.verbIchidanS;
+      // case '':
+      //   return PartOfSpeech.verbGodanAru;
+      case '五段・ラ行':
+        if (features[6] == 'ある' || features[6] == '有る' || features[6] == 'アル') {
+          return PartOfSpeech.verbGodanRI;
+        } else {
+          return PartOfSpeech.verbGodanR;
+        }
+      case '五段・バ行':
+        return PartOfSpeech.verbGodanB;
+      case '五段・ガ行':
+        return PartOfSpeech.verbGodanG;
+      case '五段・カ行促音便':
+        return PartOfSpeech.verbGodanKS;
+      case '五段・カ行イ音便':
+        return PartOfSpeech.verbGodanK;
+      case '五段・マ行':
+        return PartOfSpeech.verbGodanM;
+      case '五段・ナ行':
+        return PartOfSpeech.verbGodanN;
+      case '五段・サ行':
+        return PartOfSpeech.verbGodanS;
+      case '五段・タ行':
+        return PartOfSpeech.verbGodanT;
+      case '五段・ワ行促音便':
+        return PartOfSpeech.verbGodanU;
+      // case '':
+      //   return PartOfSpeech.verbGodanUS;
+      // case '':
+      //   return PartOfSpeech.verbGodanUru;
+      default:
+        return null;
+    }
   }
 
   List<RubyTextPair> createRubyTextPairs(String writing, String reading) {
