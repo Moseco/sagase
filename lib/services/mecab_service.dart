@@ -159,7 +159,12 @@ class MecabService {
       );
 
       // Check if the current token should be trailing of previous token
-      if (list.isNotEmpty && list.last.pos != PartOfSpeech.particle) {
+      if (list.isNotEmpty) {
+        if (tokens[i - 1].features[5] == '連用タ接続') {
+          list.last.trailing ??= [];
+          list.last.trailing!.add(current);
+          continue;
+        } else if (list.last.pos != PartOfSpeech.particle) {
         if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
           list.last.trailing ??= [];
           list.last.trailing!.add(current);
@@ -180,6 +185,7 @@ class MecabService {
           list.last.trailing ??= [];
           list.last.trailing!.add(current);
           continue;
+          }
         }
       }
 
