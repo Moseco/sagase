@@ -140,17 +140,32 @@ class MecabService {
         pos = PartOfSpeech.nounProper;
       }
 
-      // Handle corner cases where the base form (index 6) is different than the real base form
+      // Handle corner cases where the base or base reading form is different than the real form
       String base = tokens[i].features[6];
       if (tokens[i].surface == 'なら' && tokens[i].features[6] == 'だ') {
         base = 'なら';
+      }
+      String baseReading = tokens[i].features[7];
+      if (baseReading.endsWith('ッ') &&
+          tokens[i].features[5] == '連用タ接続' &&
+          tokens.length > i + 1) {
+        switch (tokens[i + 1].features[6]) {
+          case 'て':
+            baseReading =
+                '${baseReading.substring(0, baseReading.length - 1)}ク';
+            break;
+          case 'で':
+            baseReading =
+                '${baseReading.substring(0, baseReading.length - 1)}グ';
+            break;
+        }
       }
 
       // Created token to add to list or trailing of previous token
       final current = JapaneseTextToken(
         original: tokens[i].surface,
         base: base,
-        baseReading: tokens[i].features[7],
+        baseReading: baseReading,
         rubyTextPairs: createRubyTextPairs(
           tokens[i].surface,
           tokens[i].features[7],
