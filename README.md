@@ -116,3 +116,5 @@ Thanks to the [KanjiVG project](http://kanjivg.tagaini.net/) for the kanji strok
 Thanks to the [creator of MeCab](https://taku910.github.io/mecab) for the Japanese text analyzer and tokenizer.
 
 Thanks to [mifunetoshiro on Github](https://github.com/mifunetoshiro/kanjium) for providing the pitch accent data.
+
+Thanks to the [contributors on Github](https://github.com/donkuri/Kaishi) for creating the Kaishi 1.5k vocab list.

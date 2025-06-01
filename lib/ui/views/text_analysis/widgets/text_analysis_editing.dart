@@ -63,7 +63,7 @@ class TextAnalysisEditing extends ViewModelWidget<TextAnalysisViewModel> {
 class _MenuBar extends ViewModelWidget<TextAnalysisViewModel> {
   final TextEditingController controller;
 
-  const _MenuBar(this.controller, {super.key});
+  const _MenuBar(this.controller);
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {

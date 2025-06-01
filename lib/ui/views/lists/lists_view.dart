@@ -21,6 +21,8 @@ class ListsView extends StackedView<ListsViewModel> {
         ListSelection.vocab => _VocabList(),
         ListSelection.kanji => _KanjiList(),
         ListSelection.myLists => _MyLists(),
+        ListSelection.coreVocab => _CoreVocabList(),
+        ListSelection.jlptVocab => _JlptVocabList(),
         ListSelection.jlptKanji => _JlptKanjiList(),
         ListSelection.schoolKanji => _SchoolKanjiList(),
         ListSelection.kanjiKentei => _KanjiKenteiList(),
@@ -94,6 +96,129 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
           const Expanded(
             child: Text(
               'Vocab Lists',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: IconButton(
+              onPressed: () {},
+              color: Colors.transparent,
+              icon: const Icon(Icons.help),
+            ),
+          ),
+        ],
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _DictionaryListItem(
+            text: 'Kaishi 1.5k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdKaishi),
+          ),
+          _DictionaryListItem(
+            text: 'Core Vocab',
+            onTap: () => viewModel.setListSelection(ListSelection.coreVocab),
+            isFolder: true,
+          ),
+          _DictionaryListItem(
+            text: 'JLPT Vocab',
+            onTap: () => viewModel.setListSelection(ListSelection.jlptVocab),
+            isFolder: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CoreVocabList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return HomeHeader(
+      title: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: BackButton(
+              onPressed: viewModel.back,
+              color: Colors.white,
+            ),
+          ),
+          const Expanded(
+            child: Text(
+              'Core Vocab',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: IconButton(
+              onPressed: () => viewModel.showDescriptionDialog(
+                'Core Vocab',
+                'Core vocab are a set of lists containing the most common Japanese vocab based on frequency of use. Please note that each list contains unique entries, so to study the 6,000 most common vocab you should include the 2k and 6k lists.',
+              ),
+              color: Colors.white,
+              icon: const Icon(Icons.help),
+            ),
+          ),
+        ],
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _DictionaryListItem(
+            text: '2k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListId2k),
+          ),
+          _DictionaryListItem(
+            text: '6k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListId6k),
+          ),
+          _DictionaryListItem(
+            text: '10k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListId10k),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _JlptVocabList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return HomeHeader(
+      title: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: BackButton(
+              onPressed: viewModel.back,
+              color: Colors.white,
+            ),
+          ),
+          const Expanded(
+            child: Text(
+              'JLPT Vocab',
               maxLines: 1,
               textAlign: TextAlign.center,
               style: TextStyle(

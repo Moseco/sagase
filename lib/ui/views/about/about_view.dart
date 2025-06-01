@@ -119,7 +119,21 @@ class AboutView extends StackedView<AboutViewModel> {
                             r'https://github.com/mifunetoshiro/kanjium'),
                     ),
                     const TextSpan(
-                      text: ' on Github manages the pitch accent data.\n\n',
+                      text: ' on GitHub manages the pitch accent data.\n\n',
+                    ),
+                    // Kaishi 1.5k
+                    TextSpan(
+                      text: 'Kaishi 1.5k',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => viewModel
+                            .openUrl(r'https://github.com/donkuri/Kaishi'),
+                    ),
+                    const TextSpan(
+                      text: ' vocab list on GitHub.\n\n',
                     ),
                   ],
                 ),
