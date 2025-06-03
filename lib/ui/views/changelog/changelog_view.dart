@@ -72,29 +72,29 @@ class _CurrentChangelog extends StatelessWidget {
             ),
           ),
           Text(
-            'What\'s new in 1.3',
+            'What\'s new in 1.4',
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.camera),
-            title: Text('OCR beta'),
+            leading: Icon(Icons.format_list_bulleted),
+            title: Text('New vocab lists'),
             subtitle: Text(
-              'Detect and analyze Japanese text in photos',
+              'Added Kaishi 1.5k and core vocab lists',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.edit_note),
-            title: Text('Notes'),
+            leading: Icon(Icons.search),
+            title: Text('Better search'),
             subtitle: Text(
-              'Add notes to vocab and kanji',
+              'Sorting is greatly improved and you can now use wildcards',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.bug_report),
-            title: Text('Bug fixes'),
+            leading: Icon(Icons.text_snippet),
+            title: Text('Better text analysis'),
             subtitle: Text(
-              'Many bug fixes and improvements',
+              'Text analysis is now much better at identifying vocab',
             ),
           ),
         ],
@@ -110,7 +110,16 @@ class _ChangelogHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: double.infinity,
-      child: Markdown(data: '''# [1.3.0]
+      child: Markdown(data: '''
+# [1.4.0]
+- Added 2k, 6k, 10k, and Kaishi 1.5k vocab lists
+- Added wildcard searching (e.g., "*心")
+- Added text analysis to search when no dictionary entries are found instead of just redirecting to text analysis
+- Improved vocab search sorting
+- Improved text analysis verb identification
+- Improved text analysis handling of auxiliary verbs
+- Fixed initial flashcard streak amount on reset
+# [1.3.0]
 - Added OCR beta to allow finding Japanese text in photos, a complete version should come in the next release
 - Added user notes to vocab and kanji, these notes can also be shown in flashcards
 - Improved text analysis dictionary lookup
