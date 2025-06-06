@@ -74,6 +74,58 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                   ListView(
                     children: [
                       CheckboxListTile(
+                        title: const Text('Kaishi 1.5k'),
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListIdKaishi]
+                                ?.enabled ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants.dictionaryListIdKaishi,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('2k'),
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListId2k]
+                                ?.enabled ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants.dictionaryListId2k,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('6k'),
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListId6k]
+                                ?.enabled ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants.dictionaryListId6k,
+                            value),
+                      ),
+                      CheckboxListTile(
+                        title: const Text('10k'),
+                        value: widget
+                                .request
+                                .data
+                                .predefinedLists[SagaseDictionaryConstants
+                                    .dictionaryListId10k]
+                                ?.enabled ??
+                            false,
+                        onChanged: (bool? value) => _setPredefinedList(
+                            SagaseDictionaryConstants.dictionaryListId10k,
+                            value),
+                      ),
+                      CheckboxListTile(
                         title: const Text('JLPT N5'),
                         value: widget
                                 .request
