@@ -148,7 +148,8 @@ class MecabService {
       String baseReading = tokens[i].features[7];
       if (baseReading.endsWith('ッ') &&
           tokens[i].features[5] == '連用タ接続' &&
-          tokens.length > i + 1) {
+          tokens.length > i + 1 &&
+          tokens[i + 1].features.length == 9) {
         switch (tokens[i + 1].features[6]) {
           case 'て':
             baseReading =
@@ -175,31 +176,32 @@ class MecabService {
 
       // Check if the current token should be trailing of previous token
       if (list.isNotEmpty) {
-        if (tokens[i - 1].features[5] == '連用タ接続') {
+        if (tokens[i - 1].features.length == 9 &&
+            tokens[i - 1].features[5] == '連用タ接続') {
           list.last.trailing ??= [];
           list.last.trailing!.add(current);
           continue;
         } else if (list.last.pos != PartOfSpeech.particle) {
-        if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
-          list.last.trailing ??= [];
-          list.last.trailing!.add(current);
-          continue;
-        } else if (tokens[i].features[0] == '助動詞') {
-          if (tokens[i].features[6] == 'う' ||
-              tokens[i].features[6] == 'た' ||
-              tokens[i].features[6] == 'ます' ||
-              tokens[i].features[6] == 'ん' ||
-              tokens[i].features[6] == 'ない' ||
-              tokens[i].features[7] == 'ナ') {
+          if (tokens[i].features[1] == '接続助詞' && tokens[i].features[6] == 'て') {
             list.last.trailing ??= [];
             list.last.trailing!.add(current);
             continue;
-          }
-        } else if (tokens[i].features[1] == '非自立' &&
-            tokens[i].features[6] == 'ん') {
-          list.last.trailing ??= [];
-          list.last.trailing!.add(current);
-          continue;
+          } else if (tokens[i].features[0] == '助動詞') {
+            if (tokens[i].features[6] == 'う' ||
+                tokens[i].features[6] == 'た' ||
+                tokens[i].features[6] == 'ます' ||
+                tokens[i].features[6] == 'ん' ||
+                tokens[i].features[6] == 'ない' ||
+                tokens[i].features[7] == 'ナ') {
+              list.last.trailing ??= [];
+              list.last.trailing!.add(current);
+              continue;
+            }
+          } else if (tokens[i].features[1] == '非自立' &&
+              tokens[i].features[6] == 'ん') {
+            list.last.trailing ??= [];
+            list.last.trailing!.add(current);
+            continue;
           }
         }
       }
