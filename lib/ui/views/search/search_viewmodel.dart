@@ -28,7 +28,7 @@ class SearchViewModel extends FutureViewModel {
   String get searchString => _searchString;
   List<DictionaryItem>? searchResult;
 
-  CancelableOperation<List<DictionaryItem>>? _searchOperation;
+  CancelableOperation<void>? _searchOperation;
 
   bool _showHandWriting = false;
   bool get showHandWriting => _showHandWriting;
@@ -66,42 +66,15 @@ class SearchViewModel extends FutureViewModel {
 
   void searchOnChange(String value, {bool allowSkip = true}) {
     String stringToSearch = value.trim();
-    // Prevent duplicate searches
     if (stringToSearch == _searchString && allowSkip) return;
     _searchString = stringToSearch;
 
-    if (_searchOperation != null) _searchOperation!.cancel();
+    _searchOperation?.cancel();
 
     if (_searchString.isNotEmpty) {
       _searchOperation = CancelableOperation.fromFuture(
-        _dictionaryService.searchDictionary(_searchString, _searchFilter),
+        _search(_searchString, _searchFilter),
       );
-
-      _searchOperation!.value.then((value) async {
-        searchResult = value;
-        _searchOperation = null;
-        _promptAnalysis = false;
-
-        // If no results found for vocab search, try to analyze
-        if (_searchFilter == SearchFilter.vocab &&
-            searchResult!.isEmpty &&
-            !_kanaKit.isRomaji(stringToSearch)) {
-          final tokens = _mecabService.parseText(stringToSearch);
-
-          for (final token in tokens) {
-            final results =
-                await _dictionaryService.getVocabByJapaneseTextToken(token);
-
-            if (results.isNotEmpty) {
-              searchResult!.add(results[0]);
-            }
-          }
-
-          _promptAnalysis = searchResult!.isNotEmpty;
-        }
-
-        notifyListeners();
-      });
 
       if (_currentSearchHistoryItem == null) {
         _currentSearchHistoryItem = SearchHistoryItem(
@@ -123,6 +96,31 @@ class SearchViewModel extends FutureViewModel {
       searchResult = null;
       notifyListeners();
     }
+  }
+
+  Future<void> _search(String query, SearchFilter filter) async {
+    searchResult = await _dictionaryService.searchDictionary(query, filter);
+
+    _promptAnalysis = false;
+
+    if (filter == SearchFilter.vocab &&
+        searchResult!.isEmpty &&
+        !_kanaKit.isRomaji(query)) {
+      final tokens = _mecabService.parseText(query);
+
+      for (final token in tokens) {
+        final results =
+            await _dictionaryService.getVocabByJapaneseTextToken(token);
+
+        if (results.isNotEmpty) {
+          searchResult!.add(results[0]);
+        }
+      }
+
+      _promptAnalysis = searchResult!.isNotEmpty;
+    }
+
+    notifyListeners();
   }
 
   void toggleHandWriting() {
