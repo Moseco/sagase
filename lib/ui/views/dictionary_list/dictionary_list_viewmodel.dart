@@ -159,9 +159,12 @@ class DictionaryListViewModel extends FutureViewModel {
         ),
       );
 
-      await file.writeAsString(
-        (dictionaryList as MyDictionaryList).toShareJson(),
-      );
+      await file.writeAsString((dictionaryList as MyDictionaryList)
+          .copyWith(
+            vocab: vocabList?.map((e) => e.id).toList() ?? [],
+            kanji: kanjiList?.map((e) => e.id).toList() ?? [],
+          )
+          .toShareJson());
 
       // Share the file
       await Share.shareXFiles([XFile(file.path)]);
