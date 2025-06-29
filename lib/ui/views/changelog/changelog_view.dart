@@ -111,6 +111,10 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.4.1]
+- Fixed text analysis processing of incomplete conjugations
+- Fixed a bug with search when the query rapidly changed
+- Fixed a bug that caused shared lists to be empty
 # [1.4.0]
 - Added 2k, 6k, 10k, and Kaishi 1.5k vocab lists
 - Added wildcard searching (e.g., "*心")
