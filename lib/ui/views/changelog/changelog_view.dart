@@ -111,6 +111,9 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.4.2]
+- Fixed disk space calculation during dictionary download
+- Fixed crash effecting some users the first time they opened flashcards
 # [1.4.1]
 - Fixed text analysis processing of incomplete conjugations
 - Fixed a bug with search when the query rapidly changed
