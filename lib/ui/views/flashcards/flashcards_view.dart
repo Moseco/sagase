@@ -47,7 +47,7 @@ class FlashcardsView extends HookWidget {
           if (animation != null) {
             void handler(status) {
               if (status == AnimationStatus.completed) {
-                _showTutorial(context, viewModel, flipCardController);
+                _showTutorial(context);
                 animation.removeStatusListener(handler);
               }
             }
@@ -59,7 +59,7 @@ class FlashcardsView extends HookWidget {
               const Duration(milliseconds: 150),
               () {
                 if (context.mounted) {
-                  _showTutorial(context, viewModel, flipCardController);
+                  _showTutorial(context);
                 }
               },
             );
@@ -198,22 +198,10 @@ class FlashcardsView extends HookWidget {
     );
   }
 
-  void _showTutorial(
-    BuildContext context,
-    FlashcardsViewModel viewModel,
-    FlipCardController flipCardController,
-  ) {
+  void _showTutorial(BuildContext context) {
     TutorialCoachMark(
       pulseEnable: false,
       onSkip: () => false,
-      onFinish: () async {
-        if (viewModel.activeFlashcards.isNotEmpty) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          flipCardController.flip();
-          await Future.delayed(const Duration(milliseconds: 350));
-          flipCardController.flip();
-        }
-      },
       targets: [
         TargetFocus(
           identify: 'answersKey',
@@ -233,6 +221,10 @@ class FlashcardsView extends HookWidget {
                   Text.rich(
                     TextSpan(
                       children: [
+                        TextSpan(
+                          text:
+                              'Tap the flashcard to reveal the meaning or long press to see more details.\n\n',
+                        ),
                         TextSpan(
                           text: 'Wrong',
                           style: TextStyle(

@@ -282,10 +282,10 @@ packages:
     dependency: "direct main"
     description:
       name: disk_space_plus
-      sha256: eefdc9ffe232f03ae50e58b2fef574d2e12c805dc1d22cc5cc7cf7a4a78fdd94
+      sha256: "1e454599a7dcec0c0bc1ad0b7f9f563b3fffbc988175bd452c4d3c7503ed3423"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.5"
+    version: "0.2.6"
   dots_indicator:
     dependency: transitive
     description:

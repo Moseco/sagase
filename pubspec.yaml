@@ -3,7 +3,7 @@ description: A Japanese-English dictionary and learning app.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.4.1+22
+version: 1.4.2+23
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
@@ -75,7 +75,7 @@ dependencies:
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
-  disk_space_plus: ^0.2.5
+  disk_space_plus: ^0.2.6
   share_plus: ^10.1.4
   app_links: ^6.3.2
   uri_to_file:
