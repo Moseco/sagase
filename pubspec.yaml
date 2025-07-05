@@ -75,7 +75,7 @@ dependencies:
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
-  disk_space_plus: ^0.2.5
+  disk_space_plus: ^0.2.6
   share_plus: ^10.1.4
   app_links: ^6.3.2
   uri_to_file:
