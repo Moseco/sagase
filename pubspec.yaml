@@ -7,7 +7,7 @@ version: 1.4.2+23
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.29.3
+  flutter: 3.32.8
 
 isar_version: &isar_version 3.1.8
 
@@ -24,9 +24,9 @@ dependencies:
   stacked_themes: ^0.3.13
 
   # Firebase
-  firebase_core: 3.13.0
-  firebase_analytics: 11.4.5
-  firebase_crashlytics: 4.3.5
+  firebase_core: 4.0.0
+  firebase_analytics: 12.0.0 
+  firebase_crashlytics: 5.0.0
 
   # UI
   google_nav_bar: ^5.0.6
@@ -35,11 +35,14 @@ dependencies:
     git:
       url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.2.0
-  fl_chart: ^0.71.0
+  fl_chart: ^1.0.0
   flutter_svg: ^2.0.7
-  flutter_sticky_header: ^0.7.0
+  flutter_sticky_header: ^0.8.0
   shimmer: ^3.0.0
-  ruby_text: ^3.0.3
+  ruby_text:
+    git:
+      url: https://github.com/Moseco/RubyText
+      ref: '24c7a22'
   introduction_screen: ^3.1.11
   percent_indicator: ^4.2.3
   tutorial_coach_mark: ^1.2.11
@@ -99,7 +102,7 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   build_runner: any
   stacked_generator: ^1.4.0
