@@ -4,11 +4,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/recognized_text_block.dart';
 
-class TextRecognizerPainter extends CustomPainter {
+class OcrPainter extends CustomPainter {
   final List<RecognizedTextBlock> recognizedTextBlocks;
   final Size imageSize;
+  final void Function(RecognizedTextBlock) onSelect;
 
-  TextRecognizerPainter(this.recognizedTextBlocks, this.imageSize);
+  OcrPainter(this.recognizedTextBlocks, this.imageSize, this.onSelect);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -42,17 +43,15 @@ class TextRecognizerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(TextRecognizerPainter oldDelegate) {
-    //TODO the painting isn't that intense so probably fine?
-    return true;
-    // return oldDelegate.recognizedTextBlocks != recognizedTextBlocks;
+  bool shouldRepaint(OcrPainter oldDelegate) {
+    return oldDelegate.recognizedTextBlocks != recognizedTextBlocks;
   }
 
   @override
   bool? hitTest(Offset position) {
     for (final textBlock in recognizedTextBlocks) {
       if (_pointInsideRectangle(position, textBlock.offsets)) {
-        textBlock.selected = true;
+        onSelect(textBlock);
         return true;
       }
     }

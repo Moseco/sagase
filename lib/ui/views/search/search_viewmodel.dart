@@ -1,5 +1,7 @@
 import 'package:async/async.dart';
+import 'package:camera/camera.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:kana_kit/kana_kit.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
@@ -30,8 +32,8 @@ class SearchViewModel extends FutureViewModel {
 
   CancelableOperation<(List<DictionaryItem>, bool)>? _searchOperation;
 
-  bool _showHandWriting = false;
-  bool get showHandWriting => _showHandWriting;
+  InputMode _inputMode = InputMode.text;
+  InputMode get inputMode => _inputMode;
 
   List<String> _handWritingResult = [];
   List<String> get handWritingResult => _handWritingResult;
@@ -44,6 +46,12 @@ class SearchViewModel extends FutureViewModel {
 
   bool _promptAnalysis = false;
   bool get promptAnalysis => _promptAnalysis;
+
+  XFile? _image;
+  XFile? get image => _image;
+
+  bool _ocrError = false;
+  bool get ocrError => _ocrError;
 
   @override
   Future<void> futureToRun() async {
@@ -132,22 +140,6 @@ class SearchViewModel extends FutureViewModel {
     return (results, promptAnalysis);
   }
 
-  void toggleHandWriting() {
-    if (!_digitalInkService.ready) {
-      if (!_snackbarService.isSnackbarOpen) {
-        _snackbarService.showSnackbar(
-          message:
-              'Hand writing detection is setting up. Please try again later.',
-        );
-      }
-      return;
-    }
-    _showHandWriting = !showHandWriting;
-    handWritingResult.clear();
-    locator<HomeViewModel>().setShowNavigationBar(!_showHandWriting);
-    notifyListeners();
-  }
-
   Future<void> recognizeWriting(Ink ink) async {
     _handWritingResult = await _digitalInkService.recognizeWriting(ink);
     notifyListeners();
@@ -210,4 +202,60 @@ class SearchViewModel extends FutureViewModel {
       arguments: ProperNounViewArguments(properNoun: properNoun),
     );
   }
+
+  void setInputMode(InputMode mode) {
+    if (_inputMode == mode) return;
+
+    if (mode == InputMode.handWriting) {
+      if (!_digitalInkService.ready) {
+        if (!_snackbarService.isSnackbarOpen) {
+          _snackbarService.showSnackbar(
+            message:
+                'Hand writing detection is setting up. Please try again later.',
+          );
+        }
+        return;
+      }
+
+      handWritingResult.clear();
+    }
+
+    _inputMode = mode;
+    _image = null;
+    locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
+
+    rebuildUi();
+  }
+
+  Future<void> handlePictureTaken(XFile image) async {
+    _image = image;
+    rebuildUi();
+  }
+
+  void handleImageProcessed() {
+    //TODO maybe don't need
+    // rebuildUi();
+  }
+
+  void handleImageError() {
+    _image = null;
+    _snackbarService.showSnackbar(message: 'Failed to process image');
+    _ocrError = true;
+    rebuildUi();
+  }
+
+  void handleTextSelected(String text) {
+    searchOnChange(text);
+  }
+
+  void resetImage() {
+    _image = null;
+    rebuildUi();
+  }
+}
+
+enum InputMode {
+  text,
+  handWriting,
+  ocr,
 }

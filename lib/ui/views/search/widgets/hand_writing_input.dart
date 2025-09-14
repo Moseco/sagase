@@ -75,17 +75,23 @@ class HandWritingInput extends ViewModelWidget<SearchViewModel> {
                 ),
                 const VerticalDivider(width: 1, thickness: 1),
                 IconButton(
-                  onPressed: () {
-                    viewModel.toggleHandWriting();
-                    keyboardFocusNode.requestFocus();
-                  },
-                  icon: const Icon(Icons.text_fields),
+                  onPressed: () => viewModel.setInputMode(InputMode.ocr),
+                  icon: const Icon(Icons.camera_alt),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                 ),
                 IconButton(
-                  onPressed: viewModel.toggleHandWriting,
-                  icon: const Icon(Icons.keyboard_hide),
+                  onPressed: () {
+                    viewModel.setInputMode(InputMode.text);
+                    keyboardFocusNode.requestFocus();
+                  },
+                  icon: const Icon(Icons.keyboard),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                IconButton(
+                  onPressed: () => viewModel.setInputMode(InputMode.text),
+                  icon: const Icon(Icons.close),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                 ),

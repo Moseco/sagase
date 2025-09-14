@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sagase/ui/widgets/list_item_loading.dart';
+import 'package:sagase/ui/widgets/ocr_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 
 import 'ocr_viewmodel.dart';
-import 'painters/text_detector_painter.dart';
 
 class OcrView extends StackedView<OcrViewModel> {
   final bool cameraStart;
@@ -19,7 +19,7 @@ class OcrView extends StackedView<OcrViewModel> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Character Detection'),
-        actions: viewModel.currentImageBytes == null
+        actions: viewModel.image == null
             ? null
             : [
                 IconButton(
@@ -35,13 +35,21 @@ class OcrView extends StackedView<OcrViewModel> {
       body: Column(
         children: [
           Expanded(
-            child: viewModel.currentImageBytes == null
+            child: viewModel.image == null
                 ? _OcrImageLoading()
-                : _OcrImage(),
+                : OcrImage(
+                    key: ValueKey(viewModel.image!.path.hashCode),
+                    image: viewModel.image!,
+                    onImageProcessed: viewModel.handleImageProcessed,
+                    onImageError: viewModel.handleImageError,
+                    onTextSelected: viewModel.handleTextSelected,
+                    locked: false,
+                    singleSelection: false,
+                  ),
           ),
           const Divider(indent: 8, endIndent: 8),
           Expanded(
-            child: viewModel.recognizedTextBlocks == null
+            child: viewModel.selectedText == null
                 ? Column(
                     children: [
                       ListItemLoading(),
@@ -80,79 +88,29 @@ class _OcrImageLoading extends StatelessWidget {
   }
 }
 
-class _OcrImage extends ViewModelWidget<OcrViewModel> {
-  @override
-  Widget build(BuildContext context, OcrViewModel viewModel) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: GestureDetector(
-          onTap: () => viewModel.rebuildUi(),
-          child: CustomPaint(
-            foregroundPainter: viewModel.recognizedTextBlocks == null
-                ? null
-                : TextRecognizerPainter(
-                    viewModel.recognizedTextBlocks!,
-                    viewModel.imageSize,
-                  ),
-            child: IgnorePointer(
-              child: Image.memory(viewModel.currentImageBytes!),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _SelectedText extends ViewModelWidget<OcrViewModel> {
   @override
   Widget build(BuildContext context, OcrViewModel viewModel) {
-    if (viewModel.recognizedTextBlocks!.isEmpty) {
-      return Center(child: Text('No Japanese text was found'));
-    }
-
-    late Widget textSection;
-
-    if (viewModel.recognizedTextBlocks!.length == 1) {
-      textSection = SelectionArea(
-        child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              viewModel.recognizedTextBlocks![0].text,
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-        ),
-      );
-    } else {
-      textSection = ReorderableListView.builder(
-        itemCount: viewModel.recognizedTextBlocks!.length,
-        onReorder: viewModel.reorderList,
-        itemBuilder: (context, index) {
-          final current = viewModel.recognizedTextBlocks![index];
-          return ListTile(
-            key: ValueKey(current),
-            leading: Checkbox(
-              value: current.selected,
-              onChanged: (value) {
-                if (value == null) return;
-                viewModel.toggleCheckBox(index, value);
-              },
-            ),
-            title: Text(current.text),
-            trailing: Icon(Icons.drag_indicator),
-          );
-        },
-      );
+    if (viewModel.selectedText!.isEmpty) {
+      return Center(child: Text('Select text from the image'));
     }
 
     return Column(
       children: [
-        Expanded(child: textSection),
+        Expanded(
+          child: ReorderableListView.builder(
+            itemCount: viewModel.selectedText!.length,
+            onReorder: viewModel.reorderList,
+            itemBuilder: (context, index) {
+              final current = viewModel.selectedText![index];
+              return ListTile(
+                key: ValueKey(current),
+                title: Text(current),
+                trailing: Icon(Icons.drag_indicator),
+              );
+            },
+          ),
+        ),
         Container(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).padding.bottom,
@@ -162,9 +120,7 @@ class _SelectedText extends ViewModelWidget<OcrViewModel> {
           child: TextButton.icon(
             icon: const Icon(Icons.text_snippet, color: Colors.white),
             label: Text(
-              viewModel.recognizedTextBlocks!.length == 1
-                  ? 'Analyze text'
-                  : 'Analyze selected text',
+              'Analyze text',
               style: TextStyle(color: Colors.white),
             ),
             onPressed: viewModel.analyzeSelectedText,

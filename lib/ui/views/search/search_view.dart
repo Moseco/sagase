@@ -16,6 +16,7 @@ import 'package:stacked_hooks/stacked_hooks.dart';
 import 'search_viewmodel.dart';
 import 'widgets/analysis_prompt.dart';
 import 'widgets/hand_writing_input.dart';
+import 'widgets/ocr_widget.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -52,12 +53,18 @@ class _Body extends StackedHookView<SearchViewModel> {
           viewModel.searchResult == null
               ? _SearchHistory(searchController)
               : const _SearchResults(),
-          if (viewModel.showHandWriting)
+          if (viewModel.inputMode == InputMode.handWriting)
             HandWritingInput(
               searchController: searchController,
               handWritingController: handWritingController,
               keyboardFocusNode: keyboardFocusNode,
-            )
+            ),
+          if (viewModel.inputMode == InputMode.ocr)
+            OcrWidget(
+              searchController: searchController,
+              handWritingController: handWritingController,
+              keyboardFocusNode: keyboardFocusNode,
+            ),
         ],
       ),
     );
@@ -88,12 +95,23 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
             focusNode: keyboardFocusNode,
             displayArrows: false,
             toolbarButtons: [
+              // Open OCR and dismiss keyboard
+              (node) {
+                return IconButton(
+                  onPressed: () {
+                    node.unfocus();
+                    viewModel.setInputMode(InputMode.ocr);
+                    handWritingFocusNode.requestFocus();
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                );
+              },
               // Open hand writing and dismiss keyboard
               (node) {
                 return IconButton(
                   onPressed: () {
                     node.unfocus();
-                    viewModel.toggleHandWriting();
+                    viewModel.setInputMode(InputMode.handWriting);
                     handWritingFocusNode.requestFocus();
                   },
                   icon: const Icon(Icons.draw),
@@ -117,15 +135,16 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
             children: [
               Expanded(
                 child: TextField(
-                  autofocus: viewModel.showHandWriting,
-                  readOnly: viewModel.showHandWriting,
+                  autofocus: viewModel.inputMode != InputMode.text,
+                  readOnly: viewModel.inputMode != InputMode.text,
                   showCursor: true,
                   autocorrect: false,
                   enableIMEPersonalizedLearning: false,
                   maxLines: 1,
-                  textInputAction:
-                      viewModel.showHandWriting ? null : TextInputAction.done,
-                  focusNode: viewModel.showHandWriting
+                  textInputAction: viewModel.inputMode != InputMode.text
+                      ? null
+                      : TextInputAction.done,
+                  focusNode: viewModel.inputMode != InputMode.text
                       ? handWritingFocusNode
                       : keyboardFocusNode,
                   controller: searchController,
@@ -213,7 +232,6 @@ class _SearchResults extends ViewModelWidget<SearchViewModel> {
       );
     }
 
-    // Show results
     return Expanded(
       child: ListView.separated(
         key: UniqueKey(),
