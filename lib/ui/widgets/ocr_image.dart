@@ -196,11 +196,16 @@ class _OcrImage extends StatelessWidget {
         },
       );
     } else {
-      // TODO
       return LayoutBuilder(
         builder: (context, constraints) {
           return InteractiveViewer(
-            constrained: true,
+            constrained: false,
+            child: SizedBox(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: FittedBox(
+                clipBehavior: Clip.hardEdge,
+                fit: BoxFit.contain,
             child: CustomPaint(
               foregroundPainter: recognizedTextBlocks == null
                   ? null
@@ -210,98 +215,12 @@ class _OcrImage extends StatelessWidget {
                       onSelect,
                     ),
               child: Image.memory(image),
+                ),
+              ),
             ),
           );
         },
       );
-      // return LayoutBuilder(
-      //   builder: (context, constraints) {
-      //     return InteractiveViewer(
-      //       constrained: false,
-      //       child: CustomPaint(
-      //         foregroundPainter: recognizedTextBlocks == null
-      //             ? null
-      //             : OcrPainter(
-      //                 recognizedTextBlocks!,
-      //                 imageSize,
-      //               ),
-      //         // child: IgnorePointer(
-      //         //   child: FittedBox(
-      //         //     clipBehavior: Clip.hardEdge,
-      //         //     fit: BoxFit.contain,
-      //         //     child: Image.memory(image),
-      //         //   ),
-      //         // ),
-      //         // child: IgnorePointer(
-      //         //   child: SizedBox(
-      //         //     width: MediaQuery.of(context).size.width,
-      //         //     child: FittedBox(
-      //         //       clipBehavior: Clip.hardEdge,
-      //         //       fit: BoxFit.contain,
-      //         //       child: Image.memory(image),
-      //         //     ),
-      //         //   ),
-      //         // ),
-      //         child: IgnorePointer(
-      //           child: SizedBox(
-      //             width: constraints.maxWidth,
-      //             child: Image.memory(
-      //               image,
-      //               // fit: BoxFit.fitWidth,
-      //               fit: BoxFit.cover,
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // );
     }
-
-    // return CustomPaint(
-    //   foregroundPainter: recognizedTextBlocks == null
-    //       ? null
-    //       : OcrPainter(
-    //           recognizedTextBlocks!,
-    //           imageSize,
-    //         ),
-    //   child: Container(
-    //     decoration: BoxDecoration(
-    //       image: DecorationImage(
-    //         image: MemoryImage(image),
-    //         fit: BoxFit.cover,
-    //       ),
-    //     ),
-    //   ),
-    // );
-
-    // return Container(
-    //   decoration: BoxDecoration(
-    //     image: DecorationImage(
-    //       image: MemoryImage(image),
-    //       fit: BoxFit.cover,
-    //     ),
-    //   ),
-    // );
-
-    // return Center(
-    //   child: GestureDetector(
-    //     // onTap: () => viewModel.rebuildUi(),
-    //     child: CustomPaint(
-    //       foregroundPainter: recognizedTextBlocks == null
-    //           ? null
-    //           : OcrPainter(
-    //               recognizedTextBlocks!,
-    //               imageSize,
-    //             ),
-    //       child: IgnorePointer(
-    //         child: Image.memory(
-    //           image,
-    //           fit: BoxFit.fitWidth,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

@@ -71,7 +71,10 @@ class OcrWidget extends ViewModelWidget<SearchViewModel> {
                     image: viewModel.image!,
                     onImageProcessed: viewModel.handleImageProcessed,
                     onImageError: viewModel.handleImageError,
-                    onTextSelected: viewModel.handleTextSelected,
+                    onTextSelected: (text) {
+                      searchController.text = text;
+                      viewModel.handleTextSelected(text);
+                    },
                     locked: true,
                     singleSelection: true,
                   ),
