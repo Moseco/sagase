@@ -126,49 +126,52 @@ class _SelectedText extends ViewModelWidget<OcrViewModel> {
 
   @override
   Widget build(BuildContext context, OcrViewModel viewModel) {
-    return Column(
-      children: [
-        Expanded(
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: TextField(
-                controller: controller,
-                maxLines: null,
-                style: const TextStyle(fontSize: 24),
-                decoration: const InputDecoration.collapsed(
-                  hintText: 'Select text from the image...',
+    return GestureDetector(
+      onVerticalDragStart: (_) => FocusScope.of(context).unfocus(),
+      child: Column(
+        children: [
+          Expanded(
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextField(
+                  controller: controller,
+                  maxLines: null,
+                  style: const TextStyle(fontSize: 24),
+                  decoration: const InputDecoration.collapsed(
+                    hintText: 'Select text from the image...',
+                  ),
+                  maxLength: 1000,
+                  inputFormatters: [LengthLimitingTextInputFormatter(1000)],
                 ),
-                maxLength: 1000,
-                inputFormatters: [LengthLimitingTextInputFormatter(1000)],
               ),
             ),
           ),
-        ),
-        AnimatedCrossFade(
-          crossFadeState: controller.text.isEmpty
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
-          duration: const Duration(milliseconds: 200),
-          firstChild: SizedBox.shrink(),
-          secondChild: Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom,
-            ),
-            width: double.infinity,
-            color: Colors.deepPurple,
-            child: TextButton.icon(
-              icon: const Icon(Icons.text_snippet, color: Colors.white),
-              label: const Text(
-                'Analyze',
-                style: TextStyle(color: Colors.white),
+          AnimatedCrossFade(
+            crossFadeState: controller.text.isEmpty
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            duration: const Duration(milliseconds: 200),
+            firstChild: SizedBox.shrink(),
+            secondChild: Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).padding.bottom,
               ),
-              onPressed: () => viewModel.analyzeText(controller.text),
+              width: double.infinity,
+              color: Colors.deepPurple,
+              child: TextButton.icon(
+                icon: const Icon(Icons.text_snippet, color: Colors.white),
+                label: const Text(
+                  'Analyze',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () => viewModel.analyzeText(controller.text),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

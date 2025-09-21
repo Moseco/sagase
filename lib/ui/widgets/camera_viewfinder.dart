@@ -119,6 +119,7 @@ class _CameraViewfinderState extends State<CameraViewfinder>
             child: Center(
               child: FloatingActionButton(
                 onPressed: _takePhoto,
+                foregroundColor: Colors.white,
                 backgroundColor: Colors.deepPurple,
                 child: const Icon(Icons.camera_alt),
               ),
