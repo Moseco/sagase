@@ -55,7 +55,7 @@ class OcrWidget extends ViewModelWidget<SearchViewModel> {
                 ),
                 IconButton(
                   onPressed: () => viewModel.setInputMode(InputMode.text),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.keyboard_arrow_down),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                 ),
@@ -64,20 +64,27 @@ class OcrWidget extends ViewModelWidget<SearchViewModel> {
           ),
           const Divider(height: 1, thickness: 1),
           Expanded(
-            child: viewModel.image == null
-                ? CameraViewfinder(onPictureTaken: viewModel.handlePictureTaken)
-                : OcrImage(
-                    key: ValueKey(viewModel.image!.path.hashCode),
-                    image: viewModel.image!,
-                    onImageProcessed: viewModel.handleImageProcessed,
-                    onImageError: viewModel.handleImageError,
-                    onTextSelected: (text) {
-                      searchController.text = text;
-                      viewModel.handleTextSelected(text);
-                    },
-                    locked: true,
-                    singleSelection: true,
-                  ),
+            child: viewModel.ocrError
+                ? Center(
+                    child: Text(
+                      'Failed to process image',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : viewModel.image == null
+                    ? CameraViewfinder(
+                        onPictureTaken: viewModel.handlePictureTaken)
+                    : OcrImage(
+                        key: ValueKey(viewModel.image!.path.hashCode),
+                        image: viewModel.image!,
+                        onImageError: viewModel.handleImageError,
+                        onTextSelected: (text) {
+                          searchController.text = text;
+                          viewModel.handleTextSelected(text);
+                        },
+                        locked: true,
+                        singleSelection: true,
+                      ),
           ),
         ],
       ),

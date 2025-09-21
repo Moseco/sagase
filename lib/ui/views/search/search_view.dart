@@ -121,7 +121,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
               (node) {
                 return IconButton(
                   onPressed: node.unfocus,
-                  icon: const Icon(Icons.keyboard_hide),
+                  icon: const Icon(Icons.keyboard_arrow_down),
                 );
               },
             ],

@@ -16,7 +16,7 @@ class OcrPainter extends CustomPainter {
     final unselectedPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = Colors.blueGrey;
+      ..color = Colors.lightBlueAccent;
 
     final selectedPaint = Paint()
       ..style = PaintingStyle.stroke

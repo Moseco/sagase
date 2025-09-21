@@ -14,7 +14,7 @@ import 'package:shimmer/shimmer.dart';
 
 class OcrImage extends StatefulWidget {
   final XFile image;
-  final void Function() onImageProcessed;
+  final void Function(int)? onImageProcessed;
   final void Function() onImageError;
   final void Function(String) onTextSelected;
   final bool locked;
@@ -23,7 +23,7 @@ class OcrImage extends StatefulWidget {
   const OcrImage({
     super.key,
     required this.image,
-    required this.onImageProcessed,
+    this.onImageProcessed,
     required this.onImageError,
     required this.locked,
     required this.onTextSelected,
@@ -96,7 +96,10 @@ class _OcrImageState extends State<OcrImage> {
     }
 
     setState(() {});
-    widget.onImageProcessed();
+
+    if (widget.onImageProcessed != null) {
+      widget.onImageProcessed!(_recognizedTextBlocks!.length);
+    }
 
     await rotatedImage.delete();
   }
@@ -206,15 +209,15 @@ class _OcrImage extends StatelessWidget {
               child: FittedBox(
                 clipBehavior: Clip.hardEdge,
                 fit: BoxFit.contain,
-            child: CustomPaint(
-              foregroundPainter: recognizedTextBlocks == null
-                  ? null
-                  : OcrPainter(
-                      recognizedTextBlocks!,
-                      imageSize,
-                      onSelect,
-                    ),
-              child: Image.memory(image),
+                child: CustomPaint(
+                  foregroundPainter: recognizedTextBlocks == null
+                      ? null
+                      : OcrPainter(
+                          recognizedTextBlocks!,
+                          imageSize,
+                          onSelect,
+                        ),
+                  child: Image.memory(image),
                 ),
               ),
             ),

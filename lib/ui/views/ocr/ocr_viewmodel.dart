@@ -9,11 +9,11 @@ class OcrViewModel extends BaseViewModel {
 
   final ImagePicker _imagePicker = ImagePicker();
 
+  OcrState _state = OcrState.waiting;
+  OcrState get state => _state;
+
   XFile? _image;
   XFile? get image => _image;
-
-  List<String>? _selectedText;
-  List<String>? get selectedText => _selectedText;
 
   OcrViewModel(bool cameraStart) {
     if (cameraStart) {
@@ -33,7 +33,7 @@ class OcrViewModel extends BaseViewModel {
 
   Future<void> _processImage(ImageSource imageSource) async {
     _image = null;
-    _selectedText = null;
+    _state = OcrState.waiting;
     rebuildUi();
 
     try {
@@ -44,39 +44,46 @@ class OcrViewModel extends BaseViewModel {
       );
     }
 
+    if (image == null) {
+      _navigationService.back();
+      return;
+    }
+
+    _state = OcrState.loading;
+
     rebuildUi();
   }
 
-  void handleImageProcessed() {
-    _selectedText = [];
+  void handleImageProcessed(int length) {
+    if (length == 0) {
+      _state = OcrState.viewEmpty;
+    } else {
+      _state = OcrState.viewing;
+    }
     rebuildUi();
   }
 
   void handleImageError() {
     _image = null;
-    _snackbarService.showSnackbar(message: 'Failed to process image');
+    _state = OcrState.error;
     rebuildUi();
   }
 
-  void handleTextSelected(String text) {
-    _selectedText?.add(text);
+  void handleTextSelected() {
     rebuildUi();
   }
 
-  void reorderList(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) newIndex -= 1;
+  void analyzeText(String text) {
+    if (text.isEmpty) return;
 
-    _selectedText!.insert(
-      newIndex,
-      _selectedText!.removeAt(oldIndex),
-    );
-    rebuildUi();
+    _navigationService.back(result: text);
   }
+}
 
-  void analyzeSelectedText() {
-    if (_selectedText == null) return;
-    if (_selectedText!.isEmpty) return;
-
-    _navigationService.back(result: _selectedText!.join('\n'));
-  }
+enum OcrState {
+  waiting,
+  loading,
+  viewing,
+  viewEmpty,
+  error,
 }

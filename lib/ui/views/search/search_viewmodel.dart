@@ -222,6 +222,7 @@ class SearchViewModel extends FutureViewModel {
 
     _inputMode = mode;
     _image = null;
+    _ocrError = false;
     locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
 
     rebuildUi();
@@ -230,11 +231,6 @@ class SearchViewModel extends FutureViewModel {
   Future<void> handlePictureTaken(XFile image) async {
     _image = image;
     rebuildUi();
-  }
-
-  void handleImageProcessed() {
-    //TODO maybe don't need
-    // rebuildUi();
   }
 
   void handleImageError() {
@@ -250,6 +246,7 @@ class SearchViewModel extends FutureViewModel {
 
   void resetImage() {
     _image = null;
+    _ocrError = false;
     rebuildUi();
   }
 }
