@@ -296,10 +296,11 @@ class _SearchHistory extends ViewModelWidget<SearchViewModel> {
                   onPressed: () async {
                     final cdata = await Clipboard.getData(Clipboard.kTextPlain);
                     if (cdata?.text != null) {
-                      searchController.text = cdata!.text!;
+                      final text = cdata!.text!.replaceAll('\n', '');
+                      searchController.text = text;
                       searchController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: cdata.text!.length));
-                      viewModel.searchOnChange(cdata.text!);
+                          TextPosition(offset: text.length));
+                      viewModel.searchOnChange(text);
                     }
                   },
                 ),

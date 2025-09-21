@@ -190,7 +190,7 @@ class _OcrImage extends StatelessWidget {
                 onTapUp: _handleTapUp,
                 child: CustomPaint(
                   foregroundPainter: OcrPainter(
-                    recognizedTextBlocks!,
+                    recognizedTextBlocks,
                     imageSize,
                   ),
                   child: Image.memory(image),
