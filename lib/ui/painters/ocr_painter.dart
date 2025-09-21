@@ -14,12 +14,12 @@ class OcrPainter extends CustomPainter {
     if (recognizedTextBlocks != null) {
       final unselectedPaint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
+        ..strokeWidth = 4
         ..color = Colors.lightBlueAccent;
 
       final selectedPaint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
+        ..strokeWidth = 4
         ..color = Colors.lightGreenAccent;
 
       for (final textBlock in recognizedTextBlocks!) {
