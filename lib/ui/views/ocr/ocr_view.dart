@@ -36,17 +36,23 @@ class _Body extends StackedHookView<OcrViewModel> {
             ? null
             : [
                 IconButton(
-                  onPressed: viewModel.openCamera,
+                  onPressed: () {
+                    viewModel.openCamera();
+                    controller.clear();
+                  },
                   icon: Icon(Icons.camera),
                 ),
                 IconButton(
-                  onPressed: viewModel.selectImage,
+                  onPressed: () {
+                    viewModel.selectImage();
+                    controller.clear();
+                  },
                   icon: Icon(Icons.photo),
                 ),
               ],
       ),
       body: viewModel.state == OcrState.error
-          ? const _Error()
+          ? _Error(controller)
           : Column(
               children: [
                 Expanded(
@@ -129,7 +135,6 @@ class _SelectedText extends ViewModelWidget<OcrViewModel> {
               padding: const EdgeInsets.all(8),
               child: TextField(
                 controller: controller,
-                autofocus: true,
                 maxLines: null,
                 style: const TextStyle(fontSize: 24),
                 decoration: const InputDecoration.collapsed(
@@ -169,7 +174,9 @@ class _SelectedText extends ViewModelWidget<OcrViewModel> {
 }
 
 class _Error extends ViewModelWidget<OcrViewModel> {
-  const _Error();
+  final TextEditingController controller;
+
+  const _Error(this.controller);
 
   @override
   Widget build(BuildContext context, OcrViewModel viewModel) {
@@ -185,14 +192,20 @@ class _Error extends ViewModelWidget<OcrViewModel> {
           const Text('Please try again'),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () => viewModel.openCamera(),
+            onPressed: () {
+              viewModel.openCamera();
+              controller.clear();
+            },
             icon: const Icon(Icons.camera),
-            label: const Text('Take photo'),
+            label: const Text('Open camera'),
           ),
           ElevatedButton.icon(
-            onPressed: () => viewModel.selectImage(),
+            onPressed: () {
+              viewModel.selectImage();
+              controller.clear();
+            },
             icon: const Icon(Icons.photo),
-            label: const Text('Select photo'),
+            label: const Text('Pick from photos'),
           ),
         ],
       ),
