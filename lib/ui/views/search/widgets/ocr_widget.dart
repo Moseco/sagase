@@ -55,7 +55,7 @@ class OcrWidget extends ViewModelWidget<SearchViewModel> {
                 ),
                 IconButton(
                   onPressed: () => viewModel.setInputMode(InputMode.text),
-                  icon: const Icon(Icons.keyboard_arrow_down),
+                  icon: const Icon(Icons.close),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                 ),
