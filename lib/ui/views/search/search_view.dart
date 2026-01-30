@@ -121,7 +121,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
               (node) {
                 return IconButton(
                   onPressed: node.unfocus,
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.keyboard_hide),
                 );
               },
             ],
@@ -143,7 +143,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                   maxLines: 1,
                   textInputAction: viewModel.inputMode != InputMode.text
                       ? null
-                      : TextInputAction.done,
+                      : TextInputAction.search,
                   focusNode: viewModel.inputMode != InputMode.text
                       ? handWritingFocusNode
                       : keyboardFocusNode,
@@ -189,7 +189,9 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
                       onPressed: () {
                         viewModel.searchOnChange('');
                         searchController.clear();
-                        handWritingFocusNode.requestFocus();
+                        viewModel.inputMode != InputMode.text
+                            ? handWritingFocusNode.requestFocus()
+                            : keyboardFocusNode.requestFocus();
                       },
                       icon: Icon(
                         Icons.clear,
