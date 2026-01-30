@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sagase/datamodels/isar/dictionary_list.dart';
 
 part 'predefined_dictionary_list.g.dart';

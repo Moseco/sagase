@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sagase/datamodels/isar/dictionary_info.dart';
 import 'package:sagase/datamodels/isar/flashcard_set.dart';
 import 'package:sagase/datamodels/isar/kanji.dart';

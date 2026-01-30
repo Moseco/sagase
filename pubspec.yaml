@@ -7,26 +7,32 @@ version: 1.4.2+23
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.32.8
+  flutter: 3.38.9
 
-isar_version: &isar_version 3.1.8
+isar_version: &isar_version 3.3.0
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
 
+  # Dictionary
+  sagase_dictionary:
+    git:
+      url: https://github.com/Moseco/sagase_dictionary
+      ref: '6e44fb2'
+
   # State management
-  stacked: ^3.4.1
-  stacked_services: ^1.1.1
-  stacked_hooks: ^0.2.3
+  stacked: ^3.5.0
+  stacked_services: ^1.6.0
+  stacked_hooks: ^0.2.4
   flutter_hooks: any
-  stacked_themes: ^0.3.13
+  stacked_themes: ^0.3.15
 
   # Firebase
-  firebase_core: 4.0.0
-  firebase_analytics: 12.0.0 
-  firebase_crashlytics: 5.0.0
+  firebase_core: 4.4.0
+  firebase_analytics: 12.1.1
+  firebase_crashlytics: 5.0.7
 
   # UI
   google_nav_bar: ^5.0.6
@@ -36,7 +42,7 @@ dependencies:
       url: https://github.com/Moseco/flip_card
   keyboard_actions: ^4.2.0
   fl_chart: ^1.0.0
-  flutter_svg: ^2.0.7
+  flutter_svg: ^2.2.3
   flutter_sticky_header: ^0.8.0
   shimmer: ^3.0.0
   ruby_text:
@@ -51,36 +57,38 @@ dependencies:
   # Other
   drift: any # Version defined by sagase_dictionary
   drift_flutter: any
-  isar:
+  isar_community:
     version: *isar_version
-    hosted: https://pub.isar-community.dev/
-  isar_flutter_libs:
+  isar_community_flutter_libs:
     version: *isar_version
-    hosted: https://pub.isar-community.dev/
   path_provider: ^2.0.15
   kana_kit: ^2.1.1
   async: ^2.11.0
   archive: ^4.0.5
-  google_mlkit_digital_ink_recognition: ^0.14.1
-  google_mlkit_text_recognition: ^0.15.0
+  google_mlkit_digital_ink_recognition:
+    git:
+      url: https://github.com/Moseco/google_ml_kit_flutter
+      path: packages/google_mlkit_digital_ink_recognition
+      ref: 'ed12704'
+  google_mlkit_text_recognition:
+    git:
+      url: https://github.com/Moseco/google_ml_kit_flutter
+      path: packages/google_mlkit_text_recognition
+      ref: 'ed12704'
   intl: ^0.20.2
   shared_preferences: ^2.3.5
   mecab_dart:
     git:
       url: https://github.com/Moseco/mecab_dart
-      ref: '338acd9'
+      ref: 'bed21bb'
   path: ^1.8.3
-  flutter_file_dialog: ^3.0.1
-  sagase_dictionary:
-    git:
-      url: https://github.com/Moseco/sagase_dictionary
-      ref: '4ea66ef'
+  flutter_file_dialog: ^3.0.3
   url_launcher: ^6.1.12
   dio: ^5.3.3
   in_app_review: ^2.0.8
   disk_space_plus: ^0.2.6
-  share_plus: ^10.1.4
-  app_links: ^6.3.2
+  share_plus: ^12.0.0
+  app_links: ^7.0.0
   uri_to_file:
     git:
       url: https://github.com/chan150/uri-to-file
@@ -97,8 +105,8 @@ dependencies:
 dependency_overrides:
   flutter_statusbarcolor_ns:
     git:
-      url: https://github.com/uintdev/flutter_statusbarcolor/
-      ref: 'd870cb2'
+      url: https://github.com/moseco/flutter_statusbarcolor/
+      ref: '3fd1a9b'
 
 dev_dependencies:
   flutter_test:
@@ -106,10 +114,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   build_runner: any
-  stacked_generator: ^1.4.0
-  isar_generator:
+  stacked_generator: ^2.0.0
+  isar_community_generator:
     version: *isar_version
-    hosted: https://pub.isar-community.dev/
   mockito: ^5.4.2
   plugin_platform_interface: ^2.1.4
   path_provider_platform_interface: ^2.0.6

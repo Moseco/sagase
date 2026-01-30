@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 abstract class DictionaryList {
   Id id = Isar.autoIncrement;

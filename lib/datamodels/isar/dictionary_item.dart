@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sagase/datamodels/isar/spaced_repetition_data.dart';
 
 abstract class DictionaryItem {

@@ -167,7 +167,9 @@ class DictionaryListViewModel extends FutureViewModel {
           .toShareJson());
 
       // Share the file
-      await Share.shareXFiles([XFile(file.path)]);
+      SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)]),
+      );
     }
   }
 

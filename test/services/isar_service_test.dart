@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sagase/datamodels/isar/flashcard_set.dart';
 import 'package:sagase/datamodels/isar/kanji.dart';
 import 'package:sagase/datamodels/isar/my_dictionary_list.dart';

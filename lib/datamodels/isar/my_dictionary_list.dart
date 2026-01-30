@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sagase/datamodels/isar/dictionary_list.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart'
     show SagaseDictionaryConstants;
