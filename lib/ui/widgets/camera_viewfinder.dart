@@ -1,5 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class CameraViewfinder extends StatefulWidget {
   final void Function(XFile) onPictureTaken;
@@ -37,9 +40,15 @@ class _CameraViewfinderState extends State<CameraViewfinder>
         break;
       }
     }
+
+    // This is a temporary workaround for iPhone 17 family devices
+    final iOS = Platform.isIOS ? await DeviceInfoPlugin().iosInfo : null;
+
     _controller = CameraController(
       cameraToUse,
-      ResolutionPreset.max,
+      iOS != null && iOS.utsname.machine.contains("iPhone18")
+          ? ResolutionPreset.ultraHigh
+          : ResolutionPreset.max,
       enableAudio: false,
     );
 

@@ -101,6 +101,7 @@ dependencies:
     git:
       url: https://github.com/Moseco/flutter_exif_rotation
       ref: '55b72de'
+  device_info_plus: ^12.3.0
 
 dependency_overrides:
   flutter_statusbarcolor_ns:
