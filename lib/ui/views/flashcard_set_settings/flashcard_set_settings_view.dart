@@ -66,12 +66,17 @@ class FlashcardSetSettingsView
               if (flashcardSet.usingSpacedRepetition)
                 const PopupMenuItem(
                   value: PopupMenuItemType.reset,
-                  child: Text('Reset'),
+                  child: Text('Reset progress'),
                 ),
               if (flashcardSet.usingSpacedRepetition)
                 const PopupMenuItem(
                   value: PopupMenuItemType.statistics,
                   child: Text('View statistics'),
+                ),
+              if (flashcardSet.usingSpacedRepetition)
+                const PopupMenuItem(
+                  value: PopupMenuItemType.spaceOut,
+                  child: Text('Space out flashcards'),
                 ),
             ],
             onSelected: viewModel.handlePopupMenuButton,

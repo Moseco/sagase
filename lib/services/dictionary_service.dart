@@ -11,6 +11,7 @@ import 'package:archive/archive_io.dart' as archive;
 import 'package:sagase/datamodels/user_backup.dart';
 import 'package:sagase/services/isar_service.dart';
 import 'package:sagase/utils/constants.dart' as constants;
+import 'package:sagase/utils/date_time_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:path/path.dart' as path;
 
@@ -463,6 +464,25 @@ class DictionaryService {
       startDate,
       endDate,
     );
+  }
+
+  Future<void> spaceOutFlashcards(List<DictionaryItem> flashcards) async {
+    await _database.transaction(() async {
+      final now = DateTime.now();
+
+      int flashcardsPerDay = (flashcards.length - 150) ~/ 12;
+      for (int i = 1; i < 14; i++) {
+        int dueDate = now.add(Duration(days: i)).toInt();
+        for (int j = 0; j < flashcardsPerDay && flashcards.length > 150; j++) {
+          await setSpacedRepetitionData(
+            flashcards
+                .removeLast()
+                .spacedRepetitionData!
+                .copyWith(dueDate: dueDate),
+          );
+        }
+      }
+    });
   }
 
   Future<void> setSpacedRepetitionData(SpacedRepetitionData data) async {

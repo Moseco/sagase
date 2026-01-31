@@ -4,6 +4,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/lists_bottom_sheet_argument.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/utils/date_time_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/dictionary_service.dart';
@@ -49,6 +50,9 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
         break;
       case PopupMenuItemType.statistics:
         _openFlashcardSetInfo();
+        break;
+      case PopupMenuItemType.spaceOut:
+        _spaceOutDueFlashcards();
         break;
     }
   }
@@ -245,6 +249,44 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
   bool shouldShowTutorial() {
     return _sharedPreferencesService.getAndSetTutorialFlashcardSetSettings();
   }
+
+  Future<void> _spaceOutDueFlashcards() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Reduce due flashcards?',
+      description:
+          'Have too many due flashcards? To help you study due flashcards can be delayed. Pressing confirm will leave 150 due flashcards for today and spread the rest out over the next 2 weeks.',
+      mainButtonTitle: 'Confirm',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    if (response != null && response.confirmed) {
+      _dialogService.showCustomDialog(
+        variant: DialogType.progressIndicator,
+        title: 'Updating flashcards',
+        barrierDismissible: false,
+      );
+
+      final allFlashcards =
+          await _dictionaryService.getFlashcardSetFlashcards(flashcardSet);
+      final dueFlashcards = <DictionaryItem>[];
+
+      final sessionDateTime = DateTime.now();
+      int todayAsInt = sessionDateTime.toInt();
+      for (var item in allFlashcards) {
+        if (item.spacedRepetitionData != null &&
+            item.spacedRepetitionData!.dueDate! <= todayAsInt) {
+          dueFlashcards.add(item);
+        }
+      }
+
+      dueFlashcards.shuffle();
+      await _dictionaryService.spaceOutFlashcards(dueFlashcards);
+
+      _dialogService.completeDialog(DialogResponse());
+    }
+  }
 }
 
 enum PopupMenuItemType {
@@ -252,4 +294,5 @@ enum PopupMenuItemType {
   delete,
   reset,
   statistics,
+  spaceOut,
 }

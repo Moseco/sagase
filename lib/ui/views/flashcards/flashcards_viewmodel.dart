@@ -716,7 +716,6 @@ class FlashcardsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
-      // Show progress indicator dialog
       _dialogService.showCustomDialog(
         variant: DialogType.progressIndicator,
         title: 'Updating flashcards',
@@ -724,20 +723,7 @@ class FlashcardsViewModel extends FutureViewModel {
       );
 
       dueFlashcards.shuffle(_random);
-      int flashcardsPerDay = (dueFlashcards.length - 150) ~/ 12;
-      for (int i = 1; i < 14; i++) {
-        int dueDate = sessionDateTime.add(Duration(days: i)).toInt();
-        for (int j = 0;
-            j < flashcardsPerDay && dueFlashcards.length > 150;
-            j++) {
-          await _dictionaryService.setSpacedRepetitionData(
-            dueFlashcards
-                .removeLast()
-                .spacedRepetitionData!
-                .copyWith(dueDate: dueDate),
-          );
-        }
-      }
+      await _dictionaryService.spaceOutFlashcards(dueFlashcards);
 
       _dialogService.completeDialog(DialogResponse());
     }
