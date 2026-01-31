@@ -31,6 +31,8 @@ class SettingsViewModel extends BaseViewModel {
       _sharedPreferencesService.getFlashcardLearningModeEnabled();
   int get newFlashcardsPerDay =>
       _sharedPreferencesService.getNewFlashcardsPerDay();
+  bool get addNewFlashcardsInBatches =>
+      _sharedPreferencesService.getAddNewFlashcardsInBatches();
   int get flashcardDistance => _sharedPreferencesService.getFlashcardDistance();
   int get flashcardCorrectAnswersRequired =>
       _sharedPreferencesService.getFlashcardCorrectAnswersRequired();
@@ -105,6 +107,11 @@ class SettingsViewModel extends BaseViewModel {
       _sharedPreferencesService.setNewFlashcardsPerDay(amount);
       notifyListeners();
     } catch (_) {}
+  }
+
+  void setAddNewFlashcardsInBatches(bool value) {
+    _sharedPreferencesService.setAddNewFlashcardsInBatches(value);
+    notifyListeners();
   }
 
   Future<void> setFlashcardDistance() async {

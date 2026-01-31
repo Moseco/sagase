@@ -1981,5 +1981,37 @@ void main() {
           await dictionaryService.getRecentFlashcardSetReport(flashcardSet);
       expect(report, null);
     });
+
+    test(
+        'Add new flashcards in batches when enabled and have no due flashcards',
+        () async {
+      // Set shared preferences
+      getAndRegisterSharedPreferencesService(
+        getFlashcardLearningModeEnabled: true,
+        getNewFlashcardsPerDay: 1,
+        getAddNewFlashcardsInBatches: true,
+      );
+
+      // Create dictionary lists to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab2());
+
+      // Create flashcard set and assign lists
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Check results
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.newFlashcards.length, 1);
+    });
   });
 }

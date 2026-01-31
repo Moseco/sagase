@@ -96,6 +96,16 @@ class SettingsView extends StatelessWidget {
                       ),
                       onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
                     ),
+                    SettingsTile.switchTile(
+                      enabled: viewModel.flashcardLearningModeEnabled,
+                      initialValue: viewModel.addNewFlashcardsInBatches,
+                      onToggle: viewModel.setAddNewFlashcardsInBatches,
+                      activeSwitchColor: Theme.of(context).colorScheme.primary,
+                      title: const Text('Add new flashcards in batches'),
+                      description: const Text(
+                        'If enabled, when no due flashcards are available new flashcards are added in batches instead of all at once.',
+                      ),
+                    ),
                     SettingsTile.navigation(
                       title:
                           const Text('Set initial spaced repetition interval'),

@@ -344,11 +344,26 @@ class FlashcardsViewModel extends FutureViewModel {
       // If active flashcards is still empty then try to add new flashcards
       Future<DialogResponse<dynamic>?>? reportDialogResponse;
       if (activeFlashcards.isEmpty) {
-        activeFlashcards.addAll(newFlashcards);
-        newFlashcards.clear();
+        if (_sharedPreferencesService.getFlashcardLearningModeEnabled() &&
+            _sharedPreferencesService.getAddNewFlashcardsInBatches()) {
+          if (initial) newFlashcards.shuffle(_random);
+
+          int newFlashcardsToAdd = max(
+              0,
+              min(
+                _sharedPreferencesService.getNewFlashcardsPerDay() -
+                    startedFlashcards.length,
+                newFlashcards.length,
+              ));
+          activeFlashcards.addAll(newFlashcards.take(newFlashcardsToAdd));
+          newFlashcards.removeRange(0, newFlashcardsToAdd);
+        } else {
+          activeFlashcards.addAll(newFlashcards);
+          newFlashcards.clear();
+          activeFlashcards.shuffle(_random);
+        }
         _answeringDueFlashcards = false;
-        // Randomize
-        activeFlashcards.shuffle(_random);
+
         // Add any started flashcards
         activeFlashcards.insertAll(0, startedFlashcards..shuffle(_random));
         startedFlashcards.clear();

@@ -237,4 +237,14 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setProperNounsEnabled(bool value) async {
     await _sharedPreferences.setBool(constants.keyProperNounsEnabled, value);
   }
+
+  bool getAddNewFlashcardsInBatches() {
+    return _sharedPreferences.getBool(constants.keyAddNewFlashcardsInBatches) ??
+        constants.defaultAddNewFlashcardsInBatches;
+  }
+
+  Future<void> setAddNewFlashcardsInBatches(bool value) async {
+    await _sharedPreferences.setBool(
+        constants.keyAddNewFlashcardsInBatches, value);
+  }
 }

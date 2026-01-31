@@ -25,6 +25,7 @@ const keyTutorialVocab = 'tutorial_vocab';
 const keyShowDetailedProgress = 'show_detailed_progress';
 const keyChangelogVersionShown = 'changelog_version_shown';
 const keyProperNounsEnabled = 'proper_nouns_enabled';
+const keyAddNewFlashcardsInBatches = 'add_new_flashcards_in_batches';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -40,6 +41,7 @@ const defaultStartOnLearningView = false;
 const defaultStrokeDiagramStartExpanded = true;
 const defaultShowDetailedProgress = false;
 const defaultProperNounsEnabled = false;
+const defaultAddNewFlashcardsInBatches = false;
 
 const searchQueryLimit = 1000;
 
