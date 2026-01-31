@@ -15,47 +15,51 @@ class LearningView extends StackedView<LearningViewModel> {
   @override
   Widget builder(context, viewModel, child) {
     return Scaffold(
-      body: HomeHeader(
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: BackButton(onPressed: () {}, color: Colors.transparent),
-            ),
-            const Expanded(
-              child: Text(
-                'Learning',
-                softWrap: false,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (_, __) => viewModel.handleBackButton(),
+        child: HomeHeader(
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: BackButton(onPressed: () {}, color: Colors.transparent),
+              ),
+              const Expanded(
+                child: Text(
+                  'Learning',
+                  softWrap: false,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: IconButton(
-                onPressed: viewModel.createFlashcardSet,
-                color: Colors.white,
-                icon: const Icon(Icons.add),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: IconButton(
+                  onPressed: viewModel.createFlashcardSet,
+                  color: Colors.white,
+                  icon: const Icon(Icons.add),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: switch (viewModel.flashcardSets?.length) {
+            null => const _Loading(),
+            0 => const _NoFlashcards(),
+            _ => ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: viewModel.flashcardSets!.length,
+                itemBuilder: (context, index) => _FlashcardSet(
+                  viewModel.flashcardSets![index],
+                ),
+              ),
+          },
         ),
-        child: switch (viewModel.flashcardSets?.length) {
-          null => const _Loading(),
-          0 => const _NoFlashcards(),
-          _ => ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: viewModel.flashcardSets!.length,
-              itemBuilder: (context, index) => _FlashcardSet(
-                viewModel.flashcardSets![index],
-              ),
-            ),
-        },
       ),
     );
   }

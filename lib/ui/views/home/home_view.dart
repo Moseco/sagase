@@ -16,64 +16,57 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
       viewModelBuilder: () => locator<HomeViewModel>(),
-      builder: (context, viewModel, child) => PopScope(
-        canPop: viewModel.currentIndex == 0,
-        onPopInvokedWithResult: (bool didPop, Object? result) async {
-          if (!didPop) viewModel.handleBackButton();
-        },
-        child: Scaffold(
-          body: ExtendedNavigator(
-            navigatorKey:
-                StackedService.nestedNavigationKey(nestedNavigationKey),
-            initialRoute: viewModel.startOnLearningView
-                ? HomeViewRoutes.learningView
-                : HomeViewRoutes.searchView,
-            router: HomeViewRouter(),
-            observers: [
-              FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-            ],
-          ),
-          bottomNavigationBar: viewModel.showNavigationBar
-              ? SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: GNav(
-                      haptic: false,
-                      gap: 8,
-                      color: Theme.of(context).iconTheme.color,
-                      activeColor: Colors.white,
-                      iconSize: 24,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      tabBorderRadius: 15,
-                      tabBackgroundColor: Colors.deepPurple,
-                      selectedIndex: viewModel.currentIndex,
-                      onTabChange: viewModel.handleNavigation,
-                      tabs: const [
-                        GButton(
-                          icon: Icons.search,
-                          text: 'Search',
-                        ),
-                        GButton(
-                          icon: Icons.format_list_bulleted,
-                          text: 'Lists',
-                        ),
-                        GButton(
-                          icon: Icons.school,
-                          text: 'Learning',
-                        ),
-                        GButton(
-                          icon: Icons.settings,
-                          text: 'Settings',
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : null,
+      builder: (context, viewModel, child) => Scaffold(
+        body: ExtendedNavigator(
+          navigatorKey: StackedService.nestedNavigationKey(nestedNavigationKey),
+          initialRoute: viewModel.startOnLearningView
+              ? HomeViewRoutes.learningView
+              : HomeViewRoutes.searchView,
+          router: HomeViewRouter(),
+          observers: [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ],
         ),
+        bottomNavigationBar: viewModel.showNavigationBar
+            ? SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: GNav(
+                    haptic: false,
+                    gap: 8,
+                    color: Theme.of(context).iconTheme.color,
+                    activeColor: Colors.white,
+                    iconSize: 24,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    tabBorderRadius: 15,
+                    tabBackgroundColor: Colors.deepPurple,
+                    selectedIndex: viewModel.currentIndex,
+                    onTabChange: viewModel.handleNavigation,
+                    tabs: const [
+                      GButton(
+                        icon: Icons.search,
+                        text: 'Search',
+                      ),
+                      GButton(
+                        icon: Icons.format_list_bulleted,
+                        text: 'Lists',
+                      ),
+                      GButton(
+                        icon: Icons.school,
+                        text: 'Learning',
+                      ),
+                      GButton(
+                        icon: Icons.settings,
+                        text: 'Settings',
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }

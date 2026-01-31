@@ -16,17 +16,23 @@ class ListsView extends StackedView<ListsViewModel> {
   @override
   Widget builder(context, viewModel, child) {
     return Scaffold(
-      body: switch (viewModel.listSelection) {
-        ListSelection.main => _MainList(),
-        ListSelection.vocab => _VocabList(),
-        ListSelection.kanji => _KanjiList(),
-        ListSelection.myLists => _MyLists(),
-        ListSelection.coreVocab => _CoreVocabList(),
-        ListSelection.jlptVocab => _JlptVocabList(),
-        ListSelection.jlptKanji => _JlptKanjiList(),
-        ListSelection.schoolKanji => _SchoolKanjiList(),
-        ListSelection.kanjiKentei => _KanjiKenteiList(),
-      },
+      body: PopScope(
+        canPop: viewModel.listSelection != ListSelection.main,
+        onPopInvokedWithResult: (bool didPop, _) {
+          if (!didPop) viewModel.handleBackButton();
+        },
+        child: switch (viewModel.listSelection) {
+          ListSelection.main => _MainList(),
+          ListSelection.vocab => _VocabList(),
+          ListSelection.kanji => _KanjiList(),
+          ListSelection.myLists => _MyLists(),
+          ListSelection.coreVocab => _CoreVocabList(),
+          ListSelection.jlptVocab => _JlptVocabList(),
+          ListSelection.jlptKanji => _JlptKanjiList(),
+          ListSelection.schoolKanji => _SchoolKanjiList(),
+          ListSelection.kanjiKentei => _KanjiKenteiList(),
+        },
+      ),
     );
   }
 }

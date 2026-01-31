@@ -5,6 +5,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/utils/constants.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
@@ -157,6 +158,12 @@ class ListsViewModel extends FutureViewModel {
       mainButtonTitle: 'Close',
       barrierDismissible: true,
     );
+  }
+
+  void handleBackButton() {
+    if (listSelection == ListSelection.main) {
+      locator<HomeViewModel>().handleBackButton();
+    }
   }
 
   @override

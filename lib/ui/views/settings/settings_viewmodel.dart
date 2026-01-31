@@ -10,6 +10,7 @@ import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/themes.dart';
+import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -45,6 +46,10 @@ class SettingsViewModel extends BaseViewModel {
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
+  }
+
+  void handleBackButton() {
+    locator<HomeViewModel>().handleBackButton();
   }
 
   void setInitialCorrectInterval(int value) {

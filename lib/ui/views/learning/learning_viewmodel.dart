@@ -2,6 +2,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
+import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -113,5 +114,9 @@ class LearningViewModel extends FutureViewModel {
       Routes.flashcardSetInfoView,
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
+  }
+
+  void handleBackButton() {
+    locator<HomeViewModel>().handleBackButton();
   }
 }
