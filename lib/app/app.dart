@@ -4,6 +4,7 @@ import 'package:sagase/services/firebase_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/mecab_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/ui/bottom_sheets/add_to_my_list_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/assign_my_lists_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart';
@@ -107,6 +108,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     LazySingleton(classType: SearchViewModel),
   ],
   bottomsheets: [
+    StackedBottomsheet(classType: AddToMyListBottomSheet),
     StackedBottomsheet(classType: AssignMyListsBottomSheet),
     StackedBottomsheet(classType: AssignListsBottomSheet),
     StackedBottomsheet(classType: StrokeOrderBottomSheet),

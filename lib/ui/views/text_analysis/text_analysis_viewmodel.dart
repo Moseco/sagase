@@ -87,8 +87,32 @@ class TextAnalysisViewModel extends FutureViewModel {
     rebuildUi();
   }
 
-  void copyText() {
-    Clipboard.setData(ClipboardData(text: _text));
+  Future<void> addToDictionaryList() async {
+    final myDictionaryLists =
+        await _dictionaryService.getAllMyDictionaryLists();
+
+    final response = await _bottomSheetService.showCustomSheet(
+      variant: BottomSheetType.addToMyListBottom,
+      data: myDictionaryLists,
+    );
+
+    if (response?.data == null) return;
+
+    final List<DictionaryItem> itemsToAdd = [];
+    for (var token in tokens!) {
+      if (token.associatedDictionaryItems != null &&
+          token.associatedDictionaryItems!.length == 1 &&
+          token.associatedDictionaryItems!.first is Vocab) {
+        itemsToAdd.add(token.associatedDictionaryItems!.first);
+      }
+    }
+
+    await _dictionaryService.addManyToMyDictionaryList(
+      response!.data! as MyDictionaryList,
+      itemsToAdd,
+    );
+
+    _snackbarService.showSnackbar(message: 'Vocab added to list');
   }
 
   void openAssociatedDictionaryItem(JapaneseTextToken token) {

@@ -328,6 +328,14 @@ class DictionaryService {
         .addDictionaryItem(dictionaryList, dictionaryItem);
   }
 
+  Future<void> addManyToMyDictionaryList(
+    MyDictionaryList dictionaryList,
+    List<DictionaryItem> dictionaryItems,
+  ) async {
+    await _database.myDictionaryListsDao
+        .addDictionaryItems(dictionaryList, dictionaryItems);
+  }
+
   Future<void> removeFromMyDictionaryList(
     MyDictionaryList dictionaryList,
     DictionaryItem dictionaryItem,

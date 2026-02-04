@@ -71,8 +71,10 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
                 icon: const Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: viewModel.copyText,
-                icon: const Icon(Icons.copy),
+                onPressed: viewModel.analysisFailed
+                    ? null
+                    : viewModel.addToDictionaryList,
+                icon: const Icon(Icons.playlist_add),
               ),
             ],
         },
