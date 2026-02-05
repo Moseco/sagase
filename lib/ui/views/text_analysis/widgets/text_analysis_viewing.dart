@@ -12,109 +12,127 @@ class TextAnalysisViewing extends ViewModelWidget<TextAnalysisViewModel> {
 
   @override
   Widget build(BuildContext context, TextAnalysisViewModel viewModel) {
-    List<Widget> textChildren = [];
+    List<Widget> lineWidgets = [];
     List<Widget> associatedVocabChildren = [];
-    for (var token in viewModel.tokens!) {
-      List<RubyTextData> data = [];
 
-      // Create writing buffer to be used in case of multiple associated vocab
-      final writing = StringBuffer();
-      // Add main pairs
-      for (var rubyPair in token.rubyTextPairs) {
-        writing.write(rubyPair.writing);
-        data.add(
-          RubyTextData(
-            rubyPair.writing,
-            ruby: rubyPair.reading,
-          ),
-        );
-      }
-      // Add any trailing pairs
-      if (token.trailing != null) {
-        for (var trailing in token.trailing!) {
-          for (var rubyPair in trailing.rubyTextPairs) {
-            writing.write(rubyPair.writing);
-            data.add(
-              RubyTextData(
-                rubyPair.writing,
-                ruby: rubyPair.reading,
-              ),
-            );
-          }
-        }
-      }
+    for (var lineTokens in viewModel.tokens!) {
+      List<Widget> textChildren = [];
 
-      textChildren.add(
-        GestureDetector(
-          onTap: () => viewModel.openAssociatedDictionaryItem(token),
-          onLongPress: () => viewModel.copyToken(token),
-          child: Container(
-            decoration: BoxDecoration(
-              border: token.associatedDictionaryItems!.isNotEmpty
-                  ? Border(
-                      bottom: BorderSide(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!,
-                      ),
-                    )
-                  : null,
-            ),
-            child: RubyText(
-              data,
-              style: const TextStyle(
-                fontSize: 24,
-                letterSpacing: 0,
-                height: 1.1,
-              ),
-              rubyStyle: const TextStyle(height: 1.2),
-            ),
-          ),
-        ),
-      );
+      for (var token in lineTokens) {
+        List<RubyTextData> data = [];
 
-      if (token.associatedDictionaryItems != null &&
-          token.associatedDictionaryItems!.isNotEmpty) {
-        if (token.associatedDictionaryItems!.length == 1) {
-          if (token.associatedDictionaryItems![0] is Vocab) {
-            associatedVocabChildren.add(
-              VocabListItem(
-                vocab: token.associatedDictionaryItems![0] as Vocab,
-                onPressed: () => viewModel.openAssociatedDictionaryItem(token),
-              ),
-            );
-          } else {
-            associatedVocabChildren.add(
-              ProperNounListItem(
-                properNoun: token.associatedDictionaryItems![0] as ProperNoun,
-                onPressed: () => viewModel.openAssociatedDictionaryItem(token),
-              ),
-            );
-          }
-        } else {
-          // Multiple dictionary item
-          associatedVocabChildren.add(
-            InkWell(
-              onTap: () => viewModel.openAssociatedDictionaryItem(token),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Multiple options for $writing',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const Text(
-                      'Tap to view',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ],
-                ),
-              ),
+        // Create writing buffer to be used in case of multiple associated vocab
+        final writing = StringBuffer();
+        // Add main pairs
+        for (var rubyPair in token.rubyTextPairs) {
+          writing.write(rubyPair.writing);
+          data.add(
+            RubyTextData(
+              rubyPair.writing,
+              ruby: rubyPair.reading,
             ),
           );
         }
+        // Add any trailing pairs
+        if (token.trailing != null) {
+          for (var trailing in token.trailing!) {
+            for (var rubyPair in trailing.rubyTextPairs) {
+              writing.write(rubyPair.writing);
+              data.add(
+                RubyTextData(
+                  rubyPair.writing,
+                  ruby: rubyPair.reading,
+                ),
+              );
+            }
+          }
+        }
+
+        textChildren.add(
+          GestureDetector(
+            onTap: () => viewModel.openAssociatedDictionaryItem(token),
+            onLongPress: () => viewModel.copyToken(token),
+            child: Container(
+              decoration: BoxDecoration(
+                border: token.associatedDictionaryItems!.isNotEmpty
+                    ? Border(
+                        bottom: BorderSide(
+                          color: Theme.of(context).textTheme.bodyMedium!.color!,
+                        ),
+                      )
+                    : null,
+              ),
+              child: RubyText(
+                data,
+                style: const TextStyle(
+                  fontSize: 24,
+                  letterSpacing: 0,
+                  height: 1.1,
+                ),
+                rubyStyle: const TextStyle(height: 1.2),
+              ),
+            ),
+          ),
+        );
+
+        if (token.associatedDictionaryItems != null &&
+            token.associatedDictionaryItems!.isNotEmpty) {
+          if (token.associatedDictionaryItems!.length == 1) {
+            if (token.associatedDictionaryItems![0] is Vocab) {
+              associatedVocabChildren.add(
+                VocabListItem(
+                  vocab: token.associatedDictionaryItems![0] as Vocab,
+                  onPressed: () =>
+                      viewModel.openAssociatedDictionaryItem(token),
+                ),
+              );
+            } else {
+              associatedVocabChildren.add(
+                ProperNounListItem(
+                  properNoun: token.associatedDictionaryItems![0] as ProperNoun,
+                  onPressed: () =>
+                      viewModel.openAssociatedDictionaryItem(token),
+                ),
+              );
+            }
+          } else {
+            // Multiple dictionary item
+            associatedVocabChildren.add(
+              InkWell(
+                onTap: () => viewModel.openAssociatedDictionaryItem(token),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Multiple options for $writing',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const Text(
+                        'Tap to view',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+        }
+      }
+
+      if (textChildren.isNotEmpty) {
+        lineWidgets.add(
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.end,
+            spacing: 6,
+            children: textChildren,
+          ),
+        );
       }
     }
 
@@ -133,10 +151,9 @@ class TextAnalysisViewing extends ViewModelWidget<TextAnalysisViewModel> {
               padding: const EdgeInsets.all(8),
               child: SizedBox(
                 width: double.infinity,
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.end,
-                  spacing: 6,
-                  children: textChildren,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: lineWidgets,
                 ),
               ),
             ),

@@ -26,7 +26,7 @@ class TextAnalysisViewModel extends FutureViewModel {
 
   bool _addToHistory;
 
-  List<JapaneseTextToken>? tokens;
+  List<List<JapaneseTextToken>>? tokens;
 
   bool _analysisFailed = true;
   bool get analysisFailed => _analysisFailed;
@@ -54,22 +54,31 @@ class TextAnalysisViewModel extends FutureViewModel {
 
     _analysisFailed = true;
 
-    tokens = _mecabService.parseText(_text);
+    final lines = _text.split('\n');
+    tokens = [];
 
-    for (var token in tokens!) {
-      if (token.pos == PartOfSpeech.nounProper &&
-          _sharedPreferencesService.getProperNounsEnabled()) {
-        token.associatedDictionaryItems =
-            await _dictionaryService.getProperNounByJapaneseTextToken(token);
-      }
+    for (var line in lines) {
+      String internalTrimmed = line.trim();
+      if (internalTrimmed.isEmpty) continue;
 
-      if (token.associatedDictionaryItems == null ||
-          token.associatedDictionaryItems!.isEmpty) {
-        token.associatedDictionaryItems =
-            await _dictionaryService.getVocabByJapaneseTextToken(token);
-      }
-      if (token.associatedDictionaryItems!.isNotEmpty) {
-        _analysisFailed = false;
+      final lineTokens = _mecabService.parseText(internalTrimmed);
+      tokens!.add(lineTokens);
+
+      for (var token in lineTokens) {
+        if (token.pos == PartOfSpeech.nounProper &&
+            _sharedPreferencesService.getProperNounsEnabled()) {
+          token.associatedDictionaryItems =
+              await _dictionaryService.getProperNounByJapaneseTextToken(token);
+        }
+
+        if (token.associatedDictionaryItems == null ||
+            token.associatedDictionaryItems!.isEmpty) {
+          token.associatedDictionaryItems =
+              await _dictionaryService.getVocabByJapaneseTextToken(token);
+        }
+        if (token.associatedDictionaryItems!.isNotEmpty) {
+          _analysisFailed = false;
+        }
       }
     }
 
@@ -99,11 +108,13 @@ class TextAnalysisViewModel extends FutureViewModel {
     if (response?.data == null) return;
 
     final List<DictionaryItem> itemsToAdd = [];
-    for (var token in tokens!) {
-      if (token.associatedDictionaryItems != null &&
-          token.associatedDictionaryItems!.length == 1 &&
-          token.associatedDictionaryItems!.first is Vocab) {
-        itemsToAdd.add(token.associatedDictionaryItems!.first);
+    for (var lineTokens in tokens!) {
+      for (var token in lineTokens) {
+        if (token.associatedDictionaryItems != null &&
+            token.associatedDictionaryItems!.length == 1 &&
+            token.associatedDictionaryItems!.first is Vocab) {
+          itemsToAdd.add(token.associatedDictionaryItems!.first);
+        }
       }
     }
 
