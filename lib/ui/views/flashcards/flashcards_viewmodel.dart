@@ -344,8 +344,7 @@ class FlashcardsViewModel extends FutureViewModel {
       // If active flashcards is still empty then try to add new flashcards
       Future<DialogResponse<dynamic>?>? reportDialogResponse;
       if (activeFlashcards.isEmpty) {
-        if (_sharedPreferencesService.getFlashcardLearningModeEnabled() &&
-            _sharedPreferencesService.getAddNewFlashcardsInBatches()) {
+        if (_sharedPreferencesService.getAddNewFlashcardsInBatches()) {
           if (initial) newFlashcards.shuffle(_random);
 
           int newFlashcardsToAdd = max(

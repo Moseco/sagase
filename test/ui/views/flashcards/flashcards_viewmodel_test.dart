@@ -1987,7 +1987,6 @@ void main() {
         () async {
       // Set shared preferences
       getAndRegisterSharedPreferencesService(
-        getFlashcardLearningModeEnabled: true,
         getNewFlashcardsPerDay: 1,
         getAddNewFlashcardsInBatches: true,
       );
