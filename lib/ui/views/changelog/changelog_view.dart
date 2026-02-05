@@ -92,9 +92,9 @@ class _CurrentChangelog extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.school),
-            title: Text('Improved learning mode'),
+            title: Text('More flashcard options'),
             subtitle: Text(
-              'More options to control how new flashcards are added while studying',
+              'Keep your studying on track with more options to manage new and due flashcards',
             ),
           ),
         ],
