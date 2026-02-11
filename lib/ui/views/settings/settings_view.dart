@@ -88,16 +88,7 @@ class SettingsView extends StatelessWidget {
                         'If enabled, a set amount of new flashcards will be included with due flashcards. You can also long press a flashcard set to open in a different mode.',
                       ),
                     ),
-                    SettingsTile.navigation(
-                      enabled: viewModel.flashcardLearningModeEnabled,
-                      title: const Text('Set new flashcards per day'),
-                      description: const Text(
-                        'The amount of new flashcards to be added along with due cards while in learning mode.',
-                      ),
-                      onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
-                    ),
                     SettingsTile.switchTile(
-                      enabled: viewModel.flashcardLearningModeEnabled,
                       initialValue: viewModel.addNewFlashcardsInBatches,
                       onToggle: viewModel.setAddNewFlashcardsInBatches,
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
@@ -105,6 +96,15 @@ class SettingsView extends StatelessWidget {
                       description: const Text(
                         'If enabled, when no due flashcards are available new flashcards are added in batches instead of all at once.',
                       ),
+                    ),
+                    SettingsTile.navigation(
+                      enabled: viewModel.flashcardLearningModeEnabled ||
+                          viewModel.addNewFlashcardsInBatches,
+                      title: const Text('Set new flashcard amount'),
+                      description: const Text(
+                        'The amount of new flashcards added if learning mode or add new flashcards in batches are enabled.',
+                      ),
+                      onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
                     ),
                     SettingsTile.navigation(
                       title:

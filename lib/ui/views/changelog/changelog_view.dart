@@ -72,29 +72,29 @@ class _CurrentChangelog extends StatelessWidget {
             ),
           ),
           Text(
-            'What\'s new in 1.4',
+            'What\'s new in 1.5',
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.format_list_bulleted),
-            title: Text('New vocab lists'),
+            leading: Icon(Icons.camera),
+            title: Text('New and improved OCR'),
             subtitle: Text(
-              'Added Kaishi 1.5k and core vocab lists',
+              'Find words in photos right from the search screen',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.search),
-            title: Text('Better search'),
+            leading: Icon(Icons.playlist_add),
+            title: Text('From text to flashcards'),
             subtitle: Text(
-              'Sorting is greatly improved and you can now use wildcards',
+              'Bulk import vocab directly from text or images into your custom lists',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.text_snippet),
-            title: Text('Better text analysis'),
+            leading: Icon(Icons.school),
+            title: Text('More flashcard options'),
             subtitle: Text(
-              'Text analysis is now much better at identifying vocab',
+              'Keep your studying on track with more options to manage new and due flashcards',
             ),
           ),
         ],
@@ -111,6 +111,12 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.5.0]
+- Full release of OCR with overhauled UI in the text analysis screen and ability to use OCR directly from the search screen
+- Added ability to bulk import all identified vocab from text analysis into your custom lists
+- Added option to space out flashcards if a large amount of due flashcards pile up
+- Added option to restrict how many new flashcards are shown when no due flashcards are available
+- Fixed performance issues during onboarding
 # [1.4.2]
 - Fixed disk space calculation during dictionary download
 - Fixed crash effecting some users the first time they opened flashcards
