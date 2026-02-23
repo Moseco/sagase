@@ -64,7 +64,7 @@ class _Body extends StackedHookView<OcrViewModel> {
                           onImageProcessed: viewModel.handleImageProcessed,
                           onImageError: viewModel.handleImageError,
                           onTextSelected: (text) {
-                            controller.text = controller.text + text;
+                            controller.text = "${controller.text}\n$text";
                             viewModel.handleTextSelected();
                           },
                           locked: false,
