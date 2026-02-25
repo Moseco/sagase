@@ -63,9 +63,15 @@ class _Body extends StackedHookView<OcrViewModel> {
                           image: viewModel.image!,
                           onImageProcessed: viewModel.handleImageProcessed,
                           onImageError: viewModel.handleImageError,
-                          onTextSelected: (text) {
-                            controller.text = "${controller.text}\n$text";
-                            viewModel.handleTextSelected();
+                          onTextBlockSelected: (textBlock) {
+                            if (controller.text.isEmpty) {
+                              controller.text = textBlock.text;
+                            } else {
+                              controller.text =
+                                  "${controller.text}\n${textBlock.text}";
+                            }
+                            viewModel.appendToHistory(
+                                controller.text, textBlock);
                           },
                           locked: false,
                           singleSelection: false,
@@ -144,30 +150,42 @@ class _SelectedText extends ViewModelWidget<OcrViewModel> {
                   ),
                   maxLength: 1000,
                   inputFormatters: [LengthLimitingTextInputFormatter(1000)],
+                  onChanged: viewModel.appendToHistory,
                 ),
               ),
             ),
           ),
-          AnimatedCrossFade(
-            crossFadeState: controller.text.isEmpty
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            duration: const Duration(milliseconds: 200),
-            firstChild: SizedBox.shrink(),
-            secondChild: Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).padding.bottom,
-              ),
-              width: double.infinity,
-              color: Colors.deepPurple,
-              child: TextButton.icon(
-                icon: const Icon(Icons.text_snippet, color: Colors.white),
-                label: const Text(
-                  'Analyze',
-                  style: TextStyle(color: Colors.white),
+          Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom,
+            ),
+            width: double.infinity,
+            color: Colors.deepPurple,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: viewModel.canUndo
+                      ? () => controller.text = viewModel.undo()
+                      : null,
+                  icon: const Icon(Icons.undo, color: Colors.white),
+                  splashColor: Colors.transparent,
                 ),
-                onPressed: () => viewModel.analyzeText(controller.text),
-              ),
+                IconButton(
+                  onPressed: viewModel.canRedo
+                      ? () => controller.text = viewModel.redo()
+                      : null,
+                  icon: const Icon(Icons.redo, color: Colors.white),
+                  splashColor: Colors.transparent,
+                ),
+                TextButton(
+                  child: const Text(
+                    'Analyze',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () => viewModel.analyzeText(controller.text),
+                ),
+              ],
             ),
           ),
         ],
