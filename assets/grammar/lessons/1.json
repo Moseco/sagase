@@ -1,0 +1,143 @@
+{
+    "title": "ほうがいい",
+    "description": "It would be better to...",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "In Japanese, the grammar point ほうがいい (hou ga ii) is the go-to expression for giving advice or suggestions. In English, it translates most closely to \"it's better to...\" or \"you should.\""
+                }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "The Grammar Construction"
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The way you connect a verb to ほうがいい depends on whether you are giving positive or negative advice."
+                }
+            ]
+        },
+        {
+            "type": "subheader",
+            "content": "Positive Advice (doing something)"
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "To suggest someone do something, use the past tense (ta-form) + ほうがいい."
+                }
+            ]
+        },
+        {
+            "type": "example",
+            "japanese": {
+                "text": "早く寝たほうがいいです。",
+                "romaji": "Hayaku neta hou ga ii desu."
+            },
+            "english": "You should go to bed early."
+        },
+        {
+            "type": "subheader",
+            "content": "Negative Advice (not doing something)"
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "To suggest someone avoid doing something, use the negative present (nai-form) + ほうがいい."
+                }
+            ]
+        },
+        {
+            "type": "example",
+            "japanese": {
+                "text": "甘い物を食べないほうがいいです。",
+                "romaji": "amai mono o tabenai hou ga ii desu."
+            },
+            "english": "You shouldn't eat sweet things."
+        },
+        {
+            "type": "header",
+            "content": "Important Nuances"
+        },
+        {
+            "type": "bulleted-list",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The \"Unsolicited Advice\" Warning: In Japanese culture, giving direct advice can sometimes feel a bit pushy or \"bossy\" because it implies you know what's best for the other person. To soften it, people often add 〜ですよ (desu yo) or 〜と思います (to omoimasu - I think) at the end."
+                },
+                {
+                    "type": "text",
+                    "text": "The Past Tense Mystery: You might wonder why we use the past tense for positive advice (e.g., neta instead of neru). Using the past tense makes the choice feel more concrete and definitive—it implies the action is already decided as the superior option."
+                },
+                {
+                    "type": "text",
+                    "text": "Strong Recommendation: While it translates to \"should,\" in many contexts, it carries a nuance of \"you'd better do this (or else there might be a problem).\""
+                }
+            ]
+        }
+    ],
+    "practice": [
+        {
+            "text": "喉が痛いなら、飴を{}ほうがいいですよ。",
+            "answer": "食べた",
+            "answer_romaji": "tabeta"
+        },
+        {
+            "text": "体に悪いですから、タバコは{}。",
+            "answer": "吸わないほうがいい",
+            "answer_romaji": "suowanaihougaii"
+        },
+        {
+            "text": "漢字が難しいですね。辞書で{}ほうがいいです。",
+            "answer": "調べた",
+            "answer_romaji": "shirabeta"
+        },
+        {
+            "text": "明日は早いですから、今夜はお酒を{}。",
+            "answer": "飲まないほうがいい",
+            "answer_romaji": "noomanaihougaii"
+        },
+        {
+            "text": "雨が降りそうです。傘を{}ほうがいいですよ。",
+            "answer": "持っていった",
+            "answer_romaji": "motteita"
+        },
+        {
+            "text": "日本へ行く前に、少し日本語を{}。",
+            "answer": "勉強したほうがいい",
+            "answer_romaji": "benkyoushitahougaii"
+        },
+        {
+            "text": "秘密ですから、誰にも{}ほうがいいです。",
+            "answer": "言わない",
+            "answer_romaji": "iwanai"
+        },
+        {
+            "text": "部屋が汚いですから、今日{}。",
+            "answer": "掃除したほうがいい",
+            "answer_romaji": "soujishitahougaii"
+        },
+        {
+            "text": "借りたお金ですから、{}ほうがいいですよ。",
+            "answer": "忘れない",
+            "answer_romaji": "wasurenai"
+        },
+        {
+            "text": "鍵がありません！警察に{}。",
+            "answer": "相談したほうがいい",
+            "answer_romaji": "soudanshitahougaii"
+        }
+    ]
+}

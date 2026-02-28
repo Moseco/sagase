@@ -119,4 +119,8 @@ class LearningViewModel extends FutureViewModel {
   void handleBackButton() {
     locator<HomeViewModel>().handleBackButton();
   }
+
+  void openGrammar() {
+    _navigationService.navigateTo(Routes.grammarView);
+  }
 }

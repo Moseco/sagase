@@ -145,4 +145,6 @@ flutter:
     - assets/images/radical_positions/
     # App Icon
     - assets/images/icon.png
+    # Grammar
+    - assets/grammar/lessons/
     

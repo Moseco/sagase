@@ -48,17 +48,27 @@ class LearningView extends StackedView<LearningViewModel> {
               ),
             ],
           ),
-          child: switch (viewModel.flashcardSets?.length) {
-            null => const _Loading(),
-            0 => const _NoFlashcards(),
-            _ => ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: viewModel.flashcardSets!.length,
-                itemBuilder: (context, index) => _FlashcardSet(
-                  viewModel.flashcardSets![index],
-                ),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: viewModel.openGrammar,
+                child: const Text('Open grammar'),
               ),
-          },
+              switch (viewModel.flashcardSets?.length) {
+                null => const _Loading(),
+                0 => const _NoFlashcards(),
+                _ => Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: viewModel.flashcardSets!.length,
+                      itemBuilder: (context, index) => _FlashcardSet(
+                        viewModel.flashcardSets![index],
+                      ),
+                    ),
+                  ),
+              },
+            ],
+          ),
         ),
       ),
     );
