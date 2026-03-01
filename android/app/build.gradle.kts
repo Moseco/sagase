@@ -61,7 +61,7 @@ android {
 }
 
 dependencies {
-    implementation("com.google.mlkit:text-recognition-japanese:16.0.0")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
 }
 
 flutter {
