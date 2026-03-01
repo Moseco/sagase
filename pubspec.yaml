@@ -7,7 +7,7 @@ version: 1.5.0+26
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.38.9
+  flutter: 3.41.2
 
 isar_version: &isar_version 3.3.0
 
@@ -31,7 +31,7 @@ dependencies:
 
   # Firebase
   firebase_core: 4.4.0
-  firebase_analytics: 12.1.1
+  firebase_analytics: 12.1.2
   firebase_crashlytics: 5.0.7
 
   # UI
@@ -65,16 +65,8 @@ dependencies:
   kana_kit: ^2.1.1
   async: ^2.11.0
   archive: ^4.0.5
-  google_mlkit_digital_ink_recognition:
-    git:
-      url: https://github.com/Moseco/google_ml_kit_flutter
-      path: packages/google_mlkit_digital_ink_recognition
-      ref: 'ed12704'
-  google_mlkit_text_recognition:
-    git:
-      url: https://github.com/Moseco/google_ml_kit_flutter
-      path: packages/google_mlkit_text_recognition
-      ref: 'ed12704'
+  google_mlkit_digital_ink_recognition: ^0.14.2
+  google_mlkit_text_recognition: ^0.15.1
   intl: ^0.20.2
   shared_preferences: ^2.3.5
   mecab_dart:
@@ -95,7 +87,7 @@ dependencies:
       ref: 'ddb5dff'
   security_scoped_resource: ^0.0.2
   sanitize_filename: ^1.0.5
-  camera: ^0.11.2
+  camera: ^0.12.0
   image_picker: ^1.1.2
   flutter_exif_rotation:
     git:
