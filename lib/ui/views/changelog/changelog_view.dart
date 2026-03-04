@@ -111,6 +111,9 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.5.1]
+- Added undo and redo functionality to text analysis
+- Improved error handling during OCR
 # [1.5.0]
 - Full release of OCR with overhauled UI in the text analysis screen and ability to use OCR directly from the search screen
 - Added ability to bulk import all identified vocab from text analysis into your custom lists
