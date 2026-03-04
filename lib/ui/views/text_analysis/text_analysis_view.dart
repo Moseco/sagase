@@ -59,22 +59,22 @@ class _Body extends StackedHookView<TextAnalysisViewModel> {
           TextAnalysisState.loading => null,
           TextAnalysisState.viewing => [
               IconButton(
-                onPressed: () {
-                  controller.clear();
-                  viewModel.textChanged('');
-                  viewModel.editText();
-                },
-                icon: const Icon(Icons.note_add_outlined),
+                onPressed: viewModel.analysisFailed
+                    ? null
+                    : viewModel.addToDictionaryList,
+                icon: const Icon(Icons.playlist_add),
               ),
               IconButton(
                 onPressed: viewModel.editText,
                 icon: const Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: viewModel.analysisFailed
-                    ? null
-                    : viewModel.addToDictionaryList,
-                icon: const Icon(Icons.playlist_add),
+                onPressed: () {
+                  controller.clear();
+                  viewModel.textChanged('');
+                  viewModel.editText();
+                },
+                icon: const Icon(Icons.note_add_outlined),
               ),
             ],
         },
