@@ -1,6 +1,5 @@
 import 'package:async/async.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kana_kit/kana_kit.dart';
@@ -45,8 +44,8 @@ class SearchViewModel extends FutureViewModel {
   SearchFilter _searchFilter = SearchFilter.vocab;
   SearchFilter get searchFilter => _searchFilter;
 
-  VoidCallback? _onRequestKeyboardFocus;
-  set onRequestKeyboardFocus(VoidCallback? callback) {
+  void Function()? _onRequestKeyboardFocus;
+  set onRequestKeyboardFocus(void Function() callback) {
     _onRequestKeyboardFocus = callback;
   }
 
