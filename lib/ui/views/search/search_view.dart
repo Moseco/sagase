@@ -27,12 +27,12 @@ class SearchView extends StatelessWidget {
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
       viewModelBuilder: () => locator<SearchViewModel>(),
-      builder: (context, viewModel, child) => Scaffold(body: _Body()),
+      builder: (context, viewModel, child) => _SearchView(),
     );
   }
 }
 
-class _Body extends StackedHookView<SearchViewModel> {
+class _SearchView extends StackedHookView<SearchViewModel> {
   @override
   Widget builder(BuildContext context, SearchViewModel viewModel) {
     final searchController =
@@ -41,31 +41,44 @@ class _Body extends StackedHookView<SearchViewModel> {
     final handWritingFocusNode = useFocusNode();
     final handWritingController = use(const HandWritingControllerHook());
 
-    return HomeHeader(
-      title: _SearchTextField(
-        searchController: searchController,
-        keyboardFocusNode: keyboardFocusNode,
-        handWritingFocusNode: handWritingFocusNode,
-      ),
-      child: Column(
-        children: [
-          if (viewModel.promptAnalysis) AnalysisPrompt(),
-          viewModel.searchResult == null
-              ? _SearchHistory(searchController)
-              : const _SearchResults(),
-          if (viewModel.inputMode == InputMode.handWriting)
-            HandWritingInput(
-              searchController: searchController,
-              handWritingController: handWritingController,
-              keyboardFocusNode: keyboardFocusNode,
-            ),
-          if (viewModel.inputMode == InputMode.ocr)
-            OcrWidget(
-              searchController: searchController,
-              handWritingController: handWritingController,
-              keyboardFocusNode: keyboardFocusNode,
-            ),
-        ],
+    return Scaffold(
+      floatingActionButton:
+          keyboardFocusNode.hasFocus || viewModel.inputMode != InputMode.text
+              ? null
+              : FloatingActionButton(
+                  onPressed: () {
+                    keyboardFocusNode.requestFocus();
+                    viewModel.rebuildUi();
+                  },
+                  backgroundColor: Colors.deepPurple,
+                  child: const Icon(Icons.search),
+                ),
+      body: HomeHeader(
+        title: _SearchTextField(
+          searchController: searchController,
+          keyboardFocusNode: keyboardFocusNode,
+          handWritingFocusNode: handWritingFocusNode,
+        ),
+        child: Column(
+          children: [
+            if (viewModel.promptAnalysis) AnalysisPrompt(),
+            viewModel.searchResult == null
+                ? _SearchHistory(searchController)
+                : const _SearchResults(),
+            if (viewModel.inputMode == InputMode.handWriting)
+              HandWritingInput(
+                searchController: searchController,
+                handWritingController: handWritingController,
+                keyboardFocusNode: keyboardFocusNode,
+              ),
+            if (viewModel.inputMode == InputMode.ocr)
+              OcrWidget(
+                searchController: searchController,
+                handWritingController: handWritingController,
+                keyboardFocusNode: keyboardFocusNode,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -120,7 +133,10 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
               // Dismiss keyboard
               (node) {
                 return IconButton(
-                  onPressed: node.unfocus,
+                  onPressed: () {
+                    node.unfocus();
+                    viewModel.rebuildUi();
+                  },
                   icon: const Icon(Icons.keyboard_hide),
                 );
               },
