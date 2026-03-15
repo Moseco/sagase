@@ -122,10 +122,7 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
               // Dismiss keyboard
               (node) {
                 return IconButton(
-                  onPressed: () {
-                    node.unfocus();
-                    viewModel.rebuildUi();
-                  },
+                  onPressed: node.unfocus,
                   icon: const Icon(Icons.keyboard_hide),
                 );
               },
