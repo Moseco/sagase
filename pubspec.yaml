@@ -3,11 +3,11 @@ description: A Japanese-English dictionary and learning app.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.5.1+27
+version: 1.5.1+28
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.41.2
+  flutter: 3.41.4
 
 isar_version: &isar_version 3.3.0
 

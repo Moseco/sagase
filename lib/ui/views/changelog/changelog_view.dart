@@ -113,6 +113,7 @@ class _ChangelogHistory extends StatelessWidget {
       child: Markdown(data: '''
 # [1.5.1]
 - Added undo and redo functionality to text analysis
+- Added ability to open the keyboard on the search screen by tapping the search tab button
 - Improved error handling during OCR
 # [1.5.0]
 - Full release of OCR with overhauled UI in the text analysis screen and ability to use OCR directly from the search screen
