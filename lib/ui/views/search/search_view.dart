@@ -41,6 +41,8 @@ class _Body extends StackedHookView<SearchViewModel> {
     final handWritingFocusNode = useFocusNode();
     final handWritingController = use(const HandWritingControllerHook());
 
+    viewModel.onRequestKeyboardFocus = () => keyboardFocusNode.requestFocus();
+
     return HomeHeader(
       title: _SearchTextField(
         searchController: searchController,

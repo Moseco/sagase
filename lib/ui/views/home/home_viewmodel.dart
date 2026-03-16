@@ -8,6 +8,7 @@ import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/ui/views/search/search_viewmodel.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:security_scoped_resource/security_scoped_resource.dart';
 import 'package:stacked/stacked.dart';
@@ -209,8 +210,9 @@ class HomeViewModel extends IndexTrackingViewModel {
   void handleNavigation(int index, {bool preventDuplicates = true}) {
     // Prevent navigation to the same screen
     if (index == currentIndex && preventDuplicates) {
-      // If navigating to lists view, clear to base lists view
-      if (index == 1) {
+      if (index == 0) {
+        locator<SearchViewModel>().handleNavBarTap();
+      } else if (index == 1) {
         _navigationService.popUntil(
           (route) => route.isFirst,
           id: nestedNavigationKey,
