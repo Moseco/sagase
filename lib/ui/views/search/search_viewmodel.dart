@@ -44,6 +44,11 @@ class SearchViewModel extends FutureViewModel {
   SearchFilter _searchFilter = SearchFilter.vocab;
   SearchFilter get searchFilter => _searchFilter;
 
+  void Function()? _onRequestKeyboardFocus;
+  set onRequestKeyboardFocus(void Function() callback) {
+    _onRequestKeyboardFocus = callback;
+  }
+
   bool _promptAnalysis = false;
   bool get promptAnalysis => _promptAnalysis;
 
@@ -248,6 +253,10 @@ class SearchViewModel extends FutureViewModel {
     _image = null;
     _ocrError = false;
     rebuildUi();
+  }
+
+  void handleNavBarTap() {
+    _onRequestKeyboardFocus?.call();
   }
 }
 

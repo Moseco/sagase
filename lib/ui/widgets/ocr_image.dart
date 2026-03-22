@@ -17,7 +17,8 @@ class OcrImage extends StatefulWidget {
   final XFile image;
   final void Function(int)? onImageProcessed;
   final void Function() onImageError;
-  final void Function(String) onTextSelected;
+  final void Function(String)? onTextSelected;
+  final void Function(RecognizedTextBlock)? onTextBlockSelected;
   final bool locked;
   final bool singleSelection;
 
@@ -27,7 +28,8 @@ class OcrImage extends StatefulWidget {
     this.onImageProcessed,
     required this.onImageError,
     required this.locked,
-    required this.onTextSelected,
+    this.onTextSelected,
+    this.onTextBlockSelected,
     required this.singleSelection,
   });
 
@@ -108,7 +110,8 @@ class _OcrImageState extends State<OcrImage> {
   void handleSelect(RecognizedTextBlock textBlock) {
     setState(() {
       if (!textBlock.selected) {
-        widget.onTextSelected(textBlock.text);
+        widget.onTextSelected?.call(textBlock.text);
+        widget.onTextBlockSelected?.call(textBlock);
       }
 
       if (widget.singleSelection) {
