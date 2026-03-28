@@ -124,6 +124,7 @@ class IsarService {
         myDictionaryLists: myDictionaryListBackups,
         flashcardSets: flashcardSetBackups,
         flashcardSetReports: [],
+        spacedRepetitionData: [],
         vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
         vocabSpacedRepetitionDataEnglish:
             vocabSpacedRepetitionDataEnglishBackups,

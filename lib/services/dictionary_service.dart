@@ -639,30 +639,13 @@ class DictionaryService {
       }
 
       // Spaced repetition data
-      Map<String, String> vocabSpacedRepetitionDataBackups = {};
-      Map<String, String> vocabSpacedRepetitionDataEnglishBackups = {};
-      Map<String, String> kanjiSpacedRepetitionDataBackups = {};
-      Map<String, String> kanjiSpacedRepetitionDataEnglishBackups = {};
+      List<String> spacedRepetitionDataBackups = [];
       final spacedRepetitionDataList =
           await _database.spacedRepetitionDatasDao.getAll();
       for (final spacedRepetitionData in spacedRepetitionDataList) {
-        if (spacedRepetitionData.vocabId != 0) {
-          if (spacedRepetitionData.frontType == FrontType.japanese) {
-            vocabSpacedRepetitionDataBackups[spacedRepetitionData.vocabId
-                .toString()] = spacedRepetitionData.toBackupJson();
-          } else {
-            vocabSpacedRepetitionDataEnglishBackups[spacedRepetitionData.vocabId
-                .toString()] = spacedRepetitionData.toBackupJson();
-          }
-        } else {
-          if (spacedRepetitionData.frontType == FrontType.japanese) {
-            kanjiSpacedRepetitionDataBackups[spacedRepetitionData.kanjiId
-                .toString()] = spacedRepetitionData.toBackupJson();
-          } else {
-            kanjiSpacedRepetitionDataEnglishBackups[spacedRepetitionData.kanjiId
-                .toString()] = spacedRepetitionData.toBackupJson();
-          }
-        }
+        spacedRepetitionDataBackups.add(
+          spacedRepetitionData.toBackupJson(),
+        );
       }
 
       // Search history
@@ -701,12 +684,7 @@ class DictionaryService {
         myDictionaryLists: myDictionaryListBackups,
         flashcardSets: flashcardSetBackups,
         flashcardSetReports: flashcardSetReportBackups,
-        vocabSpacedRepetitionData: vocabSpacedRepetitionDataBackups,
-        vocabSpacedRepetitionDataEnglish:
-            vocabSpacedRepetitionDataEnglishBackups,
-        kanjiSpacedRepetitionData: kanjiSpacedRepetitionDataBackups,
-        kanjiSpacedRepetitionDataEnglish:
-            kanjiSpacedRepetitionDataEnglishBackups,
+        spacedRepetitionData: spacedRepetitionDataBackups,
         searchHistory: searchHistoryBackups,
         textAnalysisHistory: textAnalysisHistoryBackups,
         vocabNotes: vocabNoteBackups,
@@ -754,45 +732,58 @@ class DictionaryService {
               FlashcardSetReport.fromBackupJson(flashcardSetReportJson));
         }
 
-        // Vocab spaced repetition data
+        // Spaced repetition data
+        for (final spacedRepetitionDataJson
+            in userBackup.spacedRepetitionData) {
+          await _database.spacedRepetitionDatasDao.set(
+            SpacedRepetitionData.fromBackupJson(
+                jsonDecode(spacedRepetitionDataJson)),
+          );
+        }
+
+        // Old vocab spaced repetition data format
         for (final entry in userBackup.vocabSpacedRepetitionData.entries) {
-          final spacedRepetitionData = SpacedRepetitionData.fromBackupJson(
+          final spacedRepetitionData = SpacedRepetitionData.fromBackupJsonOld(
             jsonDecode(entry.value),
-            vocabId: int.parse(entry.key),
-            frontType: FrontType.japanese,
+            int.parse(entry.key),
+            DictionaryItemType.vocab,
+            FrontType.japanese,
           );
 
           await _database.spacedRepetitionDatasDao.set(spacedRepetitionData);
         }
 
-        // Vocab spaced repetition data English
+        // Old vocab spaced repetition data English format
         for (var entry in userBackup.vocabSpacedRepetitionDataEnglish.entries) {
-          final spacedRepetitionData = SpacedRepetitionData.fromBackupJson(
+          final spacedRepetitionData = SpacedRepetitionData.fromBackupJsonOld(
             jsonDecode(entry.value),
-            vocabId: int.parse(entry.key),
-            frontType: FrontType.english,
+            int.parse(entry.key),
+            DictionaryItemType.vocab,
+            FrontType.english,
           );
 
           await _database.spacedRepetitionDatasDao.set(spacedRepetitionData);
         }
 
-        // Kanji spaced repetition data
+        // Old Kanji spaced repetition data format
         for (final entry in userBackup.kanjiSpacedRepetitionData.entries) {
-          final spacedRepetitionData = SpacedRepetitionData.fromBackupJson(
+          final spacedRepetitionData = SpacedRepetitionData.fromBackupJsonOld(
             jsonDecode(entry.value),
-            kanjiId: int.parse(entry.key),
-            frontType: FrontType.japanese,
+            int.parse(entry.key),
+            DictionaryItemType.kanji,
+            FrontType.japanese,
           );
 
           await _database.spacedRepetitionDatasDao.set(spacedRepetitionData);
         }
 
-        // Kanji spaced repetition data English
+        // Old Kanji spaced repetition data English format
         for (var entry in userBackup.kanjiSpacedRepetitionDataEnglish.entries) {
-          final spacedRepetitionData = SpacedRepetitionData.fromBackupJson(
+          final spacedRepetitionData = SpacedRepetitionData.fromBackupJsonOld(
             jsonDecode(entry.value),
-            kanjiId: int.parse(entry.key),
-            frontType: FrontType.english,
+            int.parse(entry.key),
+            DictionaryItemType.kanji,
+            FrontType.english,
           );
 
           await _database.spacedRepetitionDatasDao.set(spacedRepetitionData);
