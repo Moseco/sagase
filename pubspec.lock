@@ -357,10 +357,10 @@ packages:
     dependency: "direct main"
     description:
       name: drift
-      sha256: "61f876c0291b194980bafd203f48e85d5fb04e4a7334367d1a89f44004dbcb83"
+      sha256: "055c249d1f91be5a47fe447f88afc24c4ca6f4cd6c5ed66767b4797d48acc2e5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.32.0"
+    version: "2.32.1"
   drift_flutter:
     dependency: "direct main"
     description:
@@ -1241,8 +1241,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: bd90efb
-      resolved-ref: bd90efb3ebd30ff444ef3b813caab3f6117d46c1
+      ref: "6c87d64"
+      resolved-ref: "6c87d64d71c21dc4a33339b6f6306dc2b3fa2385"
       url: "https://github.com/Moseco/sagase_dictionary"
     source: git
     version: "1.0.0"

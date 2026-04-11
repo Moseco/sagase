@@ -31,7 +31,6 @@ import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart'
 import 'package:sagase/ui/views/flashcard_set_settings/flashcard_set_settings_view.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_view.dart';
 import 'package:sagase/ui/views/grammar/grammar_view.dart';
-import 'package:sagase/ui/views/grammar_lesson/grammar_lesson_view.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase/ui/views/kanji_list/kanji_list_view.dart';
 import 'package:sagase/ui/views/ocr/ocr_view.dart';
@@ -89,7 +88,6 @@ import 'package:stacked_themes/stacked_themes.dart';
     ),
     MaterialRoute(page: ProperNounView),
     MaterialRoute(page: GrammarView),
-    MaterialRoute(page: GrammarLessonView),
     MaterialRoute(page: OcrView),
     MaterialRoute(page: DevView),
   ],

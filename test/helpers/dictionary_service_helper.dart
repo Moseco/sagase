@@ -317,17 +317,39 @@ Future<DictionaryService> setUpDictionaryData({
         strokeCount: const drift.Value(2),
       ),
     ]);
+    // Grammar
+    batch.insertAll(database.grammars, [
+      const GrammarsCompanion(
+        id: drift.Value(1),
+        form: drift.Value('です'),
+        meaning: drift.Value('To be'),
+        jlptLevel: drift.Value(5),
+      ),
+      const GrammarsCompanion(
+        id: drift.Value(2),
+        form: drift.Value('ほうがいい'),
+        meaning: drift.Value('It would be better to...'),
+        jlptLevel: drift.Value(5),
+      ),
+      const GrammarsCompanion(
+        id: drift.Value(3),
+        form: drift.Value('～たい'),
+        meaning: drift.Value('want to do'),
+        jlptLevel: drift.Value(5),
+      ),
+    ]);
     // Predefined dictionary list
     batch.insertAll(database.predefinedDictionaryLists, [
       const PredefinedDictionaryListsCompanion(
         id: drift.Value(0),
-        name: drift.Value('Vocab  list'),
+        name: drift.Value('Vocab list'),
         vocab: drift.Value([1, 2, 3, 4, 5]),
         kanji: drift.Value([]),
+        grammar: drift.Value([]),
       ),
       PredefinedDictionaryListsCompanion(
         id: const drift.Value(1),
-        name: const drift.Value('Kanji  list'),
+        name: const drift.Value('Kanji list'),
         vocab: const drift.Value([]),
         kanji: drift.Value([
           '一'.kanjiCodePoint(),
@@ -336,6 +358,14 @@ Future<DictionaryService> setUpDictionaryData({
           '四'.kanjiCodePoint(),
           '五'.kanjiCodePoint(),
         ]),
+        grammar: const drift.Value([]),
+      ),
+      const PredefinedDictionaryListsCompanion(
+        id: drift.Value(2),
+        name: drift.Value('Grammar list'),
+        vocab: drift.Value([]),
+        kanji: drift.Value([]),
+        grammar: drift.Value([1, 2]),
       ),
     ]);
   });

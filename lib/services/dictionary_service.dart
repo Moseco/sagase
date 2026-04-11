@@ -592,6 +592,17 @@ class DictionaryService {
     await _database.kanjisDao.deleteNote(kanjiId);
   }
 
+  Future<Grammar> getGrammar(int id) async {
+    return _database.grammarsDao.get(id);
+  }
+
+  Future<List<Grammar>> getGrammarList(
+    List<int> list, {
+    FrontType? frontType,
+  }) async {
+    return _database.grammarsDao.getAll(list, frontType: frontType);
+  }
+
   Future<bool> restoreFromBackup(String backupFilePath) async {
     bool result = false;
 
@@ -618,7 +629,10 @@ class DictionaryService {
         final result = await getMyDictionaryListItems(dictionaryList);
         myDictionaryListBackups.add(
           dictionaryList
-              .copyWith(vocab: result.vocabIds, kanji: result.kanjiIds)
+              .copyWith(
+                  vocab: result.vocabIds,
+                  kanji: result.kanjiIds,
+                  grammar: result.grammarIds)
               .toBackupJson(),
         );
       }

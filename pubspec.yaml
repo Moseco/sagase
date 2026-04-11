@@ -20,7 +20,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: 'bd90efb'
+      ref: '6c87d64'
 
   # State management
   stacked: ^3.5.0
@@ -137,6 +137,4 @@ flutter:
     - assets/images/radical_positions/
     # App Icon
     - assets/images/icon.png
-    # Grammar
-    - assets/grammar/lessons/
     

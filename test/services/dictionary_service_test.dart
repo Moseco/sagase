@@ -445,6 +445,10 @@ void main() {
         dictionaryList,
         (await service.getKanji('三'))!,
       );
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        (await service.getGrammar(1)),
+      );
 
       // Create flashcard set
       final flashcardSet = await service.createFlashcardSet('set1');
@@ -529,6 +533,7 @@ void main() {
       expect(myList.timestamp.isDifferentDay(DateTime.now()), false);
       expect(myList.vocab, [3, 2]);
       expect(myList.kanji, ['三'.kanjiCodePoint(), '二'.kanjiCodePoint()]);
+      expect(myList.grammar, [1]);
 
       // Flashcard set
       expect(userBackup.flashcardSets.length, 1);
@@ -609,6 +614,7 @@ void main() {
       expect(dictionaryListItems.vocabIds, [3, 2]);
       expect(dictionaryListItems.kanjiIds,
           ['三'.kanjiCodePoint(), '二'.kanjiCodePoint()]);
+      expect(dictionaryListItems.grammarIds, [1]);
 
       // Flashcard sets
       final flashcardSets = await newService.getFlashcardSets();
