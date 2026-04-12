@@ -385,26 +385,28 @@ class DictionaryService {
   ) async {
     Set<int> vocabIds = {};
     Set<int> kanjiIds = {};
-    // Get predefined dictionary list vocab/kanji ids
+    Set<int> grammarIds = {};
+    // Get predefined dictionary list vocab/kanji/grammar ids
     final predefinedDictionaryLists = await getPredefinedDictionaryLists(
         flashcardSet.predefinedDictionaryLists);
     for (var dictionaryList in predefinedDictionaryLists) {
       vocabIds.addAll(dictionaryList.vocab);
       kanjiIds.addAll(dictionaryList.kanji);
+      grammarIds.addAll(dictionaryList.grammar);
     }
 
-    // Get my dictionary list vocab/kanji ids
+    // Get my dictionary list vocab/kanji/grammar ids
     final myDictionaryLists =
         await getMyDictionaryLists(flashcardSet.myDictionaryLists);
     for (var dictionaryList in myDictionaryLists) {
-      // Load dictionary list content
       final items = await _database.myDictionaryListsDao
           .getDictionaryListItems(dictionaryList);
       vocabIds.addAll(items.vocabIds);
       kanjiIds.addAll(items.kanjiIds);
+      grammarIds.addAll(items.grammarIds);
     }
 
-    // Load vocab and kanji
+    // Load vocab, kanji, and grammar
     return (await getVocabList(
           vocabIds.toList(),
           frontType: flashcardSet.frontType,
@@ -412,6 +414,10 @@ class DictionaryService {
             .cast<DictionaryItem>() +
         await getKanjiList(
           kanjiIds.toList(),
+          frontType: flashcardSet.frontType,
+        ) +
+        await getGrammarList(
+          grammarIds.toList(),
           frontType: flashcardSet.frontType,
         );
   }

@@ -134,8 +134,10 @@ class FlashcardsViewModel extends FutureViewModel {
                   flashcardSet.vocabShowReadingIfRareKanji)) {
             front.write(flashcard.readings[0].reading);
           }
-        } else {
-          front.write((flashcard as Kanji).kanji);
+        } else if (flashcard is Kanji) {
+          front.write(flashcard.kanji);
+        } else if (flashcard is Grammar) {
+          front.write(flashcard.form);
         }
 
         // Check if similar flashcard already found
@@ -641,15 +643,21 @@ class FlashcardsViewModel extends FutureViewModel {
   void openFlashcardItem() async {
     if (activeFlashcards.isEmpty) return;
 
-    if (activeFlashcards[0] is Vocab) {
+    final flashcard = activeFlashcards[0];
+    if (flashcard is Vocab) {
       _navigationService.navigateTo(
         Routes.vocabView,
-        arguments: VocabViewArguments(vocab: activeFlashcards[0] as Vocab),
+        arguments: VocabViewArguments(vocab: flashcard),
+      );
+    } else if (flashcard is Kanji) {
+      _navigationService.navigateTo(
+        Routes.kanjiView,
+        arguments: KanjiViewArguments(kanji: flashcard),
       );
     } else {
       _navigationService.navigateTo(
-        Routes.kanjiView,
-        arguments: KanjiViewArguments(kanji: activeFlashcards[0] as Kanji),
+        Routes.grammarView,
+        arguments: GrammarViewArguments(grammar: flashcard as Grammar),
       );
     }
   }
