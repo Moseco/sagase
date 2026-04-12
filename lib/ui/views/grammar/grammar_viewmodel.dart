@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
@@ -6,17 +8,22 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
+import 'grammar_view.dart';
+
 class GrammarViewModel extends FutureViewModel {
   final _dictionaryService = locator<DictionaryService>();
+  final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
 
   final Grammar grammar;
+  final int? grammarListIndex;
+  final List<Grammar>? grammarList;
 
   List<int> _myDictionaryListsContainingGrammar = [];
   bool get inMyDictionaryList =>
       _myDictionaryListsContainingGrammar.isNotEmpty;
 
-  GrammarViewModel(this.grammar);
+  GrammarViewModel(this.grammar, this.grammarListIndex, this.grammarList);
 
   @override
   Future<void> futureToRun() async {
@@ -70,5 +77,29 @@ class GrammarViewModel extends FutureViewModel {
     }
 
     rebuildUi();
+  }
+
+  void navigateToPreviousGrammar() {
+    _navigationService.replaceWithTransition(
+      GrammarView(
+        grammarList![grammarListIndex! - 1],
+        grammarListIndex: grammarListIndex! - 1,
+        grammarList: grammarList,
+      ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
+    );
+  }
+
+  void navigateToNextGrammar() {
+    _navigationService.replaceWithTransition(
+      GrammarView(
+        grammarList![grammarListIndex! + 1],
+        grammarListIndex: grammarListIndex! + 1,
+        grammarList: grammarList,
+      ),
+      transitionStyle: Transition.noTransition,
+      popGesture: Platform.isIOS,
+    );
   }
 }

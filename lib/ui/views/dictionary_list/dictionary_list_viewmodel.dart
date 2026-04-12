@@ -80,7 +80,11 @@ class DictionaryListViewModel extends FutureViewModel {
   Future<void> navigateToGrammar(Grammar grammar, int index) async {
     await _navigationService.navigateTo(
       Routes.grammarView,
-      arguments: GrammarViewArguments(grammar: grammar),
+      arguments: GrammarViewArguments(
+        grammar: grammar,
+        grammarListIndex: index,
+        grammarList: grammarList,
+      ),
     );
   }
 
