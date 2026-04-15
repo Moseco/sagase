@@ -51,13 +51,11 @@ class LearningView extends StackedView<LearningViewModel> {
           child: switch (viewModel.flashcardSets?.length) {
             null => const _Loading(),
             0 => const _NoFlashcards(),
-            _ => Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: viewModel.flashcardSets!.length,
-                  itemBuilder: (context, index) => _FlashcardSet(
-                    viewModel.flashcardSets![index],
-                  ),
+            _ => ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: viewModel.flashcardSets!.length,
+                itemBuilder: (context, index) => _FlashcardSet(
+                  viewModel.flashcardSets![index],
                 ),
               ),
           },
