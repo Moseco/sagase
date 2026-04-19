@@ -130,11 +130,6 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
         padding: const EdgeInsets.all(16),
         children: [
           _DictionaryListItem(
-            text: 'Kaishi 1.5k',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdKaishi),
-          ),
-          _DictionaryListItem(
             text: 'Core Vocab',
             onTap: () => viewModel.setListSelection(ListSelection.coreVocab),
             isFolder: true,
@@ -143,6 +138,11 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
             text: 'JLPT Vocab',
             onTap: () => viewModel.setListSelection(ListSelection.jlptVocab),
             isFolder: true,
+          ),
+          _DictionaryListItem(
+            text: 'Kaishi 1.5k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdKaishi),
           ),
         ],
       ),
@@ -326,16 +326,6 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
         padding: const EdgeInsets.all(16),
         children: [
           _DictionaryListItem(
-            text: 'Jouyou',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdJouyou),
-          ),
-          _DictionaryListItem(
-            text: 'Jinmeiyou',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdJinmeiyou),
-          ),
-          _DictionaryListItem(
             text: 'JLPT Kanji',
             onTap: () => viewModel.setListSelection(ListSelection.jlptKanji),
             isFolder: true,
@@ -349,6 +339,16 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
             text: 'Kanji Kentei',
             onTap: () => viewModel.setListSelection(ListSelection.kanjiKentei),
             isFolder: true,
+          ),
+          _DictionaryListItem(
+            text: 'Jouyou',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJouyou),
+          ),
+          _DictionaryListItem(
+            text: 'Jinmeiyou',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJinmeiyou),
           ),
         ],
       ),
