@@ -20,7 +20,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '3df24c3'
+      ref: '37bd0e0'
 
   # State management
   stacked: ^3.5.0

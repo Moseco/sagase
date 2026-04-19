@@ -178,6 +178,7 @@ enum ListSelection {
   vocab,
   kanji,
   myLists,
+  grammar,
   coreVocab,
   jlptVocab,
   jlptKanji,

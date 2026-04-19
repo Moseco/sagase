@@ -22,7 +22,9 @@ class DictionaryListViewModel extends FutureViewModel {
 
   List<Vocab>? vocabList;
   List<Kanji>? kanjiList;
-  bool get loaded => vocabList != null && kanjiList != null;
+  List<Grammar>? grammarList;
+  bool get loaded =>
+      vocabList != null && kanjiList != null && grammarList != null;
 
   StreamSubscription<DictionaryItemIdsResult>? _myDictionaryListWatcher;
 
@@ -34,6 +36,8 @@ class DictionaryListViewModel extends FutureViewModel {
       // Get vocab and kanji
       vocabList = await _dictionaryService.getVocabList(dictionaryList.vocab);
       kanjiList = await _dictionaryService.getKanjiList(dictionaryList.kanji);
+      grammarList =
+          await _dictionaryService.getGrammarList(dictionaryList.grammar);
     } else {
       // Start watching vocab and kanji
       final stream = _dictionaryService
@@ -42,6 +46,7 @@ class DictionaryListViewModel extends FutureViewModel {
         // If first load, just get everything
         vocabList = await _dictionaryService.getVocabList(event.vocabIds);
         kanjiList = await _dictionaryService.getKanjiList(event.kanjiIds);
+        grammarList = await _dictionaryService.getGrammarList(event.grammarIds);
 
         rebuildUi();
 
@@ -68,6 +73,17 @@ class DictionaryListViewModel extends FutureViewModel {
         kanji: kanji,
         kanjiListIndex: index,
         kanjiList: kanjiList,
+      ),
+    );
+  }
+
+  Future<void> navigateToGrammar(Grammar grammar, int index) async {
+    await _navigationService.navigateTo(
+      Routes.grammarView,
+      arguments: GrammarViewArguments(
+        grammar: grammar,
+        grammarListIndex: index,
+        grammarList: grammarList,
       ),
     );
   }
@@ -163,6 +179,7 @@ class DictionaryListViewModel extends FutureViewModel {
           .copyWith(
             vocab: vocabList?.map((e) => e.id).toList() ?? [],
             kanji: kanjiList?.map((e) => e.id).toList() ?? [],
+            grammar: grammarList?.map((e) => e.id).toList() ?? [],
           )
           .toShareJson());
 

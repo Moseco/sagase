@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase/ui/widgets/grammar_list_item.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
@@ -17,8 +18,17 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
 
   @override
   Widget builder(context, viewModel, child) {
+    final tabs = <_DictionaryListTab>[];
+    if (viewModel.loaded) {
+      if (viewModel.vocabList!.isNotEmpty) tabs.add(_DictionaryListTab.vocab);
+      if (viewModel.kanjiList!.isNotEmpty) tabs.add(_DictionaryListTab.kanji);
+      if (viewModel.grammarList!.isNotEmpty) {
+        tabs.add(_DictionaryListTab.grammar);
+      }
+    }
+
     return DefaultTabController(
-      length: 2,
+      length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           title: Text(viewModel.dictionaryList.name),
@@ -43,32 +53,51 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
                   ),
                 ]
               : null,
-          bottom: viewModel.loaded &&
-                  viewModel.vocabList!.isNotEmpty &&
-                  viewModel.kanjiList!.isNotEmpty
-              ? const TabBar(tabs: [Tab(text: 'Vocab'), Tab(text: 'Kanji')])
+          bottom: tabs.length > 1
+              ? TabBar(
+                  tabs: tabs
+                      .map((tab) => Tab(text: tab.label))
+                      .toList(growable: false),
+                )
               : null,
         ),
         body: SafeArea(
           bottom: false,
           child: !viewModel.loaded
               ? const Center(child: CircularProgressIndicator())
-              : viewModel.vocabList!.isNotEmpty
-                  ? viewModel.kanjiList!.isNotEmpty
-                      ? const TabBarView(
-                          children: [
-                            _VocabList(),
-                            _KanjiList(),
-                          ],
-                        )
-                      : const _VocabList()
-                  : viewModel.kanjiList!.isNotEmpty
-                      ? const _KanjiList()
-                      : const _Empty(),
+              : tabs.isEmpty
+                  ? const _Empty()
+                  : tabs.length == 1
+                      ? _buildTabContent(tabs.first)
+                      : TabBarView(
+                          children: tabs
+                              .map(_buildTabContent)
+                              .toList(growable: false),
+                        ),
         ),
       ),
     );
   }
+
+  Widget _buildTabContent(_DictionaryListTab tab) {
+    switch (tab) {
+      case _DictionaryListTab.vocab:
+        return const _VocabList();
+      case _DictionaryListTab.kanji:
+        return const _KanjiList();
+      case _DictionaryListTab.grammar:
+        return const _GrammarList();
+    }
+  }
+}
+
+enum _DictionaryListTab {
+  vocab('Vocab'),
+  kanji('Kanji'),
+  grammar('Grammar');
+
+  final String label;
+  const _DictionaryListTab(this.label);
 }
 
 class _VocabList extends ViewModelWidget<DictionaryListViewModel> {
@@ -119,6 +148,30 @@ class _KanjiList extends ViewModelWidget<DictionaryListViewModel> {
   }
 }
 
+class _GrammarList extends ViewModelWidget<DictionaryListViewModel> {
+  const _GrammarList();
+
+  @override
+  Widget build(BuildContext context, DictionaryListViewModel viewModel) {
+    return ListView.separated(
+      separatorBuilder: (_, __) => const Divider(
+        height: 1,
+        indent: 8,
+        endIndent: 8,
+      ),
+      itemCount: viewModel.grammarList!.length,
+      itemBuilder: (context, index) {
+        final current = viewModel.grammarList![index];
+
+        return GrammarListItem(
+          grammar: current,
+          onPressed: () => viewModel.navigateToGrammar(current, index),
+        );
+      },
+    );
+  }
+}
+
 class _Empty extends StatelessWidget {
   const _Empty();
 
@@ -136,7 +189,7 @@ class _Empty extends StatelessWidget {
               ),
               WidgetSpan(child: Icon(Icons.star_border)),
               TextSpan(
-                text: 'from any vocab or kanji page.',
+                text: 'from any vocab, kanji, or grammar page.',
               ),
             ],
           ),

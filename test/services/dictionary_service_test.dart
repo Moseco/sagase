@@ -445,6 +445,10 @@ void main() {
         dictionaryList,
         (await service.getKanji('三'))!,
       );
+      await service.addToMyDictionaryList(
+        dictionaryList,
+        (await service.getGrammar(1)),
+      );
 
       // Create flashcard set
       final flashcardSet = await service.createFlashcardSet('set1');
@@ -529,6 +533,7 @@ void main() {
       expect(myList.timestamp.isDifferentDay(DateTime.now()), false);
       expect(myList.vocab, [3, 2]);
       expect(myList.kanji, ['三'.kanjiCodePoint(), '二'.kanjiCodePoint()]);
+      expect(myList.grammar, [1]);
 
       // Flashcard set
       expect(userBackup.flashcardSets.length, 1);
@@ -547,62 +552,43 @@ void main() {
       expect(report.flashcardSetId, set.id);
       expect(report.date, 20240920);
 
-      // Vocab spaced repetition data Japanese front
-      expect(userBackup.vocabSpacedRepetitionData.length, 2);
-      expect(userBackup.vocabSpacedRepetitionData['2'], isNotNull);
+      // Spaced repetition data
+      expect(userBackup.spacedRepetitionData.length, 5);
+
       final data1 = SpacedRepetitionData.fromBackupJson(
-        jsonDecode(userBackup.vocabSpacedRepetitionData['2']),
-        vocabId: 2,
-        frontType: FrontType.japanese,
-      );
+          jsonDecode(userBackup.spacedRepetitionData[0]));
+      expect(data1.itemId, 2);
+      expect(data1.itemType, DictionaryItemType.vocab);
+      expect(data1.frontType, FrontType.japanese);
       expect(data1.interval, 0);
 
-      expect(userBackup.vocabSpacedRepetitionData['3'], isNotNull);
       final data2 = SpacedRepetitionData.fromBackupJson(
-        jsonDecode(userBackup.vocabSpacedRepetitionData['3']),
-        vocabId: 3,
-        frontType: FrontType.japanese,
-      );
+          jsonDecode(userBackup.spacedRepetitionData[1]));
+      expect(data2.itemId, 3);
+      expect(data2.itemType, DictionaryItemType.vocab);
+      expect(data2.frontType, FrontType.japanese);
       expect(data2.interval, 1);
 
-      // Vocab spaced repetition data English front
-      expect(userBackup.vocabSpacedRepetitionDataEnglish.length, 1);
-      expect(userBackup.vocabSpacedRepetitionDataEnglish['3'], isNotNull);
       final data3 = SpacedRepetitionData.fromBackupJson(
-        jsonDecode(userBackup.vocabSpacedRepetitionDataEnglish['3']),
-        vocabId: 3,
-        frontType: FrontType.english,
-      );
+          jsonDecode(userBackup.spacedRepetitionData[2]));
+      expect(data3.itemId, 3);
+      expect(data3.itemType, DictionaryItemType.vocab);
+      expect(data3.frontType, FrontType.english);
       expect(data3.interval, 2);
 
-      // Kanji spaced repetition data Japanese front
-      expect(userBackup.kanjiSpacedRepetitionData.length, 1);
-      expect(
-        userBackup.kanjiSpacedRepetitionData['三'.kanjiCodePoint().toString()],
-        isNotNull,
-      );
       final data4 = SpacedRepetitionData.fromBackupJson(
-        jsonDecode(userBackup
-            .kanjiSpacedRepetitionData['三'.kanjiCodePoint().toString()]),
-        kanjiId: 3,
-        frontType: FrontType.japanese,
-      );
+          jsonDecode(userBackup.spacedRepetitionData[3]));
+      expect(data4.itemId, '三'.kanjiCodePoint());
+      expect(data4.itemType, DictionaryItemType.kanji);
+      expect(data4.frontType, FrontType.japanese);
       expect(data4.interval, 3);
 
-      // Kanji spaced repetition data English front
-      expect(userBackup.kanjiSpacedRepetitionDataEnglish.length, 1);
-      expect(
-        userBackup
-            .kanjiSpacedRepetitionDataEnglish['三'.kanjiCodePoint().toString()],
-        isNotNull,
-      );
-      final spaced5 = SpacedRepetitionData.fromBackupJson(
-        jsonDecode(userBackup
-            .kanjiSpacedRepetitionDataEnglish['三'.kanjiCodePoint().toString()]),
-        kanjiId: 3,
-        frontType: FrontType.english,
-      );
-      expect(spaced5.interval, 4);
+      final data5 = SpacedRepetitionData.fromBackupJson(
+          jsonDecode(userBackup.spacedRepetitionData[4]));
+      expect(data5.itemId, '三'.kanjiCodePoint());
+      expect(data5.itemType, DictionaryItemType.kanji);
+      expect(data5.frontType, FrontType.english);
+      expect(data5.interval, 4);
 
       // Search history
       expect(userBackup.searchHistory, ['newer', 'older']);
@@ -628,6 +614,7 @@ void main() {
       expect(dictionaryListItems.vocabIds, [3, 2]);
       expect(dictionaryListItems.kanjiIds,
           ['三'.kanjiCodePoint(), '二'.kanjiCodePoint()]);
+      expect(dictionaryListItems.grammarIds, [1]);
 
       // Flashcard sets
       final flashcardSets = await newService.getFlashcardSets();
@@ -688,6 +675,44 @@ void main() {
 
       // Cleanup
       await newService.close();
+    });
+
+    test('importUserData - old spaced repetition data format (v15)', () async {
+      final service = await setUpDictionaryData();
+
+      // Use export data from old spaced repetition data format
+      final file = File('test/fixtures/export_version_15.json');
+      expect(file.existsSync(), true);
+
+      // Import the backup
+      await service.importUserData(file.path);
+
+      // Validate spaced repetition data
+      var vocabList =
+          await service.getVocabList([1, 2, 3], frontType: FrontType.japanese);
+      expect(vocabList[0].spacedRepetitionData, null);
+      expect(vocabList[1].spacedRepetitionData!.interval, 0);
+      expect(vocabList[2].spacedRepetitionData!.interval, 1);
+      vocabList =
+          await service.getVocabList([2, 3], frontType: FrontType.english);
+      expect(vocabList[0].spacedRepetitionData, null);
+      expect(vocabList[1].spacedRepetitionData!.interval, 2);
+
+      var kanjiList = await service.getKanjiList(
+        ['二'.kanjiCodePoint(), '三'.kanjiCodePoint()],
+        frontType: FrontType.japanese,
+      );
+      expect(kanjiList[0].spacedRepetitionData, null);
+      expect(kanjiList[1].spacedRepetitionData!.interval, 3);
+      kanjiList = await service.getKanjiList(
+        ['二'.kanjiCodePoint(), '三'.kanjiCodePoint()],
+        frontType: FrontType.english,
+      );
+      expect(kanjiList[0].spacedRepetitionData, null);
+      expect(kanjiList[1].spacedRepetitionData!.interval, 4);
+
+      // Cleanup
+      await service.close();
     });
 
     group('open and importDatabase', () {

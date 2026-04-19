@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_viewmodel.dart';
+import 'package:sagase/ui/widgets/grammar_list_item.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
+import '../../../helpers/common/grammar_data.dart';
 import '../../../helpers/common/kanji_data.dart';
 import '../../../helpers/common/vocab_data.dart';
 import '../../../helpers/mocks.dart';
@@ -16,7 +18,11 @@ void main() {
     tearDown(() => unregisterServices());
 
     testWidgets('Empty predefined dictionary list', (tester) async {
-      getAndRegisterDictionaryService(getVocabList: [], getKanjiList: []);
+      getAndRegisterDictionaryService(
+        getVocabList: [],
+        getKanjiList: [],
+        getGrammarList: [],
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -26,6 +32,7 @@ void main() {
               name: 'Name',
               vocab: [],
               kanji: [],
+              grammar: [],
             ),
           ),
         ),
@@ -45,8 +52,13 @@ void main() {
       getAndRegisterDictionaryService(
         getVocabList: [],
         getKanjiList: [],
+        getGrammarList: [],
         watchMyDictionaryListItems: [
-          DictionaryItemIdsResult(vocabIds: [], kanjiIds: []),
+          DictionaryItemIdsResult(
+            vocabIds: [],
+            kanjiIds: [],
+            grammarIds: [],
+          ),
         ],
       );
 
@@ -76,8 +88,13 @@ void main() {
       getAndRegisterDictionaryService(
         getVocabList: [getVocab1(), getVocab2()],
         getKanjiList: [],
+        getGrammarList: [],
         watchMyDictionaryListItems: [
-          DictionaryItemIdsResult(vocabIds: [0, 1], kanjiIds: []),
+          DictionaryItemIdsResult(
+            vocabIds: [0, 1],
+            kanjiIds: [],
+            grammarIds: [],
+          ),
         ],
       );
 
@@ -106,8 +123,13 @@ void main() {
       getAndRegisterDictionaryService(
         getVocabList: [],
         getKanjiList: [getKanji1()],
+        getGrammarList: [],
         watchMyDictionaryListItems: [
-          DictionaryItemIdsResult(vocabIds: [], kanjiIds: [2]),
+          DictionaryItemIdsResult(
+            vocabIds: [],
+            kanjiIds: [2],
+            grammarIds: [],
+          ),
         ],
       );
 
@@ -132,17 +154,58 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
     });
 
-    testWidgets('My dictionary list with vocab and kanji', (tester) async {
+    testWidgets('My dictionary list with grammar', (tester) async {
       getAndRegisterDictionaryService(
-        getVocabList: [getVocab1(), getVocab2()],
-        getKanjiList: [getKanji1()],
+        getVocabList: [],
+        getKanjiList: [],
+        getGrammarList: [getGrammar1()],
         watchMyDictionaryListItems: [
-          DictionaryItemIdsResult(vocabIds: [0, 1], kanjiIds: [2]),
+          DictionaryItemIdsResult(
+            vocabIds: [],
+            kanjiIds: [],
+            grammarIds: [3],
+          ),
         ],
       );
 
       await tester.pumpWidget(
         MaterialApp(
+          home: DictionaryListView(
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+              grammar: [3],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(GrammarListItem), findsNothing);
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GrammarListItem), findsOne);
+      expect(find.byType(TabBar), findsNothing);
+    });
+
+    testWidgets('My dictionary list with vocab and kanji', (tester) async {
+      getAndRegisterDictionaryService(
+        getVocabList: [getVocab1(), getVocab2()],
+        getKanjiList: [getKanji1()],
+        getGrammarList: [],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(
+            vocabIds: [0, 1],
+            kanjiIds: [2],
+            grammarIds: [],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(splashFactory: NoSplash.splashFactory),
           home: DictionaryListView(
             MyDictionaryList(
               id: 0,
@@ -170,6 +233,59 @@ void main() {
 
       expect(find.byType(VocabListItem), findsNothing);
       expect(find.byType(KanjiListItem), findsOne);
+    });
+
+    testWidgets('My dictionary list with vocab, kanji, and grammar',
+        (tester) async {
+      getAndRegisterDictionaryService(
+        getVocabList: [getVocab1(), getVocab2()],
+        getKanjiList: [getKanji1()],
+        getGrammarList: [getGrammar1()],
+        watchMyDictionaryListItems: [
+          DictionaryItemIdsResult(
+            vocabIds: [0, 1],
+            kanjiIds: [2],
+            grammarIds: [3],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(splashFactory: NoSplash.splashFactory),
+          home: DictionaryListView(
+            MyDictionaryList(
+              id: 0,
+              name: 'Name',
+              timestamp: DateTime.now(),
+              vocab: [0, 1],
+              kanji: [2],
+              grammar: [3],
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TabBar), findsOne);
+      expect(find.byType(VocabListItem), findsExactly(2));
+      expect(find.byType(KanjiListItem), findsNothing);
+      expect(find.byType(GrammarListItem), findsNothing);
+
+      await tester.tap(find.textContaining('Kanji'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(VocabListItem), findsNothing);
+      expect(find.byType(KanjiListItem), findsOne);
+      expect(find.byType(GrammarListItem), findsNothing);
+
+      await tester.tap(find.textContaining('Grammar'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(VocabListItem), findsNothing);
+      expect(find.byType(KanjiListItem), findsNothing);
+      expect(find.byType(GrammarListItem), findsOne);
     });
   });
 }

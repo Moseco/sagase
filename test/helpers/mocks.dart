@@ -98,6 +98,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   ImportResult? importDatabase,
   List<Vocab>? getVocabList,
   List<Kanji>? getKanjiList,
+  List<Grammar>? getGrammarList,
   List<DictionaryItemIdsResult>? watchMyDictionaryListItems,
   List<int>? getMyDictionaryListsContainingDictionaryItem,
   Radical? getRadical,
@@ -120,6 +121,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   when(service.close()).thenAnswer((_) async {});
   when(service.getVocabList(any)).thenAnswer((_) async => getVocabList!);
   when(service.getKanjiList(any)).thenAnswer((_) async => getKanjiList!);
+  when(service.getGrammarList(any)).thenAnswer((_) async => getGrammarList!);
   when(service.watchMyDictionaryListItems(any))
       .thenAnswer((_) => Stream.fromIterable(watchMyDictionaryListItems!));
   when(service.getMyDictionaryListsContainingDictionaryItem(any))

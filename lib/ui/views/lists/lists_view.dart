@@ -26,6 +26,7 @@ class ListsView extends StackedView<ListsViewModel> {
           ListSelection.vocab => _VocabList(),
           ListSelection.kanji => _KanjiList(),
           ListSelection.myLists => _MyLists(),
+          ListSelection.grammar => _GrammarList(),
           ListSelection.coreVocab => _CoreVocabList(),
           ListSelection.jlptVocab => _JlptVocabList(),
           ListSelection.jlptKanji => _JlptKanjiList(),
@@ -54,6 +55,11 @@ class _MainList extends ViewModelWidget<ListsViewModel> {
         padding: const EdgeInsets.all(16),
         children: [
           _MainListItem(
+            leadingIcon: Icons.star,
+            titleText: 'My lists',
+            onTap: () => viewModel.setListSelection(ListSelection.myLists),
+          ),
+          _MainListItem(
             leadingText: '語',
             titleText: 'Vocabulary',
             onTap: () => viewModel.setListSelection(ListSelection.vocab),
@@ -64,9 +70,9 @@ class _MainList extends ViewModelWidget<ListsViewModel> {
             onTap: () => viewModel.setListSelection(ListSelection.kanji),
           ),
           _MainListItem(
-            leadingIcon: Icons.star,
-            titleText: 'My lists',
-            onTap: () => viewModel.setListSelection(ListSelection.myLists),
+            leadingText: '文',
+            titleText: 'Grammar',
+            onTap: () => viewModel.setListSelection(ListSelection.grammar),
           ),
           _MainListItem(
             leadingText: 'あ',
@@ -124,11 +130,6 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
         padding: const EdgeInsets.all(16),
         children: [
           _DictionaryListItem(
-            text: 'Kaishi 1.5k',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdKaishi),
-          ),
-          _DictionaryListItem(
             text: 'Core Vocab',
             onTap: () => viewModel.setListSelection(ListSelection.coreVocab),
             isFolder: true,
@@ -137,6 +138,11 @@ class _VocabList extends ViewModelWidget<ListsViewModel> {
             text: 'JLPT Vocab',
             onTap: () => viewModel.setListSelection(ListSelection.jlptVocab),
             isFolder: true,
+          ),
+          _DictionaryListItem(
+            text: 'Kaishi 1.5k',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdKaishi),
           ),
         ],
       ),
@@ -320,16 +326,6 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
         padding: const EdgeInsets.all(16),
         children: [
           _DictionaryListItem(
-            text: 'Jouyou',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdJouyou),
-          ),
-          _DictionaryListItem(
-            text: 'Jinmeiyou',
-            onTap: () => viewModel.navigateToPredefinedDictionaryList(
-                SagaseDictionaryConstants.dictionaryListIdJinmeiyou),
-          ),
-          _DictionaryListItem(
             text: 'JLPT Kanji',
             onTap: () => viewModel.setListSelection(ListSelection.jlptKanji),
             isFolder: true,
@@ -343,6 +339,16 @@ class _KanjiList extends ViewModelWidget<ListsViewModel> {
             text: 'Kanji Kentei',
             onTap: () => viewModel.setListSelection(ListSelection.kanjiKentei),
             isFolder: true,
+          ),
+          _DictionaryListItem(
+            text: 'Jouyou',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJouyou),
+          ),
+          _DictionaryListItem(
+            text: 'Jinmeiyou',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJinmeiyou),
           ),
         ],
       ),
@@ -670,6 +676,79 @@ class _MyLists extends ViewModelWidget<ListsViewModel> {
                     );
                   },
                 ),
+    );
+  }
+}
+
+class _GrammarList extends ViewModelWidget<ListsViewModel> {
+  @override
+  Widget build(BuildContext context, ListsViewModel viewModel) {
+    return HomeHeader(
+      title: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: BackButton(
+              onPressed: viewModel.back,
+              color: Colors.white,
+            ),
+          ),
+          const Expanded(
+            child: Text(
+              'JLPT Grammar',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: IconButton(
+              onPressed: () => viewModel.showDescriptionDialog(
+                'JLPT Grammar',
+                'JLPT (Japanese-Language Proficiency Test) is a test that gauges Japanese ability, recognized by the Japanese government and many companies. N5 is the easiest and N1 is the hardest. These are not official lists. They are a best guess of the required grammar.',
+              ),
+              color: Colors.white,
+              icon: const Icon(Icons.help),
+            ),
+          ),
+        ],
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _DictionaryListItem(
+            text: 'JLPT N5',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJlptGrammarN5),
+          ),
+          _DictionaryListItem(
+            text: 'JLPT N4',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJlptGrammarN4),
+          ),
+          _DictionaryListItem(
+            text: 'JLPT N3',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJlptGrammarN3),
+          ),
+          _DictionaryListItem(
+            text: 'JLPT N2',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJlptGrammarN2),
+          ),
+          _DictionaryListItem(
+            text: 'JLPT N1',
+            onTap: () => viewModel.navigateToPredefinedDictionaryList(
+                SagaseDictionaryConstants.dictionaryListIdJlptGrammarN1),
+          ),
+        ],
+      ),
     );
   }
 }

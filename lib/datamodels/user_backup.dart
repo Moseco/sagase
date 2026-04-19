@@ -8,6 +8,7 @@ class UserBackup {
   final List<String> myDictionaryLists;
   final List<String> flashcardSets;
   final List<String> flashcardSetReports;
+  final List<String> spacedRepetitionData;
   final Map<String, dynamic> vocabSpacedRepetitionData;
   final Map<String, dynamic> vocabSpacedRepetitionDataEnglish;
   final Map<String, dynamic> kanjiSpacedRepetitionData;
@@ -23,10 +24,11 @@ class UserBackup {
     required this.myDictionaryLists,
     required this.flashcardSets,
     required this.flashcardSetReports,
-    required this.vocabSpacedRepetitionData,
-    required this.vocabSpacedRepetitionDataEnglish,
-    required this.kanjiSpacedRepetitionData,
-    required this.kanjiSpacedRepetitionDataEnglish,
+    required this.spacedRepetitionData,
+    this.vocabSpacedRepetitionData = const {},
+    this.vocabSpacedRepetitionDataEnglish = const {},
+    this.kanjiSpacedRepetitionData = const {},
+    this.kanjiSpacedRepetitionDataEnglish = const {},
     required this.searchHistory,
     required this.textAnalysisHistory,
     required this.vocabNotes,
@@ -45,6 +47,8 @@ class UserBackup {
         SagaseDictionaryConstants.backupFlashcardSets: flashcardSets,
         SagaseDictionaryConstants.backupFlashcardSetReports:
             flashcardSetReports,
+        SagaseDictionaryConstants.backupSpacedRepetitionData:
+            spacedRepetitionData,
         SagaseDictionaryConstants.backupVocabSpacedRepetitionData:
             vocabSpacedRepetitionData,
         SagaseDictionaryConstants.backupVocabSpacedRepetitionDataEnglish:
@@ -81,6 +85,9 @@ class UserBackup {
           map[SagaseDictionaryConstants.backupFlashcardSets].cast<String>(),
       flashcardSetReports:
           (map[SagaseDictionaryConstants.backupFlashcardSetReports] ?? [])
+              .cast<String>(),
+      spacedRepetitionData:
+          (map[SagaseDictionaryConstants.backupSpacedRepetitionData] ?? [])
               .cast<String>(),
       vocabSpacedRepetitionData:
           map[SagaseDictionaryConstants.backupVocabSpacedRepetitionData]
