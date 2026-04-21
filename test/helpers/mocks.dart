@@ -103,6 +103,8 @@ MockDictionaryService getAndRegisterDictionaryService({
   List<int>? getMyDictionaryListsContainingDictionaryItem,
   Radical? getRadical,
   List<Kanji>? getKanjiWithRadical,
+  List<Kanji>? getKanjiWithComponents,
+  List<Radical>? getClassicRadicals,
   Kanji? getKanji,
   List<DictionaryItem>? getFlashcardSetFlashcards,
   FlashcardSetReport? createFlashcardSetReport,
@@ -129,6 +131,10 @@ MockDictionaryService getAndRegisterDictionaryService({
   when(service.getRadical(any)).thenAnswer((_) async => getRadical!);
   when(service.getKanjiWithRadical(any))
       .thenAnswer((_) async => getKanjiWithRadical!);
+  when(service.getKanjiWithComponents(any))
+      .thenAnswer((_) async => getKanjiWithComponents!);
+  when(service.getClassicRadicals())
+      .thenAnswer((_) async => getClassicRadicals!);
   when(service.getKanji(any)).thenAnswer((_) async => getKanji!);
   when(service.updateFlashcardSet(any)).thenAnswer((_) async {});
   when(service.getFlashcardSetFlashcards(any))
