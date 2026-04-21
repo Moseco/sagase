@@ -68,13 +68,16 @@ class DictionaryListViewModel extends FutureViewModel {
           grammarList!.removeWhere((e) => !newGrammarIds.contains(e.id));
 
           // Fetch and append added items
-          vocabList!.addAll(
+          vocabList!.insertAll(
+            0,
             await _dictionaryService.getVocabList(addedVocabIds.toList()),
           );
-          kanjiList!.addAll(
+          kanjiList!.insertAll(
+            0,
             await _dictionaryService.getKanjiList(addedKanjiIds.toList()),
           );
-          grammarList!.addAll(
+          grammarList!.insertAll(
+            0,
             await _dictionaryService.getGrammarList(addedGrammarIds.toList()),
           );
         }
