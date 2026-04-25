@@ -43,14 +43,46 @@ class DictionaryListViewModel extends FutureViewModel {
       final stream = _dictionaryService
           .watchMyDictionaryListItems(dictionaryList as MyDictionaryList);
       _myDictionaryListWatcher = stream.listen((event) async {
-        // If first load, just get everything
-        vocabList = await _dictionaryService.getVocabList(event.vocabIds);
-        kanjiList = await _dictionaryService.getKanjiList(event.kanjiIds);
-        grammarList = await _dictionaryService.getGrammarList(event.grammarIds);
+        if (vocabList == null) {
+          // First load, get everything
+          vocabList = await _dictionaryService.getVocabList(event.vocabIds);
+          kanjiList = await _dictionaryService.getKanjiList(event.kanjiIds);
+          grammarList =
+              await _dictionaryService.getGrammarList(event.grammarIds);
+        } else {
+          // Compute diffs against current state
+          final newVocabIds = event.vocabIds.toSet();
+          final newKanjiIds = event.kanjiIds.toSet();
+          final newGrammarIds = event.grammarIds.toSet();
+
+          final addedVocabIds =
+              newVocabIds.difference(vocabList!.map((e) => e.id).toSet());
+          final addedKanjiIds =
+              newKanjiIds.difference(kanjiList!.map((e) => e.id).toSet());
+          final addedGrammarIds =
+              newGrammarIds.difference(grammarList!.map((e) => e.id).toSet());
+
+          // Remove deleted items
+          vocabList!.removeWhere((e) => !newVocabIds.contains(e.id));
+          kanjiList!.removeWhere((e) => !newKanjiIds.contains(e.id));
+          grammarList!.removeWhere((e) => !newGrammarIds.contains(e.id));
+
+          // Fetch and append added items
+          vocabList!.insertAll(
+            0,
+            await _dictionaryService.getVocabList(addedVocabIds.toList()),
+          );
+          kanjiList!.insertAll(
+            0,
+            await _dictionaryService.getKanjiList(addedKanjiIds.toList()),
+          );
+          grammarList!.insertAll(
+            0,
+            await _dictionaryService.getGrammarList(addedGrammarIds.toList()),
+          );
+        }
 
         rebuildUi();
-
-        // TODO improve efficiency by loading differences after first load
       });
     }
   }
