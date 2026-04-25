@@ -38,6 +38,18 @@ class SearchViewModel extends FutureViewModel {
   List<String> _handWritingResult = [];
   List<String> get handWritingResult => _handWritingResult;
 
+  List<Radical> _radicals = [];
+  List<Radical> get radicals => _radicals;
+
+  final Set<String> _selectedRadicals = {};
+  Set<String> get selectedRadicals => _selectedRadicals;
+
+  List<Kanji> _radicalKanjiResult = [];
+  List<Kanji> get radicalKanjiResult => _radicalKanjiResult;
+
+  Set<String> _viableRadicals = {};
+  Set<String> get viableRadicals => _viableRadicals;
+
   List<SearchHistoryItem> searchHistory = [];
   SearchHistoryItem? _currentSearchHistoryItem;
 
@@ -225,11 +237,56 @@ class SearchViewModel extends FutureViewModel {
       handWritingResult.clear();
     }
 
+    if (mode == InputMode.radical) {
+      _loadRadicals();
+    }
+
     _inputMode = mode;
     _image = null;
     _ocrError = false;
     locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
 
+    rebuildUi();
+  }
+
+  Future<void> _loadRadicals() async {
+    if (_radicals.isNotEmpty) return;
+    _radicals = await _dictionaryService.getClassicRadicals();
+    _viableRadicals = _radicals.map((r) => r.radical).toSet();
+    rebuildUi();
+  }
+
+  Future<void> toggleRadical(String radical) async {
+    if (_selectedRadicals.contains(radical)) {
+      _selectedRadicals.remove(radical);
+    } else {
+      if (!_viableRadicals.contains(radical)) return;
+      _selectedRadicals.add(radical);
+    }
+
+    if (_selectedRadicals.isEmpty) {
+      _radicalKanjiResult = [];
+      _viableRadicals = _radicals.map((r) => r.radical).toSet();
+    } else {
+      _radicalKanjiResult = await _dictionaryService
+          .getKanjiWithComponents(_selectedRadicals.toList());
+      // Viable = any component that appears in at least one result kanji
+      final viable = <String>{};
+      for (final kanji in _radicalKanjiResult) {
+        final components = kanji.components;
+        if (components != null) viable.addAll(components);
+      }
+      _viableRadicals = viable;
+    }
+
+    rebuildUi();
+  }
+
+  void clearSelectedRadicals() {
+    if (_selectedRadicals.isEmpty) return;
+    _selectedRadicals.clear();
+    _radicalKanjiResult = [];
+    _viableRadicals = _radicals.map((r) => r.radical).toSet();
     rebuildUi();
   }
 
@@ -264,4 +321,5 @@ enum InputMode {
   text,
   handWriting,
   ocr,
+  radical,
 }

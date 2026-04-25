@@ -252,6 +252,10 @@ class DictionaryService {
     return _database.kanjisDao.getAllWithRadical(radical);
   }
 
+  Future<List<Kanji>> getKanjiWithComponents(List<String> components) async {
+    return _database.kanjisDao.getAllWithComponents(components);
+  }
+
   Future<PredefinedDictionaryList> getPredefinedDictionaryList(int id) async {
     return _database.predefinedDictionaryListsDao.get(id);
   }
