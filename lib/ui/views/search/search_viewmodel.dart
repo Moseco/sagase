@@ -32,6 +32,7 @@ class SearchViewModel extends FutureViewModel {
   List<DictionaryItem>? searchResult;
 
   CancelableOperation<(List<DictionaryItem>, bool)>? _searchOperation;
+  CancelableOperation<(List<Kanji>, Set<String>)>? _radicalOperation;
 
   InputMode _inputMode = InputMode.text;
   InputMode get inputMode => _inputMode;
@@ -243,7 +244,7 @@ class SearchViewModel extends FutureViewModel {
     rebuildUi();
   }
 
-  Future<void> toggleRadical(String radical) async {
+  void toggleRadical(String radical) {
     if (_selectedRadicals.contains(radical)) {
       _selectedRadicals.remove(radical);
     } else {
@@ -251,26 +252,41 @@ class SearchViewModel extends FutureViewModel {
       _selectedRadicals.add(radical);
     }
 
+    _radicalOperation?.cancel();
+
     if (_selectedRadicals.isEmpty) {
       _radicalKanjiResult = [];
       _viableRadicals = Set.of(allKanjiComponentSearchChars);
-    } else {
-      _radicalKanjiResult = await _dictionaryService
-          .getKanjiWithComponents(_selectedRadicals.toList());
-      // Viable = any component that appears in at least one result kanji
-      final viable = <String>{};
-      for (final kanji in _radicalKanjiResult) {
-        final components = kanji.components;
-        if (components != null) viable.addAll(components);
-      }
-      _viableRadicals = viable;
+      rebuildUi();
+      return;
     }
 
-    rebuildUi();
+    _radicalOperation = CancelableOperation.fromFuture(
+      _fetchRadicalResults(_selectedRadicals.toList()),
+    );
+
+    _radicalOperation!.then((value) {
+      _radicalKanjiResult = value.$1;
+      _viableRadicals = value.$2;
+      rebuildUi();
+    });
+  }
+
+  Future<(List<Kanji>, Set<String>)> _fetchRadicalResults(
+    List<String> components,
+  ) async {
+    final kanjiList =
+        await _dictionaryService.getKanjiWithComponents(components);
+    final viable = <String>{};
+    for (final kanji in kanjiList) {
+      if (kanji.components != null) viable.addAll(kanji.components!);
+    }
+    return (kanjiList, viable);
   }
 
   void clearSelectedRadicals() {
     if (_selectedRadicals.isEmpty) return;
+    _radicalOperation?.cancel();
     _selectedRadicals.clear();
     _radicalKanjiResult = [];
     _viableRadicals = Set.of(allKanjiComponentSearchChars);
