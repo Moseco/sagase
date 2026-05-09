@@ -12,6 +12,7 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
+import 'package:sagase/ui/views/search/widgets/kanji_components.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -38,16 +39,13 @@ class SearchViewModel extends FutureViewModel {
   List<String> _handWritingResult = [];
   List<String> get handWritingResult => _handWritingResult;
 
-  List<Radical> _radicals = [];
-  List<Radical> get radicals => _radicals;
-
   final Set<String> _selectedRadicals = {};
   Set<String> get selectedRadicals => _selectedRadicals;
 
   List<Kanji> _radicalKanjiResult = [];
   List<Kanji> get radicalKanjiResult => _radicalKanjiResult;
 
-  Set<String> _viableRadicals = {};
+  Set<String> _viableRadicals = Set.of(allKanjiComponentSearchChars);
   Set<String> get viableRadicals => _viableRadicals;
 
   List<SearchHistoryItem> searchHistory = [];
@@ -237,22 +235,11 @@ class SearchViewModel extends FutureViewModel {
       handWritingResult.clear();
     }
 
-    if (mode == InputMode.radical) {
-      _loadRadicals();
-    }
-
     _inputMode = mode;
     _image = null;
     _ocrError = false;
     locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
 
-    rebuildUi();
-  }
-
-  Future<void> _loadRadicals() async {
-    if (_radicals.isNotEmpty) return;
-    _radicals = await _dictionaryService.getClassicRadicals();
-    _viableRadicals = _radicals.map((r) => r.radical).toSet();
     rebuildUi();
   }
 
@@ -266,7 +253,7 @@ class SearchViewModel extends FutureViewModel {
 
     if (_selectedRadicals.isEmpty) {
       _radicalKanjiResult = [];
-      _viableRadicals = _radicals.map((r) => r.radical).toSet();
+      _viableRadicals = Set.of(allKanjiComponentSearchChars);
     } else {
       _radicalKanjiResult = await _dictionaryService
           .getKanjiWithComponents(_selectedRadicals.toList());
@@ -286,7 +273,7 @@ class SearchViewModel extends FutureViewModel {
     if (_selectedRadicals.isEmpty) return;
     _selectedRadicals.clear();
     _radicalKanjiResult = [];
-    _viableRadicals = _radicals.map((r) => r.radical).toSet();
+    _viableRadicals = Set.of(allKanjiComponentSearchChars);
     rebuildUi();
   }
 

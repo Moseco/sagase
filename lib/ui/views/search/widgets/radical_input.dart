@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 
 import '../search_viewmodel.dart';
+import 'kanji_components.dart';
 
 class RadicalInput extends ViewModelWidget<SearchViewModel> {
   final TextEditingController searchController;
@@ -113,11 +113,7 @@ class RadicalInput extends ViewModelWidget<SearchViewModel> {
             ),
           ),
           const Divider(height: 1, thickness: 1),
-          Expanded(
-            child: viewModel.radicals.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : _RadicalGrid(),
-          ),
+          const Expanded(child: _ComponentGrid()),
           const Divider(indent: 16, endIndent: 16, height: 1),
           Padding(
             padding: EdgeInsets.only(
@@ -142,25 +138,21 @@ class RadicalInput extends ViewModelWidget<SearchViewModel> {
   }
 }
 
-class _RadicalGrid extends ViewModelWidget<SearchViewModel> {
-  @override
-  Widget build(BuildContext context, SearchViewModel viewModel) {
-    final groups = <int, List<Radical>>{};
-    for (final radical in viewModel.radicals) {
-      groups.putIfAbsent(radical.strokeCount, () => []).add(radical);
-    }
-    final strokeCounts = groups.keys.toList()..sort();
+class _ComponentGrid extends StatelessWidget {
+  const _ComponentGrid();
 
+  @override
+  Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        for (final strokeCount in strokeCounts)
+        for (final group in kanjiComponentGroups)
           SliverStickyHeader(
             header: Container(
               width: double.infinity,
               color: Theme.of(context).appBarTheme.backgroundColor,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Text(
-                strokeCount == 1 ? '1 stroke' : '$strokeCount strokes',
+                group.$1 == 1 ? '1 stroke' : '${group.$1} strokes',
                 style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ),
@@ -171,8 +163,8 @@ class _RadicalGrid extends ViewModelWidget<SearchViewModel> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (final radical in groups[strokeCount]!)
-                      _RadicalTile(radical),
+                    for (final component in group.$2)
+                      _ComponentTile(component),
                   ],
                 ),
               ),
@@ -183,16 +175,16 @@ class _RadicalGrid extends ViewModelWidget<SearchViewModel> {
   }
 }
 
-class _RadicalTile extends ViewModelWidget<SearchViewModel> {
-  final Radical radical;
+class _ComponentTile extends ViewModelWidget<SearchViewModel> {
+  final KanjiComponent component;
 
-  const _RadicalTile(this.radical);
+  const _ComponentTile(this.component);
 
   @override
   Widget build(BuildContext context, SearchViewModel viewModel) {
-    final isSelected = viewModel.selectedRadicals.contains(radical.radical);
+    final isSelected = viewModel.selectedRadicals.contains(component.search);
     final isViable =
-        isSelected || viewModel.viableRadicals.contains(radical.radical);
+        isSelected || viewModel.viableRadicals.contains(component.search);
 
     final theme = Theme.of(context);
     final Color background;
@@ -211,7 +203,7 @@ class _RadicalTile extends ViewModelWidget<SearchViewModel> {
     }
 
     return GestureDetector(
-      onTap: isViable ? () => viewModel.toggleRadical(radical.radical) : null,
+      onTap: isViable ? () => viewModel.toggleRadical(component.search) : null,
       child: Container(
         width: 40,
         height: 40,
@@ -221,7 +213,7 @@ class _RadicalTile extends ViewModelWidget<SearchViewModel> {
         ),
         alignment: Alignment.center,
         child: Text(
-          radical.radical,
+          component.display,
           style: TextStyle(fontSize: 20, color: foreground),
         ),
       ),
