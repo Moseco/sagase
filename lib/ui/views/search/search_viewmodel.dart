@@ -239,6 +239,7 @@ class SearchViewModel extends FutureViewModel {
     _inputMode = mode;
     _image = null;
     _ocrError = false;
+    clearSelectedRadicals();
     locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
 
     rebuildUi();
@@ -275,8 +276,7 @@ class SearchViewModel extends FutureViewModel {
   Future<(List<String>, Set<String>)> _fetchRadicalResults(
     List<String> components,
   ) async {
-    final result =
-        await _dictionaryService.getKanjiWithComponents(components);
+    final result = await _dictionaryService.getKanjiWithComponents(components);
     return (result.kanji, result.validComponents.toSet());
   }
 
