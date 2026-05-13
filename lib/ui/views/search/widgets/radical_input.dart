@@ -3,7 +3,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:stacked/stacked.dart';
 
 import '../search_viewmodel.dart';
-import 'kanji_components.dart';
+import '../utils/kanji_components.dart';
 
 class RadicalInput extends ViewModelWidget<SearchViewModel> {
   final TextEditingController searchController;

@@ -12,7 +12,7 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
-import 'package:sagase/ui/views/search/widgets/kanji_components.dart';
+import 'package:sagase/ui/views/search/utils/kanji_components.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
