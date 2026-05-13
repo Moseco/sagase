@@ -51,6 +51,8 @@ class RadicalInput extends ViewModelWidget<SearchViewModel> {
                                   ? 'Select radicals to find kanji'
                                   : 'No kanji match',
                               style: const TextStyle(color: Colors.grey),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         )
@@ -163,8 +165,7 @@ class _ComponentGrid extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (final component in group.$2)
-                      _ComponentTile(component),
+                    for (final component in group.$2) _ComponentTile(component),
                   ],
                 ),
               ),
