@@ -38,6 +38,19 @@ class OcrWidget extends ViewModelWidget<SearchViewModel> {
                   ),
                 ),
                 IconButton(
+                  onPressed: () => viewModel.setInputMode(InputMode.radical),
+                  icon: const Text(
+                    '部',
+                    style: TextStyle(
+                      height: 1.2,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                IconButton(
                   onPressed: () =>
                       viewModel.setInputMode(InputMode.handWriting),
                   icon: const Icon(Icons.draw),

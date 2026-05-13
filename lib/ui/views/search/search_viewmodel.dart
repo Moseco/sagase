@@ -12,6 +12,7 @@ import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
+import 'package:sagase/ui/views/search/utils/kanji_components.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -31,12 +32,22 @@ class SearchViewModel extends FutureViewModel {
   List<DictionaryItem>? searchResult;
 
   CancelableOperation<(List<DictionaryItem>, bool)>? _searchOperation;
+  CancelableOperation<(List<String>, Set<String>)>? _radicalOperation;
 
   InputMode _inputMode = InputMode.text;
   InputMode get inputMode => _inputMode;
 
   List<String> _handWritingResult = [];
   List<String> get handWritingResult => _handWritingResult;
+
+  final Set<String> _selectedRadicals = {};
+  Set<String> get selectedRadicals => _selectedRadicals;
+
+  List<String> _radicalKanjiResult = [];
+  List<String> get radicalKanjiResult => _radicalKanjiResult;
+
+  Set<String> _viableRadicals = Set.of(allKanjiComponentSearchChars);
+  Set<String> get viableRadicals => _viableRadicals;
 
   List<SearchHistoryItem> searchHistory = [];
   SearchHistoryItem? _currentSearchHistoryItem;
@@ -228,8 +239,53 @@ class SearchViewModel extends FutureViewModel {
     _inputMode = mode;
     _image = null;
     _ocrError = false;
+    clearSelectedRadicals();
     locator<HomeViewModel>().setShowNavigationBar(mode == InputMode.text);
 
+    rebuildUi();
+  }
+
+  void toggleRadical(String radical) {
+    if (_selectedRadicals.contains(radical)) {
+      _selectedRadicals.remove(radical);
+    } else {
+      if (!_viableRadicals.contains(radical)) return;
+      _selectedRadicals.add(radical);
+    }
+
+    _radicalOperation?.cancel();
+
+    if (_selectedRadicals.isEmpty) {
+      _radicalKanjiResult = [];
+      _viableRadicals = Set.of(allKanjiComponentSearchChars);
+      rebuildUi();
+      return;
+    }
+
+    _radicalOperation = CancelableOperation.fromFuture(
+      _fetchRadicalResults(_selectedRadicals.toList()),
+    );
+
+    _radicalOperation!.then((value) {
+      _radicalKanjiResult = value.$1;
+      _viableRadicals = value.$2;
+      rebuildUi();
+    });
+  }
+
+  Future<(List<String>, Set<String>)> _fetchRadicalResults(
+    List<String> components,
+  ) async {
+    final result = await _dictionaryService.getKanjiWithComponents(components);
+    return (result.kanji, result.validComponents.toSet());
+  }
+
+  void clearSelectedRadicals() {
+    if (_selectedRadicals.isEmpty) return;
+    _radicalOperation?.cancel();
+    _selectedRadicals.clear();
+    _radicalKanjiResult = [];
+    _viableRadicals = Set.of(allKanjiComponentSearchChars);
     rebuildUi();
   }
 
@@ -264,4 +320,5 @@ enum InputMode {
   text,
   handWriting,
   ocr,
+  radical,
 }

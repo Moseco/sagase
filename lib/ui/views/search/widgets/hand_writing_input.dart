@@ -75,6 +75,19 @@ class HandWritingInput extends ViewModelWidget<SearchViewModel> {
                 ),
                 const VerticalDivider(width: 1, thickness: 1),
                 IconButton(
+                  onPressed: () => viewModel.setInputMode(InputMode.radical),
+                  icon: const Text(
+                    '部',
+                    style: TextStyle(
+                      height: 1.2,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                IconButton(
                   onPressed: () => viewModel.setInputMode(InputMode.ocr),
                   icon: const Icon(Icons.camera_alt),
                   splashColor: Colors.transparent,

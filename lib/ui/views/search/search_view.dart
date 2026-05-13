@@ -17,6 +17,7 @@ import 'search_viewmodel.dart';
 import 'widgets/analysis_prompt.dart';
 import 'widgets/hand_writing_input.dart';
 import 'widgets/ocr_widget.dart';
+import 'widgets/radical_input.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -67,6 +68,11 @@ class _Body extends StackedHookView<SearchViewModel> {
               handWritingController: handWritingController,
               keyboardFocusNode: keyboardFocusNode,
             ),
+          if (viewModel.inputMode == InputMode.radical)
+            RadicalInput(
+              searchController: searchController,
+              keyboardFocusNode: keyboardFocusNode,
+            ),
         ],
       ),
     );
@@ -97,6 +103,24 @@ class _SearchTextField extends ViewModelWidget<SearchViewModel> {
             focusNode: keyboardFocusNode,
             displayArrows: false,
             toolbarButtons: [
+              // Open radical search and dismiss keyboard
+              (node) {
+                return IconButton(
+                  onPressed: () {
+                    node.unfocus();
+                    viewModel.setInputMode(InputMode.radical);
+                    handWritingFocusNode.requestFocus();
+                  },
+                  icon: const Text(
+                    '部',
+                    style: TextStyle(
+                      height: 1.2,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              },
               // Open OCR and dismiss keyboard
               (node) {
                 return IconButton(
