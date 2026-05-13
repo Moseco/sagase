@@ -252,7 +252,8 @@ class DictionaryService {
     return _database.kanjisDao.getAllWithRadical(radical);
   }
 
-  Future<List<Kanji>> getKanjiWithComponents(List<String> components) async {
+  Future<({List<String> kanji, List<String> validComponents})>
+      getKanjiWithComponents(List<String> components) async {
     return _database.kanjisDao.getAllWithComponents(components);
   }
 

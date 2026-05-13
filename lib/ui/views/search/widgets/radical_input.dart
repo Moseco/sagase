@@ -61,7 +61,7 @@ class RadicalInput extends ViewModelWidget<SearchViewModel> {
                             final kanji = viewModel.radicalKanjiResult[index];
                             return GestureDetector(
                               onTap: () {
-                                _insertKanji(kanji.kanji);
+                                _insertKanji(kanji);
                                 viewModel.searchOnChange(searchController.text);
                               },
                               child: Container(
@@ -74,7 +74,7 @@ class RadicalInput extends ViewModelWidget<SearchViewModel> {
                                     ),
                                   ),
                                 ),
-                                child: Center(child: Text(kanji.kanji)),
+                                child: Center(child: Text(kanji)),
                               ),
                             );
                           },

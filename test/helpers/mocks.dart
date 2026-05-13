@@ -103,7 +103,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   List<int>? getMyDictionaryListsContainingDictionaryItem,
   Radical? getRadical,
   List<Kanji>? getKanjiWithRadical,
-  List<Kanji>? getKanjiWithComponents,
+  ({List<String> kanji, List<String> validComponents})? getKanjiWithComponents,
   List<Radical>? getClassicRadicals,
   Kanji? getKanji,
   List<DictionaryItem>? getFlashcardSetFlashcards,

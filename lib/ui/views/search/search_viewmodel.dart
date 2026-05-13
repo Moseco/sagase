@@ -32,7 +32,7 @@ class SearchViewModel extends FutureViewModel {
   List<DictionaryItem>? searchResult;
 
   CancelableOperation<(List<DictionaryItem>, bool)>? _searchOperation;
-  CancelableOperation<(List<Kanji>, Set<String>)>? _radicalOperation;
+  CancelableOperation<(List<String>, Set<String>)>? _radicalOperation;
 
   InputMode _inputMode = InputMode.text;
   InputMode get inputMode => _inputMode;
@@ -43,8 +43,8 @@ class SearchViewModel extends FutureViewModel {
   final Set<String> _selectedRadicals = {};
   Set<String> get selectedRadicals => _selectedRadicals;
 
-  List<Kanji> _radicalKanjiResult = [];
-  List<Kanji> get radicalKanjiResult => _radicalKanjiResult;
+  List<String> _radicalKanjiResult = [];
+  List<String> get radicalKanjiResult => _radicalKanjiResult;
 
   Set<String> _viableRadicals = Set.of(allKanjiComponentSearchChars);
   Set<String> get viableRadicals => _viableRadicals;
@@ -272,16 +272,12 @@ class SearchViewModel extends FutureViewModel {
     });
   }
 
-  Future<(List<Kanji>, Set<String>)> _fetchRadicalResults(
+  Future<(List<String>, Set<String>)> _fetchRadicalResults(
     List<String> components,
   ) async {
-    final kanjiList =
+    final result =
         await _dictionaryService.getKanjiWithComponents(components);
-    final viable = <String>{};
-    for (final kanji in kanjiList) {
-      if (kanji.components != null) viable.addAll(kanji.components!);
-    }
-    return (kanjiList, viable);
+    return (result.kanji, result.validComponents.toSet());
   }
 
   void clearSelectedRadicals() {
