@@ -231,7 +231,7 @@ class FlashcardsView extends HookWidget {
                         ),
                         TextSpan(
                           text:
-                              ' will reset the interval before the flashcard is shown again and put it back into the stack.\n\n',
+                              ' will reset the interval before the flashcard is shown again and put it back into the deck.\n\n',
                         ),
                         TextSpan(
                           text: 'Repeat',
@@ -242,7 +242,7 @@ class FlashcardsView extends HookWidget {
                         ),
                         TextSpan(
                           text:
-                              ' will put the flashcard back into the stack and not affect the interval.\n\n',
+                              ' will put the flashcard back into the deck and not affect the interval.\n\n',
                         ),
                         TextSpan(
                           text: 'Correct',

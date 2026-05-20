@@ -48,11 +48,11 @@ class SettingsView extends StatelessWidget {
                   title: const Text('General'),
                   tiles: [
                     SettingsTile.navigation(
-                      title: const Text('Set Japanese font'),
+                      title: const Text('Japanese font'),
                       onPressed: (_) => viewModel.setJapaneseFont(),
                     ),
                     SettingsTile.navigation(
-                      title: const Text('Set app theme'),
+                      title: const Text('App theme'),
                       onPressed: (_) => viewModel.setAppTheme(),
                     ),
                     SettingsTile.switchTile(
@@ -72,7 +72,7 @@ class SettingsView extends StatelessWidget {
                       onToggle: viewModel.setProperNounsEnabled,
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Include proper nouns'),
-                      description: const Text('Increases app size by ~100mb'),
+                      description: const Text('Increases app size by ~100 MB.'),
                     ),
                   ],
                 ),
@@ -85,7 +85,7 @@ class SettingsView extends StatelessWidget {
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Learning mode'),
                       description: const Text(
-                        'If enabled, a set amount of new flashcards will be included with due flashcards. You can also long press a flashcard set to open in a different mode.',
+                        'Include a set amount of new flashcards alongside due flashcards. Long press a flashcard set to open it in a different mode.',
                       ),
                     ),
                     SettingsTile.switchTile(
@@ -94,34 +94,33 @@ class SettingsView extends StatelessWidget {
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Add new flashcards in batches'),
                       description: const Text(
-                        'If enabled, when no due flashcards are available new flashcards are added in batches instead of all at once.',
+                        'When no due flashcards are available, add new flashcards in batches instead of all at once.',
                       ),
                     ),
                     SettingsTile.navigation(
                       enabled: viewModel.flashcardLearningModeEnabled ||
                           viewModel.addNewFlashcardsInBatches,
-                      title: const Text('Set new flashcard amount'),
+                      title: const Text('New flashcards per day'),
                       description: const Text(
-                        'The amount of new flashcards added if learning mode or add new flashcards in batches are enabled.',
+                        'Number of new flashcards added when learning mode or batched adding is enabled.',
                       ),
                       onPressed: (_) => viewModel.setNewFlashcardsPerDay(),
                     ),
                     SettingsTile.navigation(
-                      title:
-                          const Text('Set initial spaced repetition interval'),
+                      title: const Text('Initial spaced repetition interval'),
                       onPressed: (_) =>
                           viewModel.setInitialSpacedRepetitionInterval(),
                     ),
                     SettingsTile.navigation(
-                      title: const Text('Set flashcard distance'),
+                      title: const Text('Flashcard distance'),
                       description: const Text(
-                        'How far into the stack a flashcard is put after a wrong answer, repeat answer, or while completing a new flashcard.',
+                        'How far into the deck a flashcard is placed after a wrong answer, repeat answer, or while completing a new flashcard.',
                       ),
                       onPressed: (_) => viewModel.setFlashcardDistance(),
                     ),
                     SettingsTile.navigation(
                       title: const Text(
-                          'Set correct answers required to complete a new flashcard'),
+                          'Correct answers to complete a new flashcard'),
                       onPressed: (_) =>
                           viewModel.setFlashcardCorrectAnswersRequired(),
                     ),
@@ -132,7 +131,7 @@ class SettingsView extends StatelessWidget {
                       title:
                           const Text('Preview new spaced repetition interval'),
                       description: const Text(
-                        'Shown underneath flashcard answer buttons.',
+                        'Show the upcoming interval beneath the flashcard answer buttons.',
                       ),
                     ),
                     SettingsTile.switchTile(
@@ -141,7 +140,7 @@ class SettingsView extends StatelessWidget {
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Show detailed progress'),
                       description: const Text(
-                        'If enabled and in learning mode, the progress bar will display due flashcards and new flashcards as separate numbers instead of as one number.',
+                        'In learning mode, display due and new flashcards as separate numbers in the progress bar.',
                       ),
                     ),
                   ],
@@ -155,7 +154,7 @@ class SettingsView extends StatelessWidget {
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Analytics collection'),
                       description: const Text(
-                        'If enabled, the app collects basic usage analytics. No personally identifying information is collected.',
+                        'Collect basic usage analytics. No personally identifying information is collected.',
                       ),
                     ),
                     SettingsTile.switchTile(
@@ -164,7 +163,7 @@ class SettingsView extends StatelessWidget {
                       activeSwitchColor: Theme.of(context).colorScheme.primary,
                       title: const Text('Crash report collection'),
                       description: const Text(
-                        'If enabled, the app collects crash report information to help with development. No personally identifying information is collected.',
+                        'Collect crash reports to help with development. No personally identifying information is collected.',
                       ),
                     ),
                     SettingsTile.navigation(
@@ -176,16 +175,16 @@ class SettingsView extends StatelessWidget {
                       onPressed: (_) => viewModel.deleteSearchHistory(),
                     ),
                     SettingsTile.navigation(
-                      title: const Text('Backup data'),
+                      title: const Text('Back up data'),
                       description: const Text(
-                        'Exports user created lists, flashcard sets, and spaced repetition data. The created file can then be saved in a safe place.',
+                        'Export your lists, flashcard sets, and spaced repetition data to a file you can save.',
                       ),
                       onPressed: (_) => viewModel.backupData(),
                     ),
                     SettingsTile.navigation(
                       title: const Text('Restore from backup'),
                       description: const Text(
-                        'This will delete all user data and then import new user data from the selected backup file.',
+                        'Replaces all user data with the contents of the selected backup file.',
                       ),
                       onPressed: (_) => viewModel.restoreFromBackup(),
                     ),
@@ -201,7 +200,7 @@ class SettingsView extends StatelessWidget {
                     ),
                     SettingsTile.navigation(
                       leading: const Icon(Icons.history),
-                      title: const Text('Open changelog'),
+                      title: const Text('Changelog'),
                       onPressed: (_) => viewModel.openChangelog(),
                     ),
                     SettingsTile.navigation(

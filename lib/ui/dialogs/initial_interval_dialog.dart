@@ -47,9 +47,8 @@ class InitialIntervalDialog extends HookWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
               child: Text(
-                'The interval is the duration in days before a flashcard will appear again when answering a flashcard for the first time or after a wrong answer. Defaults are $defaultInitialCorrectInterval and $defaultInitialVeryCorrectInterval.',
+                'Number of days before a flashcard reappears after a first or wrong answer. Defaults are $defaultInitialCorrectInterval and $defaultInitialVeryCorrectInterval.',
                 textAlign: TextAlign.justify,
-                style: TextStyle(),
               ),
             ),
             TextField(
@@ -110,7 +109,7 @@ class InitialIntervalDialog extends HookWidget {
                   if (!_snackbarService.isSnackbarOpen) {
                     _snackbarService.showSnackbar(
                       message:
-                          'Both intervals must be greater than 0 and the very correct answer interval must be larger',
+                          'Intervals must be greater than 0 and the very correct interval must be larger',
                     );
                   }
                   return;

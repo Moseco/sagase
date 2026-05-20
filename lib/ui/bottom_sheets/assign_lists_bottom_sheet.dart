@@ -49,7 +49,7 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
                 ),
                 Expanded(
                   child: Text(
-                    _path.isEmpty ? 'Flashcard Lists' : current.title,
+                    _path.isEmpty ? 'Flashcard lists' : current.title,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 24,
@@ -95,7 +95,7 @@ class AssignListsBottomSheetState extends State<AssignListsBottomSheet> {
   }
 
   _Folder _buildRoot() {
-    return _Folder('Flashcard Lists', [
+    return _Folder('Flashcard lists', [
       _Folder('My lists', [
         for (int i = 0; i < widget.request.data.myLists.length; i++)
           _DictionaryList(
