@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/app/app.dialogs.dart';
+import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
+import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/bottom_sheets/base_bottom_sheet.dart';
+import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class AssignMyListsBottomSheet extends StatefulWidget {
@@ -18,6 +23,32 @@ class AssignMyListsBottomSheet extends StatefulWidget {
 }
 
 class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
+  final _dialogService = locator<DialogService>();
+  final _dictionaryService = locator<DictionaryService>();
+
+  Future<void> _createNewList() async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.textField,
+      title: 'Create new list',
+      description: 'Name',
+      mainButtonTitle: 'Create',
+      barrierDismissible: true,
+    );
+
+    if (response?.data == null) return;
+    final name = (response!.data as String).sanitizeName();
+    if (name.isEmpty) return;
+
+    final newList = await _dictionaryService.createMyDictionaryList(name);
+    if (!mounted) return;
+    setState(() {
+      widget.request.data.insert(
+        0,
+        MyListsBottomSheetItem(newList, true, changed: true),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseBottomSheet(
@@ -28,12 +59,13 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.close, color: Colors.transparent),
+                  onPressed: _createNewList,
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Create new list',
                 ),
                 const Expanded(
                   child: Text(
-                    'My Lists',
+                    'My lists',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
