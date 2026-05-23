@@ -295,8 +295,13 @@ class MecabService {
         String kanaSubstring = writing.substring(kanaStartingPosition, i);
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition > 0) {
-          // Find position of kana substring in the reading
-          int position = reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
+          // Find position of kana substring in the reading. Start searching at
+          // kanaStartingPosition since each preceding non-kana writing char is
+          // at least one kana in the reading.
+          int position = reading.indexOf(
+            _kanaKit.toHiragana(kanaSubstring),
+            kanaStartingPosition,
+          );
           if (position != -1) {
             // Get non-kana writing and reading then cut from writing and reading strings
             rubyTextPairs.add(RubyTextPair(
@@ -343,8 +348,13 @@ class MecabService {
         String kanaSubstring = writing.substring(kanaStartingPosition);
         // If have non-kana before current kana, create that substring first
         if (kanaStartingPosition != 0) {
-          // Find position of kana substring in the reading
-          int position = reading.indexOf(_kanaKit.toHiragana(kanaSubstring));
+          // Find position of kana substring in the reading. Start searching at
+          // kanaStartingPosition since each preceding non-kana writing char is
+          // at least one kana in the reading.
+          int position = reading.indexOf(
+            _kanaKit.toHiragana(kanaSubstring),
+            kanaStartingPosition,
+          );
           if (position != -1) {
             // Get non-kana writing and reading
             rubyTextPairs.add(RubyTextPair(
