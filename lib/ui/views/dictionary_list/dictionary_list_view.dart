@@ -32,27 +32,31 @@ class DictionaryListView extends StackedView<DictionaryListViewModel> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(viewModel.dictionaryList.name),
-          actions: viewModel.dictionaryList is MyDictionaryList
-              ? [
-                  PopupMenuButton<PopupMenuItemType>(
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: PopupMenuItemType.rename,
-                        child: Text('Rename'),
-                      ),
-                      const PopupMenuItem(
-                        value: PopupMenuItemType.delete,
-                        child: Text('Delete'),
-                      ),
-                      const PopupMenuItem(
-                        value: PopupMenuItemType.share,
-                        child: Text('Share'),
-                      ),
-                    ],
-                    onSelected: viewModel.handlePopupMenuButton,
+          actions: [
+            IconButton(
+              tooltip: 'Study flashcards',
+              onPressed: viewModel.studyFlashcards,
+              icon: const Icon(Icons.style),
+            ),
+            if (viewModel.dictionaryList is MyDictionaryList)
+              PopupMenuButton<PopupMenuItemType>(
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: PopupMenuItemType.rename,
+                    child: Text('Rename'),
                   ),
-                ]
-              : null,
+                  const PopupMenuItem(
+                    value: PopupMenuItemType.delete,
+                    child: Text('Delete'),
+                  ),
+                  const PopupMenuItem(
+                    value: PopupMenuItemType.share,
+                    child: Text('Share'),
+                  ),
+                ],
+                onSelected: viewModel.handlePopupMenuButton,
+              ),
+          ],
           bottom: tabs.length > 1
               ? TabBar(
                   tabs: tabs
