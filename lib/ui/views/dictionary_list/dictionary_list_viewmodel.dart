@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
+import 'package:sagase/ui/dialogs/flashcard_set_select_dialog.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:stacked/stacked.dart';
@@ -118,6 +119,86 @@ class DictionaryListViewModel extends FutureViewModel {
         grammarList: grammarList,
       ),
     );
+  }
+
+  Future<void> studyFlashcards() async {
+    final isPredefined = dictionaryList is PredefinedDictionaryList;
+    final listId = dictionaryList.id;
+
+    final flashcardSets = await _dictionaryService.getFlashcardSets();
+    final matching = <FlashcardSet>[];
+    final others = <FlashcardSet>[];
+    for (final set in flashcardSets) {
+      final containsList = isPredefined
+          ? set.predefinedDictionaryLists.contains(listId)
+          : set.myDictionaryLists.contains(listId);
+      if (containsList) {
+        matching.add(set);
+      } else {
+        others.add(set);
+      }
+    }
+
+    FlashcardSet flashcardSet;
+    if (flashcardSets.isEmpty) {
+      final created = await _createFlashcardSetForList();
+      if (created == null) return;
+      flashcardSet = created;
+    } else {
+      final response = await _dialogService.showCustomDialog(
+        variant: DialogType.flashcardSetSelect,
+        data: (matching: matching, others: others),
+        barrierDismissible: true,
+      );
+      if (response?.data is! FlashcardSetSelectResult) return;
+      final result = response!.data as FlashcardSetSelectResult;
+
+      switch (result) {
+        case FlashcardSetSelectOpen(flashcardSet: final set):
+          flashcardSet = set;
+        case FlashcardSetSelectAddToExisting(flashcardSet: final set):
+          if (isPredefined) {
+            set.predefinedDictionaryLists.add(listId);
+          } else {
+            set.myDictionaryLists.add(listId);
+          }
+          await _dictionaryService.updateFlashcardSet(set);
+          flashcardSet = set;
+        case FlashcardSetSelectCreateNew():
+          final created = await _createFlashcardSetForList();
+          if (created == null) return;
+          flashcardSet = created;
+      }
+    }
+
+    await _navigationService.navigateTo(
+      Routes.flashcardsView,
+      arguments: FlashcardsViewArguments(flashcardSet: flashcardSet),
+    );
+  }
+
+  Future<FlashcardSet?> _createFlashcardSetForList() async {
+    final nameResponse = await _dialogService.showCustomDialog(
+      variant: DialogType.textField,
+      title: 'Create flashcard set',
+      description: 'Name',
+      mainButtonTitle: 'Create',
+      data: dictionaryList.name,
+      barrierDismissible: true,
+    );
+
+    if (nameResponse?.data == null) return null;
+    final name = (nameResponse!.data as String).sanitizeName();
+    if (name.isEmpty) return null;
+
+    final flashcardSet = await _dictionaryService.createFlashcardSet(name);
+    if (dictionaryList is PredefinedDictionaryList) {
+      flashcardSet.predefinedDictionaryLists.add(dictionaryList.id);
+    } else {
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+    }
+    await _dictionaryService.updateFlashcardSet(flashcardSet);
+    return flashcardSet;
   }
 
   void handlePopupMenuButton(PopupMenuItemType type) {
