@@ -78,7 +78,6 @@ class FlashcardSetSelectDialog extends StatelessWidget {
                           DialogResponse(data: FlashcardSetSelectOpen(set)),
                         ),
                       ),
-                    // const Divider(height: 1),
                   ],
                   if (others.isNotEmpty) ...[
                     const _SectionHeader('Add this list to flashcard set'),

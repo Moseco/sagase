@@ -136,7 +136,7 @@ class _FlashcardSet extends ViewModelWidget<LearningViewModel> {
           children: [
             const Padding(
               padding: EdgeInsets.only(left: 12),
-              child: Icon(Icons.web_stories),
+              child: Icon(Icons.style),
             ),
             Expanded(
               child: Padding(
