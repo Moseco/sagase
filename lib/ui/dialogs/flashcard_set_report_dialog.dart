@@ -42,7 +42,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                 fontSize: 24,
               ),
             ),
-            const Text('Performance Summary'),
+            const Text('Performance summary'),
             const SizedBox(height: 16),
             Center(
               child: CircularPercentIndicator(
@@ -78,7 +78,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        'Due Flashcards\nCompleted',
+                        'Due flashcards\ncompleted',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey),
                       ),
@@ -98,7 +98,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                       ),
                       const Text(
                         textAlign: TextAlign.center,
-                        'Due Flashcards\nGot Wrong',
+                        'Due flashcards\ngot wrong',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -122,7 +122,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                       ),
                       const Text(
                         textAlign: TextAlign.center,
-                        'New Flashcards\nCompleted',
+                        'New flashcards\ncompleted',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -141,7 +141,7 @@ class FlashcardSetReportDialog extends StatelessWidget {
                       ),
                       const Text(
                         textAlign: TextAlign.center,
-                        'Study\nStreak',
+                        'Study\nstreak',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],

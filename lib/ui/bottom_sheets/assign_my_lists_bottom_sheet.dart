@@ -33,7 +33,7 @@ class AssignMyListsBottomSheetState extends State<AssignMyListsBottomSheet> {
                 ),
                 const Expanded(
                   child: Text(
-                    'My Lists',
+                    'My lists',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,

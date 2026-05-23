@@ -33,7 +33,7 @@ class TextAnalysisHistoryBottomSheet extends StatelessWidget {
                   vertical: 14,
                 ),
                 child: Text(
-                  'Text Analysis History',
+                  'Text analysis history',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
