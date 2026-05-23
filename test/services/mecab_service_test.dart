@@ -95,6 +95,16 @@ void main() {
       expect(pairs[0].writing, 'ＩＣ');
       expect(pairs[0].reading, 'アイシイ');
       expect(pairs[1].writing, 'カード');
+
+      pairs = service.createRubyTextPairs('近所付き合い', 'きんじょづきあい');
+      print(pairs[0].writing);
+      expect(pairs.length, 4);
+      expect(pairs[0].writing, '近所付');
+      expect(pairs[0].reading, 'きんじょづ');
+      expect(pairs[1].writing, 'き');
+      expect(pairs[2].writing, '合');
+      expect(pairs[2].reading, 'あ');
+      expect(pairs[3].writing, 'い');
     });
 
     test('createRubyTextPairs katakana reading', () {
