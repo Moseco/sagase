@@ -32,7 +32,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
             color: Colors.grey,
             activeColor: Theme.of(context).colorScheme.primary,
           ),
-          safeAreaList: const [true, true, false, false],
+          safeAreaList: const [true, true, true, true],
           pages: [
             PageViewModel(
               image: const Text('探', style: TextStyle(fontSize: 80)),

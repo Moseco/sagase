@@ -111,6 +111,8 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.5.2]
+- Added padding to onboarding screen to prevent system UI from covering important elements
 # [1.5.1]
 - Added undo and redo functionality to text analysis
 - Added ability to open the keyboard on the search screen by tapping the search tab button
