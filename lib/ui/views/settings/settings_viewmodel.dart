@@ -195,18 +195,23 @@ class SettingsViewModel extends BaseViewModel {
 
     // Ask user to save file to a location
     String? newPath;
+    bool saveError = false;
     try {
       newPath = await FlutterFileDialog.saveFile(
         params: SaveFileDialogParams(sourceFilePath: path),
       );
     } catch (_) {
-      newPath = null;
+      saveError = true;
     }
 
     _dialogService.completeDialog(DialogResponse());
 
     _snackbarService.showSnackbar(
-      message: newPath == null ? 'Failed to save file' : 'Export successful',
+      message: newPath != null
+          ? 'Export successful'
+          : saveError
+              ? 'Failed to save file'
+              : 'Export cancelled',
     );
 
     // Delete the original file
