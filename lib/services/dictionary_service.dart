@@ -615,7 +615,11 @@ class DictionaryService {
   }
 
   Future<bool> restoreFromBackup(String backupFilePath) async {
-    bool result = false;
+    try {
+      final file = File(backupFilePath);
+      if (!await file.exists()) return false;
+      final userBackup = UserBackup.fromBackupJson(await file.readAsString());
+      if (userBackup == null) return false;
 
     await _database.transaction(() async {
       // Delete existing user data
@@ -623,12 +627,19 @@ class DictionaryService {
       await _database.myDictionaryListsDao.deleteAll();
       await _database.spacedRepetitionDatasDao.deleteAll();
       await deleteSearchHistory();
+        await _database.vocabsDao.deleteAllNotes();
+        await _database.kanjisDao.deleteAllNotes();
 
       // Import user data from backup
-      result = await importUserData(backupFilePath);
+        if (!await _importUserBackup(userBackup)) {
+          throw Exception();
+        }
     });
 
-    return result;
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<String?> exportUserData() async {
@@ -740,6 +751,14 @@ class DictionaryService {
       final userBackup = UserBackup.fromBackupJson(await file.readAsString());
       if (userBackup == null) return false;
 
+      return _importUserBackup(userBackup);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _importUserBackup(UserBackup userBackup) async {
+    try {
       await _database.transaction(() async {
         // My dictionary lists
         for (final json in userBackup.myDictionaryLists) {

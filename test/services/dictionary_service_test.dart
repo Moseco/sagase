@@ -246,6 +246,10 @@ void main() {
         const TextAnalysisHistoryItem(id: 0, analysisText: 'analysis!'),
       );
 
+      // Create notes
+      await service.setVocabNote(2, 'vocab note');
+      await service.setKanjiNote('二'.kanjiCodePoint(), 'kanji note');
+
       // Export data
       String path = (await service.exportUserData())!;
       final file = File(path);
@@ -296,6 +300,12 @@ void main() {
         const TextAnalysisHistoryItem(id: 1, analysisText: 'newer!'),
       );
 
+      // Modify existing note and create new notes that should be removed
+      await service.setVocabNote(2, 'changed vocab note');
+      await service.setVocabNote(3, 'new vocab note');
+      await service.setKanjiNote('二'.kanjiCodePoint(), 'changed kanji note');
+      await service.setKanjiNote('三'.kanjiCodePoint(), 'new kanji note');
+
       // Restore from backup
       await service.restoreFromBackup(file.path);
 
@@ -326,6 +336,44 @@ void main() {
       final textAnalysisHistory = await service.getTextAnalysisHistory();
       expect(textAnalysisHistory.length, 1);
       expect(textAnalysisHistory[0].analysisText, 'analysis!');
+
+      expect((await service.getVocab(2)).note, 'vocab note');
+      expect((await service.getVocab(3)).note, null);
+      expect((await service.getKanji('二'))?.note, 'kanji note');
+      expect((await service.getKanji('三'))?.note, null);
+
+      // Cleanup
+      await service.close();
+    });
+
+    test('restoreFromBackup - failed restore does not delete user data',
+        () async {
+      final service = await setUpDictionaryData();
+
+      // Create initial user data
+      await service.createMyDictionaryList('list1');
+
+      // Export a valid backup, then corrupt it so the import will fail
+      final exportPath = (await service.exportUserData())!;
+      final backupMap =
+          jsonDecode(await File(exportPath).readAsString()) as Map;
+      backupMap[SagaseDictionaryConstants.backupMyDictionaryLists] = [
+        'not valid backup json',
+      ];
+      final corruptedFile = File(path.join(
+        (await path_provider.getApplicationCacheDirectory()).path,
+        'corrupted.sagase',
+      ));
+      await corruptedFile.writeAsString(jsonEncode(backupMap));
+
+      // Restore should fail
+      final result = await service.restoreFromBackup(corruptedFile.path);
+      expect(result, false);
+
+      // Verify original user data
+      final myDictionaryLists = await service.getAllMyDictionaryLists();
+      expect(myDictionaryLists.length, 1);
+      expect(myDictionaryLists[0].name, 'list1');
 
       // Cleanup
       await service.close();
