@@ -621,20 +621,20 @@ class DictionaryService {
       final userBackup = UserBackup.fromBackupJson(await file.readAsString());
       if (userBackup == null) return false;
 
-    await _database.transaction(() async {
-      // Delete existing user data
-      await _database.flashcardSetsDao.deleteAll();
-      await _database.myDictionaryListsDao.deleteAll();
-      await _database.spacedRepetitionDatasDao.deleteAll();
-      await deleteSearchHistory();
+      await _database.transaction(() async {
+        // Delete existing user data
+        await _database.flashcardSetsDao.deleteAll();
+        await _database.myDictionaryListsDao.deleteAll();
+        await _database.spacedRepetitionDatasDao.deleteAll();
+        await deleteSearchHistory();
         await _database.vocabsDao.deleteAllNotes();
         await _database.kanjisDao.deleteAllNotes();
 
-      // Import user data from backup
+        // Import user data from backup
         if (!await _importUserBackup(userBackup)) {
-          throw Exception();
+          throw Exception('Import failed');
         }
-    });
+      });
 
       return true;
     } catch (_) {
