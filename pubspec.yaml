@@ -7,9 +7,9 @@ version: 1.5.2+29
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.41.4
+  flutter: 3.44.4
 
-isar_version: &isar_version 3.3.0
+isar_version: &isar_version 3.3.2
 
 dependencies:
   flutter:
@@ -20,7 +20,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: 'faa6ecf'
+      ref: '0d567a3'
 
   # State management
   stacked: ^3.5.0
@@ -30,9 +30,9 @@ dependencies:
   stacked_themes: ^0.3.15
 
   # Firebase
-  firebase_core: 4.4.0
-  firebase_analytics: 12.1.2
-  firebase_crashlytics: 5.0.7
+  firebase_core: 4.11.0
+  firebase_analytics: 12.4.3
+  firebase_crashlytics: 5.2.4
 
   # UI
   google_nav_bar: ^5.0.6
@@ -79,7 +79,7 @@ dependencies:
   dio: ^5.3.3
   in_app_review: ^2.0.8
   disk_space_plus: ^0.2.6
-  share_plus: ^12.0.0
+  share_plus: ^13.2.0
   app_links: ^7.0.0
   uri_to_file:
     git:
@@ -93,7 +93,7 @@ dependencies:
     git:
       url: https://github.com/Moseco/flutter_exif_rotation
       ref: '55b72de'
-  device_info_plus: ^12.3.0
+  device_info_plus: ^13.2.0
 
 dependency_overrides:
   flutter_statusbarcolor_ns:
