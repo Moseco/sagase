@@ -19,6 +19,7 @@ Future<Isar> setUpIsar() async {
   late String binaryName;
   switch (Abi.current()) {
     case Abi.macosX64:
+    case Abi.macosArm64:
       binaryName = 'libisar.dylib';
       break;
     case Abi.linuxX64:
