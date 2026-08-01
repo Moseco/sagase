@@ -109,11 +109,15 @@ class _RomajiAndType extends ViewModelWidget<ProperNounViewModel> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              viewModel.properNoun.types.map((e) => e.displayTitle).join(', '),
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const Divider(),
+            if (viewModel.properNoun.types.isNotEmpty) ...[
+              Text(
+                viewModel.properNoun.types
+                    .map((e) => e.displayTitle)
+                    .join(', '),
+                style: const TextStyle(color: Colors.grey),
+              ),
+              const Divider(),
+            ],
             Text(viewModel.properNoun.romaji),
           ],
         ),
