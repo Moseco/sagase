@@ -548,14 +548,22 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Afrikaans';
       case LanguageSource.ain:
         return 'Ainu';
+      case LanguageSource.alb:
+        return 'Albanian';
       case LanguageSource.alg:
         return 'Algonquian';
       case LanguageSource.amh:
         return 'Amharic';
       case LanguageSource.ara:
         return 'Arabic';
+      case LanguageSource.arm:
+        return 'Armenian';
       case LanguageSource.arn:
         return 'Mapuche';
+      case LanguageSource.aze:
+        return 'Azerbaijani';
+      case LanguageSource.ben:
+        return 'Bengali';
       case LanguageSource.bnt:
         return 'Bantu';
       case LanguageSource.bre:
@@ -567,11 +575,13 @@ extension LanguageSourceExtension on LanguageSource {
       case LanguageSource.chi:
         return 'Chinese';
       case LanguageSource.chn:
-        return 'Chinook';
+        return 'Chinook Jargon';
       case LanguageSource.cze:
         return 'Czech';
       case LanguageSource.dan:
         return 'Danish';
+      case LanguageSource.div:
+        return 'Dhivehi';
       case LanguageSource.dut:
         return 'Dutch';
       case LanguageSource.eng:
@@ -610,12 +620,18 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Indonesian';
       case LanguageSource.ita:
         return 'Italian';
+      case LanguageSource.kaz:
+        return 'Kazakh';
       case LanguageSource.khm:
-        return 'Mon-Khmer';
+        return 'Khmer';
+      case LanguageSource.kir:
+        return 'Kyrgyz';
       case LanguageSource.kor:
         return 'Korean';
       case LanguageSource.kur:
         return 'Kurdish';
+      case LanguageSource.lao:
+        return 'Lao';
       case LanguageSource.lat:
         return 'Latin';
       case LanguageSource.lit:
@@ -626,12 +642,16 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Maori';
       case LanguageSource.may:
         return 'Malay';
+      case LanguageSource.mlg:
+        return 'Malagasy';
       case LanguageSource.mnc:
         return 'Manchu';
       case LanguageSource.mol:
         return 'Moldovan';
       case LanguageSource.mon:
         return 'Mongolian';
+      case LanguageSource.nep:
+        return 'Nepali';
       case LanguageSource.nor:
         return 'Norwegian';
       case LanguageSource.per:
@@ -652,8 +672,12 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Slovak';
       case LanguageSource.slv:
         return 'Slovenian';
+      case LanguageSource.smo:
+        return 'Samoan';
       case LanguageSource.som:
         return 'Somali';
+      case LanguageSource.sot:
+        return 'Southern Sotho';
       case LanguageSource.spa:
         return 'Spanish';
       case LanguageSource.swa:
@@ -664,12 +688,16 @@ extension LanguageSourceExtension on LanguageSource {
         return 'Tahitian';
       case LanguageSource.tam:
         return 'Tamil';
+      case LanguageSource.tgk:
+        return 'Tajik';
       case LanguageSource.tgl:
         return 'Tagalog';
       case LanguageSource.tha:
         return 'Thai';
       case LanguageSource.tib:
         return 'Tibetan';
+      case LanguageSource.tuk:
+        return 'Turkmen';
       case LanguageSource.tur:
         return 'Turkish';
       case LanguageSource.ukr:
