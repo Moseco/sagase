@@ -138,6 +138,10 @@ class FlashcardsViewModel extends FutureViewModel {
           front.write(flashcard.kanji);
         } else if (flashcard is Grammar) {
           front.write(flashcard.form);
+          if (flashcardSet.grammarShowReading &&
+              flashcard.form.contains(kanjiRegExp)) {
+            front.write(flashcard.reading);
+          }
         }
 
         // Check if similar flashcard already found

@@ -322,18 +322,21 @@ Future<DictionaryService> setUpDictionaryData({
       const GrammarsCompanion(
         id: drift.Value(1),
         form: drift.Value('です'),
+        reading: drift.Value('です'),
         meaning: drift.Value('To be'),
         jlptLevel: drift.Value(5),
       ),
       const GrammarsCompanion(
         id: drift.Value(2),
         form: drift.Value('ほうがいい'),
+        reading: drift.Value('ほうがいい'),
         meaning: drift.Value('It would be better to...'),
         jlptLevel: drift.Value(5),
       ),
       const GrammarsCompanion(
         id: drift.Value(3),
         form: drift.Value('～たい'),
+        reading: drift.Value('たい'),
         meaning: drift.Value('want to do'),
         jlptLevel: drift.Value(5),
       ),

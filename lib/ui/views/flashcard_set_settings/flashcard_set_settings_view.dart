@@ -289,6 +289,15 @@ class FlashcardSetSettingsView
                                 ),
                               ),
                               ListTile(
+                                title: const Text('Show reading'),
+                                subtitle: const Text('Grammar flashcard front'),
+                                trailing: Switch(
+                                  activeColor: Colors.deepPurple,
+                                  value: flashcardSet.grammarShowReading,
+                                  onChanged: viewModel.setGrammarShowReading,
+                                ),
+                              ),
+                              ListTile(
                                 title: const Text('Show note'),
                                 subtitle: const Text('Flashcard back'),
                                 trailing: Switch(

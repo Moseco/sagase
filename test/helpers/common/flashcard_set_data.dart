@@ -11,6 +11,7 @@ FlashcardSet createDefaultFlashcardSet({int id = 0, String name = 'Set'}) {
     vocabShowAlternatives: false,
     vocabShowPitchAccent: false,
     kanjiShowReading: false,
+    grammarShowReading: false,
     vocabShowPartsOfSpeech: false,
     showNote: false,
     timestamp: DateTime.now(),

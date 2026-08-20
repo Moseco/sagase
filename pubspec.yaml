@@ -20,7 +20,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '47f89d1'
+      ref: 'db219b4'
 
   # State management
   stacked: ^3.5.0
@@ -130,7 +130,7 @@ flutter:
 
   assets:
     # Dictionary and mecab files for debug
-    # - assets/dictionary/dictionary.zip
+    - assets/dictionary/dictionary.zip
     # - assets/mecab/mecab.zip
     # - assets/dictionary/proper_noun_dictionary.zip
     # Radical positions images

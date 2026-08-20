@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 
@@ -68,6 +69,11 @@ class GrammarView extends StackedView<GrammarViewModel> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
+            if (grammar.form.contains(kanjiRegExp))
+              Text(
+                grammar.reading,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             const SizedBox(height: 4),
             Text(
               'JLPT N${grammar.jlptLevel}',
