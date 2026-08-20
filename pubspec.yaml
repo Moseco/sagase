@@ -130,7 +130,7 @@ flutter:
 
   assets:
     # Dictionary and mecab files for debug
-    - assets/dictionary/dictionary.zip
+    # - assets/dictionary/dictionary.zip
     # - assets/mecab/mecab.zip
     # - assets/dictionary/proper_noun_dictionary.zip
     # Radical positions images
