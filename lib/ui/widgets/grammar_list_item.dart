@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/utils/furigana_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class GrammarListItem extends StatelessWidget {
@@ -22,7 +23,7 @@ class GrammarListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              grammar.form,
+              removeFurigana(grammar.form),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),

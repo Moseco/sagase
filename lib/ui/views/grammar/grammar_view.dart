@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sagase/utils/constants.dart' show kanjiRegExp;
+import 'package:sagase/ui/widgets/card_with_title_section.dart';
+import 'package:sagase/ui/widgets/furigana_text.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 
@@ -48,40 +49,112 @@ class GrammarView extends StackedView<GrammarViewModel> {
           ),
         ],
       ),
+      // Can throw exception "'!_selectionStartsInScrollable': is not true."
+      // when long press then try to scroll on disabled areas.
+      // But seems to work okay in release builds.
       body: SafeArea(
         bottom: false,
-        child: _buildLessonContent(context, viewModel.grammar),
+        child: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: [
+              _Form(viewModel.grammar),
+              _Meaning(viewModel.grammar),
+              const _Example(),
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
+        ),
       ),
     );
   }
+}
 
-  Widget _buildLessonContent(BuildContext context, Grammar grammar) {
-    return SingleChildScrollView(
+class _Form extends StatelessWidget {
+  final Grammar grammar;
+
+  const _Form(this.grammar);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: FuriganaText(
+        grammar.form,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 32),
+      ),
+    );
+  }
+}
+
+class _Meaning extends StatelessWidget {
+  final Grammar grammar;
+
+  const _Meaning(this.grammar);
+
+  @override
+  Widget build(BuildContext context) {
+    return CardWithTitleSection(
+      title: 'Meaning',
+      titleTrailing: _JlptLevel(grammar.jlptLevel),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              grammar.form,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+        padding: const EdgeInsets.all(8),
+        child: Text(grammar.meaning),
+      ),
+    );
+  }
+}
+
+class _JlptLevel extends StatelessWidget {
+  final int level;
+
+  const _JlptLevel(this.level);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      decoration: const BoxDecoration(
+        color: Colors.deepPurple,
+        borderRadius: BorderRadius.all(Radius.circular(6)),
+      ),
+      child: SelectionContainer.disabled(
+        child: Text(
+          'JLPT N$level',
+          style: const TextStyle(
+            color: Colors.white,
+            height: 1.1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Example extends ViewModelWidget<GrammarViewModel> {
+  const _Example() : super(reactive: false);
+
+  @override
+  Widget build(BuildContext context, GrammarViewModel viewModel) {
+    return SelectionContainer.disabled(
+      child: CardWithTitleSection(
+        title: 'Example',
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: viewModel.openExampleInAnalysis,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FuriganaText(viewModel.grammar.exampleJapanese),
+                Text(viewModel.grammar.exampleEnglish),
+              ],
             ),
-            if (grammar.form.contains(kanjiRegExp))
-              Text(
-                grammar.reading,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            const SizedBox(height: 4),
-            Text(
-              'JLPT N${grammar.jlptLevel}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 8),
-            Text(grammar.meaning),
-          ],
+          ),
         ),
       ),
     );

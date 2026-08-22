@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:sagase/app/app.bottomsheets.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase/datamodels/my_lists_bottom_sheet_item.dart';
 import 'package:sagase/services/dictionary_service.dart';
+import 'package:sagase/utils/furigana_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -20,8 +22,7 @@ class GrammarViewModel extends FutureViewModel {
   final List<Grammar>? grammarList;
 
   List<int> _myDictionaryListsContainingGrammar = [];
-  bool get inMyDictionaryList =>
-      _myDictionaryListsContainingGrammar.isNotEmpty;
+  bool get inMyDictionaryList => _myDictionaryListsContainingGrammar.isNotEmpty;
 
   GrammarViewModel(this.grammar, this.grammarListIndex, this.grammarList);
 
@@ -77,6 +78,16 @@ class GrammarViewModel extends FutureViewModel {
     }
 
     rebuildUi();
+  }
+
+  void openExampleInAnalysis() {
+    _navigationService.navigateTo(
+      Routes.textAnalysisView,
+      arguments: TextAnalysisViewArguments(
+        initialText: removeFurigana(grammar.exampleJapanese),
+        addToHistory: false,
+      ),
+    );
   }
 
   void navigateToPreviousGrammar() {

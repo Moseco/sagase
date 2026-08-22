@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/furigana_text.dart';
 import 'package:sagase/ui/widgets/grammar_list_item.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
-import 'package:sagase/utils/constants.dart' show kanjiRegExp;
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 
 class GrammarFlashcardFront extends StatelessWidget {
@@ -17,30 +17,14 @@ class GrammarFlashcardFront extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = [
-      Text(
-        grammar.form,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 40),
-      ),
-    ];
-
-    if (flashcardSet.grammarShowReading && grammar.form.contains(kanjiRegExp)) {
-      children.add(
-        Text(
-          grammar.reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 30),
-        ),
-      );
-    }
-
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: children,
+        child: FuriganaText(
+          grammar.form,
+          showReading: flashcardSet.grammarShowReading,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 40),
         ),
       ),
     );
@@ -74,30 +58,27 @@ class GrammarFlashcardBack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [
-      Text(
+      FuriganaText(
         grammar.form,
         textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 32),
       ),
-    ];
-
-    if (grammar.form.contains(kanjiRegExp)) {
-      children.add(
-        Text(
-          grammar.reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24),
-        ),
-      );
-    }
-
-    children.addAll([
       const SizedBox(height: 16),
       Text(
         grammar.meaning,
         textAlign: TextAlign.center,
       ),
-    ]);
+      const SizedBox(height: 16),
+      FuriganaText(
+        grammar.exampleJapanese,
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        grammar.exampleEnglish,
+        textAlign: TextAlign.center,
+      ),
+    ];
 
     if (grammar.similarFlashcards != null) {
       children.addAll([
