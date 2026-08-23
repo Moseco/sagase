@@ -9,13 +9,11 @@ class BaseBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
+      child: Material(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
         child: child,
       ),
