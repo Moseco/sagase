@@ -818,6 +818,97 @@ void main() {
       expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
     });
 
+    test('Undo correct answer that did not increase the interval', () async {
+      // Low ease factor and short interval means the new interval will be
+      // the same as the current one
+      await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+                  dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+              .copyWith(
+                  interval: 2,
+                  repetitions: 2,
+                  easeFactor: 1.3,
+                  dueDate: DateTime.now().toInt(),
+                  totalAnswers: 5));
+
+      // Create dictionary list to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+
+      // Create flashcard set and assign list
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      getAndRegisterNavigationService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      expect(viewModel.activeFlashcards.length, 1);
+      final flashcard = viewModel.activeFlashcards[0];
+
+      // Answer correct and confirm the interval did not change
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(flashcard.spacedRepetitionData!.interval, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+
+      // Undo
+      await viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.interval, 2);
+      expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+    });
+
+    test('Undo very correct answer', () async {
+      await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+                  dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+              .copyWith(
+                  interval: 2,
+                  repetitions: 2,
+                  easeFactor: 1.3,
+                  dueDate: DateTime.now().toInt(),
+                  totalAnswers: 5));
+
+      // Create dictionary list to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+
+      // Create flashcard set and assign list
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      getAndRegisterNavigationService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      expect(viewModel.activeFlashcards.length, 1);
+      final flashcard = viewModel.activeFlashcards[0];
+
+      // Answer very correct
+      await viewModel.answerFlashcard(FlashcardAnswer.veryCorrect);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+
+      // Undo
+      await viewModel.undo();
+      expect(flashcard.spacedRepetitionData!.interval, 2);
+      expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+    });
+
     test('Undo with new card initial correct requirement', () async {
       // Create dictionary lists to use
       final dictionaryList =
