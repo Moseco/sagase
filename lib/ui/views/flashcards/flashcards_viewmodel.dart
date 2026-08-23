@@ -7,6 +7,7 @@ import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
+import 'package:sagase/utils/furigana_utils.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -137,7 +138,7 @@ class FlashcardsViewModel extends FutureViewModel {
         } else if (flashcard is Kanji) {
           front.write(flashcard.kanji);
         } else if (flashcard is Grammar) {
-          front.write(flashcard.form);
+          front.write(removeFurigana(flashcard.form));
         }
 
         // Check if similar flashcard already found

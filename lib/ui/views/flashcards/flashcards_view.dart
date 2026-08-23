@@ -405,8 +405,10 @@ Widget _buildFlashcardFront(
     };
   } else {
     return switch (flashcardSet.frontType) {
-      FrontType.japanese =>
-        GrammarFlashcardFront(grammar: flashcard as Grammar),
+      FrontType.japanese => GrammarFlashcardFront(
+          flashcardSet: flashcardSet,
+          grammar: flashcard as Grammar,
+        ),
       FrontType.english =>
         GrammarFlashcardFrontEnglish(grammar: flashcard as Grammar),
     };

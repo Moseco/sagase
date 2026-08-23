@@ -5,4 +5,6 @@ Grammar getGrammar1() => Grammar(
       form: '～たい',
       meaning: 'want to do',
       jlptLevel: 5,
+      exampleJapanese: "食べたい",
+      exampleEnglish: "I want to eat",
     );

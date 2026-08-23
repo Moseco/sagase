@@ -217,6 +217,12 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     _dictionaryService.updateFlashcardSet(flashcardSet);
   }
 
+  void setGrammarShowReading(bool value) {
+    flashcardSet.grammarShowReading = value;
+    notifyListeners();
+    _dictionaryService.updateFlashcardSet(flashcardSet);
+  }
+
   void setVocabShowPartsOfSpeech(bool value) {
     flashcardSet.vocabShowPartsOfSpeech = value;
     notifyListeners();
