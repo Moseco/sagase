@@ -200,6 +200,7 @@ class FlashcardsViewModel extends FutureViewModel {
     _undoList.add(_UndoItem(
       currentFlashcard,
       currentFlashcard.spacedRepetitionData,
+      answer,
     ));
 
     if (usingSpacedRepetition) {
@@ -491,24 +492,21 @@ class FlashcardsViewModel extends FutureViewModel {
     }
 
     if (_usingSpacedRepetition) {
-      // If undoing a newly completed card, decrease new flashcards completed
-      if (current.previousData?.dueDate == null &&
+      if (current.answer == FlashcardAnswer.wrong) {
+        // Only the first wrong answer for a not new flashcard was counted
+        if (current.previousData?.dueDate != null &&
+            current.previousData!.interval != 0) {
+          flashcardSetReport.dueFlashcardsGotWrong--;
+          _dictionaryService.setFlashcardSetReport(flashcardSetReport);
+        }
+      } else if (current.answer != FlashcardAnswer.repeat &&
           current.flashcard.spacedRepetitionData?.dueDate != null) {
-        flashcardSetReport.newFlashcardsCompleted--;
-        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
-      }
-      // If undoing a not new card and previous answer was correct, decrease count
-      if (current.previousData?.dueDate != null &&
-          current.previousData!.interval <
-              current.flashcard.spacedRepetitionData!.interval) {
-        flashcardSetReport.dueFlashcardsCompleted--;
-        _dictionaryService.setFlashcardSetReport(flashcardSetReport);
-      }
-      // If undoing a not new card and previous answer was the first wrong answer, decrease count
-      if (current.previousData?.dueDate != null &&
-          current.previousData!.interval != 0 &&
-          current.flashcard.spacedRepetitionData!.interval == 0) {
-        flashcardSetReport.dueFlashcardsGotWrong--;
+        // Correct or very correct answer that completed the flashcard
+        if (current.previousData?.dueDate == null) {
+          flashcardSetReport.newFlashcardsCompleted--;
+        } else {
+          flashcardSetReport.dueFlashcardsCompleted--;
+        }
         _dictionaryService.setFlashcardSetReport(flashcardSetReport);
       }
     }
@@ -608,7 +606,6 @@ class FlashcardsViewModel extends FutureViewModel {
     } else {
       interval = 0;
       repetitions = 0;
-      easeFactor = currentData.easeFactor;
     }
 
     if (currentData.repetitions == 0 &&
@@ -763,10 +760,12 @@ enum FlashcardAnswer {
 class _UndoItem {
   final DictionaryItem flashcard;
   final SpacedRepetitionData? previousData;
+  final FlashcardAnswer answer;
 
   const _UndoItem(
     this.flashcard,
     this.previousData,
+    this.answer,
   );
 }
 
