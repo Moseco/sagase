@@ -220,11 +220,12 @@ class FlashcardsViewModel extends FutureViewModel {
     // Remove current flashcard from active list
     final currentFlashcard = activeFlashcards.removeAt(0);
     // Add to the undo list
-    _undoList.add(_UndoItem(
+    final undoItem = _UndoItem(
       currentFlashcard,
       currentFlashcard.spacedRepetitionData,
       answer,
-    ));
+    );
+    _undoList.add(undoItem);
 
     if (usingSpacedRepetition) {
       if (answer == FlashcardAnswer.repeat) {
@@ -346,6 +347,16 @@ class FlashcardsViewModel extends FutureViewModel {
     }
 
     if (activeFlashcards.isEmpty) {
+      // Preparing flashcards can move the session on to the new flashcards, so
+      // remember the current state to be able to undo this answer
+      undoItem.sessionSnapshot = _SessionSnapshot(
+        newFlashcards: List.of(newFlashcards),
+        startedFlashcards: List.of(startedFlashcards),
+        answeringDueFlashcards: _answeringDueFlashcards,
+        newFlashcardsAdded: _newFlashcardsAdded,
+        initialDueFlashcardCount: _initialDueFlashcardCount,
+        reportDialogShown: _reportDialogShown,
+      );
       await _prepareFlashcards();
     } else if (activeFlashcards[0] is Vocab) {
       await _loadVocabFlashcardKanji(activeFlashcards[0] as Vocab);
@@ -524,6 +535,24 @@ class FlashcardsViewModel extends FutureViewModel {
         }
         _dictionaryService.setFlashcardSetReport(flashcardSetReport);
       }
+    }
+
+    // If this answer emptied the active list, undo the flashcards that were
+    // prepared to take its place. The active list was empty at that point so
+    // everything in it now came from the new and started flashcards.
+    final sessionSnapshot = current.sessionSnapshot;
+    if (sessionSnapshot != null) {
+      activeFlashcards.clear();
+      newFlashcards
+        ..clear()
+        ..addAll(sessionSnapshot.newFlashcards);
+      startedFlashcards
+        ..clear()
+        ..addAll(sessionSnapshot.startedFlashcards);
+      _answeringDueFlashcards = sessionSnapshot.answeringDueFlashcards;
+      _newFlashcardsAdded = sessionSnapshot.newFlashcardsAdded;
+      _initialDueFlashcardCount = sessionSnapshot.initialDueFlashcardCount;
+      _reportDialogShown = sessionSnapshot.reportDialogShown;
     }
 
     // Put flashcard at the front of active list with the previous data
@@ -805,12 +834,31 @@ class _UndoItem {
   final DictionaryItem flashcard;
   final SpacedRepetitionData? previousData;
   final FlashcardAnswer answer;
+  _SessionSnapshot? sessionSnapshot;
 
-  const _UndoItem(
+  _UndoItem(
     this.flashcard,
     this.previousData,
     this.answer,
   );
+}
+
+class _SessionSnapshot {
+  final List<DictionaryItem> newFlashcards;
+  final List<DictionaryItem> startedFlashcards;
+  final bool answeringDueFlashcards;
+  final int newFlashcardsAdded;
+  final int initialDueFlashcardCount;
+  final bool reportDialogShown;
+
+  const _SessionSnapshot({
+    required this.newFlashcards,
+    required this.startedFlashcards,
+    required this.answeringDueFlashcards,
+    required this.newFlashcardsAdded,
+    required this.initialDueFlashcardCount,
+    required this.reportDialogShown,
+  });
 }
 
 enum FlashcardStartMode {

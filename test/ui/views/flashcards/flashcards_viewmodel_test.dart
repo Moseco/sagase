@@ -1003,6 +1003,68 @@ void main() {
       expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
     });
 
+    test('Undo the answer that finished the due flashcards', () async {
+      // Only vocab1 has been answered before so vocab2 is a new flashcard
+      await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+                  dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+              .copyWith(
+                  interval: 2,
+                  repetitions: 2,
+                  easeFactor: 2.5,
+                  dueDate: DateTime.now().toInt(),
+                  totalAnswers: 5));
+
+      // Create dictionary list to use
+      final dictionaryList =
+          await dictionaryService.createMyDictionaryList('list1');
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab1());
+      await dictionaryService.addToMyDictionaryList(
+          dictionaryList, getVocab2());
+
+      // Create flashcard set and assign list
+      final flashcardSet = await dictionaryService.createFlashcardSet('name');
+      flashcardSet.myDictionaryLists.add(dictionaryList.id);
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      // Only the due flashcard is being answered
+      expect(viewModel.answeringDueFlashcards, true);
+      expect(viewModel.initialDueFlashcardCount, 1);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, getVocab1().id);
+      final flashcard = viewModel.activeFlashcards[0];
+
+      // Answering it moves the session on to the new flashcards
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.answeringDueFlashcards, false);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, getVocab2().id);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+
+      // Undo returns to answering the due flashcard
+      await viewModel.undo();
+      expect(viewModel.answeringDueFlashcards, true);
+      expect(viewModel.initialDueFlashcardCount, 1);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, getVocab1().id);
+      expect(flashcard.spacedRepetitionData!.interval, 2);
+      expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+
+      // Answering it again moves the session on to the same new flashcard
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+      expect(viewModel.answeringDueFlashcards, false);
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, getVocab2().id);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+    });
+
     test('Undo with new card initial correct requirement', () async {
       // Create dictionary lists to use
       final dictionaryList =
