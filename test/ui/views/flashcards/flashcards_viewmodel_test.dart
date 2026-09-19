@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.dialogs.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
@@ -907,6 +908,99 @@ void main() {
       expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
       expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
       expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+    });
+
+    test('Session rollover does not apply the answer to the old session',
+        () async {
+      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
+
+      final navigationService = getAndRegisterNavigationService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      expect(viewModel.activeFlashcards.length, 2);
+      final flashcard = viewModel.activeFlashcards[0];
+
+      // Move the session start back so the next answer rolls the session over
+      viewModel.sessionDateTime =
+          viewModel.sessionDateTime.subtract(const Duration(days: 1));
+
+      await viewModel.answerFlashcard(FlashcardAnswer.correct);
+
+      // Nothing about the answer was applied to this session
+      expect(viewModel.activeFlashcards.length, 2);
+      expect(viewModel.activeFlashcards[0], flashcard);
+      expect(viewModel.canUndo, false);
+      expect(flashcard.spacedRepetitionData!.interval, 2);
+      expect(flashcard.spacedRepetitionData!.repetitions, 2);
+      expect(flashcard.spacedRepetitionData!.totalAnswers, 5);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+
+      // The answer was handed to the new session instead
+      final captured = verify(navigationService.replaceWith(
+        any,
+        arguments: captureAnyNamed('arguments'),
+      )).captured;
+      expect(captured.length, 1);
+      final arguments = captured[0] as FlashcardsViewArguments;
+      expect(arguments.pendingAnswer!.flashcardId, flashcard.id);
+      expect(arguments.pendingAnswer!.flashcardType, DictionaryItemType.vocab);
+      expect(arguments.pendingAnswer!.answer, FlashcardAnswer.correct);
+    });
+
+    test('Pending answer is applied to the new session', () async {
+      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
+
+      // Call initialize with the answer given as the previous session ended
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        null,
+        pendingAnswer: PendingFlashcardAnswer(
+          getVocab1().id,
+          DictionaryItemType.vocab,
+          FlashcardAnswer.correct,
+        ),
+        randomSeed: 123,
+      );
+      await viewModel.futureToRun();
+
+      // The answer was applied and counted towards the new session
+      expect(viewModel.activeFlashcards.length, 1);
+      expect(viewModel.activeFlashcards[0].id, getVocab2().id);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+
+      // And it is undoable within the new session
+      expect(viewModel.canUndo, true);
+      await viewModel.undo();
+      expect(viewModel.activeFlashcards.length, 2);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+    });
+
+    test('Pending answer for a flashcard not in the new session is ignored',
+        () async {
+      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
+
+      // Call initialize with a pending answer for a flashcard outside the set
+      var viewModel = FlashcardsViewModel(
+        flashcardSet,
+        null,
+        pendingAnswer: PendingFlashcardAnswer(
+          getVocab3().id,
+          DictionaryItemType.vocab,
+          FlashcardAnswer.correct,
+        ),
+        randomSeed: 123,
+      );
+      await viewModel.futureToRun();
+
+      expect(viewModel.activeFlashcards.length, 2);
+      expect(viewModel.canUndo, false);
+      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
     });
 
     test('Undo with new card initial correct requirement', () async {
@@ -2104,4 +2198,33 @@ void main() {
       expect(viewModel.newFlashcards.length, 1);
     });
   });
+}
+
+// Creates a flashcard set containing two vocab flashcards that are due today
+Future<FlashcardSet> _setUpDueVocabFlashcardSet(
+    DictionaryService dictionaryService) async {
+  for (var vocab in [getVocab1(), getVocab2()]) {
+    await dictionaryService.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+                dictionaryItem: vocab, frontType: FrontType.japanese)
+            .copyWith(
+                interval: 2,
+                repetitions: 2,
+                easeFactor: 2.5,
+                dueDate: DateTime.now().toInt(),
+                totalAnswers: 5));
+  }
+
+  // Create dictionary list to use
+  final dictionaryList =
+      await dictionaryService.createMyDictionaryList('list1');
+  await dictionaryService.addToMyDictionaryList(dictionaryList, getVocab1());
+  await dictionaryService.addToMyDictionaryList(dictionaryList, getVocab2());
+
+  // Create flashcard set and assign list
+  final flashcardSet = await dictionaryService.createFlashcardSet('name');
+  flashcardSet.myDictionaryLists.add(dictionaryList.id);
+  await dictionaryService.updateFlashcardSet(flashcardSet);
+
+  return flashcardSet;
 }

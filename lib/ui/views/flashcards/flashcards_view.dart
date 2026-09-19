@@ -16,6 +16,7 @@ class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
   final FlashcardStartMode? startMode;
   final int? randomSeed;
+  final PendingFlashcardAnswer? pendingAnswer;
 
   final answersKey = GlobalKey();
 
@@ -23,6 +24,7 @@ class FlashcardsView extends HookWidget {
     this.flashcardSet, {
     this.startMode,
     this.randomSeed,
+    this.pendingAnswer,
     super.key,
   });
 
@@ -34,6 +36,7 @@ class FlashcardsView extends HookWidget {
       viewModelBuilder: () => FlashcardsViewModel(
         flashcardSet,
         startMode,
+        pendingAnswer: pendingAnswer,
         randomSeed: randomSeed,
       ),
       fireOnViewModelReadyOnce: true,
