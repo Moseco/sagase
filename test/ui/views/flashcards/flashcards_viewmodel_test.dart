@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.dialogs.dart';
-import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
@@ -910,11 +909,12 @@ void main() {
       expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
     });
 
-    test('Session rollover does not apply the answer to the old session',
+    test('Session rollover discards the answer and reloads the session',
         () async {
       final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
 
       final navigationService = getAndRegisterNavigationService();
+      final dialogService = getAndRegisterDialogService();
 
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
@@ -940,67 +940,104 @@ void main() {
       expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
       expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
 
-      // The answer was handed to the new session instead
-      final captured = verify(navigationService.replaceWith(
+      // The user was told about the reload and the session was restarted
+      verify(dialogService.showCustomDialog(
+        variant: DialogType.info,
+        title: 'Reload flashcards',
+        description: anyNamed('description'),
+        mainButtonTitle: anyNamed('mainButtonTitle'),
+        barrierDismissible: true,
+      )).called(1);
+      verify(navigationService.replaceWith(
         any,
-        arguments: captureAnyNamed('arguments'),
-      )).captured;
-      expect(captured.length, 1);
-      final arguments = captured[0] as FlashcardsViewArguments;
-      expect(arguments.pendingAnswer!.flashcardId, flashcard.id);
-      expect(arguments.pendingAnswer!.flashcardType, DictionaryItemType.vocab);
-      expect(arguments.pendingAnswer!.answer, FlashcardAnswer.correct);
+        arguments: anyNamed('arguments'),
+      )).called(1);
     });
 
-    test('Pending answer is applied to the new session', () async {
+    test('Answering again during the session rollover is ignored', () async {
       final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
 
-      // Call initialize with the answer given as the previous session ended
-      var viewModel = FlashcardsViewModel(
-        flashcardSet,
-        null,
-        pendingAnswer: PendingFlashcardAnswer(
-          getVocab1().id,
-          DictionaryItemType.vocab,
-          FlashcardAnswer.correct,
-        ),
-        randomSeed: 123,
-      );
+      final navigationService = getAndRegisterNavigationService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.futureToRun();
 
-      // The answer was applied and counted towards the new session
-      expect(viewModel.activeFlashcards.length, 1);
-      expect(viewModel.activeFlashcards[0].id, getVocab2().id);
-      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
-      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+      // Move the session start back so the next answer rolls the session over
+      viewModel.sessionDateTime =
+          viewModel.sessionDateTime.subtract(const Duration(days: 1));
 
-      // And it is undoable within the new session
-      expect(viewModel.canUndo, true);
-      await viewModel.undo();
-      expect(viewModel.activeFlashcards.length, 2);
-      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+      // Answer again before the reload finishes
+      final firstAnswer = viewModel.answerFlashcard(FlashcardAnswer.correct);
+      final secondAnswer = viewModel.answerFlashcard(FlashcardAnswer.wrong);
+      await firstAnswer;
+      await secondAnswer;
+
+      // The session was only reloaded once
+      verify(navigationService.replaceWith(
+        any,
+        arguments: anyNamed('arguments'),
+      )).called(1);
     });
 
-    test('Pending answer for a flashcard not in the new session is ignored',
-        () async {
+    test('Expired session is reloaded without answering a flashcard', () async {
       final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
 
-      // Call initialize with a pending answer for a flashcard outside the set
-      var viewModel = FlashcardsViewModel(
-        flashcardSet,
-        null,
-        pendingAnswer: PendingFlashcardAnswer(
-          getVocab3().id,
-          DictionaryItemType.vocab,
-          FlashcardAnswer.correct,
-        ),
-        randomSeed: 123,
-      );
+      final navigationService = getAndRegisterNavigationService();
+      final dialogService = getAndRegisterDialogService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.futureToRun();
 
+      // Move the session start back so the session has expired
+      viewModel.sessionDateTime =
+          viewModel.sessionDateTime.subtract(const Duration(days: 1));
+
+      await viewModel.reloadSessionIfExpired();
+
+      // The user was told about the reload and the session was restarted
+      verify(dialogService.showCustomDialog(
+        variant: DialogType.info,
+        title: 'Reload flashcards',
+        description: anyNamed('description'),
+        mainButtonTitle: anyNamed('mainButtonTitle'),
+        barrierDismissible: true,
+      )).called(1);
+      verify(navigationService.replaceWith(
+        any,
+        arguments: anyNamed('arguments'),
+      )).called(1);
+
+      // The session was left untouched
       expect(viewModel.activeFlashcards.length, 2);
       expect(viewModel.canUndo, false);
       expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+    });
+
+    test('Session that has not expired is not reloaded', () async {
+      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
+
+      final navigationService = getAndRegisterNavigationService();
+      final dialogService = getAndRegisterDialogService();
+
+      // Call initialize
+      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+      await viewModel.futureToRun();
+
+      await viewModel.reloadSessionIfExpired();
+
+      verifyNever(dialogService.showCustomDialog(
+        variant: DialogType.info,
+        title: 'Reload flashcards',
+        description: anyNamed('description'),
+        mainButtonTitle: anyNamed('mainButtonTitle'),
+        barrierDismissible: true,
+      ));
+      verifyNever(navigationService.replaceWith(
+        any,
+        arguments: anyNamed('arguments'),
+      ));
     });
 
     test('Undo the answer that finished the due flashcards', () async {

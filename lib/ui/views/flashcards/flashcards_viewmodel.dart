@@ -21,8 +21,6 @@ class FlashcardsViewModel extends FutureViewModel {
 
   final FlashcardSet flashcardSet;
   FlashcardStartMode? startMode;
-  // Answer given right as the previous session rolled over into today
-  final PendingFlashcardAnswer? pendingAnswer;
 
   late final FlashcardSetReport flashcardSetReport;
 
@@ -61,11 +59,11 @@ class FlashcardsViewModel extends FutureViewModel {
   }
 
   bool _reportDialogShown = false;
+  bool _reloadingSession = false;
 
   FlashcardsViewModel(
     this.flashcardSet,
     this.startMode, {
-    this.pendingAnswer,
     int? randomSeed,
   }) : _random = Random(randomSeed);
 
@@ -193,29 +191,12 @@ class FlashcardsViewModel extends FutureViewModel {
     }
 
     await _prepareFlashcards(initial: true);
-
-    await _applyPendingAnswer();
   }
 
   Future<void> answerFlashcard(FlashcardAnswer answer) async {
     if (activeFlashcards.isEmpty) return;
 
-    if (usingSpacedRepetition) {
-      // Reload session if survived into following day (allow for last minute completion)
-      final now = DateTime.now();
-      if (sessionDateTime.isDifferentDay(now) &&
-          (now.hour > 3 || now.difference(sessionDateTime).inDays > 0)) {
-        // Leave this session untouched by the answer and hand the answer to the
-        // new session instead so that the day change is a clean break
-        return _reloadSession(
-          pendingAnswer: PendingFlashcardAnswer(
-            activeFlashcards[0].id,
-            activeFlashcards[0].type,
-            answer,
-          ),
-        );
-      }
-    }
+    if (_sessionExpired) return _reloadSession();
 
     // Remove current flashcard from active list
     final currentFlashcard = activeFlashcards.removeAt(0);
@@ -687,35 +668,41 @@ class FlashcardsViewModel extends FutureViewModel {
 
     final flashcard = activeFlashcards[0];
     if (flashcard is Vocab) {
-      _navigationService.navigateTo(
+      await _navigationService.navigateTo(
         Routes.vocabView,
         arguments: VocabViewArguments(vocab: flashcard),
       );
     } else if (flashcard is Kanji) {
-      _navigationService.navigateTo(
+      await _navigationService.navigateTo(
         Routes.kanjiView,
         arguments: KanjiViewArguments(kanji: flashcard),
       );
     } else {
-      _navigationService.navigateTo(
+      await _navigationService.navigateTo(
         Routes.grammarView,
         arguments: GrammarViewArguments(grammar: flashcard as Grammar),
       );
     }
+
+    reloadSessionIfExpired();
   }
 
   void openFlashcardSetInfo() async {
-    _navigationService.navigateTo(
+    await _navigationService.navigateTo(
       Routes.flashcardSetInfoView,
       arguments: FlashcardSetInfoViewArguments(flashcardSet: flashcardSet),
     );
+
+    reloadSessionIfExpired();
   }
 
   void openKanji(Kanji kanji) async {
-    _navigationService.navigateTo(
+    await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
     );
+
+    reloadSessionIfExpired();
   }
 
   Future<void> _loadVocabFlashcardKanji(Vocab vocab) async {
@@ -749,23 +736,23 @@ class FlashcardsViewModel extends FutureViewModel {
     }
   }
 
-  Future<void> _applyPendingAnswer() async {
-    final pending = pendingAnswer;
-    if (pending == null) return;
-
-    // The flashcard is not guaranteed to be part of the new session, such as a
-    // started flashcard held back until the due flashcards are finished
-    final index = activeFlashcards.indexWhere((flashcard) =>
-        flashcard.id == pending.flashcardId &&
-        flashcard.type == pending.flashcardType);
-    if (index == -1) return;
-
-    // Move to the front of the active list so it is answered like any other flashcard
-    activeFlashcards.insert(0, activeFlashcards.removeAt(index));
-    await answerFlashcard(pending.answer);
+  // The session has survived into the following day
+  // (allow for last minute completion)
+  bool get _sessionExpired {
+    if (!_usingSpacedRepetition || allFlashcards == null) return false;
+    final now = DateTime.now();
+    return sessionDateTime.isDifferentDay(now) &&
+        (now.hour > 3 || now.difference(sessionDateTime).inDays > 0);
   }
 
-  Future<void> _reloadSession({PendingFlashcardAnswer? pendingAnswer}) async {
+  Future<void> reloadSessionIfExpired() async {
+    if (_sessionExpired) return _reloadSession();
+  }
+
+  Future<void> _reloadSession() async {
+    if (_reloadingSession) return;
+    _reloadingSession = true;
+
     await _dialogService.showCustomDialog(
       variant: DialogType.info,
       title: 'Reload flashcards',
@@ -780,7 +767,6 @@ class FlashcardsViewModel extends FutureViewModel {
       arguments: FlashcardsViewArguments(
         flashcardSet: flashcardSet,
         startMode: startMode,
-        pendingAnswer: pendingAnswer,
       ),
     );
   }
@@ -816,18 +802,6 @@ enum FlashcardAnswer {
   repeat,
   correct,
   veryCorrect,
-}
-
-class PendingFlashcardAnswer {
-  final int flashcardId;
-  final DictionaryItemType flashcardType;
-  final FlashcardAnswer answer;
-
-  const PendingFlashcardAnswer(
-    this.flashcardId,
-    this.flashcardType,
-    this.answer,
-  );
 }
 
 class _UndoItem {

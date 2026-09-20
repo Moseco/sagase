@@ -2,6 +2,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:sagase/ui/widgets/app_lifecycle_handler.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -16,7 +17,6 @@ class FlashcardsView extends HookWidget {
   final FlashcardSet flashcardSet;
   final FlashcardStartMode? startMode;
   final int? randomSeed;
-  final PendingFlashcardAnswer? pendingAnswer;
 
   final answersKey = GlobalKey();
 
@@ -24,7 +24,6 @@ class FlashcardsView extends HookWidget {
     this.flashcardSet, {
     this.startMode,
     this.randomSeed,
-    this.pendingAnswer,
     super.key,
   });
 
@@ -36,7 +35,6 @@ class FlashcardsView extends HookWidget {
       viewModelBuilder: () => FlashcardsViewModel(
         flashcardSet,
         startMode,
-        pendingAnswer: pendingAnswer,
         randomSeed: randomSeed,
       ),
       fireOnViewModelReadyOnce: true,
@@ -66,132 +64,138 @@ class FlashcardsView extends HookWidget {
           }
         }
       },
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          systemOverlayStyle: Theme.of(context).brightness == Brightness.light
-              ? const SystemUiOverlayStyle(
-                  statusBarIconBrightness: Brightness.dark,
-                  statusBarBrightness: Brightness.light,
-                )
-              : null,
-          iconTheme: Theme.of(context).brightness == Brightness.light
-              ? const IconThemeData(color: Colors.black)
-              : null,
-          actions: [
-            IconButton(
-              onPressed: viewModel.openFlashcardSetInfo,
-              icon: const Icon(Icons.query_stats),
-            ),
-          ],
-        ),
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              const _ProgressIndicator(),
-              _Flashcards(
-                flashcardDeckController: flashcardDeckController,
-                flipCardController: flipCardController,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                child: IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: viewModel.openFlashcardItem,
-                        icon: const Icon(Icons.info_outline),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: flipCardController.flip,
-                          onLongPress: () {},
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: viewModel.canUndo
-                            ? () {
-                                flipCardController
-                                    .flipWithoutAnimation(CardSide.front);
-                                viewModel.undo();
-                                flashcardDeckController.undoSwipe();
-                              }
-                            : null,
-                        icon: const Icon(Icons.undo),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 8,
-                margin: EdgeInsets.only(
-                  left: 8,
-                  right: 8,
-                  bottom: 8 + MediaQuery.of(context).padding.bottom * 1.2,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Row(
-                    key: answersKey,
-                    mainAxisSize: MainAxisSize.max,
-                    children: viewModel.usingSpacedRepetition
-                        ? [
-                            _FlashcardAnswerButton(
-                              icon: Icons.close,
-                              color: Colors.red,
-                              onTap: () => flashcardDeckController.swipeWrong(),
-                              newInterval: viewModel
-                                  .getNewInterval(FlashcardAnswer.wrong),
-                            ),
-                            _FlashcardAnswerButton(
-                              icon: Icons.refresh,
-                              color: Colors.yellow,
-                              onTap: () =>
-                                  flashcardDeckController.swipeRepeat(),
-                              newInterval: viewModel
-                                  .getNewInterval(FlashcardAnswer.repeat),
-                            ),
-                            _FlashcardAnswerButton(
-                              icon: Icons.check,
-                              color: Colors.green,
-                              onTap: () =>
-                                  flashcardDeckController.swipeCorrect(),
-                              newInterval: viewModel
-                                  .getNewInterval(FlashcardAnswer.correct),
-                            ),
-                            _FlashcardAnswerButton(
-                              icon: Icons.done_all,
-                              color: Colors.blue,
-                              onTap: () =>
-                                  flashcardDeckController.swipeVeryCorrect(),
-                              newInterval: viewModel
-                                  .getNewInterval(FlashcardAnswer.veryCorrect),
-                            ),
-                          ]
-                        : [
-                            _FlashcardAnswerButton(
-                              icon: Icons.close,
-                              color: Colors.red,
-                              onTap: () => flashcardDeckController.swipeWrong(),
-                            ),
-                            _FlashcardAnswerButton(
-                              icon: Icons.check,
-                              color: Colors.green,
-                              onTap: () =>
-                                  flashcardDeckController.swipeCorrect(),
-                            ),
-                          ],
-                  ),
-                ),
+      builder: (context, viewModel, child) => AppLifecycleHandler(
+        onResumed: viewModel.reloadSessionIfExpired,
+        onlyWhenCurrentRoute: true,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            systemOverlayStyle: Theme.of(context).brightness == Brightness.light
+                ? const SystemUiOverlayStyle(
+                    statusBarIconBrightness: Brightness.dark,
+                    statusBarBrightness: Brightness.light,
+                  )
+                : null,
+            iconTheme: Theme.of(context).brightness == Brightness.light
+                ? const IconThemeData(color: Colors.black)
+                : null,
+            actions: [
+              IconButton(
+                onPressed: viewModel.openFlashcardSetInfo,
+                icon: const Icon(Icons.query_stats),
               ),
             ],
+          ),
+          body: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                const _ProgressIndicator(),
+                _Flashcards(
+                  flashcardDeckController: flashcardDeckController,
+                  flipCardController: flipCardController,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: viewModel.openFlashcardItem,
+                          icon: const Icon(Icons.info_outline),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: flipCardController.flip,
+                            onLongPress: () {},
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: viewModel.canUndo
+                              ? () {
+                                  flipCardController
+                                      .flipWithoutAnimation(CardSide.front);
+                                  viewModel.undo();
+                                  flashcardDeckController.undoSwipe();
+                                }
+                              : null,
+                          icon: const Icon(Icons.undo),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Card(
+                  elevation: 8,
+                  margin: EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    bottom: 8 + MediaQuery.of(context).padding.bottom * 1.2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      key: answersKey,
+                      mainAxisSize: MainAxisSize.max,
+                      children: viewModel.usingSpacedRepetition
+                          ? [
+                              _FlashcardAnswerButton(
+                                icon: Icons.close,
+                                color: Colors.red,
+                                onTap: () =>
+                                    flashcardDeckController.swipeWrong(),
+                                newInterval: viewModel
+                                    .getNewInterval(FlashcardAnswer.wrong),
+                              ),
+                              _FlashcardAnswerButton(
+                                icon: Icons.refresh,
+                                color: Colors.yellow,
+                                onTap: () =>
+                                    flashcardDeckController.swipeRepeat(),
+                                newInterval: viewModel
+                                    .getNewInterval(FlashcardAnswer.repeat),
+                              ),
+                              _FlashcardAnswerButton(
+                                icon: Icons.check,
+                                color: Colors.green,
+                                onTap: () =>
+                                    flashcardDeckController.swipeCorrect(),
+                                newInterval: viewModel
+                                    .getNewInterval(FlashcardAnswer.correct),
+                              ),
+                              _FlashcardAnswerButton(
+                                icon: Icons.done_all,
+                                color: Colors.blue,
+                                onTap: () =>
+                                    flashcardDeckController.swipeVeryCorrect(),
+                                newInterval: viewModel.getNewInterval(
+                                    FlashcardAnswer.veryCorrect),
+                              ),
+                            ]
+                          : [
+                              _FlashcardAnswerButton(
+                                icon: Icons.close,
+                                color: Colors.red,
+                                onTap: () =>
+                                    flashcardDeckController.swipeWrong(),
+                              ),
+                              _FlashcardAnswerButton(
+                                icon: Icons.check,
+                                color: Colors.green,
+                                onTap: () =>
+                                    flashcardDeckController.swipeCorrect(),
+                              ),
+                            ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
