@@ -97,7 +97,6 @@ void main() {
       expect(pairs[1].writing, 'カード');
 
       pairs = service.createRubyTextPairs('近所付き合い', 'きんじょづきあい');
-      print(pairs[0].writing);
       expect(pairs.length, 4);
       expect(pairs[0].writing, '近所付');
       expect(pairs[0].reading, 'きんじょづ');
