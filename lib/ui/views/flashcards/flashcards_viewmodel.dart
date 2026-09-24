@@ -482,6 +482,8 @@ class FlashcardsViewModel extends FutureViewModel {
   Future<void> undo() async {
     if (_undoList.isEmpty) return;
 
+    if (_sessionExpired) return _reloadSession();
+
     // Current card to go back to
     final current = _undoList.removeLast();
 

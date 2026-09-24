@@ -1139,6 +1139,27 @@ void main() {
         verify(reloadNavigation()).called(1);
       });
 
+      test('Session rollover discards the undo and reloads the session',
+          () async {
+        final flashcard = viewModel.activeFlashcards[0];
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+        expireSession();
+
+        await viewModel.undo();
+
+        // The answer from the previous day was not undone
+        expect(viewModel.activeFlashcards.length, 1);
+        expect(viewModel.activeFlashcards[0], isNot(flashcard));
+        expect(viewModel.canUndo, true);
+        expect(flashcard.spacedRepetitionData!.repetitions, 3);
+        expect(flashcard.spacedRepetitionData!.totalAnswers, 6);
+        expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 1);
+
+        // The user was told about the reload and the session was restarted
+        verify(reloadDialog()).called(1);
+        verify(reloadNavigation()).called(1);
+      });
+
       test('Answering again during the session rollover is ignored', () async {
         expireSession();
 
