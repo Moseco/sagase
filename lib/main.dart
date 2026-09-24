@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: StackedService.navigatorKey,
         onGenerateRoute: StackedRouter().onGenerateRoute,
         navigatorObservers: [
+          StackedService.routeObserver,
           FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
         ],
       ),

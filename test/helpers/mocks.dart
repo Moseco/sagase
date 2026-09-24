@@ -13,6 +13,8 @@ import 'package:sagase/utils/constants.dart' as constants;
 import 'dictionary_service_helper.dart';
 import 'mocks.mocks.dart';
 
+export 'mocks.mocks.dart';
+
 @GenerateMocks([], customMocks: [
   MockSpec<NavigationService>(onMissingStub: OnMissingStub.returnDefault),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.throwException),
@@ -25,11 +27,14 @@ import 'mocks.mocks.dart';
   MockSpec<DigitalInkService>(onMissingStub: OnMissingStub.throwException),
   MockSpec<DownloadService>(onMissingStub: OnMissingStub.throwException),
 ])
-MockNavigationService getAndRegisterNavigationService() {
+MockNavigationService getAndRegisterNavigationService({
+  String currentRoute = '',
+}) {
   _removeRegistrationIfExists<NavigationService>();
   final service = MockNavigationService();
 
   when(service.back()).thenReturn(false);
+  when(service.currentRoute).thenReturn(currentRoute);
 
   locator.registerSingleton<NavigationService>(service);
   return service;

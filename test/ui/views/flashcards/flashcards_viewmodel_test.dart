@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.dialogs.dart';
+import 'package:sagase/app/app.router.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
 import 'package:sagase/utils/date_time_utils.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 import '../../../helpers/common/vocab_data.dart';
 import '../../../helpers/mocks.dart';
@@ -842,8 +844,6 @@ void main() {
       flashcardSet.myDictionaryLists.add(dictionaryList.id);
       await dictionaryService.updateFlashcardSet(flashcardSet);
 
-      getAndRegisterNavigationService();
-
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.futureToRun();
@@ -887,8 +887,6 @@ void main() {
       flashcardSet.myDictionaryLists.add(dictionaryList.id);
       await dictionaryService.updateFlashcardSet(flashcardSet);
 
-      getAndRegisterNavigationService();
-
       // Call initialize
       var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
       await viewModel.futureToRun();
@@ -907,137 +905,6 @@ void main() {
       expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
       expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
       expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
-    });
-
-    test('Session rollover discards the answer and reloads the session',
-        () async {
-      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
-
-      final navigationService = getAndRegisterNavigationService();
-      final dialogService = getAndRegisterDialogService();
-
-      // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.futureToRun();
-
-      expect(viewModel.activeFlashcards.length, 2);
-      final flashcard = viewModel.activeFlashcards[0];
-
-      // Move the session start back so the next answer rolls the session over
-      viewModel.sessionDateTime =
-          viewModel.sessionDateTime.subtract(const Duration(days: 1));
-
-      await viewModel.answerFlashcard(FlashcardAnswer.correct);
-
-      // Nothing about the answer was applied to this session
-      expect(viewModel.activeFlashcards.length, 2);
-      expect(viewModel.activeFlashcards[0], flashcard);
-      expect(viewModel.canUndo, false);
-      expect(flashcard.spacedRepetitionData!.interval, 2);
-      expect(flashcard.spacedRepetitionData!.repetitions, 2);
-      expect(flashcard.spacedRepetitionData!.totalAnswers, 5);
-      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
-      expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
-      expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
-
-      // The user was told about the reload and the session was restarted
-      verify(dialogService.showCustomDialog(
-        variant: DialogType.info,
-        title: 'Reload flashcards',
-        description: anyNamed('description'),
-        mainButtonTitle: anyNamed('mainButtonTitle'),
-        barrierDismissible: true,
-      )).called(1);
-      verify(navigationService.replaceWith(
-        any,
-        arguments: anyNamed('arguments'),
-      )).called(1);
-    });
-
-    test('Answering again during the session rollover is ignored', () async {
-      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
-
-      final navigationService = getAndRegisterNavigationService();
-
-      // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.futureToRun();
-
-      // Move the session start back so the next answer rolls the session over
-      viewModel.sessionDateTime =
-          viewModel.sessionDateTime.subtract(const Duration(days: 1));
-
-      // Answer again before the reload finishes
-      final firstAnswer = viewModel.answerFlashcard(FlashcardAnswer.correct);
-      final secondAnswer = viewModel.answerFlashcard(FlashcardAnswer.wrong);
-      await firstAnswer;
-      await secondAnswer;
-
-      // The session was only reloaded once
-      verify(navigationService.replaceWith(
-        any,
-        arguments: anyNamed('arguments'),
-      )).called(1);
-    });
-
-    test('Expired session is reloaded without answering a flashcard', () async {
-      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
-
-      final navigationService = getAndRegisterNavigationService();
-      final dialogService = getAndRegisterDialogService();
-
-      // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.futureToRun();
-
-      // Move the session start back so the session has expired
-      viewModel.sessionDateTime =
-          viewModel.sessionDateTime.subtract(const Duration(days: 1));
-
-      await viewModel.reloadSessionIfExpired();
-
-      // The user was told about the reload and the session was restarted
-      verify(dialogService.showCustomDialog(
-        variant: DialogType.info,
-        title: 'Reload flashcards',
-        description: anyNamed('description'),
-        mainButtonTitle: anyNamed('mainButtonTitle'),
-        barrierDismissible: true,
-      )).called(1);
-      verify(navigationService.replaceWith(
-        any,
-        arguments: anyNamed('arguments'),
-      )).called(1);
-
-      // The session was left untouched
-      expect(viewModel.activeFlashcards.length, 2);
-      expect(viewModel.canUndo, false);
-      expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
-    });
-
-    test('Session that has not expired is not reloaded', () async {
-      final flashcardSet = await _setUpDueVocabFlashcardSet(dictionaryService);
-
-      final navigationService = getAndRegisterNavigationService();
-      final dialogService = getAndRegisterDialogService();
-
-      // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.futureToRun();
-
-      await viewModel.reloadSessionIfExpired();
-
-      verifyNever(dialogService.showCustomDialog(
-        variant: DialogType.info,
-        title: 'Reload flashcards',
-        description: anyNamed('description'),
-        mainButtonTitle: anyNamed('mainButtonTitle'),
-        barrierDismissible: true,
-      ));
-      verifyNever(navigationService.replaceWith(
-        any,
-        arguments: anyNamed('arguments'),
-      ));
     });
 
     test('Undo the answer that finished the due flashcards', () async {
@@ -1172,6 +1039,164 @@ void main() {
       fetchedVocab =
           await dictionaryService.getVocab(1, frontType: FrontType.japanese);
       expect(fetchedVocab.spacedRepetitionData!.dueDate, null);
+    });
+
+    group('Session reload', () {
+      late MockNavigationService navigationService;
+      late MockDialogService dialogService;
+      late FlashcardsViewModel viewModel;
+
+      setUp(() async {
+        navigationService = getAndRegisterNavigationService(
+          currentRoute: Routes.flashcardsView,
+        );
+        dialogService = getAndRegisterDialogService();
+
+        await dictionaryService.setSpacedRepetitionData(
+            SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab1(), frontType: FrontType.japanese)
+                .copyWith(
+                    interval: 2,
+                    repetitions: 2,
+                    easeFactor: 2.5,
+                    dueDate: DateTime.now().toInt(),
+                    totalAnswers: 5));
+        await dictionaryService.setSpacedRepetitionData(
+            SpacedRepetitionData.initial(
+                    dictionaryItem: getVocab2(), frontType: FrontType.japanese)
+                .copyWith(
+                    interval: 2,
+                    repetitions: 2,
+                    easeFactor: 2.5,
+                    dueDate: DateTime.now().toInt(),
+                    totalAnswers: 5));
+
+        // Create dictionary list to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab1());
+        await dictionaryService.addToMyDictionaryList(
+            dictionaryList, getVocab2());
+
+        // Create flashcard set and assign list
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet);
+
+        // Call initialize
+        viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+      });
+
+      // Move the session start back so the session has expired
+      void expireSession() {
+        viewModel.sessionDateTime =
+            viewModel.sessionDateTime.subtract(const Duration(days: 1));
+      }
+
+      Future<DialogResponse?> reloadDialog() => dialogService.showCustomDialog(
+            variant: DialogType.info,
+            title: 'Reload flashcards',
+            description: anyNamed('description'),
+            mainButtonTitle: anyNamed('mainButtonTitle'),
+            barrierDismissible: true,
+          );
+
+      Future<dynamic>? reloadNavigation() => navigationService.replaceWith(
+            Routes.flashcardsView,
+            arguments: anyNamed('arguments'),
+            preventDuplicates: false,
+          );
+
+      test('Session that has not expired is not reloaded', () async {
+        await viewModel.reloadSessionIfExpired();
+
+        verifyNever(reloadDialog());
+        verifyNever(reloadNavigation());
+      });
+
+      test('Session rollover discards the answer and reloads the session',
+          () async {
+        final flashcard = viewModel.activeFlashcards[0];
+        expireSession();
+
+        await viewModel.answerFlashcard(FlashcardAnswer.correct);
+
+        // Nothing about the answer was applied to this session
+        expect(viewModel.activeFlashcards.length, 2);
+        expect(viewModel.activeFlashcards[0], flashcard);
+        expect(viewModel.canUndo, false);
+        expect(flashcard.spacedRepetitionData!.interval, 2);
+        expect(flashcard.spacedRepetitionData!.repetitions, 2);
+        expect(flashcard.spacedRepetitionData!.totalAnswers, 5);
+        expect(viewModel.flashcardSetReport.dueFlashcardsCompleted, 0);
+        expect(viewModel.flashcardSetReport.dueFlashcardsGotWrong, 0);
+        expect(viewModel.flashcardSetReport.newFlashcardsCompleted, 0);
+
+        // The user was told about the reload and the session was restarted
+        verify(reloadDialog()).called(1);
+        verify(reloadNavigation()).called(1);
+      });
+
+      test('Answering again during the session rollover is ignored', () async {
+        expireSession();
+
+        // Answer again before the reload finishes
+        await Future.wait([
+          viewModel.answerFlashcard(FlashcardAnswer.correct),
+          viewModel.answerFlashcard(FlashcardAnswer.wrong),
+        ]);
+
+        verify(reloadNavigation()).called(1);
+      });
+
+      test('Expired session is reloaded without answering a flashcard',
+          () async {
+        expireSession();
+
+        await viewModel.reloadSessionIfExpired();
+
+        verify(reloadDialog()).called(1);
+        verify(reloadNavigation()).called(1);
+      });
+
+      test('Expired session is only reloaded while the flashcards are on top',
+          () async {
+        bool onTop = false;
+        when(navigationService.currentRoute).thenAnswer(
+            (_) => onTop ? Routes.flashcardsView : Routes.vocabView);
+        expireSession();
+
+        // Another view is on top of the flashcards
+        await viewModel.reloadSessionIfExpired();
+
+        verifyNever(reloadDialog());
+        verifyNever(reloadNavigation());
+
+        // Back on the flashcards the session is reloaded
+        onTop = true;
+        await viewModel.reloadSessionIfExpired();
+
+        verify(reloadDialog()).called(1);
+        verify(reloadNavigation()).called(1);
+      });
+
+      test(
+          'Expired session is not reloaded when the flashcards are left during the dialog',
+          () async {
+        // Return to home while the dialog is open (e.g. importing a file)
+        when(reloadDialog()).thenAnswer((_) async {
+          when(navigationService.currentRoute).thenReturn(Routes.homeView);
+          return null;
+        });
+        expireSession();
+
+        await viewModel.reloadSessionIfExpired();
+
+        verify(reloadDialog()).called(1);
+        verifyNever(reloadNavigation());
+      });
     });
 
     test('Multiple wrong answers in a row', () async {
@@ -2297,33 +2322,4 @@ void main() {
       expect(viewModel.newFlashcards.length, 1);
     });
   });
-}
-
-// Creates a flashcard set containing two vocab flashcards that are due today
-Future<FlashcardSet> _setUpDueVocabFlashcardSet(
-    DictionaryService dictionaryService) async {
-  for (var vocab in [getVocab1(), getVocab2()]) {
-    await dictionaryService.setSpacedRepetitionData(
-        SpacedRepetitionData.initial(
-                dictionaryItem: vocab, frontType: FrontType.japanese)
-            .copyWith(
-                interval: 2,
-                repetitions: 2,
-                easeFactor: 2.5,
-                dueDate: DateTime.now().toInt(),
-                totalAnswers: 5));
-  }
-
-  // Create dictionary list to use
-  final dictionaryList =
-      await dictionaryService.createMyDictionaryList('list1');
-  await dictionaryService.addToMyDictionaryList(dictionaryList, getVocab1());
-  await dictionaryService.addToMyDictionaryList(dictionaryList, getVocab2());
-
-  // Create flashcard set and assign list
-  final flashcardSet = await dictionaryService.createFlashcardSet('name');
-  flashcardSet.myDictionaryLists.add(dictionaryList.id);
-  await dictionaryService.updateFlashcardSet(flashcardSet);
-
-  return flashcardSet;
 }

@@ -749,8 +749,11 @@ class FlashcardsViewModel extends FutureViewModel {
     if (_sessionExpired) return _reloadSession();
   }
 
+  bool get _isCurrentRoute =>
+      _navigationService.currentRoute == Routes.flashcardsView;
+
   Future<void> _reloadSession() async {
-    if (_reloadingSession) return;
+    if (_reloadingSession || !_isCurrentRoute) return;
     _reloadingSession = true;
 
     await _dialogService.showCustomDialog(
@@ -762,12 +765,18 @@ class FlashcardsViewModel extends FutureViewModel {
       barrierDismissible: true,
     );
 
+    if (!_isCurrentRoute) {
+      _reloadingSession = false;
+      return;
+    }
+
     _navigationService.replaceWith(
       Routes.flashcardsView,
       arguments: FlashcardsViewArguments(
         flashcardSet: flashcardSet,
         startMode: startMode,
       ),
+      preventDuplicates: false,
     );
   }
 

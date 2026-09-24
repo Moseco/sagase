@@ -40,6 +40,7 @@ class DictionaryItemsBottomSheet extends StatelessWidget {
               onPressed: () => locator<NavigationService>().navigateTo(
                 Routes.vocabView,
                 arguments: VocabViewArguments(vocab: current),
+                preventDuplicates: false,
               ),
             );
           } else if (current is Kanji) {
@@ -48,6 +49,7 @@ class DictionaryItemsBottomSheet extends StatelessWidget {
               onPressed: () => locator<NavigationService>().navigateTo(
                 Routes.kanjiView,
                 arguments: KanjiViewArguments(kanji: current),
+                preventDuplicates: false,
               ),
             );
           } else {
@@ -56,6 +58,7 @@ class DictionaryItemsBottomSheet extends StatelessWidget {
               onPressed: () => locator<NavigationService>().navigateTo(
                 Routes.properNounView,
                 arguments: ProperNounViewArguments(properNoun: current),
+                preventDuplicates: false,
               ),
             );
           }

@@ -99,6 +99,8 @@ class GrammarViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.grammarView,
+      preventDuplicates: false,
     );
   }
 
@@ -111,6 +113,8 @@ class GrammarViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.grammarView,
+      preventDuplicates: false,
     );
   }
 }

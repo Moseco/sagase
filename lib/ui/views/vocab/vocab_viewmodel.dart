@@ -183,7 +183,10 @@ class VocabViewModel extends FutureViewModel {
       _startWatcher();
       if (reference.ids!.length == 1) {
         final vocab = await _dictionaryService.getVocab(reference.ids![0]);
-        await _navigationService.navigateToVocabView(vocab: vocab);
+        await _navigationService.navigateToVocabView(
+          vocab: vocab,
+          preventDuplicates: false,
+        );
       } else {
         final vocabList = await _dictionaryService.getVocabList(reference.ids!);
         await _bottomSheetService.showCustomSheet(
@@ -219,6 +222,8 @@ class VocabViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.vocabView,
+      preventDuplicates: false,
     );
   }
 
@@ -231,6 +236,8 @@ class VocabViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.vocabView,
+      preventDuplicates: false,
     );
   }
 

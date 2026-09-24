@@ -84,6 +84,7 @@ class KanjiViewModel extends FutureViewModel {
     await _navigationService.navigateTo(
       Routes.kanjiView,
       arguments: KanjiViewArguments(kanji: kanji),
+      preventDuplicates: false,
     );
   }
 
@@ -173,6 +174,8 @@ class KanjiViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.kanjiView,
+      preventDuplicates: false,
     );
   }
 
@@ -185,6 +188,8 @@ class KanjiViewModel extends FutureViewModel {
       ),
       transitionStyle: Transition.noTransition,
       popGesture: Platform.isIOS,
+      routeName: Routes.kanjiView,
+      preventDuplicates: false,
     );
   }
 
