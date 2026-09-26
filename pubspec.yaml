@@ -7,7 +7,7 @@ version: 1.5.2+29
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-  flutter: 3.44.4
+  flutter: 3.44.9
 
 isar_version: &isar_version 3.3.2
 
@@ -20,7 +20,7 @@ dependencies:
   sagase_dictionary:
     git:
       url: https://github.com/Moseco/sagase_dictionary
-      ref: '8249b97'
+      ref: 'd8fb32d'
 
   # State management
   stacked: ^3.5.0
@@ -30,9 +30,9 @@ dependencies:
   stacked_themes: ^0.3.15
 
   # Firebase
-  firebase_core: 4.11.0
-  firebase_analytics: 12.4.3
-  firebase_crashlytics: 5.2.4
+  firebase_core: ^4.13.0
+  firebase_analytics: ^12.4.6
+  firebase_crashlytics: ^5.2.7
 
   # UI
   google_nav_bar: ^5.0.6
@@ -65,8 +65,8 @@ dependencies:
   kana_kit: ^2.1.1
   async: ^2.11.0
   archive: ^4.0.5
-  google_mlkit_digital_ink_recognition: ^0.14.2
-  google_mlkit_text_recognition: ^0.15.1
+  google_mlkit_digital_ink_recognition: ^0.16.1
+  google_mlkit_text_recognition: ^0.17.1
   intl: ^0.20.2
   shared_preferences: ^2.3.5
   mecab_dart:
