@@ -8,14 +8,14 @@ PODS:
     - Flutter
   - flutter_statusbarcolor_ns (0.0.1):
     - Flutter
-  - google_mlkit_commons (0.11.1):
+  - google_mlkit_commons (0.13.0):
     - Flutter
     - MLKitVision (~> 10.0.0)
-  - google_mlkit_digital_ink_recognition (0.14.2):
+  - google_mlkit_digital_ink_recognition (0.16.1):
     - Flutter
     - google_mlkit_commons
     - GoogleMLKit/DigitalInkRecognition (~> 9.0.0)
-  - google_mlkit_text_recognition (0.15.1):
+  - google_mlkit_text_recognition (0.17.1):
     - Flutter
     - google_mlkit_commons
     - GoogleMLKit/TextRecognition (~> 9.0.0)
@@ -156,9 +156,9 @@ SPEC CHECKSUMS:
   flutter_exif_rotation: 5406455759acacf1f7b1b83e85dbb545340d6e9c
   flutter_keyboard_visibility: 4625131e43015dbbe759d9b20daaf77e0e3f6619
   flutter_statusbarcolor_ns: 28ea17050f37c962fe05a4722a6d43afc4fca76b
-  google_mlkit_commons: a5e4ffae5bc59ea4c7b9025dc72cb6cb79dc1166
-  google_mlkit_digital_ink_recognition: a9f14c9a75bad980ea26f2d3ce277f5963f413ba
-  google_mlkit_text_recognition: b3de5adb786ad7a0fe8e13618387b8d2df0f3c70
+  google_mlkit_commons: b2c0a76e7ef4ff555e70e5d71f21d66ce3d08a97
+  google_mlkit_digital_ink_recognition: f59b44fccf63c628f442540cd7433700025f2201
+  google_mlkit_text_recognition: 5a8cb8b73c765938fb7111de6f5f883b90f15d52
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: b1eee21a41c57704fe72483b15c85cb2c0cd7444
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
