@@ -694,18 +694,20 @@ packages:
   google_mlkit_digital_ink_recognition:
     dependency: "direct main"
     description:
-      name: google_mlkit_digital_ink_recognition
-      sha256: c0483cefaf5671e9b056413a2c8ec67b6f74ee4ac2f31079f5af0808ad339395
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/google_mlkit_digital_ink_recognition"
+      ref: "1083593"
+      resolved-ref: "108359333a05cfefe8f3515b6280d4804749be8d"
+      url: "https://github.com/flutter-ml/google_ml_kit_flutter"
+    source: git
     version: "0.16.1"
   google_mlkit_text_recognition:
     dependency: "direct main"
     description:
-      name: google_mlkit_text_recognition
-      sha256: e13685af5093c8be009a3555909b72a80e10cfe8f97752bcbdf99fa0ccbda810
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/google_mlkit_text_recognition"
+      ref: "1083593"
+      resolved-ref: "108359333a05cfefe8f3515b6280d4804749be8d"
+      url: "https://github.com/flutter-ml/google_ml_kit_flutter"
+    source: git
     version: "0.17.1"
   google_nav_bar:
     dependency: "direct main"

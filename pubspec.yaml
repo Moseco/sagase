@@ -65,8 +65,16 @@ dependencies:
   kana_kit: ^2.1.1
   async: ^2.11.0
   archive: ^4.0.5
-  google_mlkit_digital_ink_recognition: ^0.16.1
-  google_mlkit_text_recognition: ^0.17.1
+  google_mlkit_digital_ink_recognition:
+    git:
+      url: https://github.com/flutter-ml/google_ml_kit_flutter
+      path: packages/google_mlkit_digital_ink_recognition
+      ref: '1083593'
+  google_mlkit_text_recognition:
+    git:
+      url: https://github.com/flutter-ml/google_ml_kit_flutter
+      path: packages/google_mlkit_text_recognition
+      ref: '1083593'
   intl: ^0.20.2
   shared_preferences: ^2.3.5
   mecab_dart:
