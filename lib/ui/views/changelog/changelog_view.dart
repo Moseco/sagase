@@ -72,29 +72,29 @@ class _CurrentChangelog extends StatelessWidget {
             ),
           ),
           Text(
-            'What\'s new in 1.5',
+            'What\'s new in 1.6',
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
           ListTile(
-            leading: Icon(Icons.camera),
-            title: Text('New and improved OCR'),
+            leading: Icon(Icons.menu_book),
+            title: Text('Grammar'),
             subtitle: Text(
-              'Find words in photos right from the search screen',
+              'Learn JLPT-based grammar with meanings, example sentences, and flashcards',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.playlist_add),
-            title: Text('From text to flashcards'),
+            leading: Icon(Icons.extension),
+            title: Text('Kanji component search'),
             subtitle: Text(
-              'Bulk import vocab directly from text or images into your custom lists',
+              'Find kanji by selecting the parts they are made of',
             ),
           ),
           ListTile(
-            leading: Icon(Icons.school),
-            title: Text('More flashcard options'),
+            leading: Icon(Icons.bolt),
+            title: Text('Faster and more flexible search'),
             subtitle: Text(
-              'Keep your studying on track with more options to manage new and due flashcards',
+              'Search is faster and understands more input',
             ),
           ),
         ],
@@ -111,6 +111,18 @@ class _ChangelogHistory extends StatelessWidget {
     return const SizedBox(
       width: double.infinity,
       child: Markdown(data: '''
+# [1.6.0]
+- Added JLPT-based grammar lists with meanings and example sentences
+- Added grammar to flashcards and my lists, including an option to show readings on the front of grammar flashcards
+- Added kanji component search, available from the search keyboard toolbar
+- Added ability to start flashcards directly from a list
+- Added ability to create a new list when adding items to my lists
+- Improved search speed and handling of kana, repetition marks, and wildcards
+- Improved furigana placement
+- Improved reliability of restoring from backup
+- Updated dictionary data
+- Fixed flashcard performance counts being incorrect after undoing answers
+- Fixed undoing an answer when moving on to new flashcards
 # [1.5.2]
 - Added padding to onboarding screen to prevent system UI from covering important elements
 # [1.5.1]

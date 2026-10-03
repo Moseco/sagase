@@ -50,4 +50,4 @@ const isarDatabaseFile = 'default.isar';
 const isarDatabaseLockFile = 'default.isar.lock';
 const ocrImagesDir = 'ocr_images';
 
-const currentChangelogVersion = 5;
+const currentChangelogVersion = 6;
