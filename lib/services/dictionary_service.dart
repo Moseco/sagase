@@ -427,23 +427,39 @@ class DictionaryService {
         );
   }
 
-  Future<void> resetFlashcardSetSpacedRepetitionData(
+  Future<bool> resetFlashcardSetSpacedRepetitionData(
     FlashcardSet flashcardSet,
   ) async {
-    // Get dictionary items for the flashcard set
-    final dictionaryItems = await getFlashcardSetFlashcards(flashcardSet);
+    final previousStreak = flashcardSet.streak;
+    final previousTimestamp = flashcardSet.timestamp;
 
-    // Delete the appropriate spaced repetition data
-    for (var item in dictionaryItems) {
-      await _database.spacedRepetitionDatasDao
-          .deleteSpacedRepetitionData(item, flashcardSet.frontType);
+    try {
+      await _database.transaction(() async {
+        // Get dictionary items for the flashcard set
+        final dictionaryItems = await getFlashcardSetFlashcards(flashcardSet);
+
+        // Delete the appropriate spaced repetition data
+        for (var item in dictionaryItems) {
+          if (item.spacedRepetitionData == null) continue;
+          await _database.spacedRepetitionDatasDao
+              .deleteSpacedRepetitionData(item, flashcardSet.frontType);
+        }
+
+        // Delete flashcard set reports
+        await _database.flashcardSetsDao
+            .deleteFlashcardSetReports(flashcardSet);
+
+        flashcardSet.streak = 0;
+        await updateFlashcardSet(flashcardSet);
+      });
+
+      return true;
+    } catch (_) {
+      // Database changes were rolled back so also restore the flashcard set
+      flashcardSet.streak = previousStreak;
+      flashcardSet.timestamp = previousTimestamp;
+      return false;
     }
-
-    // Delete flashcard set reports
-    await _database.flashcardSetsDao.deleteFlashcardSetReports(flashcardSet);
-
-    flashcardSet.streak = 0;
-    await updateFlashcardSet(flashcardSet);
   }
 
   Future<FlashcardSetReport> createFlashcardSetReport(

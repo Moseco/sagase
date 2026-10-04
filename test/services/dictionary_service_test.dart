@@ -208,6 +208,104 @@ void main() {
       });
     });
 
+    test('resetFlashcardSetSpacedRepetitionData', () async {
+      final dictionaryService = await setUpDictionaryData();
+
+      // Add spaced repetition data for 4 of the 5 vocab in the predefined dictionary list
+      for (int i = 1; i < 5; i++) {
+        await dictionaryService.setSpacedRepetitionData(
+          SpacedRepetitionData.initial(
+            dictionaryItem: await dictionaryService.getVocab(i),
+            frontType: FrontType.japanese,
+          ),
+        );
+      }
+      // Data with a different front type that should not be deleted
+      await dictionaryService.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await dictionaryService.getVocab(1),
+          frontType: FrontType.english,
+        ),
+      );
+      // Data for vocab not in the flashcard set that should not be deleted
+      await dictionaryService.setSpacedRepetitionData(
+        SpacedRepetitionData.initial(
+          dictionaryItem: await dictionaryService.getVocab(6),
+          frontType: FrontType.japanese,
+        ),
+      );
+
+      // Create flashcard set with a streak and report
+      final flashcardSet = await dictionaryService.createFlashcardSet('set');
+      flashcardSet.predefinedDictionaryLists.add(0);
+      flashcardSet.streak = 3;
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+      await dictionaryService.createFlashcardSetReport(
+        flashcardSet,
+        DateTime.now().toInt(),
+      );
+
+      expect(
+        await dictionaryService
+            .resetFlashcardSetSpacedRepetitionData(flashcardSet),
+        true,
+      );
+
+      // Spaced repetition data of the flashcard set was deleted
+      final flashcards =
+          await dictionaryService.getFlashcardSetFlashcards(flashcardSet);
+      expect(flashcards.length, 5);
+      for (final flashcard in flashcards) {
+        expect(flashcard.spacedRepetitionData, null);
+      }
+
+      // Other spaced repetition data was kept
+      expect(
+        (await dictionaryService.getVocab(1, frontType: FrontType.english))
+            .spacedRepetitionData,
+        isNotNull,
+      );
+      expect(
+        (await dictionaryService.getVocab(6, frontType: FrontType.japanese))
+            .spacedRepetitionData,
+        isNotNull,
+      );
+
+      // Reports were deleted and streak was reset
+      expect(
+        await dictionaryService.getRecentFlashcardSetReport(flashcardSet),
+        null,
+      );
+      final flashcardSets = await dictionaryService.getFlashcardSets();
+      expect(flashcardSets.length, 1);
+      expect(flashcardSets[0].streak, 0);
+
+      await dictionaryService.close();
+    });
+
+    test('resetFlashcardSetSpacedRepetitionData - failed reset', () async {
+      final dictionaryService = await setUpDictionaryData();
+
+      final flashcardSet = await dictionaryService.createFlashcardSet('set');
+      flashcardSet.predefinedDictionaryLists.add(0);
+      flashcardSet.streak = 3;
+      await dictionaryService.updateFlashcardSet(flashcardSet);
+      final timestamp = flashcardSet.timestamp;
+
+      // Closing the database makes the reset fail
+      await dictionaryService.close();
+
+      expect(
+        await dictionaryService
+            .resetFlashcardSetSpacedRepetitionData(flashcardSet),
+        false,
+      );
+
+      // Flashcard set was restored
+      expect(flashcardSet.streak, 3);
+      expect(flashcardSet.timestamp, timestamp);
+    });
+
     test('restoreFromBackup', () async {
       final service = await setUpDictionaryData();
 

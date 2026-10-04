@@ -104,7 +104,22 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
     );
 
     if (response != null && response.confirmed) {
-      _dictionaryService.resetFlashcardSetSpacedRepetitionData(flashcardSet);
+      _dialogService.showCustomDialog(
+        variant: DialogType.progressIndicator,
+        title: 'Resetting flashcard set',
+        barrierDismissible: false,
+      );
+
+      final result = await _dictionaryService
+          .resetFlashcardSetSpacedRepetitionData(flashcardSet);
+
+      _dialogService.completeDialog(DialogResponse());
+
+      if (!result) {
+        _snackbarService.showSnackbar(
+          message: 'Failed to reset flashcard set',
+        );
+      }
     }
   }
 
