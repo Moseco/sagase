@@ -8,6 +8,7 @@ import 'package:sagase/ui/views/flashcards/flashcards_viewmodel.dart';
 import 'package:sagase/utils/date_time_utils.dart';
 import 'package:stacked_services/stacked_services.dart';
 
+import '../../../helpers/common/flashcard_set_data.dart';
 import '../../../helpers/common/vocab_data.dart';
 import '../../../helpers/mocks.dart';
 
@@ -2211,79 +2212,158 @@ void main() {
       });
     });
 
-    test('Spread out due flashcards', () async {
-      await dictionaryService.close();
-      dictionaryService =
-          await getAndRegisterRealDictionaryService(vocabToCreate: 305);
-      final dialogService =
-          getAndRegisterDialogService(dialogResponseConfirmed: true);
+    group('Space out due flashcards', () {
+      test('Due flashcards are spaced out', () async {
+        await dictionaryService.close();
+        dictionaryService =
+            await getAndRegisterRealDictionaryService(vocabToCreate: 305);
+        final dialogService =
+            getAndRegisterDialogService(dialogResponseConfirmed: true);
+        final snackbarService = getAndRegisterSnackbarService();
 
-      // Set spaced repetition data for vocab
-      for (int i = 1; i <= 305; i++) {
-        await dictionaryService.setSpacedRepetitionData(
-          SpacedRepetitionData.initial(
-            dictionaryItem: await dictionaryService.getVocab(i),
+        // Set spaced repetition data for vocab
+        for (int i = 1; i <= 305; i++) {
+          await dictionaryService.setSpacedRepetitionData(
+            SpacedRepetitionData.initial(
+              dictionaryItem: await dictionaryService.getVocab(i),
+              frontType: FrontType.japanese,
+            ).copyWith(
+              interval: 1,
+              repetitions: 1,
+              dueDate: DateTime.now().toInt(),
+              totalAnswers: 1,
+            ),
+          );
+        }
+
+        // Create dictionary list to use
+        final dictionaryList =
+            await dictionaryService.createMyDictionaryList('list1');
+        for (int i = 1; i <= 305; i++) {
+          await dictionaryService.addToMyDictionaryList(
+            dictionaryList,
+            await dictionaryService.getVocab(i),
+          );
+        }
+
+        // Create flashcard set and assign lists
+        final flashcardSet = await dictionaryService.createFlashcardSet('name');
+        flashcardSet.timestamp =
+            DateTime.now().subtract(const Duration(days: 7));
+        flashcardSet.myDictionaryLists.add(dictionaryList.id);
+        await dictionaryService.updateFlashcardSet(flashcardSet,
+            updateTimestamp: false);
+        await dictionaryService.createFlashcardSetReport(
+            flashcardSet, flashcardSet.timestamp.toInt());
+
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
+
+        // Verify active flashcards
+        expect(viewModel.activeFlashcards.length, 150);
+
+        // Verify dialog
+        verify(dialogService.showCustomDialog(
+          variant: DialogType.confirmation,
+          title: anyNamed('title'),
+          description: anyNamed('description'),
+          mainButtonTitle: anyNamed('mainButtonTitle'),
+          secondaryButtonTitle: anyNamed('secondaryButtonTitle'),
+          barrierDismissible: true,
+        )).called(1);
+
+        // Progress dialog was closed without showing an error
+        verify(dialogService.completeDialog(any));
+        verifyNever(snackbarService.showSnackbar(message: anyNamed('message')));
+
+        // Load flashcards and verify due dates
+        final flashcards =
+            await dictionaryService.getFlashcardSetFlashcards(flashcardSet);
+        List<int> dueDateCounts = List.filled(14, 0);
+        final now = DateTime.parse(DateTime.now().toInt().toString());
+        for (final flashcard in flashcards) {
+          int difference =
+              DateTime.parse(flashcard.spacedRepetitionData!.dueDate.toString())
+                  .difference(now)
+                  .inDays;
+          dueDateCounts[difference]++;
+        }
+        expect(dueDateCounts[0], 150);
+        expect(dueDateCounts[1], 12);
+        expect(dueDateCounts.last, 11);
+      });
+
+      test('Due flashcards are kept when spacing out fails', () async {
+        // Enough due flashcards to offer spacing them out
+        final flashcards = List.generate(301, (i) {
+          final vocab =
+              Vocab(id: i + 1, pos: null, common: true, frequencyScore: 0)
+                ..readings = [
+                  VocabReading(
+                    id: i + 1,
+                    vocabId: i + 1,
+                    reading: 'よみ$i',
+                    readingRomaji: 'yomi$i',
+                    primaryPair: true,
+                  ),
+                ];
+          vocab.spacedRepetitionData = SpacedRepetitionData.initial(
+            dictionaryItem: vocab,
             frontType: FrontType.japanese,
           ).copyWith(
             interval: 1,
             repetitions: 1,
             dueDate: DateTime.now().toInt(),
             totalAnswers: 1,
+          );
+          return vocab;
+        });
+
+        final mockDictionaryService = getAndRegisterDictionaryService(
+          getFlashcardSetFlashcards: flashcards,
+          createFlashcardSetReport: FlashcardSetReport(
+            id: 0,
+            flashcardSetId: 0,
+            date: DateTime.now().toInt(),
+            dueFlashcardsCompleted: 0,
+            dueFlashcardsGotWrong: 0,
+            newFlashcardsCompleted: 0,
           ),
         );
-      }
+        // Remove a delayed flashcard from the due list before failing
+        when(mockDictionaryService.spaceOutFlashcards(any))
+            .thenAnswer((invocation) async {
+          (invocation.positionalArguments[0] as List<DictionaryItem>)
+              .removeLast();
+          throw Exception('Database error');
+        });
 
-      // Create dictionary list to use
-      final dictionaryList =
-          await dictionaryService.createMyDictionaryList('list1');
-      for (int i = 1; i <= 305; i++) {
-        await dictionaryService.addToMyDictionaryList(
-          dictionaryList,
-          await dictionaryService.getVocab(i),
-        );
-      }
+        final dialogService =
+            getAndRegisterDialogService(dialogResponseConfirmed: true);
+        when(dialogService.completeDialog(any)).thenReturn(null);
 
-      // Create flashcard set and assign lists
-      final flashcardSet = await dictionaryService.createFlashcardSet('name');
-      flashcardSet.timestamp = DateTime.now().subtract(const Duration(days: 7));
-      flashcardSet.myDictionaryLists.add(dictionaryList.id);
-      await dictionaryService.updateFlashcardSet(flashcardSet,
-          updateTimestamp: false);
-      await dictionaryService.createFlashcardSetReport(
-          flashcardSet, flashcardSet.timestamp.toInt());
+        final snackbarService = getAndRegisterSnackbarService();
+        when(snackbarService.showSnackbar(message: anyNamed('message')))
+            .thenReturn(null);
 
-      // Call initialize
-      var viewModel = FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
-      await viewModel.futureToRun();
+        // Previous session was several days ago
+        final flashcardSet = createDefaultFlashcardSet()
+          ..timestamp = DateTime.now().subtract(const Duration(days: 5));
 
-      // Verify active flashcards
-      expect(viewModel.activeFlashcards.length, 150);
+        // Call initialize
+        var viewModel =
+            FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
+        await viewModel.futureToRun();
 
-      // Verify dialog
-      verify(dialogService.showCustomDialog(
-        variant: DialogType.confirmation,
-        title: anyNamed('title'),
-        description: anyNamed('description'),
-        mainButtonTitle: anyNamed('mainButtonTitle'),
-        secondaryButtonTitle: anyNamed('secondaryButtonTitle'),
-        barrierDismissible: true,
-      )).called(1);
-
-      // Load flashcards and verify due dates
-      final flashcards =
-          await dictionaryService.getFlashcardSetFlashcards(flashcardSet);
-      List<int> dueDateCounts = List.filled(14, 0);
-      final now = DateTime.parse(DateTime.now().toInt().toString());
-      for (final flashcard in flashcards) {
-        int difference =
-            DateTime.parse(flashcard.spacedRepetitionData!.dueDate.toString())
-                .difference(now)
-                .inDays;
-        dueDateCounts[difference]++;
-      }
-      expect(dueDateCounts[0], 150);
-      expect(dueDateCounts[1], 12);
-      expect(dueDateCounts.last, 11);
+        // All due flashcards are kept and the error is shown
+        expect(viewModel.activeFlashcards.length, 301);
+        verify(dialogService.completeDialog(any));
+        verify(snackbarService.showSnackbar(
+          message: 'Failed to update flashcards',
+        ));
+      });
     });
 
     test('Do not create flashcard set report if not using spaced repetition',

@@ -289,23 +289,32 @@ class FlashcardSetSettingsViewModel extends FutureViewModel {
         barrierDismissible: false,
       );
 
-      final allFlashcards =
-          await _dictionaryService.getFlashcardSetFlashcards(flashcardSet);
-      final dueFlashcards = <DictionaryItem>[];
+      bool result = true;
+      try {
+        final allFlashcards =
+            await _dictionaryService.getFlashcardSetFlashcards(flashcardSet);
+        final dueFlashcards = <DictionaryItem>[];
 
-      final sessionDateTime = DateTime.now();
-      int todayAsInt = sessionDateTime.toInt();
-      for (var item in allFlashcards) {
-        if (item.spacedRepetitionData != null &&
-            item.spacedRepetitionData!.dueDate! <= todayAsInt) {
-          dueFlashcards.add(item);
+        final sessionDateTime = DateTime.now();
+        int todayAsInt = sessionDateTime.toInt();
+        for (var item in allFlashcards) {
+          final dueDate = item.spacedRepetitionData?.dueDate;
+          if (dueDate != null && dueDate <= todayAsInt) {
+            dueFlashcards.add(item);
+          }
         }
+
+        dueFlashcards.shuffle();
+        await _dictionaryService.spaceOutFlashcards(dueFlashcards);
+      } catch (_) {
+        result = false;
       }
 
-      dueFlashcards.shuffle();
-      await _dictionaryService.spaceOutFlashcards(dueFlashcards);
-
       _dialogService.completeDialog(DialogResponse());
+
+      if (!result) {
+        _snackbarService.showSnackbar(message: 'Failed to update flashcards');
+      }
     }
   }
 }

@@ -18,6 +18,7 @@ class FlashcardsViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _sharedPreferencesService = locator<SharedPreferencesService>();
+  final _snackbarService = locator<SnackbarService>();
 
   final FlashcardSet flashcardSet;
   FlashcardStartMode? startMode;
@@ -176,9 +177,9 @@ class FlashcardsViewModel extends FutureViewModel {
       }
 
       // If user has not done flashcards for several days and has a large
-      // amount due offer to spread them out over next 2 weeks
+      // amount due offer to space them out over next 2 weeks
       if (daysSincePreviousSession > 4 && dueFlashcards.length > 300) {
-        await _spreadOutDueFlashcards();
+        await _spaceOutDueFlashcards();
       }
 
       // Set initial due flashcard count and add flashcards completed today
@@ -782,7 +783,7 @@ class FlashcardsViewModel extends FutureViewModel {
     );
   }
 
-  Future<void> _spreadOutDueFlashcards() async {
+  Future<void> _spaceOutDueFlashcards() async {
     final response = await _dialogService.showCustomDialog(
       variant: DialogType.confirmation,
       title: 'Reduce due flashcards?',
@@ -801,9 +802,22 @@ class FlashcardsViewModel extends FutureViewModel {
       );
 
       dueFlashcards.shuffle(_random);
-      await _dictionaryService.spaceOutFlashcards(dueFlashcards);
+      final allDueFlashcards = List.of(dueFlashcards);
+      bool result = true;
+      try {
+        await _dictionaryService.spaceOutFlashcards(dueFlashcards);
+      } catch (_) {
+        dueFlashcards
+          ..clear()
+          ..addAll(allDueFlashcards);
+        result = false;
+      }
 
       _dialogService.completeDialog(DialogResponse());
+
+      if (!result) {
+        _snackbarService.showSnackbar(message: 'Failed to update flashcards');
+      }
     }
   }
 }
