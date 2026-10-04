@@ -94,7 +94,7 @@ class DictionaryListViewModel extends FutureViewModel {
       arguments: VocabViewArguments(
         vocab: vocab,
         vocabListIndex: index,
-        vocabList: vocabList,
+        vocabList: List.of(vocabList!),
       ),
     );
   }
@@ -105,7 +105,7 @@ class DictionaryListViewModel extends FutureViewModel {
       arguments: KanjiViewArguments(
         kanji: kanji,
         kanjiListIndex: index,
-        kanjiList: kanjiList,
+        kanjiList: List.of(kanjiList!),
       ),
     );
   }
@@ -116,7 +116,7 @@ class DictionaryListViewModel extends FutureViewModel {
       arguments: GrammarViewArguments(
         grammar: grammar,
         grammarListIndex: index,
-        grammarList: grammarList,
+        grammarList: List.of(grammarList!),
       ),
     );
   }
