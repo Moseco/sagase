@@ -7,6 +7,7 @@ import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
 import 'package:sagase/ui/widgets/list_item_loading.dart';
+import 'package:sagase/ui/widgets/list_navigation_scaffold.dart';
 import 'package:sagase/ui/widgets/stroke_order_diagram.dart';
 import 'package:sagase/ui/widgets/vocab_list_item.dart';
 import 'package:stacked/stacked.dart';
@@ -26,23 +27,9 @@ class KanjiView extends StackedView<KanjiViewModel> {
 
   @override
   Widget builder(context, viewModel, child) {
-    return Scaffold(
+    return ListNavigationScaffold(
       appBar: AppBar(
         actions: [
-          if (kanjiList != null)
-            IconButton(
-              onPressed: kanjiListIndex == 0
-                  ? null
-                  : viewModel.navigateToPreviousKanji,
-              icon: const Icon(Icons.chevron_left),
-            ),
-          if (kanjiList != null)
-            IconButton(
-              onPressed: kanjiListIndex! == kanjiList!.length - 1
-                  ? null
-                  : viewModel.navigateToNextKanji,
-              icon: const Icon(Icons.chevron_right),
-            ),
           IconButton(
             onPressed: viewModel.openMyDictionaryListsSheet,
             icon: Icon(
@@ -288,11 +275,15 @@ class KanjiView extends StackedView<KanjiViewModel> {
                   ),
                 ),
               if (kanji.compounds != null) const _Compounds(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
+              const ListNavigationSpacer(),
             ],
           ),
         ),
       ),
+      index: kanjiListIndex,
+      length: kanjiList?.length,
+      onPrevious: viewModel.navigateToPreviousKanji,
+      onNext: viewModel.navigateToNextKanji,
     );
   }
 }
