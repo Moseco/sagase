@@ -72,34 +72,67 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!snapshot.hasData) {
       return Center(child: CircularProgressIndicator());
-    } else if (snapshot.data!.isEmpty) {
-      return Center(child: Text('No history'));
     } else {
-      return ListView.separated(
-        separatorBuilder: (_, __) => const Divider(
-          height: 1,
-          indent: 8,
-          endIndent: 8,
-        ),
-        padding: EdgeInsets.zero,
-        itemCount: snapshot.data!.length,
-        itemBuilder: (context, index) {
-          final current = snapshot.data![index];
-          return Dismissible(
-            key: ObjectKey(current),
-            background: Container(color: Colors.red),
-            onDismissed: (_) => deletedCallback(current),
-            child: ListTile(
-              title: Text(
-                current.analysisText,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-              onTap: () => completer(SheetResponse(data: current)),
-            ),
-          );
-        },
+      return _HistoryList(
+        items: snapshot.data!,
+        deletedCallback: deletedCallback,
+        completer: completer,
       );
     }
+  }
+}
+
+class _HistoryList extends StatefulWidget {
+  final List<TextAnalysisHistoryItem> items;
+  final void Function(TextAnalysisHistoryItem) deletedCallback;
+  final Function(SheetResponse) completer;
+
+  const _HistoryList({
+    required this.items,
+    required this.deletedCallback,
+    required this.completer,
+  });
+
+  @override
+  State<_HistoryList> createState() => _HistoryListState();
+}
+
+class _HistoryListState extends State<_HistoryList> {
+  late final List<TextAnalysisHistoryItem> _items = List.of(widget.items);
+
+  @override
+  Widget build(BuildContext context) {
+    if (_items.isEmpty) {
+      return Center(child: Text('No history'));
+    }
+
+    return ListView.separated(
+      separatorBuilder: (_, __) => const Divider(
+        height: 1,
+        indent: 8,
+        endIndent: 8,
+      ),
+      padding: EdgeInsets.zero,
+      itemCount: _items.length,
+      itemBuilder: (context, index) {
+        final current = _items[index];
+        return Dismissible(
+          key: ObjectKey(current),
+          background: Container(color: Colors.red),
+          onDismissed: (_) {
+            setState(() => _items.remove(current));
+            widget.deletedCallback(current);
+          },
+          child: ListTile(
+            title: Text(
+              current.analysisText,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+            onTap: () => widget.completer(SheetResponse(data: current)),
+          ),
+        );
+      },
+    );
   }
 }

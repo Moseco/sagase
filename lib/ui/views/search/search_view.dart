@@ -262,7 +262,7 @@ class _SearchResults extends ViewModelWidget<SearchViewModel> {
 
     return Expanded(
       child: ListView.separated(
-        key: UniqueKey(),
+        key: ObjectKey(viewModel.searchResult),
         separatorBuilder: (_, __) => const Divider(
           height: 1,
           indent: 8,

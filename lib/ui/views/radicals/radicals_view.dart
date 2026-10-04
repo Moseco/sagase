@@ -44,7 +44,7 @@ class RadicalsView extends StackedView<RadicalsViewModel> {
       body: viewModel.radicals == null
           ? Container()
           : CustomScrollView(
-              key: UniqueKey(),
+              key: ObjectKey(viewModel.radicals),
               slivers: viewModel.radicalSorting == RadicalSorting.important
                   ? _getRadicalListByImportance(
                       context,
