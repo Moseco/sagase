@@ -1,6 +1,7 @@
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/datamodels/kana.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/digital_ink_service.dart';
 import 'package:sagase/services/download_service.dart';
@@ -179,6 +180,10 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   bool getProperNounsEnabled = constants.defaultProperNounsEnabled,
   bool getAddNewFlashcardsInBatches =
       constants.defaultAddNewFlashcardsInBatches,
+  Set<KanaScript> getKanaPracticeScripts = constants.defaultKanaPracticeScripts,
+  Set<KanaType> getKanaPracticeTypes = constants.defaultKanaPracticeTypes,
+  bool getKanaPracticeTypingEnabled =
+      constants.defaultKanaPracticeTypingEnabled,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -205,6 +210,13 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getProperNounsEnabled()).thenReturn(getProperNounsEnabled);
   when(service.getAddNewFlashcardsInBatches())
       .thenReturn(getAddNewFlashcardsInBatches);
+  when(service.getKanaPracticeScripts()).thenReturn(getKanaPracticeScripts);
+  when(service.setKanaPracticeScripts(any)).thenAnswer((_) async {});
+  when(service.getKanaPracticeTypes()).thenReturn(getKanaPracticeTypes);
+  when(service.setKanaPracticeTypes(any)).thenAnswer((_) async {});
+  when(service.getKanaPracticeTypingEnabled())
+      .thenReturn(getKanaPracticeTypingEnabled);
+  when(service.setKanaPracticeTypingEnabled(any)).thenAnswer((_) async {});
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

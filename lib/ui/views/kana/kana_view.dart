@@ -14,6 +14,10 @@ class KanaView extends StatelessWidget {
         appBar: AppBar(
           title: Text(viewModel.showHiragana ? 'Hiragana' : 'Katakana'),
           actions: [
+            IconButton(
+              onPressed: viewModel.navigateToKanaPractice,
+              icon: const Icon(Icons.style),
+            ),
             TextButton(
               onPressed: viewModel.toggleKana,
               child: Text(

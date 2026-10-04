@@ -1,3 +1,5 @@
+import 'package:sagase/datamodels/kana.dart';
+
 const int nestedNavigationKey = 1;
 
 final kanjiRegExp = RegExp(r'(\p{Script=Han})', unicode: true);
@@ -26,6 +28,9 @@ const keyShowDetailedProgress = 'show_detailed_progress';
 const keyChangelogVersionShown = 'changelog_version_shown';
 const keyProperNounsEnabled = 'proper_nouns_enabled';
 const keyAddNewFlashcardsInBatches = 'add_new_flashcards_in_batches';
+const keyKanaPracticeScripts = 'kana_practice_scripts';
+const keyKanaPracticeTypes = 'kana_practice_types';
+const keyKanaPracticeTypingEnabled = 'kana_practice_typing_enabled';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -42,6 +47,9 @@ const defaultStrokeDiagramStartExpanded = true;
 const defaultShowDetailedProgress = false;
 const defaultProperNounsEnabled = false;
 const defaultAddNewFlashcardsInBatches = false;
+const defaultKanaPracticeScripts = {KanaScript.hiragana};
+const defaultKanaPracticeTypes = {KanaType.basic};
+const defaultKanaPracticeTypingEnabled = false;
 
 const searchQueryLimit = 1000;
 

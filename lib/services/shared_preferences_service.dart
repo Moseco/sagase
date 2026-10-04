@@ -1,3 +1,4 @@
+import 'package:sagase/datamodels/kana.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sagase/utils/constants.dart' as constants;
 import 'package:stacked/stacked_annotations.dart';
@@ -246,5 +247,50 @@ class SharedPreferencesService implements InitializableDependency {
   Future<void> setAddNewFlashcardsInBatches(bool value) async {
     await _sharedPreferences.setBool(
         constants.keyAddNewFlashcardsInBatches, value);
+  }
+
+  Set<KanaScript> getKanaPracticeScripts() {
+    final names =
+        _sharedPreferences.getStringList(constants.keyKanaPracticeScripts);
+    final scripts = KanaScript.values
+        .where((e) => names?.contains(e.name) ?? false)
+        .toSet();
+    return scripts.isEmpty
+        ? {...constants.defaultKanaPracticeScripts}
+        : scripts;
+  }
+
+  Future<void> setKanaPracticeScripts(Set<KanaScript> value) async {
+    await _sharedPreferences.setStringList(
+      constants.keyKanaPracticeScripts,
+      value.map((e) => e.name).toList(),
+    );
+  }
+
+  Set<KanaType> getKanaPracticeTypes() {
+    final names =
+        _sharedPreferences.getStringList(constants.keyKanaPracticeTypes);
+    final types =
+        KanaType.values.where((e) => names?.contains(e.name) ?? false).toSet();
+    return types.isEmpty ? {...constants.defaultKanaPracticeTypes} : types;
+  }
+
+  Future<void> setKanaPracticeTypes(Set<KanaType> value) async {
+    await _sharedPreferences.setStringList(
+      constants.keyKanaPracticeTypes,
+      value.map((e) => e.name).toList(),
+    );
+  }
+
+  bool getKanaPracticeTypingEnabled() {
+    return _sharedPreferences.getBool(constants.keyKanaPracticeTypingEnabled) ??
+        constants.defaultKanaPracticeTypingEnabled;
+  }
+
+  Future<void> setKanaPracticeTypingEnabled(bool value) async {
+    await _sharedPreferences.setBool(
+      constants.keyKanaPracticeTypingEnabled,
+      value,
+    );
   }
 }
