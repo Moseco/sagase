@@ -17,6 +17,7 @@ import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
 import 'package:sagase/ui/dialogs/font_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/info_dialog.dart';
 import 'package:sagase/ui/dialogs/initial_interval_dialog.dart';
+import 'package:sagase/ui/dialogs/kana_practice_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/note_edit_dialog.dart';
 import 'package:sagase/ui/dialogs/number_text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/percent_indicator_dialog.dart';
@@ -40,6 +41,7 @@ import 'package:sagase/ui/views/radical/radical_view.dart';
 import 'package:sagase/ui/views/lists/lists_view.dart';
 import 'package:sagase/ui/views/home/home_view.dart';
 import 'package:sagase/ui/views/kana/kana_view.dart';
+import 'package:sagase/ui/views/kana_practice/kana_practice_view.dart';
 import 'package:sagase/ui/views/kanji/kanji_view.dart';
 import 'package:sagase/ui/views/kanji_compounds/kanji_compounds_view.dart';
 import 'package:sagase/ui/views/radicals/radicals_view.dart';
@@ -77,6 +79,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: RadicalView),
     MaterialRoute(page: KanjiListView),
     MaterialRoute(page: KanaView),
+    MaterialRoute(page: KanaPracticeView),
     MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
@@ -133,6 +136,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: InfoDialog),
     StackedDialog(classType: PercentIndicatorDialog),
     StackedDialog(classType: NoteEditDialog),
+    StackedDialog(classType: KanaPracticeSelectionDialog),
   ],
 )
 class AppSetup {
