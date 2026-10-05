@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/furigana_text.dart';
+import 'package:sagase/ui/widgets/list_navigation_scaffold.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
 
@@ -24,23 +26,9 @@ class GrammarView extends StackedView<GrammarViewModel> {
 
   @override
   Widget builder(context, viewModel, child) {
-    return Scaffold(
+    return ListNavigationScaffold(
       appBar: AppBar(
         actions: [
-          if (grammarList != null)
-            IconButton(
-              onPressed: grammarListIndex == 0
-                  ? null
-                  : viewModel.navigateToPreviousGrammar,
-              icon: const Icon(Icons.chevron_left),
-            ),
-          if (grammarList != null)
-            IconButton(
-              onPressed: grammarListIndex! == grammarList!.length - 1
-                  ? null
-                  : viewModel.navigateToNextGrammar,
-              icon: const Icon(Icons.chevron_right),
-            ),
           IconButton(
             onPressed: viewModel.openMyDictionaryListsSheet,
             icon: Icon(
@@ -61,11 +49,15 @@ class GrammarView extends StackedView<GrammarViewModel> {
               _Form(viewModel.grammar),
               _Meaning(viewModel.grammar),
               const _Example(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),
       ),
+      index: grammarListIndex,
+      length: grammarList?.length,
+      onPrevious: viewModel.navigateToPreviousGrammar,
+      onNext: viewModel.navigateToNextGrammar,
     );
   }
 }

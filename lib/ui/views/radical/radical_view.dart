@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase/ui/widgets/list_item_loading.dart';
 import 'package:sagase/utils/enum_utils.dart';
@@ -270,7 +271,7 @@ class RadicalView extends StackedView<RadicalViewModel> {
                   ),
                 ),
               const _KanjiUsage(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),

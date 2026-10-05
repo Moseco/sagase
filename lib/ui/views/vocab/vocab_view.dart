@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/writing_reading_pair.dart';
 import 'package:sagase/ui/widgets/note_section.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
+import 'package:sagase/ui/widgets/list_navigation_scaffold.dart';
 import 'package:sagase/ui/widgets/pitch_accent_text.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:stacked/stacked.dart';
@@ -55,23 +57,9 @@ class VocabView extends StackedView<VocabViewModel> {
 
   @override
   Widget builder(context, viewModel, child) {
-    return Scaffold(
+    return ListNavigationScaffold(
       appBar: AppBar(
         actions: [
-          if (vocabList != null)
-            IconButton(
-              onPressed: vocabListIndex == 0
-                  ? null
-                  : viewModel.navigateToPreviousVocab,
-              icon: const Icon(Icons.chevron_left),
-            ),
-          if (vocabList != null)
-            IconButton(
-              onPressed: vocabListIndex! == vocabList!.length - 1
-                  ? null
-                  : viewModel.navigateToNextVocab,
-              icon: const Icon(Icons.chevron_right),
-            ),
           IconButton(
             key: pitchAccentKey,
             onPressed: vocab.readings[0].pitchAccents != null
@@ -109,11 +97,15 @@ class VocabView extends StackedView<VocabViewModel> {
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               const _Examples(),
               if (viewModel.conjugations != null) const _Conjugations(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),
       ),
+      index: vocabListIndex,
+      length: vocabList?.length,
+      onPrevious: viewModel.navigateToPreviousVocab,
+      onNext: viewModel.navigateToNextVocab,
     );
   }
 
