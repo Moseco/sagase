@@ -1998,7 +1998,7 @@ void main() {
             FlashcardsViewModel(flashcardSet, null, randomSeed: 123);
         await viewModel.futureToRun();
 
-        expect(viewModel.flashcardSet.streak, 0);
+        expect(viewModel.flashcardSet.streak, 1);
         expect(viewModel.flashcardSetReport.date, DateTime.now().toInt());
       });
 
