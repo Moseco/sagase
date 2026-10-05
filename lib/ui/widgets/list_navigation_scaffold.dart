@@ -60,6 +60,11 @@ class _ListNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = TextButton.styleFrom(
+      foregroundColor: Theme.of(context).iconTheme.color,
+      shape: const StadiumBorder(),
+    );
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -70,18 +75,18 @@ class _ListNavigationBar extends StatelessWidget {
             margin: EdgeInsets.zero,
             shape: const StadiumBorder(),
             child: Padding(
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _NavigationButton(
-                    icon: Icons.chevron_left,
-                    text: 'Previous',
-                    iconFirst: true,
-                    onTap: index > 0 ? onPrevious : null,
+                  TextButton.icon(
+                    onPressed: index > 0 ? onPrevious : null,
+                    style: buttonStyle,
+                    icon: const Icon(Icons.chevron_left),
+                    label: const Text('Previous'),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -93,56 +98,16 @@ class _ListNavigationBar extends StatelessWidget {
                       ],
                     ),
                   ),
-                  _NavigationButton(
-                    icon: Icons.chevron_right,
-                    text: 'Next',
-                    iconFirst: false,
-                    onTap: index < length - 1 ? onNext : null,
+                  TextButton.icon(
+                    onPressed: index < length - 1 ? onNext : null,
+                    style: buttonStyle,
+                    icon: const Icon(Icons.chevron_right),
+                    label: const Text('Next'),
+                    iconAlignment: IconAlignment.end,
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavigationButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final bool iconFirst;
-  final void Function()? onTap;
-
-  const _NavigationButton({
-    required this.icon,
-    required this.text,
-    required this.iconFirst,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = onTap != null
-        ? Theme.of(context).iconTheme.color
-        : Theme.of(context).disabledColor;
-
-    final children = [
-      Icon(icon, color: foreground),
-      Text(text, style: TextStyle(color: foreground)),
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const StadiumBorder(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: iconFirst ? children : children.reversed.toList(),
           ),
         ),
       ),
