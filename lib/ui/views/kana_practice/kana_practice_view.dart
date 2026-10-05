@@ -171,6 +171,7 @@ class _Flashcards extends ViewModelWidget<KanaPracticeViewModel> {
                   IconButton(
                     onPressed: viewModel.canUndo
                         ? () {
+                            if (flashcardDeckController.isAnimating()) return;
                             flipCardController
                                 .flipWithoutAnimation(CardSide.front);
                             viewModel.undo();

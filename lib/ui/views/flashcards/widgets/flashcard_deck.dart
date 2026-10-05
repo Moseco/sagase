@@ -46,6 +46,8 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   late Animation<double> _scaleAnimation;
   late Animation<double> _differenceAnimation;
 
+  bool get _isAnimating => _currentSwipeAnimation != SwipeAnimation.none;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
     widget.controller.swipeVeryCorrect = _swipeVeryCorrect;
     widget.controller.swipeRepeat = _swipeRepeat;
     widget.controller.undoSwipe = _undoSwipe;
+    widget.controller.isAnimating = () => _isAnimating;
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
@@ -126,7 +129,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
             ),
             onPanUpdate: (tapInfo) {
               // Don't allow manually swiping the card during another animation
-              if (_currentSwipeAnimation == SwipeAnimation.none) {
+              if (!_isAnimating) {
                 setState(() {
                   _horizontalOffset += tapInfo.delta.dx;
                   _verticalOffset += tapInfo.delta.dy;
@@ -140,7 +143,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
             },
             onPanEnd: (tapInfo) {
               // Don't allow manually swiping the card during another animation
-              if (_currentSwipeAnimation == SwipeAnimation.none) {
+              if (!_isAnimating) {
                 if (_horizontalOffset < -_swipeThreshold) {
                   _swipeWrong();
                 } else if (_horizontalOffset > _swipeThreshold) {
@@ -196,6 +199,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 
   void _swipeWrong() {
+    if (_isAnimating) return;
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.wrong;
       _swipeHistory.add(SwipeAnimation.wrong);
@@ -220,6 +224,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 
   void _swipeCorrect() {
+    if (_isAnimating) return;
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.correct;
       _swipeHistory.add(SwipeAnimation.correct);
@@ -244,6 +249,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 
   void _swipeVeryCorrect() {
+    if (_isAnimating) return;
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.veryCorrect;
       _swipeHistory.add(SwipeAnimation.veryCorrect);
@@ -268,6 +274,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 
   void _swipeRepeat() {
+    if (_isAnimating) return;
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.repeat;
       _swipeHistory.add(SwipeAnimation.repeat);
@@ -292,6 +299,7 @@ class _FlashcardDeckState extends State<FlashcardDeck>
   }
 
   void _undoSwipe() {
+    if (_isAnimating) return;
     setState(() {
       _currentSwipeAnimation = SwipeAnimation.undoSwipe;
 
@@ -363,6 +371,7 @@ class FlashcardDeckController {
   late VoidCallback swipeVeryCorrect;
   late VoidCallback swipeRepeat;
   late VoidCallback undoSwipe;
+  late ValueGetter<bool> isAnimating;
 }
 
 class FlashcardDeckControllerHook extends Hook<FlashcardDeckController> {

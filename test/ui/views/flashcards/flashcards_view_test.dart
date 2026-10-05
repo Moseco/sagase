@@ -1061,6 +1061,56 @@ void main() {
       });
     });
 
+    testWidgets('Input ignored while swiping', (tester) async {
+      getAndRegisterSharedPreferencesService();
+      getAndRegisterDictionaryService(
+        getRecentFlashcardSetReport: FlashcardSetReport(
+          id: 0,
+          flashcardSetId: 0,
+          date: DateTime.now().toInt(),
+          dueFlashcardsCompleted: 0,
+          dueFlashcardsGotWrong: 0,
+          newFlashcardsCompleted: 0,
+        ),
+        getFlashcardSetFlashcards: [
+          getVocabYes(),
+          getVocabMaybe(),
+          getVocabNo1(),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FlashcardsView(
+            createDefaultFlashcardSet(),
+            startMode: FlashcardStartMode.normal,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('0 new cards completed'), findsOne);
+      expect(find.text('3 new cards left'), findsOne);
+
+      // Second answer during the swipe animation is ignored
+      await tester.tap(find.byIcon(Icons.done_all));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+
+      expect(find.text('1 new cards completed'), findsOne);
+      expect(find.text('2 new cards left'), findsOne);
+
+      // Undo during the swipe animation is ignored
+      await tester.tap(find.byIcon(Icons.done_all));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byIcon(Icons.undo));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 new cards completed'), findsOne);
+      expect(find.text('1 new cards left'), findsOne);
+    });
+
     group('Flashcard front', () {
       // TODO
     });

@@ -255,6 +255,47 @@ void main() {
       expect(find.text('5 cards left'), findsOne);
     });
 
+    testWidgets('Input ignored while swiping', (tester) async {
+      getAndRegisterSharedPreferencesService(
+        getKanaPracticeTypes: {KanaType.semiVoiced},
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(home: KanaPracticeView(randomSeed: 123)),
+      );
+      await tester.pumpAndSettle();
+
+      // Second answer during the swipe animation is ignored
+      final kana = currentKana(tester);
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+
+      expect(currentKana(tester), isNot(kana));
+      expect(find.text('1 completed'), findsOne);
+      expect(find.text('4 cards left'), findsOne);
+
+      // Undo during the swipe animation is ignored
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byIcon(Icons.undo));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 completed'), findsOne);
+      expect(find.text('3 cards left'), findsOne);
+
+      // Undo works once the swipe animation is finished
+      await tester.tap(find.byIcon(Icons.undo));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.undo));
+      await tester.pumpAndSettle();
+
+      expect(currentKana(tester), kana);
+      expect(find.text('0 completed'), findsOne);
+      expect(find.text('5 cards left'), findsOne);
+    });
+
     testWidgets('Finish and exit', (tester) async {
       getAndRegisterSharedPreferencesService(
         getKanaPracticeTypes: {KanaType.semiVoiced},

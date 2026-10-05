@@ -115,6 +115,9 @@ class FlashcardsView extends HookWidget {
                         IconButton(
                           onPressed: viewModel.canUndo
                               ? () {
+                                  if (flashcardDeckController.isAnimating()) {
+                                    return;
+                                  }
                                   flipCardController
                                       .flipWithoutAnimation(CardSide.front);
                                   viewModel.undo();
