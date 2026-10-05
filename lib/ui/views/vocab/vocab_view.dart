@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sagase/datamodels/writing_reading_pair.dart';
 import 'package:sagase/ui/widgets/note_section.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/common_vocab.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
@@ -96,7 +97,7 @@ class VocabView extends StackedView<VocabViewModel> {
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
               const _Examples(),
               if (viewModel.conjugations != null) const _Conjugations(),
-              const ListNavigationSpacer(),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),

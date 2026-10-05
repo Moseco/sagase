@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/furigana_text.dart';
 import 'package:sagase/ui/widgets/list_navigation_scaffold.dart';
@@ -48,7 +49,7 @@ class GrammarView extends StackedView<GrammarViewModel> {
               _Form(viewModel.grammar),
               _Meaning(viewModel.grammar),
               const _Example(),
-              const ListNavigationSpacer(),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),

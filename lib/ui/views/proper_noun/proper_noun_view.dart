@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ruby_text/ruby_text.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_list_item_large.dart';
 import 'package:sagase/utils/enum_utils.dart';
@@ -33,7 +34,7 @@ class ProperNounView extends StackedView<ProperNounViewModel> {
               const _WritingReading(),
               const _RomajiAndType(),
               if (viewModel.kanjiList.isNotEmpty) const _KanjiList(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),

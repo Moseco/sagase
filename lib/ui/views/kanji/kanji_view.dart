@@ -3,6 +3,7 @@ import 'package:sagase/ui/widgets/card_with_title_expandable.dart';
 import 'package:sagase/ui/widgets/note_section.dart';
 import 'package:sagase/utils/enum_utils.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
+import 'package:sagase/ui/widgets/bottom_padding_spacer.dart';
 import 'package:sagase/ui/widgets/card_with_title_section.dart';
 import 'package:sagase/ui/widgets/kanji_kun_readings.dart';
 import 'package:sagase/ui/widgets/kanji_list_item.dart';
@@ -275,7 +276,7 @@ class KanjiView extends StackedView<KanjiViewModel> {
                   ),
                 ),
               if (kanji.compounds != null) const _Compounds(),
-              const ListNavigationSpacer(),
+              const BottomPaddingSpacer(),
             ],
           ),
         ),
