@@ -283,6 +283,70 @@ void main() {
       await dictionaryService.close();
     });
 
+    group('spaceOutFlashcards', () {
+      // Due flashcards per day starting from today after spacing them out
+      final cases = [
+        // Not enough to space out
+        (150, [150, ...List.filled(13, 0)]),
+        // Fewer extra flashcards than days
+        (160, [150, ...List.filled(10, 1), ...List.filled(3, 0)]),
+        // Earlier days get the remainder
+        (170, [150, ...List.filled(7, 2), ...List.filled(6, 1)]),
+        (305, [150, ...List.filled(12, 12), 11]),
+        // Evenly divisible
+        (345, [150, ...List.filled(13, 15)]),
+      ];
+
+      for (final (dueCount, expectedCounts) in cases) {
+        test('$dueCount due flashcards', () async {
+          final dictionaryService =
+              await setUpDictionaryData(vocabToCreate: dueCount);
+          final ids = List.generate(dueCount, (i) => i + 1);
+
+          final dueFlashcards = await dictionaryService.getVocabList(
+            ids,
+            frontType: FrontType.japanese,
+          );
+          for (final flashcard in dueFlashcards) {
+            flashcard.spacedRepetitionData = SpacedRepetitionData.initial(
+              dictionaryItem: flashcard,
+              frontType: FrontType.japanese,
+            ).copyWith(
+              interval: 1,
+              repetitions: 1,
+              dueDate: DateTime.now().toInt(),
+              totalAnswers: 1,
+            );
+            await dictionaryService
+                .setSpacedRepetitionData(flashcard.spacedRepetitionData!);
+          }
+
+          await dictionaryService.spaceOutFlashcards(dueFlashcards);
+
+          // Flashcards that were spaced out are removed from the list
+          expect(dueFlashcards.length, expectedCounts[0]);
+
+          final today = DateTime.now();
+          final dates = [
+            for (int i = 0; i < 14; i++)
+              DateTime(today.year, today.month, today.day + i).toInt(),
+          ];
+          final dueDateCounts = List.filled(14, 0);
+          for (final flashcard in await dictionaryService.getVocabList(
+            ids,
+            frontType: FrontType.japanese,
+          )) {
+            final dueDate = flashcard.spacedRepetitionData!.dueDate!;
+            expect(dates, contains(dueDate));
+            dueDateCounts[dates.indexOf(dueDate)]++;
+          }
+          expect(dueDateCounts, expectedCounts);
+
+          await dictionaryService.close();
+        });
+      }
+    });
+
     test('resetFlashcardSetSpacedRepetitionData - failed reset', () async {
       final dictionaryService = await setUpDictionaryData();
 

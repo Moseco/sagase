@@ -502,13 +502,21 @@ class DictionaryService {
   }
 
   Future<void> spaceOutFlashcards(List<DictionaryItem> flashcards) async {
+    const flashcardsToKeep = 150;
+    const days = 13;
+
+    final flashcardsToSpaceOut = flashcards.length - flashcardsToKeep;
+    if (flashcardsToSpaceOut <= 0) return;
+
     await _database.transaction(() async {
       final now = DateTime.now();
 
-      int flashcardsPerDay = (flashcards.length - 150) ~/ 12;
-      for (int i = 1; i < 14; i++) {
-        int dueDate = now.add(Duration(days: i)).toInt();
-        for (int j = 0; j < flashcardsPerDay && flashcards.length > 150; j++) {
+      for (int i = 0; i < days; i++) {
+        final flashcardsForDay = flashcardsToSpaceOut ~/ days +
+            (i < flashcardsToSpaceOut % days ? 1 : 0);
+        // DateTime handles rollover for days going past the real month
+        final dueDate = DateTime(now.year, now.month, now.day + i + 1).toInt();
+        for (int j = 0; j < flashcardsForDay; j++) {
           await setSpacedRepetitionData(
             flashcards
                 .removeLast()
