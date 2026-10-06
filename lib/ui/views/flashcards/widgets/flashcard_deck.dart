@@ -92,8 +92,8 @@ class _FlashcardDeckState extends State<FlashcardDeck>
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
+    super.dispose();
   }
 
   @override
