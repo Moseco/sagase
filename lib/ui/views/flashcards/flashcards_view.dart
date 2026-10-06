@@ -553,7 +553,7 @@ class _ProgressIndicator extends ViewModelWidget<FlashcardsViewModel> {
       emptyBar = viewModel.activeFlashcards.length;
       bottomLeftString =
           '${viewModel.allFlashcards!.length - viewModel.activeFlashcards.length} completed';
-      bottomRightString = '${viewModel.allFlashcards!.length} cards left';
+      bottomRightString = '$emptyBar cards left';
     }
 
     // If completedBar or emptyBar would be too small, set minimum size

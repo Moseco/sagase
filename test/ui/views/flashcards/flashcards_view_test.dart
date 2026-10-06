@@ -1059,6 +1059,42 @@ void main() {
         expect(find.text('1 new cards completed'), findsOne);
         expect(find.text('1 new cards left'), findsOne);
       });
+
+      testWidgets('Progress bar random order', (tester) async {
+        getAndRegisterSharedPreferencesService();
+        getAndRegisterDictionaryService(
+          getFlashcardSetFlashcards: [
+            getVocabYes(),
+            getVocabMaybe(),
+            getVocabNo1(),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: FlashcardsView(
+              createDefaultFlashcardSet()..usingSpacedRepetition = false,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('0 completed'), findsOne);
+        expect(find.text('3 cards left'), findsOne);
+
+        await tester.tap(find.byIcon(Icons.check));
+        await tester.pumpAndSettle();
+
+        expect(find.text('1 completed'), findsOne);
+        expect(find.text('2 cards left'), findsOne);
+
+        // Wrong answers go back into the deck
+        await tester.tap(find.byIcon(Icons.close));
+        await tester.pumpAndSettle();
+
+        expect(find.text('1 completed'), findsOne);
+        expect(find.text('2 cards left'), findsOne);
+      });
     });
 
     testWidgets('Input ignored while swiping', (tester) async {
