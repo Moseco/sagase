@@ -18,16 +18,22 @@ class _CameraViewfinderState extends State<CameraViewfinder>
   CameraController? _controller;
   late List<CameraDescription> _cameras;
   CameraState _cameraState = CameraState.uninitialized;
+  bool _releasedWhileInactive = false;
+  Future<void>? _releasedCamera;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
 
   Future<void> _initCamera() async {
     try {
+      // The camera can't be opened again until the released one is closed
+      await _releasedCamera;
       _cameras = await availableCameras();
+      if (!mounted) return;
       if (_cameras.isEmpty) {
         setState(() => _cameraState = CameraState.permissionDenied);
         return;
@@ -42,57 +48,68 @@ class _CameraViewfinderState extends State<CameraViewfinder>
 
       // This is a temporary workaround for iPhone 17 family devices
       final iOS = Platform.isIOS ? await DeviceInfoPlugin().iosInfo : null;
+      if (!mounted) return;
 
-      _controller = CameraController(
+      final controller = CameraController(
         cameraToUse,
         iOS != null && iOS.utsname.machine.contains("iPhone18")
             ? ResolutionPreset.ultraHigh
             : ResolutionPreset.max,
         enableAudio: false,
       );
+      // Assign before initializing so dispose can clean it up
+      _controller = controller;
 
-      _controller!.initialize().then((_) {
-        if (mounted) {
-          setState(() => _cameraState = CameraState.initialized);
-        }
-      }).catchError((Object e) {
-        if (e is CameraException && e.code == 'CameraAccessDenied') {
-          setState(() => _cameraState = CameraState.permissionDenied);
-        } else {
-          setState(() => _cameraState = CameraState.error);
-        }
-      });
-    } catch (e) {
+      await controller.initialize();
+      if (!mounted) return;
+      setState(() => _cameraState = CameraState.initialized);
+    } on CameraException catch (e) {
+      if (!mounted) return;
+      setState(() => _cameraState = e.code == 'CameraAccessDenied'
+          ? CameraState.permissionDenied
+          : CameraState.error);
+    } catch (_) {
+      if (!mounted) return;
       setState(() => _cameraState = CameraState.error);
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return;
-    }
-
     if (state == AppLifecycleState.inactive) {
+      final controller = _controller;
+      if (controller == null || !controller.value.isInitialized) return;
       setState(() => _cameraState = CameraState.uninitialized);
-      _controller!.dispose();
-    } else if (state == AppLifecycleState.resumed) {
+      _controller = null;
+      _releasedWhileInactive = true;
+      _releasedCamera = controller.dispose().catchError((_) {});
+    } else if (state == AppLifecycleState.resumed && _releasedWhileInactive) {
+      _releasedWhileInactive = false;
       _initCamera();
     }
   }
 
   Future<void> _takePhoto() async {
+    final controller = _controller;
+    if (controller == null ||
+        !controller.value.isInitialized ||
+        controller.value.isTakingPicture) {
+      return;
+    }
+
     try {
-      if (!_controller!.value.isInitialized) return;
-      final image = await _controller!.takePicture();
+      final image = await controller.takePicture();
+      if (!mounted) return;
       widget.onPictureTaken(image);
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() => _cameraState = CameraState.error);
     }
   }

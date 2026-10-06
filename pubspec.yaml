@@ -121,6 +121,7 @@ dev_dependencies:
   mockito: ^5.4.2
   plugin_platform_interface: ^2.1.4
   path_provider_platform_interface: ^2.0.6
+  camera_platform_interface: ^2.14.0
 
 flutter:
   fonts:   

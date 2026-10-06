@@ -50,61 +50,75 @@ class _OcrImageState extends State<OcrImage> {
     _loadImage();
   }
 
-  Future<void> _loadImage() async {
-    final ocrImageDir = path.join(
-      (await path_provider.getApplicationCacheDirectory()).path,
-      constants.ocrImagesDir,
-    );
-    await Directory(ocrImageDir).create();
+  @override
+  void dispose() {
+    _textRecognizer.close();
+    super.dispose();
+  }
 
-    final imagePath = path.join(ocrImageDir, widget.image.name);
+  Future<void> _loadImage() async {
+    // Keep track of where the image is so it is always deleted at the end
+    File imageFile = File(widget.image.path);
     try {
-      await File(widget.image.path).rename(imagePath);
-    } catch (_) {
-      if (File(widget.image.path).existsSync()) {
-        File(widget.image.path).delete();
+      final ocrImageDir = path.join(
+        (await path_provider.getApplicationCacheDirectory()).path,
+        constants.ocrImagesDir,
+      );
+      await Directory(ocrImageDir).create();
+
+      imageFile = await imageFile.rename(
+        path.join(ocrImageDir, widget.image.name),
+      );
+
+      imageFile = await FlutterExifRotation.rotateImage(path: imageFile.path);
+
+      final inputImage = InputImage.fromFilePath(imageFile.path);
+      final imageBytes = await imageFile.readAsBytes();
+
+      final Size imageSize;
+      if (inputImage.metadata != null) {
+        imageSize = inputImage.metadata!.size;
+      } else {
+        final decodedImage = await decodeImageFromList(imageBytes);
+        imageSize = Size(
+          decodedImage.width.toDouble(),
+          decodedImage.height.toDouble(),
+        );
+        decodedImage.dispose();
       }
 
-      widget.onImageError();
-      return;
+      if (!mounted) return;
+
+      setState(() {
+        _currentImageBytes = imageBytes;
+        _imageSize = imageSize;
+      });
+
+      final recognizedText = await _textRecognizer.processImage(inputImage);
+      if (!mounted) return;
+
+      _recognizedTextBlocks = [];
+      for (final textBlock in recognizedText.blocks) {
+        _recognizedTextBlocks!.add(
+          RecognizedTextBlock(
+            text: textBlock.text,
+            points: textBlock.cornerPoints,
+          ),
+        );
+      }
+
+      setState(() {});
+
+      if (widget.onImageProcessed != null) {
+        widget.onImageProcessed!(_recognizedTextBlocks!.length);
+      }
+    } catch (_) {
+      if (mounted) widget.onImageError();
+    } finally {
+      try {
+        if (await imageFile.exists()) await imageFile.delete();
+      } catch (_) {}
     }
-
-    final rotatedImage = await FlutterExifRotation.rotateImage(path: imagePath);
-
-    final inputImage = InputImage.fromFilePath(rotatedImage.path);
-    _currentImageBytes = await rotatedImage.readAsBytes();
-
-    if (inputImage.metadata != null) {
-      _imageSize = inputImage.metadata!.size;
-    } else {
-      final decodedImage = await decodeImageFromList(_currentImageBytes!);
-      _imageSize = Size(
-        decodedImage.width.toDouble(),
-        decodedImage.height.toDouble(),
-      );
-    }
-
-    setState(() {});
-
-    final recognizedText = await _textRecognizer.processImage(inputImage);
-
-    _recognizedTextBlocks = [];
-    for (final textBlock in recognizedText.blocks) {
-      _recognizedTextBlocks!.add(
-        RecognizedTextBlock(
-          text: textBlock.text,
-          points: textBlock.cornerPoints,
-        ),
-      );
-    }
-
-    setState(() {});
-
-    if (widget.onImageProcessed != null) {
-      widget.onImageProcessed!(_recognizedTextBlocks!.length);
-    }
-
-    await rotatedImage.delete();
   }
 
   void handleSelect(RecognizedTextBlock textBlock) {
