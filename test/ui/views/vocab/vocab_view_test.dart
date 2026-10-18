@@ -262,6 +262,66 @@ void main() {
       expect(find.text('何時でも【いつでも, なんどきでも】'), findsOne);
     });
 
+    testWidgets('Vocab usually written in kana with reading info',
+        (tester) async {
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
+      getAndRegisterMecabService(
+        createRubyTextPairs: [
+          [const RubyTextPair(writing: 'なぜ')],
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '何故',
+                  primaryPair: true,
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'なぜ',
+                  readingRomaji: 'naze',
+                  primaryPair: true,
+                  info: [ReadingInfo.gikun],
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'why; how',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.adverb],
+                  miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+                ),
+              ],
+          ),
+        ),
+      );
+
+      expect(find.text('なぜ'), findsOne);
+      // Reading info is only shown with the kanji writing
+      expect(find.text('Main form'), findsNothing);
+      expect(find.text('Kanji writings'), findsOne);
+      expect(find.text('何故【なぜ￼】'), findsOne);
+      expect(find.textContaining('gikun'), findsOne);
+    });
+
     testWidgets('Vocab with multiple kanji and readings', (tester) async {
       getAndRegisterDictionaryService(
         getMyDictionaryListsContainingDictionaryItem: [],
@@ -269,6 +329,7 @@ void main() {
       getAndRegisterMecabService(
         createRubyTextPairs: [
           [const RubyTextPair(writing: '有様', reading: 'ありさま')],
+          [const RubyTextPair(writing: '有様', reading: 'ありよう')],
           [
             const RubyTextPair(writing: '有', reading: 'あ'),
             const RubyTextPair(writing: 'りさま'),
@@ -346,11 +407,224 @@ void main() {
         ),
       );
 
-      expect(find.text('有様'), findsOne);
-      expect(find.text('有様, 有り様, あり様【ありさま, ありよう】'), findsOne);
+      // One from the primary and one from also read
+      expect(find.text('有様'), findsExactly(2));
+      expect(find.text('Also written'), findsOne);
+      expect(find.text('有り様, あり様【ありさま, ありよう】'), findsOne);
+      expect(find.text('Also read'), findsOne);
+      expect(find.text('ありよう'), findsOne);
+      expect(find.text('Other writings'), findsOne);
       // The text is split because of ruby text. 有 finds 2, one from alternatives and one from kanji
       expect(find.text('有'), findsExactly(2));
       expect(find.text('りさま'), findsOne);
+    });
+
+    testWidgets('Vocab with multiple kanji sharing multiple readings',
+        (tester) async {
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
+      getAndRegisterMecabService(
+        createRubyTextPairs: [
+          [
+            const RubyTextPair(writing: '最', reading: 'もっと'),
+            const RubyTextPair(writing: 'も'),
+          ],
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '最も',
+                  primaryPair: true,
+                ),
+                const VocabWriting(
+                  id: 1,
+                  vocabId: 0,
+                  writing: '尤も',
+                  primaryPair: false,
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'もっとも',
+                  readingRomaji: 'mottomo',
+                  primaryPair: true,
+                ),
+                const VocabReading(
+                  id: 1,
+                  vocabId: 0,
+                  reading: 'もとも',
+                  readingRomaji: 'motomo',
+                  primaryPair: false,
+                  info: [ReadingInfo.outdatedKana],
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'most; extremely',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.adverb],
+                ),
+              ],
+          ),
+        ),
+      );
+
+      // Every writing/reading combination not in the primary is shown once
+      expect(find.text('Also written'), findsOne);
+      expect(find.text('尤も【もっとも, もとも￼】'), findsOne);
+      expect(find.text('Also read'), findsOne);
+      expect(find.text('最も【もとも￼】'), findsOne);
+      expect(find.textContaining('outdated kana'), findsOne);
+    });
+
+    testWidgets('Vocab with reading without kanji', (tester) async {
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
+      getAndRegisterMecabService(
+        createRubyTextPairs: [
+          [const RubyTextPair(writing: '人', reading: 'ひと')],
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '人',
+                  primaryPair: true,
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'ひと',
+                  readingRomaji: 'hito',
+                  primaryPair: true,
+                ),
+                const VocabReading(
+                  id: 1,
+                  vocabId: 0,
+                  reading: 'ヒト',
+                  readingRomaji: 'hito',
+                  primaryPair: false,
+                  associatedWritings: [],
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'man; person',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                ),
+              ],
+          ),
+        ),
+      );
+
+      expect(find.text('ひと'), findsOne);
+      // Not shown as a reading of the kanji
+      expect(find.text('Also read'), findsNothing);
+      expect(find.text('Kana writings'), findsOne);
+      expect(find.text('ヒト'), findsOne);
+    });
+
+    testWidgets(
+        'Vocab usually written in kana with first reading without kanji',
+        (tester) async {
+      getAndRegisterDictionaryService(
+        getMyDictionaryListsContainingDictionaryItem: [],
+      );
+      getAndRegisterMecabService(
+        createRubyTextPairs: [
+          [const RubyTextPair(writing: '儒艮', reading: 'じゅごん')],
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: VocabView(
+            Vocab(
+              id: 0,
+              pos: null,
+              common: true,
+              frequencyScore: 0,
+            )
+              ..writings = [
+                const VocabWriting(
+                  id: 0,
+                  vocabId: 0,
+                  writing: '儒艮',
+                  primaryPair: true,
+                ),
+              ]
+              ..readings = [
+                const VocabReading(
+                  id: 0,
+                  vocabId: 0,
+                  reading: 'ジュゴン',
+                  readingRomaji: 'jugon',
+                  primaryPair: true,
+                  associatedWritings: [],
+                ),
+                const VocabReading(
+                  id: 1,
+                  vocabId: 0,
+                  reading: 'じゅごん',
+                  readingRomaji: 'jugon',
+                  primaryPair: false,
+                ),
+              ]
+              ..definitions = [
+                const VocabDefinition(
+                  id: 0,
+                  vocabId: 0,
+                  definition: 'dugong (Dugong dugon)',
+                  waseieigo: false,
+                  pos: [PartOfSpeech.noun],
+                  miscInfo: [MiscellaneousInfo.usuallyKanaAlone],
+                ),
+              ],
+          ),
+        ),
+      );
+
+      // First reading is shown at the top even though it has no kanji
+      expect(find.text('ジュゴン'), findsOne);
+      expect(find.text('Kanji writings'), findsOne);
+      expect(find.text('儒艮'), findsOne);
+      expect(find.text('じゅごん'), findsOne);
+      // Already shown at the top so no other kana writings
+      expect(find.text('Kana writings'), findsNothing);
     });
 
     testWidgets('Vocab with kanji/reading info', (tester) async {
@@ -430,8 +704,11 @@ void main() {
       // One for each writing/reading pair
       expect(find.text('きげん'), findsExactly(3));
 
-      expect(find.text('譏嫌: outdated kanji'), findsOne);
-      expect(find.text('気嫌: irregular kanji'), findsOne);
+      // Writings are marked with numbers explained in the legend
+      expect(find.text('1'), findsExactly(2));
+      expect(find.text('2'), findsExactly(2));
+      expect(find.textContaining('outdated kanji'), findsOne);
+      expect(find.textContaining('irregular kanji'), findsOne);
     });
 
     testWidgets('Vocab with antonym', (tester) async {

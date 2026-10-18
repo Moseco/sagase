@@ -35,6 +35,9 @@ class VocabViewModel extends FutureViewModel {
   final List<Vocab>? vocabList;
 
   late final List<WritingReadingPair> writingReadingPairs;
+  late final List<VocabReading> kanaOnlyReadings;
+  late final bool forceOnlyReading;
+  late final VocabReading primaryReading;
   List<dynamic> get kanjiList => isBusy ? _kanjiStringList : _kanjiList;
   late final List<String> _kanjiStringList;
   late final List<Kanji> _kanjiList;
@@ -50,6 +53,20 @@ class VocabViewModel extends FutureViewModel {
   VocabViewModel(this.vocab, this.vocabListIndex, this.vocabList) {
     // Create writing reading pairs
     writingReadingPairs = WritingReadingPair.fromVocab(vocab);
+    kanaOnlyReadings = WritingReadingPair.kanaOnlyReadings(
+      vocab,
+      writingReadingPairs,
+    );
+
+    forceOnlyReading =
+        writingReadingPairs[0].writings != null && vocab.isUsuallyKanaAlone();
+    primaryReading = forceOnlyReading
+        ? vocab.readings.firstWhere(
+            (reading) =>
+                reading.info == null ||
+                !reading.info!.contains(ReadingInfo.searchOnlyForm),
+          )
+        : writingReadingPairs[0].readings[0];
 
     // Get list of kanji to be loaded during initialize function
     Set<String> kanjiStringSet = {};
@@ -206,7 +223,7 @@ class VocabViewModel extends FutureViewModel {
   }
 
   bool shouldShowTutorial() {
-    if (vocab.readings[0].pitchAccents != null) {
+    if (primaryReading.pitchAccents != null) {
       return _sharedPreferencesService.getAndSetTutorialVocab();
     } else {
       return false;
