@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/datamodels/kana.dart';
 import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/utils/constants.dart' as constants;
@@ -45,7 +46,6 @@ void main() {
         );
         expect(service.getKanaPracticeTypingEnabled(), true);
 
-        // Stored by name so reordering the enums does not change the selection
         final sharedPreferences = await SharedPreferences.getInstance();
         expect(
           sharedPreferences.getStringList(constants.keyKanaPracticeScripts),
@@ -81,6 +81,71 @@ void main() {
 
         expect(service.getKanaPracticeScripts(), {KanaScript.hiragana});
         expect(service.getKanaPracticeTypes(), {KanaType.basic});
+      });
+    });
+
+    group('Conjugation practice', () {
+      test('Defaults', () async {
+        final service = await createService();
+
+        expect(
+          service.getConjugationPracticeWordTypes(),
+          constants.defaultConjugationPracticeWordTypes,
+        );
+        expect(
+          service.getConjugationPracticeForms(),
+          constants.defaultConjugationPracticeForms,
+        );
+      });
+
+      test('Set and get', () async {
+        final service = await createService();
+
+        await service.setConjugationPracticeWordTypes({
+          ConjugationPracticeWordType.godanMu,
+          ConjugationPracticeWordType.adjectiveNa,
+        });
+        await service.setConjugationPracticeForms({
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.causativePassive,
+        });
+
+        expect(service.getConjugationPracticeWordTypes(), {
+          ConjugationPracticeWordType.godanMu,
+          ConjugationPracticeWordType.adjectiveNa,
+        });
+        expect(service.getConjugationPracticeForms(), {
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.causativePassive,
+        });
+
+        final sharedPreferences = await SharedPreferences.getInstance();
+        expect(
+          sharedPreferences
+              .getStringList(constants.keyConjugationPracticeWordTypes),
+          unorderedEquals(['godanMu', 'adjectiveNa']),
+        );
+        expect(
+          sharedPreferences
+              .getStringList(constants.keyConjugationPracticeForms),
+          unorderedEquals(['past', 'causativePassive']),
+        );
+      });
+
+      test('Unknown or empty selection', () async {
+        final service = await createService({
+          constants.keyConjugationPracticeWordTypes: ['ichidan', 'obsolete'],
+          constants.keyConjugationPracticeForms: <String>[],
+        });
+
+        expect(
+          service.getConjugationPracticeWordTypes(),
+          {ConjugationPracticeWordType.ichidan},
+        );
+        expect(
+          service.getConjugationPracticeForms(),
+          constants.defaultConjugationPracticeForms,
+        );
       });
     });
   });

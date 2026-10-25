@@ -1,3 +1,4 @@
+import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/datamodels/kana.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sagase/utils/constants.dart' as constants;
@@ -291,6 +292,46 @@ class SharedPreferencesService implements InitializableDependency {
     await _sharedPreferences.setBool(
       constants.keyKanaPracticeTypingEnabled,
       value,
+    );
+  }
+
+  Set<ConjugationPracticeWordType> getConjugationPracticeWordTypes() {
+    final names = _sharedPreferences
+        .getStringList(constants.keyConjugationPracticeWordTypes);
+    final types = ConjugationPracticeWordType.values
+        .where((e) => names?.contains(e.name) ?? false)
+        .toSet();
+    return types.isEmpty
+        ? {...constants.defaultConjugationPracticeWordTypes}
+        : types;
+  }
+
+  Future<void> setConjugationPracticeWordTypes(
+    Set<ConjugationPracticeWordType> value,
+  ) async {
+    await _sharedPreferences.setStringList(
+      constants.keyConjugationPracticeWordTypes,
+      value.map((e) => e.name).toList(),
+    );
+  }
+
+  Set<ConjugationPracticeForm> getConjugationPracticeForms() {
+    final names =
+        _sharedPreferences.getStringList(constants.keyConjugationPracticeForms);
+    final forms = ConjugationPracticeForm.values
+        .where((e) => names?.contains(e.name) ?? false)
+        .toSet();
+    return forms.isEmpty
+        ? {...constants.defaultConjugationPracticeForms}
+        : forms;
+  }
+
+  Future<void> setConjugationPracticeForms(
+    Set<ConjugationPracticeForm> value,
+  ) async {
+    await _sharedPreferences.setStringList(
+      constants.keyConjugationPracticeForms,
+      value.map((e) => e.name).toList(),
     );
   }
 }

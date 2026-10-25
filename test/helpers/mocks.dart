@@ -1,6 +1,7 @@
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sagase/app/app.locator.dart';
+import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/datamodels/kana.dart';
 import 'package:sagase/services/dictionary_service.dart';
 import 'package:sagase/services/digital_ink_service.dart';
@@ -113,6 +114,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   List<Radical>? getClassicRadicals,
   Kanji? getKanji,
   List<DictionaryItem>? getFlashcardSetFlashcards,
+  List<FlashcardSet>? getFlashcardSets,
   FlashcardSetReport? createFlashcardSetReport,
   FlashcardSetReport? getFlashcardSetReport,
   FlashcardSetReport? getRecentFlashcardSetReport,
@@ -145,6 +147,7 @@ MockDictionaryService getAndRegisterDictionaryService({
   when(service.updateFlashcardSet(any)).thenAnswer((_) async {});
   when(service.getFlashcardSetFlashcards(any))
       .thenAnswer((_) async => getFlashcardSetFlashcards!);
+  when(service.getFlashcardSets()).thenAnswer((_) async => getFlashcardSets!);
   when(service.createFlashcardSetReport(any, any))
       .thenAnswer((_) async => createFlashcardSetReport!);
   when(service.setFlashcardSetReport(any)).thenAnswer((_) async {});
@@ -184,6 +187,10 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   Set<KanaType> getKanaPracticeTypes = constants.defaultKanaPracticeTypes,
   bool getKanaPracticeTypingEnabled =
       constants.defaultKanaPracticeTypingEnabled,
+  Set<ConjugationPracticeWordType> getConjugationPracticeWordTypes =
+      constants.defaultConjugationPracticeWordTypes,
+  Set<ConjugationPracticeForm> getConjugationPracticeForms =
+      constants.defaultConjugationPracticeForms,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -217,6 +224,12 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getKanaPracticeTypingEnabled())
       .thenReturn(getKanaPracticeTypingEnabled);
   when(service.setKanaPracticeTypingEnabled(any)).thenAnswer((_) async {});
+  when(service.getConjugationPracticeWordTypes())
+      .thenReturn(getConjugationPracticeWordTypes);
+  when(service.setConjugationPracticeWordTypes(any)).thenAnswer((_) async {});
+  when(service.getConjugationPracticeForms())
+      .thenReturn(getConjugationPracticeForms);
+  when(service.setConjugationPracticeForms(any)).thenAnswer((_) async {});
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;
