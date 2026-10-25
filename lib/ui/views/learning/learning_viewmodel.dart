@@ -116,6 +116,14 @@ class LearningViewModel extends FutureViewModel {
     );
   }
 
+  void navigateToKanaPractice() {
+    _navigationService.navigateTo(Routes.kanaPracticeView);
+  }
+
+  void navigateToConjugationPractice() {
+    _navigationService.navigateTo(Routes.conjugationPracticeView);
+  }
+
   void handleBackButton() {
     locator<HomeViewModel>().handleBackButton();
   }

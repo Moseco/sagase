@@ -11,6 +11,7 @@ import 'package:sagase/ui/bottom_sheets/select_dictionary_item_bottom_sheet.dart
 import 'package:sagase/ui/bottom_sheets/stroke_order_bottom_sheet.dart';
 import 'package:sagase/ui/bottom_sheets/text_analysis_history_bottom_sheet.dart';
 import 'package:sagase/ui/dialogs/confirmation_dialog.dart';
+import 'package:sagase/ui/dialogs/conjugation_practice_selection_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_set_report_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_set_select_dialog.dart';
 import 'package:sagase/ui/dialogs/flashcard_start_dialog.dart';
@@ -27,6 +28,7 @@ import 'package:sagase/ui/dialogs/text_field_dialog.dart';
 import 'package:sagase/ui/dialogs/theme_selection_dialog.dart';
 import 'package:sagase/ui/views/about/about_view.dart';
 import 'package:sagase/ui/views/changelog/changelog_view.dart';
+import 'package:sagase/ui/views/conjugation_practice/conjugation_practice_view.dart';
 import 'package:sagase/ui/views/dev/dev_view.dart';
 import 'package:sagase/ui/views/dictionary_list/dictionary_list_view.dart';
 import 'package:sagase/ui/views/flashcard_set_info/flashcard_set_info_view.dart';
@@ -80,6 +82,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     MaterialRoute(page: KanjiListView),
     MaterialRoute(page: KanaView),
     MaterialRoute(page: KanaPracticeView),
+    MaterialRoute(page: ConjugationPracticeView),
     MaterialRoute(page: FlashcardSetSettingsView),
     MaterialRoute(page: FlashcardSetInfoView),
     MaterialRoute(page: FlashcardsView),
@@ -137,6 +140,7 @@ import 'package:stacked_themes/stacked_themes.dart';
     StackedDialog(classType: PercentIndicatorDialog),
     StackedDialog(classType: NoteEditDialog),
     StackedDialog(classType: KanaPracticeSelectionDialog),
+    StackedDialog(classType: ConjugationPracticeSelectionDialog),
   ],
 )
 class AppSetup {

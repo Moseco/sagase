@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/datamodels/kana.dart';
 import 'package:sagase/ui/views/flashcards/widgets/flashcard_deck.dart';
+import 'package:sagase/ui/widgets/practice_progress_bar.dart';
+import 'package:sagase/ui/widgets/typing_answer_bar.dart';
 import 'package:stacked/stacked.dart';
 
 import 'kana_practice_viewmodel.dart';
@@ -228,8 +230,8 @@ class _Typing extends ViewModelWidget<KanaPracticeViewModel> {
   Widget build(BuildContext context, KanaPracticeViewModel viewModel) {
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    void submit() {
-      viewModel.submitAnswer(textEditingController.text);
+    void submit(String answer) {
+      viewModel.submitAnswer(answer);
       // Keep a wrong answer visible until moving on to the next flashcard
       if (!viewModel.showingAnswer) textEditingController.clear();
     }
@@ -286,74 +288,11 @@ class _Typing extends ViewModelWidget<KanaPracticeViewModel> {
               ),
             ),
           ),
-          Card(
-            elevation: 8,
-            margin: EdgeInsets.only(
-              left: 8,
-              right: 8,
-              bottom: 8 + MediaQuery.of(context).padding.bottom * 1.2,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: TextField(
-                        controller: textEditingController,
-                        autofocus: true,
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        maxLines: 1,
-                        textInputAction: TextInputAction.done,
-                        onEditingComplete: submit,
-                        // Reject edits while showing the answer
-                        inputFormatters: [
-                          TextInputFormatter.withFunction(
-                            (oldValue, newValue) =>
-                                viewModel.showingAnswer ? oldValue : newValue,
-                          ),
-                        ],
-                        showCursor: !viewModel.showingAnswer,
-                        style: viewModel.showingAnswer
-                            ? const TextStyle(color: Colors.red)
-                            : null,
-                        decoration: const InputDecoration(
-                          hintText: 'Romaji',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: submit,
-                    child: Container(
-                      margin: const EdgeInsets.all(4),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 24,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            viewModel.showingAnswer ? Colors.red : Colors.green,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Icon(
-                        viewModel.showingAnswer
-                            ? Icons.arrow_forward
-                            : Icons.check,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          TypingAnswerBar(
+            controller: textEditingController,
+            onSubmit: submit,
+            showingAnswer: viewModel.showingAnswer,
+            hintText: 'Romaji',
           ),
         ],
       ),
@@ -460,69 +399,10 @@ class _ProgressIndicator extends ViewModelWidget<KanaPracticeViewModel> {
 
   @override
   Widget build(BuildContext context, KanaPracticeViewModel viewModel) {
-    int emptyBar = viewModel.activeFlashcards.length;
-    int completedBar = viewModel.allFlashcards.length - emptyBar;
-    final bottomLeftString = '$completedBar completed';
-    final bottomRightString = '$emptyBar cards left';
-
-    // If completedBar or emptyBar would be too small, set minimum size
-    if (completedBar != 0 && completedBar / emptyBar < 0.04) {
-      completedBar = 1;
-      emptyBar = 25;
-    } else if (emptyBar != 0 && emptyBar / completedBar < 0.04) {
-      completedBar = 25;
-      emptyBar = 1;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Container(
-            height: 10,
-            decoration: const BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-            ),
-            child: completedBar == 0
-                ? null
-                : Row(
-                    children: [
-                      Flexible(
-                        flex: completedBar,
-                        child: Container(
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(5),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: emptyBar,
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(bottomLeftString, textAlign: TextAlign.start),
-                ),
-                Expanded(
-                  child: Text(bottomRightString, textAlign: TextAlign.end),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return PracticeProgressBar(
+      completed:
+          viewModel.allFlashcards.length - viewModel.activeFlashcards.length,
+      remaining: viewModel.activeFlashcards.length,
     );
   }
 }

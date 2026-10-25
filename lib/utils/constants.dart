@@ -1,3 +1,4 @@
+import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/datamodels/kana.dart';
 
 const int nestedNavigationKey = 1;
@@ -31,6 +32,8 @@ const keyAddNewFlashcardsInBatches = 'add_new_flashcards_in_batches';
 const keyKanaPracticeScripts = 'kana_practice_scripts';
 const keyKanaPracticeTypes = 'kana_practice_types';
 const keyKanaPracticeTypingEnabled = 'kana_practice_typing_enabled';
+const keyConjugationPracticeWordTypes = 'conjugation_practice_word_types';
+const keyConjugationPracticeForms = 'conjugation_practice_forms';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -50,6 +53,26 @@ const defaultAddNewFlashcardsInBatches = false;
 const defaultKanaPracticeScripts = {KanaScript.hiragana};
 const defaultKanaPracticeTypes = {KanaType.basic};
 const defaultKanaPracticeTypingEnabled = false;
+const defaultConjugationPracticeWordTypes = {
+  ConjugationPracticeWordType.godanU,
+  ConjugationPracticeWordType.godanKu,
+  ConjugationPracticeWordType.godanGu,
+  ConjugationPracticeWordType.godanSu,
+  ConjugationPracticeWordType.godanTsu,
+  ConjugationPracticeWordType.godanNu,
+  ConjugationPracticeWordType.godanBu,
+  ConjugationPracticeWordType.godanMu,
+  ConjugationPracticeWordType.godanRu,
+  ConjugationPracticeWordType.ichidan,
+  ConjugationPracticeWordType.suru,
+  ConjugationPracticeWordType.irregular,
+};
+const defaultConjugationPracticeForms = {
+  ConjugationPracticeForm.polite,
+  ConjugationPracticeForm.negative,
+  ConjugationPracticeForm.past,
+  ConjugationPracticeForm.teForm,
+};
 
 const searchQueryLimit = 1000;
 
