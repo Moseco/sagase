@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/datamodels/conjugation_practice.dart';
+import 'package:sagase/ui/widgets/selection_list_item.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class ConjugationPracticeSelectionDialog extends HookWidget {
@@ -64,11 +65,11 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
                           _toggleAll(types, verbTypes, selectAll),
                       children: [
                         for (final type in verbTypes)
-                          _SelectionItem(
+                          SelectionListItem(
                             title: type.title,
                             subtitle: type.examples,
-                            selected: types.value.contains(type),
-                            onChanged: () => _toggle(types, type),
+                            item: type,
+                            selection: types,
                           ),
                       ],
                     ),
@@ -81,11 +82,11 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
                           _toggleAll(types, adjectiveTypes, selectAll),
                       children: [
                         for (final type in adjectiveTypes)
-                          _SelectionItem(
+                          SelectionListItem(
                             title: type.title,
                             subtitle: type.examples,
-                            selected: types.value.contains(type),
-                            onChanged: () => _toggle(types, type),
+                            item: type,
+                            selection: types,
                           ),
                       ],
                     ),
@@ -100,11 +101,11 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
                       ),
                       children: [
                         for (final form in ConjugationPracticeForm.values)
-                          _SelectionItem(
+                          SelectionListItem(
                             title: form.title,
                             subtitle: form.examples,
-                            selected: forms.value.contains(form),
-                            onChanged: () => _toggle(forms, form),
+                            item: form,
+                            selection: forms,
                           ),
                       ],
                     ),
@@ -128,10 +129,9 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
                   if (types.value.isEmpty || forms.value.isEmpty) {
                     error = 'At least one word type and one form must be '
                         'selected';
-                  } else if (ConjugationPracticeQuestion.getAll(
-                    types: types.value,
-                    forms: forms.value,
-                  ).isEmpty) {
+                  } else if (!types.value.any(
+                    (type) => forms.value.any((form) => form.appliesTo(type)),
+                  )) {
                     error = 'The selected forms do not apply to the selected '
                         'word types';
                   }
@@ -160,14 +160,6 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
         ),
       ),
     );
-  }
-
-  void _toggle<T>(ValueNotifier<Set<T>> selection, T item) {
-    if (selection.value.contains(item)) {
-      selection.value = selection.value.difference({item});
-    } else {
-      selection.value = selection.value.union({item});
-    }
   }
 
   void _toggleAll<T>(
@@ -258,30 +250,6 @@ class _Section extends HookWidget {
           secondChild: Column(children: children),
         ),
       ],
-    );
-  }
-}
-
-class _SelectionItem extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final bool selected;
-  final void Function() onChanged;
-
-  const _SelectionItem({
-    required this.title,
-    this.subtitle,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: Text(title),
-      subtitle: subtitle == null ? null : Text(subtitle!),
-      value: selected,
-      onChanged: (_) => onChanged(),
     );
   }
 }

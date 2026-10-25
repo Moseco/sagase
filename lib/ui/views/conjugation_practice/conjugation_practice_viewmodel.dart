@@ -1,7 +1,6 @@
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/ui/views/practice/practice_viewmodel.dart';
-import 'package:sagase/utils/romaji_converter.dart';
 
 class ConjugationPracticeViewModel
     extends PracticeViewModel<ConjugationPracticeQuestion> {
@@ -34,7 +33,7 @@ class ConjugationPracticeViewModel
 
   @override
   bool isCorrectAnswer(ConjugationPracticeQuestion item, String answer) {
-    return item.isCorrect(romajiToHiragana(answer, finalize: true));
+    return item.isCorrect(answer);
   }
 
   Future<bool> editSelection() async {

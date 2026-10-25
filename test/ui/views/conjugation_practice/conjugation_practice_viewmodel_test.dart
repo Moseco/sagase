@@ -44,8 +44,8 @@ void main() {
       final viewModel = ConjugationPracticeViewModel(randomSeed: 123);
       expect(viewModel.allItems.length, 1);
 
-      // Correct answer typed in romaji shows the answer
-      await viewModel.submitAnswer('shinda');
+      // Correct answer shows the answer
+      await viewModel.submitAnswer('しんだ');
       expect(viewModel.showingAnswer, true);
       expect(viewModel.answerCorrect, true);
       expect(viewModel.activeItems.length, 1);
@@ -84,7 +84,7 @@ void main() {
       expect(viewModel.allItems.length, 2);
 
       final current = viewModel.activeItems[0];
-      await viewModel.submitAnswer('shinu');
+      await viewModel.submitAnswer('しぬ');
       expect(viewModel.showingAnswer, true);
       expect(viewModel.answerCorrect, false);
       expect(viewModel.activeItems[0], current);
@@ -109,7 +109,7 @@ void main() {
       final current = viewModel.activeItems[0];
       final other = viewModel.activeItems[1];
 
-      await viewModel.submitAnswer('shinu');
+      await viewModel.submitAnswer('しぬ');
       expect(viewModel.showingAnswer, true);
 
       // Retrying hides the answer without counting it as wrong
@@ -127,7 +127,7 @@ void main() {
       expect(viewModel.activeItems, [other]);
     });
 
-    test('Answers accept kana, kanji and trailing n', () async {
+    test('Answers accept kana and kanji', () async {
       getAndRegisterSharedPreferencesService(
         getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
         getConjugationPracticeForms: {ConjugationPracticeForm.politeNegative},
@@ -137,9 +137,6 @@ void main() {
 
       expect(viewModel.isCorrectAnswer(question, 'しにません'), true);
       expect(viewModel.isCorrectAnswer(question, '死にません'), true);
-      expect(viewModel.isCorrectAnswer(question, 'shinimasen'), true);
-      expect(viewModel.isCorrectAnswer(question, 'しにませn'), true);
-      expect(viewModel.isCorrectAnswer(question, 'SHINIMASEN'), true);
       expect(viewModel.isCorrectAnswer(question, 'しにます'), false);
     });
 

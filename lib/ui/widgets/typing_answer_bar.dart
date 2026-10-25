@@ -73,13 +73,15 @@ class TypingAnswerBar extends StatelessWidget {
                   maxLines: 1,
                   textInputAction: TextInputAction.done,
                   onEditingComplete: _submit,
+                  onChanged: (_) {
+                    if (showingAnswer) onRetry?.call();
+                  },
                   inputFormatters: [
                     TextInputFormatter.withFunction((oldValue, newValue) {
                       if (!showingAnswer) return newValue;
                       if (onRetry != null &&
                           !answerCorrect &&
                           newValue.text.length < oldValue.text.length) {
-                        onRetry!();
                         return TextEditingValue.empty;
                       }
                       return oldValue;
