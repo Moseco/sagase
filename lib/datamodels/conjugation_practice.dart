@@ -17,7 +17,7 @@ enum ConjugationPracticeWordType {
   godanRu('Godan る', '帰る, 入る, 分かる', false),
   ichidan('Ichidan', '食べる, 見る, 起きる', false),
   suru('する verbs', '勉強する, 料理する', false),
-  irregular('Irregular', 'する, 来る, 行く, ある', false),
+  irregular('Irregular', 'する, 来る, 行く, ある', false, weight: 2),
   adjectiveI('い-adjectives', '高い, 新しい, 楽しい', true),
   adjectiveIi('いい-adjectives', 'いい, かっこいい', true),
   adjectiveNa('な-adjectives', '静か, 元気, 好き', true);
@@ -26,8 +26,16 @@ enum ConjugationPracticeWordType {
   final String examples;
   final bool isAdjective;
 
+  /// How many times more often each question of this word type is practiced
+  /// than a question of a word type with weight 1.
+  final int weight;
+
   const ConjugationPracticeWordType(
-      this.title, this.examples, this.isAdjective);
+    this.title,
+    this.examples,
+    this.isAdjective, {
+    this.weight = 1,
+  });
 
   List<ConjugationPracticeWord> get words => _words[this]!;
 }
@@ -250,51 +258,139 @@ class ConjugationPracticeQuestion {
     return result;
   }
 
+  /// Returns whether the given word types and forms have at least one
+  /// question. Stops at the first question so it is cheaper than [getAll].
+  static bool hasQuestions({
+    required Set<ConjugationPracticeWordType> types,
+    required Set<ConjugationPracticeForm> forms,
+  }) {
+    for (final type in types) {
+      for (final word in type.words) {
+        for (final form in forms) {
+          if (create(word, type, form) != null) return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /// Returns up to [count] random questions for the given word types and
-  /// forms. The questions are spread as evenly as possible over the selected
-  /// word types and forms so each of them is practiced when [count] allows.
+  /// forms. Each word type gets questions in proportion to how many questions
+  /// it has times its [ConjugationPracticeWordType.weight], so every question
+  /// of a word type with the same weight is about equally likely to be
+  /// practiced. The questions are spread as evenly as possible over the
+  /// selected forms and then over the words of each word type.
   static List<ConjugationPracticeQuestion> getRandom({
     required Set<ConjugationPracticeWordType> types,
     required Set<ConjugationPracticeForm> forms,
     required int count,
     Random? random,
   }) {
-    final remaining = getAll(types: types, forms: forms)..shuffle(random);
-    if (remaining.length <= count) return remaining;
+    final rng = random ?? Random();
+    final all = getAll(types: types, forms: forms)..shuffle(rng);
+    if (all.length <= count) return all;
 
-    final typeUses = {for (final type in types) type: 0};
-    final formUses = {for (final form in forms) form: 0};
-    final Map<(ConjugationPracticeWordType, ConjugationPracticeForm), int>
-        pairUses = {};
-
-    final List<ConjugationPracticeQuestion> result = [];
-    while (result.length < count) {
-      // Take the question whose word type and form have been used the least,
-      // breaking ties with how often the type and form pair has been used.
-      // Remaining ties keep the shuffled order.
-      late ConjugationPracticeQuestion best;
-      int bestUses = -1;
-      int bestPairUses = -1;
-      for (final question in remaining) {
-        final uses = typeUses[question.type]! + formUses[question.form]!;
-        final pairs = pairUses[(question.type, question.form)] ?? 0;
-        if (bestUses == -1 ||
-            uses < bestUses ||
-            (uses == bestUses && pairs < bestPairUses)) {
-          best = question;
-          bestUses = uses;
-          bestPairUses = pairs;
-        }
-      }
-
-      remaining.remove(best);
-      result.add(best);
-      typeUses[best.type] = typeUses[best.type]! + 1;
-      formUses[best.form] = formUses[best.form]! + 1;
-      pairUses[(best.type, best.form)] = bestPairUses + 1;
+    // The map keeps the shuffled order so the word types are in random order
+    final Map<ConjugationPracticeWordType, List<ConjugationPracticeQuestion>>
+        typeQuestions = {};
+    for (final question in all) {
+      (typeQuestions[question.type] ??= []).add(question);
     }
 
-    return result;
+    int weightOf(Iterable<ConjugationPracticeWordType> types) => types.fold(
+          0,
+          (sum, type) => sum + type.weight * typeQuestions[type]!.length,
+        );
+
+    // Word types whose weighted share covers all of their questions get all
+    // of them. Each such type gets no more than its share, so the shares of
+    // the other types only grow and the check is repeated until none are left.
+    final Map<ConjugationPracticeWordType, int> typeCounts = {};
+    final splitTypes = typeQuestions.keys.toList();
+    int splitCount = count;
+    while (true) {
+      final totalWeight = weightOf(splitTypes);
+      final fullTypes = splitTypes
+          .where((type) => splitCount * type.weight >= totalWeight)
+          .toList();
+      if (fullTypes.isEmpty) break;
+      for (final type in fullTypes) {
+        typeCounts[type] = typeQuestions[type]!.length;
+        splitCount -= typeQuestions[type]!.length;
+        splitTypes.remove(type);
+      }
+    }
+
+    // Split the rest between the word types in proportion to their weighted
+    // number of questions. Fractional shares are rounded up or down at random
+    // so a type with a small share, such as Godan ぬ with only 死ぬ, is
+    // practiced in some sessions instead of every session. The random type
+    // order varies which types are rounded up together. Because the types
+    // that would get all of their questions were handled above, no type gets
+    // more questions than it has.
+    final totalWeight = weightOf(splitTypes);
+    int position = rng.nextInt(totalWeight);
+    for (final type in splitTypes) {
+      final start = position;
+      position += splitCount * type.weight * typeQuestions[type]!.length;
+      typeCounts[type] = position ~/ totalWeight - start ~/ totalWeight;
+    }
+
+    // Fill the word types that allow the fewest of the selected forms first,
+    // such as adjectives when verb only forms are selected, so the word types
+    // that allow more forms can even out the forms afterward. List.sort is not
+    // stable so ties are broken by the random order.
+    final typeOrder = typeQuestions.keys.toList();
+    final formCounts = {
+      for (final entry in typeQuestions.entries)
+        entry.key: entry.value.map((e) => e.form).toSet().length,
+    };
+    final randomOrder = {
+      for (final (index, type) in typeOrder.indexed) type: index,
+    };
+    typeOrder.sort((a, b) {
+      final comparison = formCounts[a]!.compareTo(formCounts[b]!);
+      if (comparison != 0) return comparison;
+      return randomOrder[a]!.compareTo(randomOrder[b]!);
+    });
+
+    final formUses = {for (final form in forms) form: 0};
+    final Map<ConjugationPracticeWord, int> wordUses = {};
+    final List<ConjugationPracticeQuestion> result = [];
+    for (final type in typeOrder) {
+      final questions = typeQuestions[type]!;
+      final Map<ConjugationPracticeForm, int> typeFormUses = {};
+
+      // How often the question's form has been used, then its word, then its
+      // form within this word type
+      (int, int, int) uses(ConjugationPracticeQuestion question) => (
+            formUses[question.form]!,
+            wordUses[question.word] ?? 0,
+            typeFormUses[question.form] ?? 0,
+          );
+
+      for (int i = 0; i < typeCounts[type]!; i++) {
+        // Take the least used question. Ties keep the shuffled order.
+        final best = questions.reduce(
+          (a, b) => _compareUses(uses(b), uses(a)) < 0 ? b : a,
+        );
+
+        questions.remove(best);
+        result.add(best);
+        formUses[best.form] = formUses[best.form]! + 1;
+        wordUses[best.word] = (wordUses[best.word] ?? 0) + 1;
+        typeFormUses[best.form] = (typeFormUses[best.form] ?? 0) + 1;
+      }
+    }
+
+    // Mix the word types since they were added one after another
+    return result..shuffle(rng);
+  }
+
+  static int _compareUses((int, int, int) a, (int, int, int) b) {
+    if (a.$1 != b.$1) return a.$1.compareTo(b.$1);
+    if (a.$2 != b.$2) return a.$2.compareTo(b.$2);
+    return a.$3.compareTo(b.$3);
   }
 }
 

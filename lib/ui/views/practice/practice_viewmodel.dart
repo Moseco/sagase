@@ -13,7 +13,8 @@ import 'package:stacked_services/stacked_services.dart';
 /// setting and the session ends once every item has been answered correctly.
 /// Typed answers are checked with [isCorrectAnswer] and a wrong typed answer
 /// shows the correct answer until the user submits again. A correct typed
-/// answer does the same if [showAnswerWhenCorrect] is true.
+/// answer does the same if [showAnswerWhenCorrect] is true. Empty typed
+/// answers are ignored.
 abstract class PracticeViewModel<T> extends BaseViewModel {
   final navigationService = locator<NavigationService>();
   final dialogService = locator<DialogService>();
@@ -71,6 +72,9 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
       _showingAnswer = false;
       return answerItem(_answerCorrect);
     }
+
+    // Ignore empty answers, such as an accidental double submit
+    if (answer.trim().isEmpty) return;
 
     _answerCorrect = isCorrectAnswer(activeItems[0], answer);
     if (_answerCorrect && !showAnswerWhenCorrect) {

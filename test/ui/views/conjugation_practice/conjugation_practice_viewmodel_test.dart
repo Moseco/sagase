@@ -175,6 +175,58 @@ void main() {
       )).called(1);
     });
 
+    test('Saved selection without questions uses the defaults', () {
+      getAndRegisterSharedPreferencesService(
+        getConjugationPracticeWordTypes: {
+          ConjugationPracticeWordType.adjectiveNa
+        },
+        getConjugationPracticeForms: {ConjugationPracticeForm.potential},
+      );
+
+      final viewModel = ConjugationPracticeViewModel(randomSeed: 123);
+
+      expect(
+        viewModel.allItems.length,
+        ConjugationPracticeViewModel.questionsPerSession,
+      );
+      for (final question in viewModel.allItems) {
+        expect(
+          constants.defaultConjugationPracticeWordTypes.contains(question.type),
+          true,
+        );
+        expect(
+          constants.defaultConjugationPracticeForms.contains(question.form),
+          true,
+        );
+      }
+    });
+
+    test('Edit selection without questions is not saved', () async {
+      final sharedPreferencesService = getAndRegisterSharedPreferencesService();
+      final dialogService = getAndRegisterDialogService();
+      when(dialogService.showCustomDialog(
+        variant: DialogType.conjugationPracticeSelection,
+        data: anyNamed('data'),
+        barrierDismissible: true,
+      )).thenAnswer(
+        (_) async => DialogResponse(
+          data: (
+            {ConjugationPracticeWordType.adjectiveNa},
+            {ConjugationPracticeForm.potential},
+          ),
+        ),
+      );
+
+      final viewModel = ConjugationPracticeViewModel(randomSeed: 123);
+      final items = viewModel.allItems;
+      expect(await viewModel.editSelection(), false);
+
+      expect(viewModel.allItems, items);
+      verifyNever(
+          sharedPreferencesService.setConjugationPracticeWordTypes(any));
+      verifyNever(sharedPreferencesService.setConjugationPracticeForms(any));
+    });
+
     test('Edit selection cancelled', () async {
       final dialogService = getAndRegisterDialogService();
       when(dialogService.showCustomDialog(

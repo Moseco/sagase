@@ -198,6 +198,51 @@ void main() {
       expect(find.text('1 left'), findsOne);
     });
 
+    testWidgets('Empty submit is ignored', (tester) async {
+      getAndRegisterSharedPreferencesService(
+        getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
+        getConjugationPracticeForms: {
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.negative,
+        },
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(home: ConjugationPracticeView(randomSeed: 123)),
+      );
+      await tester.pumpAndSettle();
+
+      // Submitting without an answer does nothing
+      final firstForm = currentFormTitle(tester);
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pumpAndSettle();
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), false);
+      expect(find.byIcon(Icons.check), findsOne);
+      expect(currentFormTitle(tester), firstForm);
+      expect(find.text('0 completed'), findsOne);
+      expect(find.text('2 left'), findsOne);
+
+      // A double submit after a correct answer does not answer the next one
+      await tester.enterText(
+        find.byType(TextField),
+        firstForm == 'Past' ? 'shinda' : 'shinanai',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), true);
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), false);
+      expect(find.byIcon(Icons.check), findsOne);
+      expect(currentFormTitle(tester), isNot(firstForm));
+      expect(find.text('1 completed'), findsOne);
+      expect(find.text('1 left'), findsOne);
+    });
+
     testWidgets('Trailing n is converted on submit', (tester) async {
       getAndRegisterSharedPreferencesService(
         getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},

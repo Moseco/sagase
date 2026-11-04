@@ -129,8 +129,9 @@ class ConjugationPracticeSelectionDialog extends HookWidget {
                   if (types.value.isEmpty || forms.value.isEmpty) {
                     error = 'At least one word type and one form must be '
                         'selected';
-                  } else if (!types.value.any(
-                    (type) => forms.value.any((form) => form.appliesTo(type)),
+                  } else if (!ConjugationPracticeQuestion.hasQuestions(
+                    types: types.value,
+                    forms: forms.value,
                   )) {
                     error = 'The selected forms do not apply to the selected '
                         'word types';

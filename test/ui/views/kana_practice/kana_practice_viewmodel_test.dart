@@ -186,9 +186,12 @@ void main() {
       expect(viewModel.showingAnswer, false);
       expect(viewModel.activeFlashcards.length, 3);
 
-      // Empty answer is wrong
+      // Empty answer is ignored
+      tempFlashcard = viewModel.activeFlashcards[0];
       await viewModel.submitAnswer('');
-      expect(viewModel.showingAnswer, true);
+      await viewModel.submitAnswer('  ');
+      expect(viewModel.showingAnswer, false);
+      expect(viewModel.activeFlashcards[0], tempFlashcard);
       expect(viewModel.activeFlashcards.length, 3);
     });
 

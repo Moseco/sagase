@@ -1,6 +1,7 @@
 import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/ui/views/practice/practice_viewmodel.dart';
+import 'package:sagase/utils/constants.dart' as constants;
 
 class ConjugationPracticeViewModel
     extends PracticeViewModel<ConjugationPracticeQuestion> {
@@ -12,6 +13,15 @@ class ConjugationPracticeViewModel
   ConjugationPracticeViewModel({super.randomSeed}) {
     _types = sharedPreferencesService.getConjugationPracticeWordTypes();
     _forms = sharedPreferencesService.getConjugationPracticeForms();
+    // Saved word types or forms that no longer exist are dropped when loaded,
+    // which can leave a selection without questions
+    if (!ConjugationPracticeQuestion.hasQuestions(
+      types: _types,
+      forms: _forms,
+    )) {
+      _types = {...constants.defaultConjugationPracticeWordTypes};
+      _forms = {...constants.defaultConjugationPracticeForms};
+    }
     startSession();
   }
 
@@ -49,7 +59,12 @@ class ConjugationPracticeViewModel
       Set<ConjugationPracticeWordType> types,
       Set<ConjugationPracticeForm> forms,
     ) = response!.data;
-    if (types.isEmpty || forms.isEmpty) return false;
+    if (!ConjugationPracticeQuestion.hasQuestions(
+      types: types,
+      forms: forms,
+    )) {
+      return false;
+    }
 
     _types = types;
     _forms = forms;

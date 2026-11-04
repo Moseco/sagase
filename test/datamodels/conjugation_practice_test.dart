@@ -115,16 +115,14 @@ void main() {
           '来[こ]ない');
       expect(question('来る', ConjugationPracticeForm.polite).answerFurigana,
           '来[き]ます');
-      expect(
-          question('思い出す', ConjugationPracticeForm.negative).answerFurigana,
+      expect(question('思い出す', ConjugationPracticeForm.negative).answerFurigana,
           '思[おも]い 出[だ]さない');
-      expect(
-          question('勉強する', ConjugationPracticeForm.potential).answerFurigana,
+      expect(question('勉強する', ConjugationPracticeForm.potential).answerFurigana,
           '勉強[べんきょう]できる');
       expect(question('静か', ConjugationPracticeForm.polite).answerFurigana,
           '静[しず]かです');
-      expect(question('いい', ConjugationPracticeForm.past).answerFurigana,
-          'よかった');
+      expect(
+          question('いい', ConjugationPracticeForm.past).answerFurigana, 'よかった');
       expect(question('する', ConjugationPracticeForm.negative).answerFurigana,
           'しない');
     });
@@ -194,6 +192,56 @@ void main() {
       );
     });
 
+    test('hasQuestions matches getAll', () {
+      for (final type in ConjugationPracticeWordType.values) {
+        for (final form in ConjugationPracticeForm.values) {
+          expect(
+            ConjugationPracticeQuestion.hasQuestions(
+              types: {type},
+              forms: {form},
+            ),
+            ConjugationPracticeQuestion.getAll(
+              types: {type},
+              forms: {form},
+            ).isNotEmpty,
+            reason: '${type.name} ${form.name}',
+          );
+        }
+      }
+
+      expect(
+        ConjugationPracticeQuestion.hasQuestions(
+          types: {ConjugationPracticeWordType.adjectiveNa},
+          forms: {ConjugationPracticeForm.potential},
+        ),
+        false,
+      );
+      expect(
+        ConjugationPracticeQuestion.hasQuestions(
+          types: {
+            ConjugationPracticeWordType.adjectiveNa,
+            ConjugationPracticeWordType.godanMu,
+          },
+          forms: {ConjugationPracticeForm.potential},
+        ),
+        true,
+      );
+      expect(
+        ConjugationPracticeQuestion.hasQuestions(
+          types: {},
+          forms: {ConjugationPracticeForm.past},
+        ),
+        false,
+      );
+      expect(
+        ConjugationPracticeQuestion.hasQuestions(
+          types: {ConjugationPracticeWordType.godanMu},
+          forms: {},
+        ),
+        false,
+      );
+    });
+
     test('getRandom', () {
       final types = {
         ConjugationPracticeWordType.godanMu,
@@ -213,11 +261,11 @@ void main() {
 
       expect(questions.length, 10);
       expect(questions.toSet().length, 10);
-      // Every type and form pair is covered before repeating
-      expect(
-        questions.map((e) => (e.type, e.form)).toSet().length,
-        types.length * forms.length,
-      );
+      // Forms are balanced and words are not repeated
+      for (final form in forms) {
+        expect(questions.where((e) => e.form == form).length, 5);
+      }
+      expect(questions.map((e) => e.word).toSet().length, 10);
 
       // Fewer questions than requested returns everything
       final few = ConjugationPracticeQuestion.getRandom(
@@ -228,7 +276,7 @@ void main() {
       expect(few.length, 2);
     });
 
-    test('getRandom includes every selected word type and form', () {
+    test('getRandom splits questions between word types by weighted size', () {
       final types = ConjugationPracticeWordType.values
           .where((e) => !e.isAdjective)
           .toSet();
@@ -238,6 +286,11 @@ void main() {
         ConjugationPracticeForm.past,
         ConjugationPracticeForm.teForm,
       };
+      final all =
+          ConjugationPracticeQuestion.getAll(types: types, forms: forms);
+      final totalWeight = all.fold(0, (sum, e) => sum + e.type.weight);
+
+      int godanNuSessions = 0;
       for (int seed = 0; seed < 100; seed++) {
         final questions = ConjugationPracticeQuestion.getRandom(
           types: types,
@@ -245,8 +298,133 @@ void main() {
           count: 20,
           random: Random(seed),
         );
-        expect(questions.map((e) => e.type).toSet(), types);
-        expect(questions.map((e) => e.form).toSet(), forms);
+        expect(questions.length, 20);
+        for (final type in types) {
+          final share = 20 *
+              type.weight *
+              all.where((e) => e.type == type).length /
+              totalWeight;
+          expect(
+            questions.where((e) => e.type == type).length,
+            anyOf(share.floor(), share.ceil()),
+          );
+        }
+        // Irregular verbs have a higher weight so they are in every session
+        expect(
+          questions.where(
+            (e) => e.type == ConjugationPracticeWordType.irregular,
+          ),
+          isNotEmpty,
+        );
+        for (final form in forms) {
+          expect(questions.where((e) => e.form == form).length, 5);
+        }
+        expect(questions.map((e) => e.word).toSet().length, 20);
+
+        if (questions.any(
+          (e) => e.type == ConjugationPracticeWordType.godanNu,
+        )) {
+          godanNuSessions++;
+        }
+      }
+
+      // Godan ぬ only has 死ぬ so it is in about 1 in 5 sessions
+      expect(godanNuSessions, inInclusiveRange(10, 35));
+    });
+
+    test('getRandom gives a weighted word type at most all its questions', () {
+      final types = {
+        ConjugationPracticeWordType.irregular,
+        ConjugationPracticeWordType.godanNu,
+        ConjugationPracticeWordType.adjectiveIi,
+      };
+      final forms = {
+        ConjugationPracticeForm.polite,
+        ConjugationPracticeForm.past,
+        ConjugationPracticeForm.teForm,
+      };
+      final all =
+          ConjugationPracticeQuestion.getAll(types: types, forms: forms);
+      // The weighted share of irregular verbs is 20 * 24 / 33, about 14.5,
+      // which is more than the 12 questions they have
+      expect(all.length, 21);
+      expect(
+        all.where((e) => e.type == ConjugationPracticeWordType.irregular),
+        hasLength(12),
+      );
+
+      for (int seed = 0; seed < 100; seed++) {
+        final questions = ConjugationPracticeQuestion.getRandom(
+          types: types,
+          forms: forms,
+          count: 20,
+          random: Random(seed),
+        );
+        expect(questions.length, 20);
+        expect(questions.toSet().length, 20);
+        expect(
+          questions.where(
+            (e) => e.type == ConjugationPracticeWordType.irregular,
+          ),
+          hasLength(12),
+        );
+      }
+    });
+
+    test('getRandom balances forms that only some word types allow', () {
+      final allTypes = ConjugationPracticeWordType.values.toSet();
+      final selections = [
+        // Adjectives only allow past
+        (
+          allTypes,
+          {ConjugationPracticeForm.potential, ConjugationPracticeForm.past},
+        ),
+        // Adjectives only allow polite
+        (
+          allTypes,
+          {
+            ConjugationPracticeForm.polite,
+            ConjugationPracticeForm.potential,
+            ConjugationPracticeForm.volitional,
+          },
+        ),
+        // Too few words to avoid repeating them, and ある has no potential or
+        // volitional
+        (
+          {
+            ConjugationPracticeWordType.irregular,
+            ConjugationPracticeWordType.godanNu,
+          },
+          {
+            ConjugationPracticeForm.polite,
+            ConjugationPracticeForm.negative,
+            ConjugationPracticeForm.past,
+            ConjugationPracticeForm.teForm,
+            ConjugationPracticeForm.potential,
+            ConjugationPracticeForm.volitional,
+          },
+        ),
+      ];
+
+      for (final (types, forms) in selections) {
+        for (int seed = 0; seed < 100; seed++) {
+          final questions = ConjugationPracticeQuestion.getRandom(
+            types: types,
+            forms: forms,
+            count: 20,
+            random: Random(seed),
+          );
+          expect(questions.length, 20);
+          final formCounts = [
+            for (final form in forms)
+              questions.where((e) => e.form == form).length,
+          ];
+          expect(
+            formCounts.reduce(max) - formCounts.reduce(min),
+            lessThanOrEqualTo(1),
+            reason: 'forms $forms seed $seed counts $formCounts',
+          );
+        }
       }
     });
   });
