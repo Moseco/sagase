@@ -59,7 +59,9 @@ class LearningView extends StackedView<LearningViewModel> {
                       _FlashcardSet(flashcardSet),
                   ],
               },
-              const _Practice(),
+              if (viewModel.showKanaPractice ||
+                  viewModel.showConjugationPractice)
+                const _Practice(),
             ],
           ),
         ),
@@ -204,19 +206,24 @@ class _Practice extends ViewModelWidget<LearningViewModel> {
               ],
             ),
           ),
-          _PracticeItem(
-            leadingText: 'あ',
-            titleText: 'Kana practice',
-            subtitleText: 'Read hiragana and katakana',
-            onTap: viewModel.navigateToKanaPractice,
-          ),
-          const SizedBox(height: 8),
-          _PracticeItem(
-            leadingText: '活',
-            titleText: 'Conjugation practice',
-            subtitleText: 'Type verb and adjective forms',
-            onTap: viewModel.navigateToConjugationPractice,
-          ),
+          if (viewModel.showKanaPractice)
+            _PracticeItem(
+              leadingText: 'あ',
+              titleText: 'Kana practice',
+              subtitleText: 'Read hiragana and katakana',
+              onTap: viewModel.navigateToKanaPractice,
+              onLongPress: viewModel.hideKanaPractice,
+            ),
+          if (viewModel.showKanaPractice && viewModel.showConjugationPractice)
+            const SizedBox(height: 8),
+          if (viewModel.showConjugationPractice)
+            _PracticeItem(
+              leadingText: '活',
+              titleText: 'Conjugation practice',
+              subtitleText: 'Type verb and adjective forms',
+              onTap: viewModel.navigateToConjugationPractice,
+              onLongPress: viewModel.hideConjugationPractice,
+            ),
         ],
       ),
     );
@@ -228,12 +235,14 @@ class _PracticeItem extends StatelessWidget {
   final String titleText;
   final String subtitleText;
   final void Function() onTap;
+  final void Function() onLongPress;
 
   const _PracticeItem({
     required this.leadingText,
     required this.titleText,
     required this.subtitleText,
     required this.onTap,
+    required this.onLongPress,
   });
 
   @override
@@ -247,6 +256,7 @@ class _PracticeItem extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(

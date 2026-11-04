@@ -334,4 +334,25 @@ class SharedPreferencesService implements InitializableDependency {
       value.map((e) => e.name).toList(),
     );
   }
+
+  bool getShowKanaPractice() {
+    return _sharedPreferences.getBool(constants.keyShowKanaPractice) ??
+        constants.defaultShowKanaPractice;
+  }
+
+  Future<void> setShowKanaPractice(bool value) async {
+    await _sharedPreferences.setBool(constants.keyShowKanaPractice, value);
+  }
+
+  bool getShowConjugationPractice() {
+    return _sharedPreferences.getBool(constants.keyShowConjugationPractice) ??
+        constants.defaultShowConjugationPractice;
+  }
+
+  Future<void> setShowConjugationPractice(bool value) async {
+    await _sharedPreferences.setBool(
+      constants.keyShowConjugationPractice,
+      value,
+    );
+  }
 }

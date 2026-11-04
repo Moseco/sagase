@@ -56,5 +56,53 @@ void main() {
         greaterThan(tester.getBottomLeft(find.text('Kana practice')).dy),
       );
     });
+
+    testWidgets('Long press to hide kana practice', (tester) async {
+      getAndRegisterDictionaryService(getFlashcardSets: []);
+      getAndRegisterDialogService(dialogResponseConfirmed: true);
+      final sharedPreferencesService = getAndRegisterSharedPreferencesService();
+
+      await tester.pumpWidget(const MaterialApp(home: LearningView()));
+      await tester.pumpAndSettle();
+
+      when(sharedPreferencesService.getShowKanaPractice()).thenReturn(false);
+      await tester.longPress(find.text('Kana practice'));
+      await tester.pumpAndSettle();
+
+      verify(sharedPreferencesService.setShowKanaPractice(false)).called(1);
+      expect(find.text('Kana practice'), findsNothing);
+      expect(find.text('Conjugation practice'), findsOne);
+      expect(find.text('Practice'), findsOne);
+    });
+
+    testWidgets('Cancel hiding conjugation practice', (tester) async {
+      getAndRegisterDictionaryService(getFlashcardSets: []);
+      getAndRegisterDialogService(dialogResponseConfirmed: false);
+      final sharedPreferencesService = getAndRegisterSharedPreferencesService();
+
+      await tester.pumpWidget(const MaterialApp(home: LearningView()));
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Conjugation practice'));
+      await tester.pumpAndSettle();
+
+      verifyNever(sharedPreferencesService.setShowConjugationPractice(any));
+      expect(find.text('Conjugation practice'), findsOne);
+    });
+
+    testWidgets('Practice hidden when both are hidden', (tester) async {
+      getAndRegisterDictionaryService(getFlashcardSets: []);
+      getAndRegisterSharedPreferencesService(
+        getShowKanaPractice: false,
+        getShowConjugationPractice: false,
+      );
+
+      await tester.pumpWidget(const MaterialApp(home: LearningView()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Practice'), findsNothing);
+      expect(find.text('Kana practice'), findsNothing);
+      expect(find.text('Conjugation practice'), findsNothing);
+    });
   });
 }

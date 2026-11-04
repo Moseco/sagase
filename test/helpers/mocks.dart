@@ -191,6 +191,8 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
       constants.defaultConjugationPracticeWordTypes,
   Set<ConjugationPracticeForm> getConjugationPracticeForms =
       constants.defaultConjugationPracticeForms,
+  bool getShowKanaPractice = constants.defaultShowKanaPractice,
+  bool getShowConjugationPractice = constants.defaultShowConjugationPractice,
 }) {
   _removeRegistrationIfExists<SharedPreferencesService>();
   final service = MockSharedPreferencesService();
@@ -230,6 +232,11 @@ MockSharedPreferencesService getAndRegisterSharedPreferencesService({
   when(service.getConjugationPracticeForms())
       .thenReturn(getConjugationPracticeForms);
   when(service.setConjugationPracticeForms(any)).thenAnswer((_) async {});
+  when(service.getShowKanaPractice()).thenReturn(getShowKanaPractice);
+  when(service.setShowKanaPractice(any)).thenAnswer((_) async {});
+  when(service.getShowConjugationPractice())
+      .thenReturn(getShowConjugationPractice);
+  when(service.setShowConjugationPractice(any)).thenAnswer((_) async {});
 
   locator.registerSingleton<SharedPreferencesService>(service);
   return service;

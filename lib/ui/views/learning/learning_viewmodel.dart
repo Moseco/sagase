@@ -2,6 +2,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/app/app.router.dart';
 import 'package:sagase/services/dictionary_service.dart';
+import 'package:sagase/services/shared_preferences_service.dart';
 import 'package:sagase/ui/views/home/home_viewmodel.dart';
 import 'package:sagase_dictionary/sagase_dictionary.dart';
 import 'package:stacked/stacked.dart';
@@ -12,9 +13,14 @@ class LearningViewModel extends FutureViewModel {
   final _navigationService = locator<NavigationService>();
   final _dialogService = locator<DialogService>();
   final _snackbarService = locator<SnackbarService>();
+  final _sharedPreferencesService = locator<SharedPreferencesService>();
 
   List<FlashcardSet>? _flashcardSets;
   List<FlashcardSet>? get flashcardSets => _flashcardSets;
+
+  bool get showKanaPractice => _sharedPreferencesService.getShowKanaPractice();
+  bool get showConjugationPractice =>
+      _sharedPreferencesService.getShowConjugationPractice();
 
   @override
   Future<void> futureToRun() async {
@@ -122,6 +128,31 @@ class LearningViewModel extends FutureViewModel {
 
   void navigateToConjugationPractice() {
     _navigationService.navigateTo(Routes.conjugationPracticeView);
+  }
+
+  Future<void> hideKanaPractice() async {
+    if (!await _confirmHidePractice('kana practice')) return;
+    await _sharedPreferencesService.setShowKanaPractice(false);
+    rebuildUi();
+  }
+
+  Future<void> hideConjugationPractice() async {
+    if (!await _confirmHidePractice('conjugation practice')) return;
+    await _sharedPreferencesService.setShowConjugationPractice(false);
+    rebuildUi();
+  }
+
+  Future<bool> _confirmHidePractice(String name) async {
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.confirmation,
+      title: 'Hide $name?',
+      description: 'You can show it again from the settings.',
+      mainButtonTitle: 'Hide',
+      secondaryButtonTitle: 'Cancel',
+      barrierDismissible: true,
+    );
+
+    return response?.confirmed ?? false;
   }
 
   void handleBackButton() {

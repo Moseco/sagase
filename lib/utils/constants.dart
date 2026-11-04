@@ -34,6 +34,8 @@ const keyKanaPracticeTypes = 'kana_practice_types';
 const keyKanaPracticeTypingEnabled = 'kana_practice_typing_enabled';
 const keyConjugationPracticeWordTypes = 'conjugation_practice_word_types';
 const keyConjugationPracticeForms = 'conjugation_practice_forms';
+const keyShowKanaPractice = 'show_kana_practice';
+const keyShowConjugationPractice = 'show_conjugation_practice';
 
 const defaultInitialCorrectInterval = 1;
 const defaultInitialVeryCorrectInterval = 4;
@@ -73,6 +75,8 @@ const defaultConjugationPracticeForms = {
   ConjugationPracticeForm.past,
   ConjugationPracticeForm.teForm,
 };
+const defaultShowKanaPractice = true;
+const defaultShowConjugationPractice = true;
 
 const searchQueryLimit = 1000;
 
