@@ -99,6 +99,7 @@ class ConjugationPracticeView extends HookWidget {
                   convertToHiragana: true,
                   hintText: 'Type in romaji or kana',
                   skipPending: viewModel.skipPending,
+                  onSkipCancel: viewModel.cancelSkip,
                 ),
               ],
             ),

@@ -267,6 +267,42 @@ void main() {
       expect(find.text(TypingAnswerBar.skipHintText), findsNothing);
     });
 
+    testWidgets('Typing and deleting cancels a pending skip', (tester) async {
+      getAndRegisterSharedPreferencesService(
+        getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
+        getConjugationPracticeForms: {
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.negative,
+        },
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(home: ConjugationPracticeView(randomSeed: 123)),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsOne);
+
+      // Typing something and deleting it requires confirming the skip again
+      await tester.enterText(find.byType(TextField), 'shi');
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsNothing);
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsOne);
+      expect(isAnswerVisible(tester), false);
+      expect(find.byIcon(Icons.check), findsOne);
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), true);
+    });
+
     testWidgets('Double submit does not skip the next question',
         (tester) async {
       getAndRegisterSharedPreferencesService(

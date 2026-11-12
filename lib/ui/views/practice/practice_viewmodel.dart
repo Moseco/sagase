@@ -15,7 +15,8 @@ import 'package:stacked_services/stacked_services.dart';
 /// shows the correct answer until the user submits again. A correct typed
 /// answer does the same if [showAnswerWhenCorrect] is true. An empty typed
 /// answer sets [skipPending] and submitting an empty answer again skips the
-/// item, which shows the correct answer and counts as a wrong answer.
+/// item, which shows the correct answer and counts as a wrong answer. Typing
+/// anything in between should call [cancelSkip].
 abstract class PracticeViewModel<T> extends BaseViewModel {
   final navigationService = locator<NavigationService>();
   final dialogService = locator<DialogService>();
@@ -100,6 +101,12 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
     }
 
     _showingAnswer = true;
+    notifyListeners();
+  }
+
+  void cancelSkip() {
+    if (!_skipPending) return;
+    _skipPending = false;
     notifyListeners();
   }
 

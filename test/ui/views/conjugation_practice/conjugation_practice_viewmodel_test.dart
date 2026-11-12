@@ -127,6 +127,16 @@ void main() {
       expect(viewModel.skipPending, false);
       expect(viewModel.activeItems.length, 2);
       expect(viewModel.activeItems.last, current);
+
+      // Cancelling a pending skip requires the empty answer to be confirmed
+      // again
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, true);
+      viewModel.cancelSkip();
+      expect(viewModel.skipPending, false);
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, true);
+      expect(viewModel.showingAnswer, false);
     });
 
     test('Retry wrong typed answer', () async {
