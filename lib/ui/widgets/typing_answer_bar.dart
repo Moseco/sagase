@@ -11,6 +11,8 @@ import 'package:sagase/utils/romaji_converter.dart';
 /// [answerCorrect] or red otherwise, and the submit button changes to a next
 /// button. If [onRetry] is provided, deleting text while a wrong answer is
 /// shown clears the input and calls it so that a typo can be corrected.
+/// While [skipPending] is true the hint tells the user that submitting the
+/// empty input again reveals the answer.
 class TypingAnswerBar extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String answer) onSubmit;
@@ -19,6 +21,9 @@ class TypingAnswerBar extends StatelessWidget {
   final void Function()? onRetry;
   final bool convertToHiragana;
   final String? hintText;
+  final bool skipPending;
+
+  static const skipHintText = 'Submit again to reveal the answer';
 
   const TypingAnswerBar({
     required this.controller,
@@ -28,6 +33,7 @@ class TypingAnswerBar extends StatelessWidget {
     this.onRetry,
     this.convertToHiragana = false,
     this.hintText,
+    this.skipPending = false,
     super.key,
   });
 
@@ -91,7 +97,7 @@ class TypingAnswerBar extends StatelessWidget {
                   showCursor: !showingAnswer,
                   style: showingAnswer ? TextStyle(color: answerColor) : null,
                   decoration: InputDecoration(
-                    hintText: hintText,
+                    hintText: skipPending ? skipHintText : hintText,
                     border: InputBorder.none,
                   ),
                 ),

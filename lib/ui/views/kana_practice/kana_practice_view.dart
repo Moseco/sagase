@@ -293,6 +293,7 @@ class _Typing extends ViewModelWidget<KanaPracticeViewModel> {
             onSubmit: submit,
             showingAnswer: viewModel.showingAnswer,
             hintText: 'Romaji',
+            skipPending: viewModel.skipPending,
           ),
         ],
       ),

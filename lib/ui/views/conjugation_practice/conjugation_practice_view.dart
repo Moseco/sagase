@@ -98,6 +98,7 @@ class ConjugationPracticeView extends HookWidget {
                   onRetry: viewModel.retryAnswer,
                   convertToHiragana: true,
                   hintText: 'Type in romaji or kana',
+                  skipPending: viewModel.skipPending,
                 ),
               ],
             ),

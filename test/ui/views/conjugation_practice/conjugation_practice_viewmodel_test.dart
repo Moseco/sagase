@@ -96,6 +96,39 @@ void main() {
       expect(viewModel.activeItems.last, current);
     });
 
+    test('Skip with empty answers', () async {
+      getAndRegisterSharedPreferencesService(
+        getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
+        getConjugationPracticeForms: {
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.negative,
+        },
+      );
+
+      final viewModel = ConjugationPracticeViewModel(randomSeed: 123);
+      final current = viewModel.activeItems[0];
+
+      // First empty answer only asks to submit again
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, true);
+      expect(viewModel.showingAnswer, false);
+      expect(viewModel.activeItems[0], current);
+
+      // Second empty answer reveals the answer as a wrong answer
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, false);
+      expect(viewModel.showingAnswer, true);
+      expect(viewModel.answerCorrect, false);
+      expect(viewModel.activeItems[0], current);
+
+      // Submitting again moves on and keeps the question in the deck
+      await viewModel.submitAnswer('');
+      expect(viewModel.showingAnswer, false);
+      expect(viewModel.skipPending, false);
+      expect(viewModel.activeItems.length, 2);
+      expect(viewModel.activeItems.last, current);
+    });
+
     test('Retry wrong typed answer', () async {
       getAndRegisterSharedPreferencesService(
         getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},

@@ -186,13 +186,39 @@ void main() {
       expect(viewModel.showingAnswer, false);
       expect(viewModel.activeFlashcards.length, 3);
 
-      // Empty answer is ignored
+      // First empty answer only asks to submit again
       tempFlashcard = viewModel.activeFlashcards[0];
       await viewModel.submitAnswer('');
-      await viewModel.submitAnswer('  ');
+      expect(viewModel.skipPending, true);
       expect(viewModel.showingAnswer, false);
       expect(viewModel.activeFlashcards[0], tempFlashcard);
       expect(viewModel.activeFlashcards.length, 3);
+
+      // Second empty answer reveals the answer as a wrong answer
+      await viewModel.submitAnswer('  ');
+      expect(viewModel.skipPending, false);
+      expect(viewModel.showingAnswer, true);
+      expect(viewModel.answerCorrect, false);
+      expect(viewModel.activeFlashcards[0], tempFlashcard);
+
+      // Submitting again moves on and keeps the flashcard in the deck
+      await viewModel.submitAnswer('');
+      expect(viewModel.showingAnswer, false);
+      expect(viewModel.skipPending, false);
+      expect(viewModel.activeFlashcards.length, 3);
+      expect(viewModel.activeFlashcards.last, tempFlashcard);
+
+      // Typing an answer after an empty answer cancels the skip
+      tempFlashcard = viewModel.activeFlashcards[0];
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, true);
+      await viewModel.submitAnswer(tempFlashcard.romaji);
+      expect(viewModel.skipPending, false);
+      expect(viewModel.showingAnswer, false);
+      expect(viewModel.activeFlashcards.length, 2);
+      await viewModel.submitAnswer('');
+      expect(viewModel.skipPending, true);
+      expect(viewModel.showingAnswer, false);
     });
 
     test('Submit answer with other romanizations', () async {

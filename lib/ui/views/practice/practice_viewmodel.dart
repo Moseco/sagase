@@ -13,8 +13,9 @@ import 'package:stacked_services/stacked_services.dart';
 /// setting and the session ends once every item has been answered correctly.
 /// Typed answers are checked with [isCorrectAnswer] and a wrong typed answer
 /// shows the correct answer until the user submits again. A correct typed
-/// answer does the same if [showAnswerWhenCorrect] is true. Empty typed
-/// answers are ignored.
+/// answer does the same if [showAnswerWhenCorrect] is true. An empty typed
+/// answer sets [skipPending] and submitting an empty answer again skips the
+/// item, which shows the correct answer and counts as a wrong answer.
 abstract class PracticeViewModel<T> extends BaseViewModel {
   final navigationService = locator<NavigationService>();
   final dialogService = locator<DialogService>();
@@ -27,6 +28,9 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
 
   bool _answerCorrect = false;
   bool get answerCorrect => _answerCorrect;
+
+  bool _skipPending = false;
+  bool get skipPending => _skipPending;
 
   List<T> _allItems = [];
   List<T> get allItems => _allItems;
@@ -57,11 +61,13 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
       ..shuffle(random);
     _undoList.clear();
     _showingAnswer = false;
+    _skipPending = false;
     notifyListeners();
   }
 
   void resetAnswerState() {
     _showingAnswer = false;
+    _skipPending = false;
     _undoList.clear();
   }
 
@@ -73,9 +79,21 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
       return answerItem(_answerCorrect);
     }
 
-    // Ignore empty answers, such as an accidental double submit
-    if (answer.trim().isEmpty) return;
+    if (answer.trim().isEmpty) {
+      // The first empty answer only asks for confirmation so that an
+      // accidental double submit does not skip the item
+      if (_skipPending) {
+        _skipPending = false;
+        _answerCorrect = false;
+        _showingAnswer = true;
+      } else {
+        _skipPending = true;
+      }
+      notifyListeners();
+      return;
+    }
 
+    _skipPending = false;
     _answerCorrect = isCorrectAnswer(activeItems[0], answer);
     if (_answerCorrect && !showAnswerWhenCorrect) {
       return answerItem(true);
@@ -94,6 +112,7 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
   Future<void> answerItem(bool correct) async {
     if (activeItems.isEmpty) return;
 
+    _skipPending = false;
     final current = activeItems.removeAt(0);
     _undoList.add(current);
 
@@ -133,6 +152,7 @@ abstract class PracticeViewModel<T> extends BaseViewModel {
   void undo() {
     if (_undoList.isEmpty) return;
 
+    _skipPending = false;
     final current = _undoList.removeLast();
     activeItems.remove(current);
     activeItems.insert(0, current);

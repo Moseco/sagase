@@ -5,6 +5,7 @@ import 'package:sagase/app/app.dialogs.dart';
 import 'package:sagase/datamodels/conjugation_practice.dart';
 import 'package:sagase/ui/views/conjugation_practice/conjugation_practice_view.dart';
 import 'package:sagase/ui/widgets/furigana_text.dart';
+import 'package:sagase/ui/widgets/typing_answer_bar.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import '../../../helpers/mocks.dart';
@@ -198,7 +199,7 @@ void main() {
       expect(find.text('1 left'), findsOne);
     });
 
-    testWidgets('Empty submit is ignored', (tester) async {
+    testWidgets('Empty submit skips after submitting twice', (tester) async {
       getAndRegisterSharedPreferencesService(
         getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
         getConjugationPracticeForms: {
@@ -212,19 +213,76 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Submitting without an answer does nothing
+      // Submitting without an answer asks to submit again
       final firstForm = currentFormTitle(tester);
+      expect(find.text(TypingAnswerBar.skipHintText), findsNothing);
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsOne);
       expect(isAnswerVisible(tester), false);
       expect(find.byIcon(Icons.check), findsOne);
       expect(currentFormTitle(tester), firstForm);
+
+      // Submitting without an answer again reveals the answer as wrong
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsNothing);
+      expect(isAnswerVisible(tester), true);
+      expect(furiganaColor(tester, answerFurigana(firstForm)), Colors.red);
+      expect(find.byIcon(Icons.arrow_forward), findsOne);
       expect(find.text('0 completed'), findsOne);
       expect(find.text('2 left'), findsOne);
 
-      // A double submit after a correct answer does not answer the next one
+      // Moving on keeps the skipped question in the deck
+      await tester.tap(find.byIcon(Icons.arrow_forward));
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), false);
+      expect(currentFormTitle(tester), isNot(firstForm));
+      expect(find.text('0 completed'), findsOne);
+      expect(find.text('2 left'), findsOne);
+
+      // Answer the other question so the skipped one is back
+      await tester.enterText(
+        find.byType(TextField),
+        firstForm == 'Past' ? 'shinanai' : 'shinda',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(currentFormTitle(tester), firstForm);
+      expect(find.text('1 completed'), findsOne);
+
+      // Typing an answer after an empty submit cancels the skip
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text(TypingAnswerBar.skipHintText), findsOne);
+      await tester.enterText(
+        find.byType(TextField),
+        firstForm == 'Past' ? 'shinda' : 'shinanai',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(isAnswerVisible(tester), true);
+      expect(furiganaColor(tester, answerFurigana(firstForm)), Colors.green);
+      expect(find.text(TypingAnswerBar.skipHintText), findsNothing);
+    });
+
+    testWidgets('Double submit does not skip the next question',
+        (tester) async {
+      getAndRegisterSharedPreferencesService(
+        getConjugationPracticeWordTypes: {ConjugationPracticeWordType.godanNu},
+        getConjugationPracticeForms: {
+          ConjugationPracticeForm.past,
+          ConjugationPracticeForm.negative,
+        },
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(home: ConjugationPracticeView(randomSeed: 123)),
+      );
+      await tester.pumpAndSettle();
+
+      final firstForm = currentFormTitle(tester);
       await tester.enterText(
         find.byType(TextField),
         firstForm == 'Past' ? 'shinda' : 'shinanai',
@@ -233,11 +291,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(isAnswerVisible(tester), true);
 
+      // The extra submit only shows the hint for the next question
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       expect(isAnswerVisible(tester), false);
       expect(find.byIcon(Icons.check), findsOne);
+      expect(find.text(TypingAnswerBar.skipHintText), findsOne);
       expect(currentFormTitle(tester), isNot(firstForm));
       expect(find.text('1 completed'), findsOne);
       expect(find.text('1 left'), findsOne);
