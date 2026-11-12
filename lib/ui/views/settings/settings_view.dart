@@ -146,6 +146,23 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
                 SettingsSection(
+                  title: const Text('Practice'),
+                  tiles: [
+                    SettingsTile.switchTile(
+                      initialValue: viewModel.showKanaPractice,
+                      onToggle: viewModel.setShowKanaPractice,
+                      activeSwitchColor: Theme.of(context).colorScheme.primary,
+                      title: const Text('Show kana practice'),
+                    ),
+                    SettingsTile.switchTile(
+                      initialValue: viewModel.showConjugationPractice,
+                      onToggle: viewModel.setShowConjugationPractice,
+                      activeSwitchColor: Theme.of(context).colorScheme.primary,
+                      title: const Text('Show conjugation practice'),
+                    ),
+                  ],
+                ),
+                SettingsSection(
                   title: const Text('App data'),
                   tiles: [
                     SettingsTile.switchTile(

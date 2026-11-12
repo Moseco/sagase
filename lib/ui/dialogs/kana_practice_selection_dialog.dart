@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sagase/app/app.locator.dart';
 import 'package:sagase/datamodels/kana.dart';
+import 'package:sagase/ui/widgets/selection_list_item.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class KanaPracticeSelectionDialog extends HookWidget {
@@ -45,40 +46,40 @@ class KanaPracticeSelectionDialog extends HookWidget {
                 ),
               ),
             ),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Hiragana',
-              selected: scripts.value.contains(KanaScript.hiragana),
-              onChanged: () => _toggle(scripts, KanaScript.hiragana),
+              item: KanaScript.hiragana,
+              selection: scripts,
             ),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Katakana',
-              selected: scripts.value.contains(KanaScript.katakana),
-              onChanged: () => _toggle(scripts, KanaScript.katakana),
+              item: KanaScript.katakana,
+              selection: scripts,
             ),
             const Divider(indent: 20, endIndent: 20),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Basic',
               subtitle: 'あ, か, さ',
-              selected: types.value.contains(KanaType.basic),
-              onChanged: () => _toggle(types, KanaType.basic),
+              item: KanaType.basic,
+              selection: types,
             ),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Voiced',
               subtitle: 'が, ざ, だ',
-              selected: types.value.contains(KanaType.voiced),
-              onChanged: () => _toggle(types, KanaType.voiced),
+              item: KanaType.voiced,
+              selection: types,
             ),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Semi-voiced',
               subtitle: 'ぱ, ぴ, ぷ',
-              selected: types.value.contains(KanaType.semiVoiced),
-              onChanged: () => _toggle(types, KanaType.semiVoiced),
+              item: KanaType.semiVoiced,
+              selection: types,
             ),
-            _SelectionItem(
+            SelectionListItem(
               title: 'Combinations',
               subtitle: 'きゃ, しゅ, ちょ',
-              selected: types.value.contains(KanaType.combination),
-              onChanged: () => _toggle(types, KanaType.combination),
+              item: KanaType.combination,
+              selection: types,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
@@ -120,38 +121,6 @@ class KanaPracticeSelectionDialog extends HookWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _toggle<T>(ValueNotifier<Set<T>> selection, T item) {
-    if (selection.value.contains(item)) {
-      selection.value = selection.value.difference({item});
-    } else {
-      selection.value = selection.value.union({item});
-    }
-  }
-}
-
-class _SelectionItem extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final bool selected;
-  final void Function() onChanged;
-
-  const _SelectionItem({
-    required this.title,
-    this.subtitle,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: Text(title),
-      subtitle: subtitle == null ? null : Text(subtitle!),
-      value: selected,
-      onChanged: (_) => onChanged(),
     );
   }
 }

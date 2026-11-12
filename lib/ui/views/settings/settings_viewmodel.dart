@@ -45,6 +45,9 @@ class SettingsViewModel extends BaseViewModel {
       _sharedPreferencesService.getShowDetailedProgress();
   bool get properNounsEnabled =>
       _sharedPreferencesService.getProperNounsEnabled();
+  bool get showKanaPractice => _sharedPreferencesService.getShowKanaPractice();
+  bool get showConjugationPractice =>
+      _sharedPreferencesService.getShowConjugationPractice();
 
   void navigateToDev() {
     _navigationService.navigateTo(Routes.devView);
@@ -333,6 +336,16 @@ class SettingsViewModel extends BaseViewModel {
 
   void setShowDetailedProgress(bool value) {
     _sharedPreferencesService.setShowDetailedProgress(value);
+    notifyListeners();
+  }
+
+  void setShowKanaPractice(bool value) {
+    _sharedPreferencesService.setShowKanaPractice(value);
+    notifyListeners();
+  }
+
+  void setShowConjugationPractice(bool value) {
+    _sharedPreferencesService.setShowConjugationPractice(value);
     notifyListeners();
   }
 

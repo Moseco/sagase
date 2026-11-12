@@ -229,6 +229,17 @@ class ConjugationUtils {
       base = vocab.writings![0].writing;
     }
 
+    return conjugate(base, pos, form, negative, formal, onum);
+  }
+
+  String conjugate(
+    String base,
+    PartOfSpeech pos,
+    ConjugationForm form,
+    bool negative,
+    bool formal,
+    int onum,
+  ) {
     // na-adjectives and suru verbs can have a base length of 1, so ignore length rule for them
     // and isKana doesn't matter so it can remain true
     bool isKana = true;
@@ -356,6 +367,44 @@ const Map<String, Conjugation> conjugationMap = {
       false, false, 1, 0, 'だった', null, null),
   '0501truefalse1': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
       true, false, 1, 0, 'じゃなかった', null, null),
+  '0500falsetrue1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, false, true, 1, 0, 'です', null, null),
+  '0500truefalse2': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, true, false, 2, 0, 'ではない', null, null),
+  '0500truetrue1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, true, true, 1, 0, 'じゃないです', null, null),
+  '0500truetrue2': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, true, true, 2, 0, 'じゃありません', null, null),
+  '0500truetrue3': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, true, true, 3, 0, 'ではありません', null, null),
+  '0500truetrue4': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.nonPast, true, true, 4, 0, 'ではないです', null, null),
+  '0501falsetrue1': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      false, true, 1, 0, 'でした', null, null),
+  '0501truefalse2': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      true, false, 2, 0, 'ではなかった', null, null),
+  '0501truetrue1': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      true, true, 1, 0, 'じゃなかったです', null, null),
+  '0501truetrue2': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      true, true, 2, 0, 'じゃありませんでした', null, null),
+  '0501truetrue3': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      true, true, 3, 0, 'ではありませんでした', null, null),
+  '0501truetrue4': Conjugation(PartOfSpeech.adjectiveNa, ConjugationForm.past,
+      true, true, 4, 0, 'ではなかったです', null, null),
+  '0502falsefalse1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.conjunctive, false, false, 1, 0, 'で', null, null),
+  '0502truefalse1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.conjunctive, true, false, 1, 0, 'じゃなくて', null, null),
+  '0502truefalse2': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.conjunctive, true, false, 2, 0, 'ではなくて', null, null),
+  '0503falsefalse1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.provisional, false, false, 1, 0, 'なら', null, null),
+  '0503falsefalse2': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.provisional, false, false, 2, 0, 'ならば', null, null),
+  '0503falsefalse3': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.provisional, false, false, 3, 0, 'であれば', null, null),
+  '0510falsefalse1': Conjugation(PartOfSpeech.adjectiveNa,
+      ConjugationForm.conditional, false, false, 1, 0, 'だったら', null, null),
   // End custom additions for na-adjectives
   '0200falsefalse1': Conjugation(PartOfSpeech.adjectiveIx,
       ConjugationForm.nonPast, false, false, 1, 1, 'い', null, null),
