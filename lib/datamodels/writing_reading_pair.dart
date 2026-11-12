@@ -80,6 +80,23 @@ class WritingReadingPair {
     }
   }
 
+  static List<VocabReading> kanaOnlyReadings(
+    Vocab vocab,
+    List<WritingReadingPair> pairs,
+  ) {
+    List<VocabReading> readings = [];
+    for (final reading in vocab.readings) {
+      if (reading.info != null &&
+          reading.info!.contains(ReadingInfo.searchOnlyForm)) {
+        continue;
+      }
+      if (pairs.any((pair) => pair.readings.contains(reading))) continue;
+      readings.add(reading);
+    }
+
+    return readings;
+  }
+
   static List<WritingReadingPair> _readingOnlyPairs(Vocab vocab) {
     List<VocabReading> readings = [];
     for (final reading in vocab.readings) {

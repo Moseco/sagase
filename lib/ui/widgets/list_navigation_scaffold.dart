@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ListNavigationScaffold extends StatelessWidget {
@@ -58,9 +60,12 @@ class _ListNavigationBar extends StatelessWidget {
       shape: const StadiumBorder(),
     );
 
+    final isIOS = Platform.isIOS;
+
     return SafeArea(
+      minimum: EdgeInsets.fromLTRB(8, 0, 8, isIOS ? 8 : 0),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        padding: EdgeInsets.only(bottom: isIOS ? 0 : 8),
         child: Center(
           heightFactor: 1,
           child: FittedBox(

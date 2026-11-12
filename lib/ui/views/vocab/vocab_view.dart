@@ -62,7 +62,7 @@ class VocabView extends StackedView<VocabViewModel> {
         actions: [
           IconButton(
             key: pitchAccentKey,
-            onPressed: vocab.readings[0].pitchAccents != null
+            onPressed: viewModel.primaryReading.pitchAccents != null
                 ? viewModel.toggleShowPitchAccent
                 : null,
             icon: Icon(
@@ -149,244 +149,159 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
 
   @override
   Widget build(BuildContext context, VocabViewModel viewModel) {
-    bool forceOnlyReading =
-        pairs[0].writings != null && viewModel.vocab.isUsuallyKanaAlone();
+    final firstPair = pairs[0];
+    final primaryWriting = firstPair.writings?[0];
+    final primaryReading = viewModel.primaryReading;
+    final forceOnlyReading = viewModel.forceOnlyReading;
+    final showPrimaryWriting = primaryWriting != null && !forceOnlyReading;
+    final kanaOnlyReadings = viewModel.kanaOnlyReadings;
+
+    // Info is numbered in the order it is shown and explained in a legend
+    final legend = _InfoLegend();
 
     // Primary writing/reading pair
     late Widget primary;
-    if (viewModel.showPitchAccent &&
-        pairs[0].readings[0].pitchAccents != null) {
+    if (viewModel.showPitchAccent && primaryReading.pitchAccents != null) {
       primary = Column(
         children: [
           PitchAccentText(
-            text: pairs[0].readings[0].reading,
-            pitchAccents: pairs[0].readings[0].pitchAccents!,
-            fontSize:
-                (pairs[0].writings == null || forceOnlyReading) ? 32 : 32 / 1.5,
+            text: primaryReading.reading,
+            pitchAccents: primaryReading.pitchAccents!,
+            fontSize: showPrimaryWriting ? 32 / 1.5 : 32,
           ),
-          if (pairs[0].writings != null && !forceOnlyReading)
+          if (showPrimaryWriting)
             Text(
-              pairs[0].writings![0].writing,
+              primaryWriting.writing,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 32, height: 1.2),
             ),
         ],
       );
+    } else if (showPrimaryWriting) {
+      primary = _RubyTextWrapper(
+        pairs: viewModel.getRubyTextPairs(
+          primaryWriting.writing,
+          primaryReading.reading,
+        ),
+        fontSize: 32,
+        textAlign: TextAlign.center,
+      );
     } else {
-      if (pairs[0].writings == null || forceOnlyReading) {
-        primary = Text(
-          pairs[0].readings[0].reading,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 32),
-        );
-      } else {
-        primary = _RubyTextWrapper(
-          pairs: viewModel.getRubyTextPairs(
-            pairs[0].writings![0].writing,
-            pairs[0].readings[0].reading,
-          ),
-          fontSize: 32,
-          textAlign: TextAlign.center,
-        );
+      primary = Text(
+        primaryReading.reading,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 32),
+      );
+    }
+
+    final List<(String, Widget)> sections = [];
+
+    // Info of the primary form is kept out of the header and shown here
+    // If forcing only reading, the info is shown with the kanji writings instead
+    // unless the reading has no kanji
+    final primaryWritingInfo =
+        showPrimaryWriting ? _writingInfo(primaryWriting) : <String>[];
+    final primaryReadingInfo =
+        forceOnlyReading && !kanaOnlyReadings.contains(primaryReading)
+            ? <String>[]
+            : _readingInfo(primaryReading);
+    if (primaryWritingInfo.isNotEmpty || primaryReadingInfo.isNotEmpty) {
+      sections.add((
+        'Main form',
+        showPrimaryWriting
+            ? _bracketForms(legend, [primaryWriting], [primaryReading])
+            : Text.rich(
+                TextSpan(children: _readingSpans(legend, [primaryReading])),
+              ),
+      ));
+    }
+
+    // Every other writing/reading combination is shown exactly once
+    if (forceOnlyReading) {
+      // Primary is kana so show all kanji writings with their readings
+      sections.add((
+        'Kanji writings',
+        _pairsColumn(viewModel, legend, pairs),
+      ));
+    } else {
+      // Remaining forms of the first pair share all readings with the primary
+      if (firstPair.writings != null && firstPair.writings!.length > 1) {
+        final writings = firstPair.writings!.sublist(1);
+        sections.add((
+          'Also written',
+          // Info of a single reading is shown in the main form section
+          firstPair.readings.length == 1
+              ? _rubyWritings(viewModel, legend, writings, primaryReading)
+              : _bracketForms(legend, writings, firstPair.readings),
+        ));
       }
+      if (firstPair.readings.length > 1) {
+        final readings = firstPair.readings.sublist(1);
+        sections.add((
+          'Also read',
+          primaryWriting == null
+              ? Text.rich(TextSpan(children: _readingSpans(legend, readings)))
+              : _writingsWithReadings(
+                  viewModel,
+                  legend,
+                  [primaryWriting],
+                  readings,
+                ),
+        ));
+      }
+      if (pairs.length > 1) {
+        sections.add((
+          'Other writings',
+          _pairsColumn(viewModel, legend, pairs.sublist(1)),
+        ));
+      }
+    }
+
+    // Readings without kanji are not readings of the kanji so shown separately
+    final kanaWritings = [
+      for (final reading in kanaOnlyReadings)
+        if (reading != primaryReading) reading,
+    ];
+    if (kanaWritings.isNotEmpty) {
+      sections.add((
+        'Kana writings',
+        Text.rich(TextSpan(children: _readingSpans(legend, kanaWritings))),
+      ));
     }
 
     List<Widget> children = [];
+    for (int i = 0; i < sections.length; i++) {
+      if (i != 0) children.add(const SizedBox(height: 8));
+      children.addAll([
+        SelectionContainer.disabled(
+          child: Text(
+            sections[i].$1,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ),
+        const SizedBox(height: 2),
+        sections[i].$2,
+      ]);
+    }
 
-    // If forcing only reading, skip this first pair alternatives section
-    if (!forceOnlyReading) {
-      // Show unique info from first pair
-      if (pairs[0].writings == null && pairs[0].readings.length > 1) {
-        // Only more readings available without kanji writing
-        final buffer = StringBuffer(pairs[0].readings[1].reading);
-        for (int i = 2; i < pairs[0].readings.length; i++) {
-          buffer.write(', ');
-          buffer.write(pairs[0].readings[i].reading);
-        }
-        children.add(Text(buffer.toString()));
-      } else if (pairs[0].writings?.length == 1 &&
-          pairs[0].readings.length == 2) {
-        // 1 additional reading available with only 1 kanji writing
+    // Legend at the bottom explaining each number
+    if (legend.titles.isNotEmpty) {
+      if (children.isNotEmpty) children.add(const Divider());
+      for (int i = 0; i < legend.titles.length; i++) {
         children.add(
-          _RubyTextWrapper(
-            pairs: viewModel.getRubyTextPairs(
-              pairs[0].writings![0].writing,
-              pairs[0].readings[1].reading,
+          Text.rich(
+            TextSpan(
+              children: [
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.top,
+                  child: _Marker('${i + 1}'),
+                ),
+                TextSpan(text: ' ${legend.titles[i]}'),
+              ],
             ),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         );
-      } else if (pairs[0].writings?.length == 1 &&
-          pairs[0].readings.length > 2) {
-        // More then 2 readings available with only 1 kanji writing
-        final buffer = StringBuffer(pairs[0].writings![0].writing);
-        buffer.write('【');
-        buffer.write(pairs[0].readings[1].reading);
-        for (int i = 2; i < pairs[0].readings.length; i++) {
-          buffer.write(', ');
-          buffer.write(pairs[0].readings[i].reading);
-        }
-        buffer.write('】');
-        children.add(Text(buffer.toString()));
-      } else if (pairs[0].writings != null &&
-          pairs[0].writings!.length > 1 &&
-          pairs[0].readings.length == 1) {
-        // Additional kanji writing with only 1 reading
-        final rubyTextPairs = viewModel.getRubyTextPairs(
-          pairs[0].writings![1].writing,
-          pairs[0].readings[0].reading,
-        );
-        for (int i = 2; i < pairs[0].writings!.length; i++) {
-          rubyTextPairs.add(const RubyTextPair(writing: ', '));
-          rubyTextPairs.addAll(
-            viewModel.getRubyTextPairs(
-              pairs[0].writings![i].writing,
-              pairs[0].readings[0].reading,
-            ),
-          );
-        }
-        children.add(_RubyTextWrapper(pairs: rubyTextPairs));
-      } else if (pairs[0].writings != null &&
-          pairs[0].writings!.length > 1 &&
-          pairs[0].readings.length > 1) {
-        // Multiple kanji writings and readings
-        final buffer = StringBuffer(pairs[0].writings![0].writing);
-        for (int i = 1; i < pairs[0].writings!.length; i++) {
-          buffer.write(', ');
-          buffer.write(pairs[0].writings![i].writing);
-        }
-        buffer.write('【');
-        buffer.write(pairs[0].readings[0].reading);
-        for (int i = 1; i < pairs[0].readings.length; i++) {
-          buffer.write(', ');
-          buffer.write(pairs[0].readings[i].reading);
-        }
-        buffer.write('】');
-        children.add(Text(buffer.toString()));
-      }
-    }
-
-    // Handle remaining pairs
-    // From 0 if forcing only reading, otherwise from 1
-    for (int i = forceOnlyReading ? 0 : 1; i < pairs.length; i++) {
-      if (pairs[i].writings != null && pairs[i].readings.length == 1) {
-        // 1 or more kanji writings with only 1 reading
-        final rubyTextPairs = viewModel.getRubyTextPairs(
-          pairs[i].writings![0].writing,
-          pairs[i].readings[0].reading,
-        );
-        for (int j = 1; j < pairs[i].writings!.length; j++) {
-          rubyTextPairs.add(const RubyTextPair(writing: ', '));
-          rubyTextPairs.addAll(
-            viewModel.getRubyTextPairs(
-              pairs[i].writings![j].writing,
-              pairs[i].readings[0].reading,
-            ),
-          );
-        }
-        // Add padding above if not the first alternative
-        if (children.isNotEmpty) {
-          children.add(const SizedBox(height: 4));
-        }
-        children.add(_RubyTextWrapper(pairs: rubyTextPairs));
-      } else {
-        final buffer = StringBuffer();
-        if (pairs[i].writings != null) {
-          buffer.write(pairs[i].writings![0].writing);
-          for (int j = 1; j < pairs[i].writings!.length; j++) {
-            buffer.write(', ');
-            buffer.write(pairs[i].writings![j].writing);
-          }
-          buffer.write('【');
-        }
-        buffer.write(pairs[i].readings[0].reading);
-        for (int j = 1; j < pairs[i].readings.length; j++) {
-          buffer.write(', ');
-          buffer.write(pairs[i].readings[j].reading);
-        }
-        if (pairs[i].writings != null) buffer.write('】');
-        children.add(Text(buffer.toString()));
-      }
-    }
-
-    // Set up initial title if alternatives available
-    late String title;
-    if (children.isNotEmpty) {
-      title = 'Alternatives';
-    }
-
-    // Get all the writing and reading info and sort by type
-    Map<WritingInfo, List<String>> kanjiInfoMap = {};
-    Map<ReadingInfo, List<String>> readingInfoMap = {};
-
-    for (var pair in viewModel.writingReadingPairs) {
-      if (pair.writings != null) {
-        for (var writing in pair.writings!) {
-          if (writing.info != null) {
-            for (var info in writing.info!) {
-              kanjiInfoMap[info] ??= [];
-              kanjiInfoMap[info]!.add(writing.writing);
-            }
-          }
-        }
-      }
-
-      for (var reading in pair.readings) {
-        if (reading.info != null) {
-          for (var info in reading.info!) {
-            readingInfoMap[info] ??= [];
-            readingInfoMap[info]!.add(reading.reading);
-          }
-        }
-      }
-    }
-
-    // If both irregular kanji/kana exist, merge into kanji version
-    if (kanjiInfoMap.containsKey(WritingInfo.irregularKana) &&
-        readingInfoMap.containsKey(ReadingInfo.irregularKana)) {
-      kanjiInfoMap[WritingInfo.irregularKana]!
-          .addAll(readingInfoMap[ReadingInfo.irregularKana]!);
-      readingInfoMap.remove(ReadingInfo.irregularKana);
-    }
-
-    // Set title and divider if needed
-    if (kanjiInfoMap.isNotEmpty || readingInfoMap.isNotEmpty) {
-      if (children.isNotEmpty) {
-        children.add(const Divider());
-      } else {
-        title = 'Kanji/kana info';
-      }
-
-      // Merge kanji/reading and info pairs
-      List<(String, String)> infoList = [];
-
-      outer:
-      for (var entry in kanjiInfoMap.entries) {
-        String text = entry.value.join(', ');
-        for (int i = 0; i < infoList.length; i++) {
-          if (infoList[i].$1 == text) {
-            infoList[i] =
-                (text, '${infoList[i].$2}, ${entry.key.displayTitle}');
-            continue outer;
-          }
-        }
-        infoList.add((text, entry.key.displayTitle));
-      }
-
-      outer:
-      for (var entry in readingInfoMap.entries) {
-        String text = entry.value.join(', ');
-        for (int i = 0; i < infoList.length; i++) {
-          if (infoList[i].$1 == text) {
-            infoList[i] =
-                (text, '${infoList[i].$2}, ${entry.key.displayTitle}');
-            continue outer;
-          }
-        }
-        infoList.add((text, entry.key.displayTitle));
-      }
-
-      for (var item in infoList) {
-        children.add(Text('${item.$1}: ${item.$2}'));
       }
     }
 
@@ -395,17 +310,225 @@ class _KanjiReadingPairs extends ViewModelWidget<VocabViewModel> {
         Center(child: primary),
         if (children.isNotEmpty)
           CardWithTitleSection(
-            title: title,
+            title: 'Forms',
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children,
+              child: DefaultTextStyle.merge(
+                style: const TextStyle(fontSize: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: children,
+                ),
               ),
             ),
           ),
       ],
+    );
+  }
+
+  // Each pair on its own line
+  Widget _pairsColumn(
+    VocabViewModel viewModel,
+    _InfoLegend legend,
+    List<WritingReadingPair> pairs,
+  ) {
+    List<Widget> children = [];
+    for (final pair in pairs) {
+      if (children.isNotEmpty) children.add(const SizedBox(height: 4));
+      if (pair.writings == null) {
+        children.add(
+          Text.rich(TextSpan(children: _readingSpans(legend, pair.readings))),
+        );
+      } else {
+        children.add(
+          _writingsWithReadings(
+            viewModel,
+            legend,
+            pair.writings!,
+            pair.readings,
+          ),
+        );
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  Widget _writingsWithReadings(
+    VocabViewModel viewModel,
+    _InfoLegend legend,
+    List<VocabWriting> writings,
+    List<VocabReading> readings,
+  ) {
+    if (readings.length == 1 && _readingInfo(readings[0]).isEmpty) {
+      return _rubyWritings(viewModel, legend, writings, readings[0]);
+    }
+    return _bracketForms(legend, writings, readings);
+  }
+
+  Widget _bracketForms(
+    _InfoLegend legend,
+    List<VocabWriting> writings,
+    List<VocabReading> readings,
+  ) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          ..._writingSpans(legend, writings),
+          const TextSpan(text: '【'),
+          ..._readingSpans(legend, readings),
+          const TextSpan(text: '】'),
+        ],
+      ),
+    );
+  }
+
+  Widget _rubyWritings(
+    VocabViewModel viewModel,
+    _InfoLegend legend,
+    List<VocabWriting> writings,
+    VocabReading reading,
+  ) {
+    List<Widget> children = [];
+    for (int i = 0; i < writings.length; i++) {
+      final marker = legend.marker(_writingInfo(writings[i]));
+      children.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            _RubyTextWrapper(
+              pairs: viewModel.getRubyTextPairs(
+                writings[i].writing,
+                reading.reading,
+              ),
+            ),
+            if (marker != null) _Marker(marker, afterRubyText: true),
+            if (i != writings.length - 1) const Text(', '),
+          ],
+        ),
+      );
+    }
+
+    return Wrap(
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.end,
+      children: children,
+    );
+  }
+
+  List<InlineSpan> _writingSpans(
+    _InfoLegend legend,
+    List<VocabWriting> writings,
+  ) {
+    return _formSpans(legend, [
+      for (final writing in writings) (writing.writing, _writingInfo(writing)),
+    ]);
+  }
+
+  List<InlineSpan> _readingSpans(
+    _InfoLegend legend,
+    List<VocabReading> readings,
+  ) {
+    return _formSpans(legend, [
+      for (final reading in readings) (reading.reading, _readingInfo(reading)),
+    ]);
+  }
+
+  List<InlineSpan> _formSpans(
+    _InfoLegend legend,
+    List<(String, List<String>)> forms,
+  ) {
+    List<InlineSpan> spans = [];
+    for (int i = 0; i < forms.length; i++) {
+      if (i != 0) spans.add(const TextSpan(text: ', '));
+      spans.add(TextSpan(text: forms[i].$1));
+      final marker = legend.marker(forms[i].$2);
+      if (marker != null) {
+        spans.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.top,
+            child: _Marker(marker),
+          ),
+        );
+      }
+    }
+    return spans;
+  }
+
+  List<String> _writingInfo(VocabWriting writing) {
+    return [
+      for (final info in writing.info ?? <WritingInfo>[])
+        if (info != WritingInfo.searchOnlyForm) info.displayTitle,
+    ];
+  }
+
+  List<String> _readingInfo(VocabReading reading) {
+    return [
+      for (final info in reading.info ?? <ReadingInfo>[])
+        if (info != ReadingInfo.searchOnlyForm) info.displayTitle,
+    ];
+  }
+}
+
+// Gives each distinct writing/reading info a number in order of appearance
+class _InfoLegend {
+  final List<String> titles = [];
+
+  // Returns the superscript text for the given info or null if there is none
+  String? marker(List<String> infoTitles) {
+    if (infoTitles.isEmpty) return null;
+    final numbers = <int>[];
+    for (final title in infoTitles) {
+      int index = titles.indexOf(title);
+      if (index == -1) {
+        titles.add(title);
+        index = titles.length - 1;
+      }
+      if (!numbers.contains(index + 1)) numbers.add(index + 1);
+    }
+    return numbers.join(',');
+  }
+}
+
+// Small raised number referring to the legend
+class _Marker extends StatelessWidget {
+  final String text;
+  // Ruby text can't hold the marker inline so it is placed after it in a row
+  // aligned to the bottom and needs to be raised manually
+  final bool afterRubyText;
+
+  const _Marker(this.text, {this.afterRubyText = false});
+
+  @override
+  Widget build(BuildContext context) {
+    const fontSize = 12.0;
+    final marker = SelectionContainer.disabled(
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          height: 1,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+    if (!afterRubyText) return marker;
+
+    // Top of the marker is put 1.36 times the font size above the bottom of
+    // the ruby text to match the height of markers in regular text
+    final textScaler = MediaQuery.textScalerOf(context);
+    final baseFontSize = DefaultTextStyle.of(context).style.fontSize ?? 14;
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom:
+            textScaler.scale(baseFontSize) * 1.36 - textScaler.scale(fontSize),
+      ),
+      child: marker,
     );
   }
 }
