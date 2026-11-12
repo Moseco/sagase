@@ -169,6 +169,44 @@ void main() {
       expect(na.isCorrect('しずかです'), false);
     });
 
+    test('ある does not accept ないで', () {
+      final q = question('ある', ConjugationPracticeForm.negativeTeForm);
+      expect(q.readingAnswers, ['なくて']);
+      expect(q.writingAnswers, ['なくて']);
+      expect(q.isCorrect('なくて'), true);
+      expect(q.isCorrect('ないで'), false);
+    });
+
+    test('Stative verbs skip unnatural forms', () {
+      ConjugationPracticeQuestion? create(
+        String writing,
+        ConjugationPracticeForm form,
+      ) {
+        final word = ConjugationPracticeWordType.values
+            .expand((type) => type.words)
+            .firstWhere((word) => word.writing == writing);
+        final type = ConjugationPracticeWordType.values
+            .firstWhere((type) => type.words.contains(word));
+        return ConjugationPracticeQuestion.create(word, type, form);
+      }
+
+      for (final writing in ['ある', '要る']) {
+        expect(create(writing, ConjugationPracticeForm.causative), null);
+        expect(
+          create(writing, ConjugationPracticeForm.causativePassive),
+          null,
+        );
+        expect(create(writing, ConjugationPracticeForm.potential), null);
+        expect(create(writing, ConjugationPracticeForm.past), isNotNull);
+      }
+
+      expect(
+        create('分かる', ConjugationPracticeForm.causative)!.readingAnswers,
+        ['わからせる', 'わからす'],
+      );
+      expect(create('分かる', ConjugationPracticeForm.potential), null);
+    });
+
     test('Adjectives only get adjective forms', () {
       final questions = ConjugationPracticeQuestion.getAll(
         types: {ConjugationPracticeWordType.adjectiveI},

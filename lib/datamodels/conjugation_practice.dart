@@ -101,18 +101,22 @@ enum ConjugationPracticeForm {
 
 /// A word to conjugate. [furigana] uses the Anki furigana format.
 /// [excludedForms] are conjugations that are grammatical but unnatural for
-/// the word and are not practiced.
+/// the word and are not practiced. [excludedAnswers] are conjugations that
+/// are generated for the word's part of speech but are wrong for the word and
+/// are not accepted as answers.
 class ConjugationPracticeWord {
   final String furigana;
   final String meaning;
   final PartOfSpeech pos;
   final Set<ConjugationPracticeForm> excludedForms;
+  final Set<String> excludedAnswers;
 
   const ConjugationPracticeWord(
     this.furigana,
     this.meaning,
     this.pos, {
     this.excludedForms = const {},
+    this.excludedAnswers = const {},
   });
 
   String get writing => removeFurigana(furigana);
@@ -204,8 +208,10 @@ class ConjugationPracticeQuestion {
       return null;
     }
 
-    final readingAnswers = _conjugateAll(word.reading, word.pos, form);
-    final writingAnswers = _conjugateAll(word.writing, word.pos, form);
+    final readingAnswers = _conjugateAll(word.reading, word.pos, form)
+      ..removeWhere(word.excludedAnswers.contains);
+    final writingAnswers = _conjugateAll(word.writing, word.pos, form)
+      ..removeWhere(word.excludedAnswers.contains);
     if (readingAnswers.isEmpty || writingAnswers.isEmpty) return null;
 
     return ConjugationPracticeQuestion(
@@ -404,6 +410,12 @@ const _unnaturalForms = {
   ConjugationPracticeForm.negativeImperative,
 };
 
+/// For stative verbs that have no natural causative either
+const _unnaturalFormsAndCausative = {
+  ..._unnaturalForms,
+  ConjugationPracticeForm.causative,
+};
+
 const _words = {
   ConjugationPracticeWordType.godanU: [
     ConjugationPracticeWord('買[か]う', 'to buy', PartOfSpeech.verbGodanU),
@@ -491,7 +503,7 @@ const _words = {
     ConjugationPracticeWord('知[し]る', 'to know', PartOfSpeech.verbGodanR),
     ConjugationPracticeWord('切[き]る', 'to cut', PartOfSpeech.verbGodanR),
     ConjugationPracticeWord('要[い]る', 'to need', PartOfSpeech.verbGodanR,
-        excludedForms: _unnaturalForms),
+        excludedForms: _unnaturalFormsAndCausative),
     ConjugationPracticeWord('分[わ]かる', 'to understand', PartOfSpeech.verbGodanR,
         excludedForms: _unnaturalForms),
     ConjugationPracticeWord('作[つく]る', 'to make', PartOfSpeech.verbGodanR),
@@ -540,7 +552,7 @@ const _words = {
     ConjugationPracticeWord('来[く]る', 'to come', PartOfSpeech.verbKuru),
     ConjugationPracticeWord('行[い]く', 'to go', PartOfSpeech.verbGodanKS),
     ConjugationPracticeWord('ある', 'to exist (things)', PartOfSpeech.verbGodanRI,
-        excludedForms: _unnaturalForms),
+        excludedForms: _unnaturalFormsAndCausative, excludedAnswers: {'ないで'}),
   ],
   ConjugationPracticeWordType.adjectiveI: [
     ConjugationPracticeWord(
